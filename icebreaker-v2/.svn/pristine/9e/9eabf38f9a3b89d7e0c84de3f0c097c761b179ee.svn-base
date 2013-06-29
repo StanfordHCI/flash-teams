@@ -1,0 +1,54 @@
+.product i{
+	display:block;
+	font-size:0.8em;
+	font-weight:normal;
+	font-style:normal;
+}
+
+.product img{
+	margin:10px;
+}
+
+.product b{
+	position: absolute;
+	right: 15px;
+	top: 15px;
+	font-size: 0.9em;
+}
+
+.product{
+	height: 80px;
+}
+
+
+.meter { 
+	height: 20px; 
+	position: relative;
+	background-color: red;	
+}
+
+.meter > span {
+	display: block;
+	height: 100%;	   
+	background-color: rgb(43,194,83);	
+	position: relative;
+	overflow: hidden;
+}
+
+
+@media all and (min-width: 650px){
+
+	.rightColumn{
+		width:56%;
+		float:right;
+		margin-left:4%;
+	}
+	
+	.leftColumn{
+		width:40%;
+		float:left;
+	}
+
+}
+
+
