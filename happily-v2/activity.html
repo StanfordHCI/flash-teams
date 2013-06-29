@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/jquery.mobile-1.3.0-rc.1.min.css" />
+    <link rel="stylesheet" href="styles/site.css" />
+    <style media="screen" type="text/css">
+    input.ui-slider-input {display: none;}
+    </style>
+    <script type="text/javascript" src="scripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery.mobile-1.3.0.min.js"></script>        
+    <script type="text/javascript" src="scripts/custom.js"></script>  
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                if (localStorage.Category == undefined)
+                    var categoryNames = [];
+                else
+                    var categoryNames = JSON.parse(localStorage.Category);
+                var str = "<option value='select'>Select---</option><option value='new'>+New Activity</option>";
+                $("#select-choice-1").empty();
+                if (categoryNames.length > 0) {
+                    $.each(categoryNames, function (i, item) {                        
+                        str += ("<option value='" + item + "'>" + item + "</option>");
+                    });
+                }
+                $("#select-choice-1").append(str).selectmenu('refresh', true);
+
+                //Set Edit Values
+                if (sessionStorage.ToEdit != "" && sessionStorage.ToEdit != undefined) {
+                    var temp = sessionStorage.ToEdit.replace("_|_","").split("|-|");
+                    $("#select-choice-1").val(temp[0]).selectmenu('refresh', true);
+                    $("#slider-1").val(temp[1]).slider('refresh');
+                }
+            });
+            function AddCategory() {
+                if ($("#txtActivity").val().trim() == "") {
+                    ShowErrorMessage("Please Enter Activty Name");
+                } else {
+                    
+
+                    var names = [];
+                    var temp = [];
+                    if (localStorage.Category == undefined)
+                        var categoryNames = [];
+                    else
+                        var categoryNames = JSON.parse(localStorage.Category);
+                    var idx = 0;
+                    if (categoryNames.length > 0) {
+                        $.each(categoryNames, function (i, item) {
+                            names[idx] = item;
+                            idx++;
+                        });
+                        temp[0] = $("#txtActivity").val().trim();
+                        names[names.length] = temp[0];
+                    }
+                    else {
+                        names[0] = $("#txtActivity").val().trim();
+                    }                   
+                   
+                    localStorage.Category = JSON.stringify(names);
+                    var categoryNames = JSON.parse(localStorage.Category);
+                    var str = "<option value='select'>Select---</option><option value='new'>+New Activity</option>";
+                    $("#select-choice-1").empty();
+                    if (categoryNames.length > 0) {
+                        $.each(categoryNames, function (i, item) {                            
+                            str += ("<option value='" + item + "'>" + item + "</option>");
+                        });
+                    }
+                    $("#select-choice-1").append(str).selectmenu('refresh', true);
+                    $(".ui-dialog").dialog("close");
+
+                }
+            }
+
+            function SubmitActivity() {
+                if ($("#select-choice-1").val() == "select" || $("#select-choice-1").val() == "new" ) {
+                    ShowErrorMessage("Please Select Activity");
+                    return 0;
+                }
+                if (sessionStorage.ToEdit != "" && sessionStorage.ToEdit != undefined) {
+                    localStorage.Log = localStorage.Log.replace(sessionStorage.ToEdit, "");
+                }
+                var level = $("#slider-1").val();
+                var Cat = $("#select-choice-1").val();
+                
+                var tempArray = Cat + "|-|" + level + "_|_";
+                if (localStorage.Log != undefined && localStorage.Log!="")
+                    localStorage.Log = localStorage.Log + tempArray;
+                else
+                    localStorage.Log = tempArray;
+                //Reset Edit Mode
+                sessionStorage.ToEdit = "";
+
+                window.location.href = "log.html";
+                
+            }           
+    </script> 
+</head>
+  <body>
+    <div data-role="page">
+         <div data-role="header" data-theme="a" class="header"> 
+                <a data-role="button" data-icon="back" data-rel="back">Back</a>                          
+                <div class="pageTitle">Log Activity</div> 
+          </div>
+        <div data-role="content" >           
+               
+            <div class="ui-grid-a">
+                <div class="ui-block-a"><a href="" data-role="button" data-inline="true" class="ui-btn-active ui-state-persist">Add Activity</a></div>
+                <div class="ui-block-b"><a data-role="button" href="log.html" data-ajax="false" data-inline="true">Activity Log</a></div>
+            </div>
+            <div data-role="fieldcontain">
+                <label for="select-choice-1" class="select">What did you do today?</label>
+                <select name="select-choice-1" onchange="ddlActivityOnChange();" id="select-choice-1">
+                    <option value="select" data-placeholder="true">Select--</option>                    
+                </select>                
+                <a href="addactivity.html" data-rel="dialog" style="display: none;" data-inline="true">Add Activity</a>
+            </div>
+               <div><label for="slider-1">How did it make you feel?</label></div>
+               <div class="center"><input type="range" data-highlight="true" data-theme="a" name="slider-1" id="slider-1" value="7.5" min="0" max="10" />     </div>
+             <a href="" data-role="button" onclick="SubmitActivity();">Submit Activity</a>  
+                 <a href="recursive.html" data-rel="dialog"  data-role="button">Make it Recursive</a>  
+                <a href="graphs.html" data-role="button" data-ajax="false">View Graph</a>
+        </div>        
+       <div data-role="footer">
+            <div data-role="navbar" data-theme="a">
+                <ul>
+                    <li><a href="index.html" data-ajax="false"><img src="images/fsriends.png" /></a></li>
+                    <li><a href="#" class="ui-btn-active ui-state-persist" data-ajax="false"><img src="images/log.png" /></a></li>
+                    <li><a href="graphs.html" data-ajax="false"><img src="images/graph-icon.png" /></a></li> 
+                       <li><a href="recommendations.html" data-ajax="false"><img src="images/rec-icon.png" /></a></li>
+                    <li><a href="friends.html" data-ajax="false"><img src="images/friends-icon.png" /></a></li>                  
+                </ul>
+                 
+            </div>
+        </div>         
+    </div>
+  </body>
+</html>

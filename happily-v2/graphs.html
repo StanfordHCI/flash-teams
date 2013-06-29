@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/jquery.mobile-1.3.0-rc.1.min.css" />
+    <link rel="stylesheet" href="styles/site.css" />
+    <script type="text/javascript" src="scripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery.mobile-1.3.0.min.js"></script>     
+    <script src="scripts/custom.js"></script>      
+     <script type="text/javascript">
+         $(document).ready(function () {
+             CalcHappiness();
+         });
+    </script>           
+</head>
+  <body>
+    <div data-role="page">
+         <div data-role="header" data-theme="a" class="header">     
+               <a data-role="button" data-icon="back" data-rel="back">Back</a>                            
+                <div class="pageTitle">View Graph</div> 
+          </div>
+        <div data-role="content" >        
+                <h3>Monthly Happiness: <span style="font-weight: bold;" id="graphHappiness"></span></h3>                   
+            <div>                   
+                <img src="images/linegraph-monthlky.jpg" style="width:100%;" />
+            </div>
+            <div class="ui-grid-a">
+                <div class="ui-block-a"><a href="graphs-year.html" data-role="button"  data-ajax="false" data-inline="true">Year Wise</a></div>
+                <div class="ui-block-b"><a data-role="button" href="" data-inline="true" class="ui-btn-active ui-state-persist">Month Wise</a></div>
+                </div>
+        </div>        
+        <div data-role="footer">
+            <div data-role="navbar" data-theme="a">
+                <ul>
+                    <li><a href="index.html" data-ajax="false" ><img src="images/fsriends.png" /></a></li>
+                    <li><a href="log.html" data-ajax="false"><img src="images/log.png" /></a></li>
+                    <li><a href="#" data-ajax="false" class="ui-btn-active ui-state-persist"><img src="images/graph-icon.png" /></a></li> 
+                       <li><a href="recommendations.html" data-ajax="false"><img src="images/rec-icon.png" /></a></li>
+                    <li><a href="friends.html" data-ajax="false"><img src="images/friends-icon.png" /></a></li>                  
+                </ul>
+                 
+            </div>
+        </div>        
+    </div>
+  </body>
+</html>
