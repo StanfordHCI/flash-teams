@@ -1,0 +1,135 @@
+﻿.mobile-logo-small {
+background: url(../images/logo.jpg) no-repeat;
+float: left;
+display: block;
+text-indent: -9999px;
+margin-left: 5px;
+margin-top:-2px;
+border:none;
+}
+
+.footer-links {
+font-size: 80%;
+margin: 10px auto 0;
+text-align:center;
+}
+.myslides {
+	width: 100%;
+	height: 50%	;
+	padding: 0;  
+    margin:  0 auto; 
+	text-align: center; 
+} 
+
+.footer-links li
+{
+    display: inline;
+padding-right: 25px;
+margin: 10px auto 0;
+    }
+    
+    .footer-links a
+    {
+        text-shadow:none;
+        color:#456f9a !important;
+        text-decoration:none;
+        }
+        
+        #nav {
+float: right;
+top: 0 !important;
+left: 115px !important;
+right: 0;
+font-family: "ProximaExtraBold", Helvetica, Arial, sans-serif;
+margin-bottom:5px;
+margin-top:56px;
+}
+
+#nav .current {
+border-bottom: none;
+}
+
+#nav li {
+float: left;
+height: 22px;
+list-style:none;
+}
+
+#nav .current a {
+color: #1d191d;
+background: url(../images/active-tab.png) repeat-x;
+border-top-left-radius: 5px;
+border-top-right-radius: 5px;
+}
+
+#nav li a {
+color: #fff;
+display: block;
+text-decoration: none;
+letter-spacing: .05em;
+line-height: 25px;
+height: 30px;
+font-size: 10px;
+padding: 3px 5px 5px 5px;
+text-transform: uppercase;
+cursor:pointer;
+}
+
+    .resize
+    {
+     width:100%;
+     height:100%;   
+    }
+    
+    .Events
+{
+    border-bottom: 1px dotted #5E87B0;
+    margin-bottom: 5px;
+}
+
+
+
+.contentPara
+{
+text-align:justify !important;font-weight:normal !important;
+}
+.header
+{
+    height: 50px;
+}
+.pageTitle
+{
+    margin-top: 15px;text-align: center;
+}
+#popupPanel-popup {
+    right: 0 !important;
+    left: auto !important;
+   
+}
+#popupPanel {
+    width: 200px;
+    border: 1px solid #000;
+    border-right: none;
+    background: rgba(0,0,0,.7);
+    margin: -1px 0;     
+}
+#popupPanel .ui-btn {
+    margin: 0.5em 5px;
+}
+#frmContainer iframe header
+{
+background-color: red;
+
+}
+#gridMenu .ui-btn-text
+{
+font-size: 12px !important;
+
+}
+.normal{white-space:normal;padding-bottom: 10px;}
+.center{text-align: center;}
+.highlight{color: #5088d2;}
+.contentPara{font-family: Helvetica !important;}
+.right{float: right;}.left{float: left;}
+.h1{text-align: left;white-space:normal;}
+@media only screen and (-webkit-min-device-pixel-ratio:1.5),      only screen and (min--moz-device-pixel-ratio:1.5),      only screen and (min-resolution:240dpi){}

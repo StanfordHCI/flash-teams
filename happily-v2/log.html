@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/jquery.mobile-1.3.0-rc.1.min.css" />
+    <link rel="stylesheet" type="text/css" href="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog.min.css" /> 
+    <link rel="stylesheet" href="styles/site.css" />
+    <style media="screen" type="text/css">
+    input.ui-slider-input {display: none;}
+    </style>
+    <script type="text/javascript" src="scripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery.mobile-1.3.0.min.js"></script>        
+    <script type="text/javascript" src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js"></script>
+    <script type="text/javascript" src="scripts/custom.js"></script>  
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                GenerateTodaysLog();
+                $(document).delegate('#opendialog', 'click', function () {                  
+                    $('<div>').simpledialog2({
+                        mode: 'button',
+                        headerText: 'Confirm',
+                        headerClose: true,
+                        buttonPrompt: 'Are you sure?',
+                        buttons: {
+                            'OK': {
+                                click: function () {
+                                    localStorage.Log = localStorage.Log.replace(sessionStorage.ToDelete, "");
+                                    window.location.reload();
+                                }
+                            },
+                            'Cancel': {
+                                click: function () {
+                                    $('#buttonoutput').text('Cancel');
+                                },
+                                icon: "delete",
+                                theme: "c"
+                            }
+                        }
+                    })
+                });
+            });
+      
+
+    </script> 
+</head>
+  <body>
+    <div data-role="page">
+         <div data-role="header" data-theme="a" class="header"> 
+                <a data-role="button" data-icon="back" data-rel="back">Back</a>                          
+                <div class="pageTitle">Log Activity</div> 
+          </div>
+        <div data-role="content" >                          
+            <div class="ui-grid-a">
+                <div class="ui-block-a"><a href="activity.html" onclick='sessionStorage.ToEdit="";' data-role="button" data-ajax="false" data-inline="true" >Add Activity</a></div>
+                <div class="ui-block-b"><a data-role="button" href="" data-inline="true" class="ui-btn-active ui-state-persist">Activity Log</a></div>
+            </div>
+            <div data-role="fieldcontain">
+                <label for="select-choice-1" class="select"></label>
+                <select name="select-choice-1" onchange="GetLog();" id="select-choice-1">
+                    <option value="today">Today--</option>                    
+                    <option value="weekly">Weekly--</option>  
+                </select>                                
+            </div>
+            <div>
+                  <table id="tblLogs" style="width: 100%;">
+                                       
+                  </table>
+            </div>    
+                            
+           
+                <a href="graphs.html" data-role="button">View Graph</a>
+        </div>        
+        <div data-role="footer">
+            <div data-role="navbar" data-theme="a">
+                <ul>
+                    <li><a href="index.html" data-ajax="false" ><img src="images/fsriends.png" /></a></li>
+                    <li><a href="#" class="ui-btn-active ui-state-persist" data-ajax="false"><img src="images/log.png" /></a></li>
+                    <li><a href="graphs.html" data-ajax="false"><img src="images/graph-icon.png" /></a></li> 
+                       <li><a href="recommendations.html" data-ajax="false"><img src="images/rec-icon.png" /></a></li>
+                    <li><a href="friends.html" data-ajax="false"><img src="images/friends-icon.png" /></a></li>                  
+                </ul>
+                 
+            </div>
+        </div>        
+    </div>
+  </body>
+</html>

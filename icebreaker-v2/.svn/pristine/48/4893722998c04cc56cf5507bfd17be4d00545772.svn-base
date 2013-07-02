@@ -1,0 +1,16 @@
+
+
+
+.meter { 
+	height: 20px;  /* Can be anything */
+	position: relative;
+	background-color: red;	
+}
+
+.meter > span {
+	display: block;
+	height: 100%;	   
+	background-color: rgb(43,194,83);	
+	position: relative;
+	overflow: hidden;
+}
