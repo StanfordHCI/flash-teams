@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html> 
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/jquery.mobile-1.3.0-rc.1.min.css" />
+    <link rel="stylesheet" href="styles/site.css" />
+    <style media="screen" type="text/css">
+    input.ui-slider-input {display: none;}
+    </style>
+    <script type="text/javascript" src="scripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery.mobile-1.3.0.min.js"></script>  
+    <script src="scripts/custom.js"></script>      
+     <script type="text/javascript">
+         $(document).ready(function () {
+             CalcHappiness();
+             CalcWeeklyHappiness();
+         });
+    </script>
+</head>
+  <body>
+    <div data-role="page">
+         <div data-role="header" data-theme="a" class="header"> 
+                <a data-role="button" data-icon="back" href="index.html" data-ajax="false">Back</a>                          
+                <div class="pageTitle">Profile</div> 
+            <a style="height: 40px;"> <img src="images/profilepic.png" />   </a>
+          </div>
+        <div data-role="content" >   
+                
+              <h3 class="center">Today's Activity</h3>     
+                             
+               <div id="imgactivity" class="center"><img src="images/cycling.png" /></div>
+            
+               <div class="center"><label for="slider-1"><span style="font-size: 16px !important;font-weight: bold;">Daily Happiness: </span><span id="level" style="font-weight: bold;">-</span></label></div>
+               <div class="center"><input type="range" disabled="disabled" data-highlight="true" data-theme="a" name="slider-1" id="slider-1" value="0" min="0" max="10" />     </div>  
+
+            <div class="center"><label for="slider-1" ><span style="font-size: 12px !important;">Weekly Happiness:</span> <span id="weeklylevel" style="font-weight: bold;font-size: 12px !important;">-</span></label></div>
+               <div class="center"><input type="range" disabled="disabled" data-highlight="true" data-theme="a" name="slider-1" id="slider-2" value="0" min="0" max="10" />     </div>  
+            <div class="center" id="noweekly" style="color: red;font-size: 10px;">No  weekly happiness</div>
+                <a href="graphs.html" data-ajax="false" data-role="button">View Graph</a>
+        </div>        
+        <div data-role="footer">
+            <div data-role="navbar" data-theme="a">
+                <ul>
+                    <li><a href="#" data-ajax="false" class="ui-btn-active ui-state-persist"><img src="images/fsriends.png" /></a></li>
+                    <li><a href="log.html" data-ajax="false"><img src="images/log.png" /></a></li>
+                    <li><a href="graphs.html" data-ajax="false"><img src="images/graph-icon.png" /></a></li> 
+                       <li><a href="recommendations.html" data-ajax="false"><img src="images/rec-icon.png" /></a></li>
+                    <li><a href="friends.html" data-ajax="false"><img src="images/friends-icon.png" /></a></a></li>                  
+                </ul>
+                 
+            </div>
+        </div>      
+    </div>
+  </body>
+</html>
