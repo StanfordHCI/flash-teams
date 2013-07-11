@@ -8,6 +8,7 @@
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <!-- Bootstrap -->
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script src="bootstrap-tooltip.js"></script>
         <!--Enable Responsive features-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
@@ -51,6 +52,10 @@ svg {
                 <div class="span8"> <!--Body Content-->
                     <div id="timeline-container" class="well" >
                         <h3>Timeline</h3>
+                        
+                        <!--NOTE: bad default to 'restart' because of mouse-->
+                        <button type="button" onclick="restart()">+ Add Event</button>
+
                     </div>
                 </div>
             </div>

@@ -13,7 +13,8 @@ timeline_svg.append("rect")
     .attr("width", width)
     .attr("height", height)
     .attr("fill", "white")
-    .on("mousedown", mousedown);
+    .on("mousedown", mousedown); 
+
 
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
@@ -42,4 +43,17 @@ function restart() {
         .attr("width", rectangle_width)
         .attr("fill", "red")
         .attr("fill-opacity", .5);
+        .on('click', timeline_popover() { //BREAKS AUTHORING OF RECTANGLES
+            $('a.timeline_info').popover({
+            title: 'New Event',
+            placement: 'bottom',
+            content: '<button id="delete">Delete</button>'
+            }).parent().delegate('button#delete', 'click', function() {
+                //ADD DELETE CODE
+            }
+    });
+
 }
+
+
+
