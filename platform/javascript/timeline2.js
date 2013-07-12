@@ -42,18 +42,21 @@ function restart() {
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "red")
-        .attr("fill-opacity", .5);
-        .on('click', timeline_popover() { //BREAKS AUTHORING OF RECTANGLES
+        .attr("fill-opacity", .5)
+        .attr('pointer-events', 'all')
+        .on('click', function() { //BREAKS AUTHORING OF RECTANGLES
             $('a.timeline_info').popover({
             title: 'New Event',
-            placement: 'bottom',
+            placement: 'right',
             content: '<button id="delete">Delete</button>'
             }).parent().delegate('button#delete', 'click', function() {
                 //ADD DELETE CODE
-            }
-    });
+            })
+        })
+            
+};
 
-}
+
 
 
 
