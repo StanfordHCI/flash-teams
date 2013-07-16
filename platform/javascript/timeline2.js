@@ -67,28 +67,39 @@ function restart() {
 
     task_rectangle.enter().insert("rect")
         .attr("class", "task_rectangle")
-        .attr("x", function(d) { return d.x; }) //note: d is data
+        .attr("x", function(d) { return d.x; }) 
         .attr("y", function(d) { return d.y; })
-        .attr("id", function(d) {return "rect" + d.id; }) //WORK HERE
+        .attr("id", function(d) {return "rect" + d.id; }) 
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "red")
         .attr("fill-opacity", .5)
         .attr('pointer-events', 'all') 
         .on('click', function(d) {  //START HERE
-            var eventPopover = d3.select("body")
-                .append("a")
+            $("#timeline-container").append($("<a>",
+            {
+                href: "#",
+                rel: "popover", 
+                title: "New Event"
+            }));
+
+            /*var eventPopover = d3.select("span8")
+                .append("<a>")
+                .attr("href", "#")
+                .attr("id", "eventPopover")
                 .attr("class", "popover")
                 .attr("rel", "popover")
                 .attr("data-toggle", "popover")
                 .attr("data-placement", "top")
-                .attr("title", "New Event");
+                .attr("data-original-title", "New Event");
                 var delButton = d3.select("eventPopover")
                     .append("btn")
                     .attr("class", "btn")
+                    .attr("id", "delete")
+                    .attr("title", "Delete")
+            */
 
-
-            console.log("you clicked!");
+            console.log("you clicked " + d.id);
 
             //$(this).popover({
             //title: 'New Event',
@@ -100,5 +111,14 @@ function restart() {
         });
             
 };
+
+
+$('[rel=popover]').popover({
+    html : true,
+    content: function() {
+        return $('#event_popover_content_wrapper').html();
+    }
+});
+
 
 
