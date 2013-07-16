@@ -19,7 +19,7 @@ timeline_svg.append("rect")
 
 //Taken from d3.gantt By Dimitry Kudrayvtsev
 //START WORKING HERE -AT
-var margin = { //MAY NEED TO ADJUST
+/*var margin = { //MAY NEED TO ADJUST
     top : 20,
     right : 40,
     bottom : 20,
@@ -41,7 +41,7 @@ var initAxis = function() {
     xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
         .tickSize(8).tickPadding(8);
     yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
-    };
+};*/
 
 
 var task_rectangles = [],
@@ -51,9 +51,9 @@ var task_rectangles = [],
 restart();
 
 function mousedown() {
-    event_counter++;
+    event_counter++; //To generate id
     var point = d3.mouse(this),
-        task_rectangle = {x: point[0], y: point[1]},
+        task_rectangle = {x: point[0], y: point[1], id: event_counter},
         t = task_rectangles.push(task_rectangle);
 
         console.log("yey");
@@ -69,20 +69,36 @@ function restart() {
         .attr("class", "task_rectangle")
         .attr("x", function(d) { return d.x; }) //note: d is data
         .attr("y", function(d) { return d.y; })
-        .attr("id", function(d) {return d.id; }) //WORK HERE
+        .attr("id", function(d) {return "rect" + d.id; }) //WORK HERE
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "red")
         .attr("fill-opacity", .5)
-        .attr('pointer-events', 'all')
-        /*.on('click', function() { //BREAKS AUTHORING OF RECTANGLES
-            $(this).popover('toggle'){
-            title: 'New Event',
-            placement: 'right',
-            content: '<button id="delete">Delete</button>'
-            }).parent().delegate('button#delete', 'click', function() {
-                //ADD DELETE CODE
-            })
-        })*/
+        .attr('pointer-events', 'all') 
+        .on('click', function(d) {  //START HERE
+            var eventPopover = d3.select("body")
+                .append("a")
+                .attr("class", "popover")
+                .attr("rel", "popover")
+                .attr("data-toggle", "popover")
+                .attr("data-placement", "top")
+                .attr("title", "New Event");
+                var delButton = d3.select("eventPopover")
+                    .append("btn")
+                    .attr("class", "btn")
+
+
+            console.log("you clicked!");
+
+            //$(this).popover({
+            //title: 'New Event',
+            //placement: 'right',
+            //content: '<button id="delete">Delete</button>' })
+            //}).parent().delegate('button#delete', 'click', function() {
+            //    this.exit().remove();
+            //})
+        });
             
 };
+
+
