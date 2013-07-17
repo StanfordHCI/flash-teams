@@ -8,6 +8,7 @@ var event_counter = 0;
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
+    .attr("fill-opacity", .5) //DEBUGGING
     .attr("height", height);
 
 timeline_svg.append("rect")
@@ -15,6 +16,7 @@ timeline_svg.append("rect")
     .attr("width", width)
     .attr("height", height)
     .attr("fill", "white")
+    .attr("fill-opacity", .5) //DEBUGGING
     .on("mousedown", mousedown);
 
 //Taken from d3.gantt By Dimitry Kudrayvtsev
@@ -48,7 +50,7 @@ var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
 
 
-restart();
+//restart();
 
 function mousedown() {
     event_counter++; //To generate id
@@ -75,41 +77,21 @@ function restart() {
         .attr("fill", "red")
         .attr("fill-opacity", .5)
         .attr('pointer-events', 'all') 
-        .on('click', function(d) {  //START HERE
-            $("#timeline-container").append($("<a>",
-            {
-                href: "#",
-                rel: "popover", 
-                title: "New Event"
-            }));
-
-            /*var eventPopover = d3.select("span8")
-                .append("<a>")
-                .attr("href", "#")
-                .attr("id", "eventPopover")
-                .attr("class", "popover")
-                .attr("rel", "popover")
-                .attr("data-toggle", "popover")
-                .attr("data-placement", "top")
-                .attr("data-original-title", "New Event");
-                var delButton = d3.select("eventPopover")
-                    .append("btn")
-                    .attr("class", "btn")
-                    .attr("id", "delete")
-                    .attr("title", "Delete")
-            */
-
-            console.log("you clicked " + d.id);
-
-            //$(this).popover({
-            //title: 'New Event',
-            //placement: 'right',
-            //content: '<button id="delete">Delete</button>' })
-            //}).parent().delegate('button#delete', 'click', function() {
-            //    this.exit().remove();
-            //})
+        .on('click', function(d) { 
+            $("a").toggle(); //default toggles visibility of elements
+            console.log("you clicked " + d.id); //DEBUGGING
         });
-            
+
+    //Event Popover
+    $("#timeline-container").append($("<a>",
+    {
+        href: "#",
+        rel: "popover", 
+        "data-toggle": "popover",
+        title: "New Event",
+        fill: "blue"
+    }));
+        
 };
 
 
