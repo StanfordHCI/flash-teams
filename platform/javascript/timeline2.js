@@ -67,10 +67,17 @@ function mousedown() {
 function restart() {
     task_rectangle = task_rectangle.data(task_rectangles); 
 
+    var dx; 
+    var dy;
+
     task_rectangle.enter().insert("rect")
         .attr("class", "task_rectangle")
-        .attr("x", function(d) { return d.x; }) 
-        .attr("y", function(d) { return d.y; })
+        .attr("x", function(d) { 
+            dx = d.x;
+            return d.x; }) 
+        .attr("y", function(d) { 
+            dy = d.y;
+            return d.y; })
         .attr("id", function(d) {return "rect" + d.id; }) 
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
@@ -78,7 +85,8 @@ function restart() {
         .attr("fill-opacity", .5)
         .attr('pointer-events', 'all') 
         .on('click', function(d) { 
-            $("a").toggle(); //default toggles visibility of elements
+            var did = d.id;
+            $("a.event").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
             console.log("you clicked " + d.id); //DEBUGGING
         });
 
@@ -86,21 +94,27 @@ function restart() {
     $("#timeline-container").append($("<a>",
     {
         href: "#",
+        class: "event",
+        id: event_counter, //UNSURE IF THIS IS CORRECT
         rel: "popover", 
         "data-toggle": "popover",
         title: "New Event",
-        fill: "blue"
+        fill: "blue",
+        style: "display: inline" //Toggles
+
     }));
         
+    $("a[rel=popover]").popover('show', {
+        html : true,
+        x: dx,
+        y: dy,
+        "data-container": "body",
+        placement: "right",
+        content: function() {
+            return $('#event_popover_content_wrapper').html();
+        }
+    });
 };
-
-
-$('[rel=popover]').popover({
-    html : true,
-    content: function() {
-        return $('#event_popover_content_wrapper').html();
-    }
-});
 
 
 
