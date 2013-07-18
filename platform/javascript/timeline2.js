@@ -22,7 +22,7 @@ $("#flashteam").popover({
     html: "true",
     title: "New Team",
     content: "Welcome." 
-    + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done">Done</button> </p>'
+    + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done" onclick="$(&quot;#flashteam&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
 });
 $("a[rel=flashpopover]").popover();
 
@@ -105,18 +105,17 @@ function restart() {
     {
         href: "#",
         class: "event",
-        id: event_counter, //UNSURE IF THIS IS CORRECT
+        id: event_counter, 
         rel: "eventpopover", 
         x: dx,
         y: dy,
         "data-toggle": "popover",
         title: "New Event",
-        style: "display: inline", //Toggles
         html: "true", //TOGGLES ON THIS
         //content: $('#event_popover_content_wrapper').html()
         content: "This is a new event" + '<p><button type="button" id="delete">Delete</button></p>'
     }));
-    $("a[rel=eventpopover]").popover('show');
+    $("a[rel=eventpopover]").popover();
 };
 
 
