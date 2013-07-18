@@ -17,6 +17,15 @@ timeline_svg.append("rect")
     .attr("fill", "white")
     .on("mousedown", mousedown);
 
+$("#flashteam").popover({
+    placement: "bottom",
+    html: "true",
+    title: "New Team",
+    content: "Welcome." 
+    + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done">Done</button> </p>'
+});
+$("a[rel=flashpopover]").popover();
+
 //Taken from d3.gantt By Dimitry Kudrayvtsev
 //START WORKING HERE -AT
 /*var margin = { //MAY NEED TO ADJUST
@@ -67,6 +76,7 @@ function restart() {
 
     var dx; 
     var dy;
+    var rectId;
 
     task_rectangle.enter().insert("rect")
         .attr("class", "task_rectangle")
@@ -76,7 +86,9 @@ function restart() {
         .attr("y", function(d) { 
             dy = d.y;
             return d.y; })
-        .attr("id", function(d) {return "rect" + d.id; }) 
+        .attr("id", function(d) {
+            rectId = "rect" + d.id;
+            return rectId; }) 
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "red")
@@ -84,28 +96,27 @@ function restart() {
         .attr('pointer-events', 'all') 
         .on('click', function(d) { 
             var did = d.id;
-            $("a[rel=popover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
+            $("a[rel=eventpopover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
             console.log("you clicked " + d.id); //DEBUGGING
         });
 
     //Event Popover
-    $("#timeline-container").append($("<a>",
+    $("#timeline-container").append($("<a>", // MAYBE task_rectangle.enter().append?
     {
         href: "#",
         class: "event",
         id: event_counter, //UNSURE IF THIS IS CORRECT
-        rel: "popover", 
+        rel: "eventpopover", 
         x: dx,
         y: dy,
         "data-toggle": "popover",
         title: "New Event",
-        fill: "green",
         style: "display: inline", //Toggles
-        html: true, //TOGGLES ON THIS
-        content: $('#event_popover_content_wrapper').html()
-        //content: "Hi there"
+        html: "true", //TOGGLES ON THIS
+        //content: $('#event_popover_content_wrapper').html()
+        content: "This is a new event" + '<p><button type="button" id="delete">Delete</button></p>'
     }));
-    $("a[rel=popover]").popover('show');
+    $("a[rel=eventpopover]").popover('show');
 };
 
 
