@@ -20,8 +20,8 @@ timeline_svg.append("rect")
 $("#flashteam").popover({
     placement: "bottom",
     html: "true",
-    title: "New Team",
-    content: "Welcome." 
+    title: '<h3>New Team</h3>',
+    content: '<h4>Welcome.</h4>' 
     + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done" onclick="$(&quot;#flashteam&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
 });
 $("a[rel=flashpopover]").popover();
@@ -100,22 +100,32 @@ function restart() {
             console.log("you clicked " + d.id); //DEBUGGING
         });
 
+    //console.log({x: dx, y: dy})
+
     //Event Popover
+    $("#timeline-container").css("position","relative");
     $("#timeline-container").append($("<a>", // MAYBE task_rectangle.enter().append?
     {
         href: "#",
         class: "event",
         id: event_counter, 
         rel: "eventpopover", 
+        position:"absolute",
         x: dx,
         y: dy,
         "data-toggle": "popover",
         title: "New Event",
-        html: "true", //TOGGLES ON THIS
+        html: "+", //TOGGLES ON THIS
         //content: $('#event_popover_content_wrapper').html()
         content: "This is a new event" + '<p><button type="button" id="delete">Delete</button></p>'
-    }));
-    $("a[rel=eventpopover]").popover();
+    }).css("position","absolute").css("left",dx+50).css("top",dy+90)); //Ethan Fast help
+
+    $("a[rel=eventpopover]").popover({
+        placement: "bottom",
+        html: "true",
+        content: '<h4>This is a new event.</h4>' 
+            + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done" onclick="$(&quot;#event&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
+    });
 };
 
 
