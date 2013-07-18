@@ -8,7 +8,6 @@ var event_counter = 0;
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
-    .attr("fill-opacity", .5) //DEBUGGING
     .attr("height", height);
 
 timeline_svg.append("rect")
@@ -16,7 +15,6 @@ timeline_svg.append("rect")
     .attr("width", width)
     .attr("height", height)
     .attr("fill", "white")
-    .attr("fill-opacity", .5) //DEBUGGING
     .on("mousedown", mousedown);
 
 //Taken from d3.gantt By Dimitry Kudrayvtsev
@@ -86,7 +84,7 @@ function restart() {
         .attr('pointer-events', 'all') 
         .on('click', function(d) { 
             var did = d.id;
-            $("a.event").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
+            $("a[rel=popover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
             console.log("you clicked " + d.id); //DEBUGGING
         });
 
@@ -97,23 +95,17 @@ function restart() {
         class: "event",
         id: event_counter, //UNSURE IF THIS IS CORRECT
         rel: "popover", 
-        "data-toggle": "popover",
-        title: "New Event",
-        fill: "blue",
-        style: "display: inline" //Toggles
-
-    }));
-        
-    $("a[rel=popover]").popover('show', {
-        html : true,
         x: dx,
         y: dy,
-        "data-container": "body",
-        placement: "right",
-        content: function() {
-            return $('#event_popover_content_wrapper').html();
-        }
-    });
+        "data-toggle": "popover",
+        title: "New Event",
+        fill: "green",
+        style: "display: inline", //Toggles
+        html: true, //TOGGLES ON THIS
+        content: $('#event_popover_content_wrapper').html()
+        //content: "Hi there"
+    }));
+    $("a[rel=popover]").popover('show');
 };
 
 
