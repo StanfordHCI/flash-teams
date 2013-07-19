@@ -1,3 +1,8 @@
+/*
+ *
+ *
+ */
+
 var width = 960,
     height = 500;
 
@@ -17,6 +22,7 @@ timeline_svg.append("rect")
     .attr("fill", "white")
     .on("mousedown", mousedown);
 
+//ALL FOR DEBUGGING
 $("#flashteam").popover({
     placement: "bottom",
     html: "true",
@@ -52,10 +58,8 @@ var initAxis = function() {
     yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
 };*/
 
-
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
-
 
 //restart();
 
@@ -64,8 +68,6 @@ function mousedown() {
     var point = d3.mouse(this),
         task_rectangle = {x: point[0], y: point[1], id: event_counter},
         t = task_rectangles.push(task_rectangle);
-
-        console.log("yey");
 
     restart();
 }
@@ -104,29 +106,26 @@ function restart() {
 
     //Event Popover
     $("#timeline-container").css("position","relative");
-    $("#timeline-container").append($("<a>", // MAYBE task_rectangle.enter().append?
+    $("#timeline-container").append($("<a>", 
     {
         href: "#",
         class: "event",
         id: event_counter, 
         rel: "eventpopover", 
         position:"absolute",
-        x: dx,
-        y: dy,
         "data-toggle": "popover",
         title: "New Event",
         html: "+", //TOGGLES ON THIS
-        //content: $('#event_popover_content_wrapper').html()
-        content: "This is a new event" + '<p><button type="button" id="delete">Delete</button></p>'
-    }).css("position","absolute").css("left",dx+50).css("top",dy+90)); //Ethan Fast help
+    }).css("position","absolute").css("left",dx+90).css("top",dy+100)); //Ethan Fast help
 
     $("a[rel=eventpopover]").popover({
         placement: "bottom",
         html: "true",
-        content: '<h4>This is a new event.</h4>' 
-            + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done" onclick="$(&quot;#event&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
+        content: '<h10>Total Runtime:</h10>' 
+            + '<p>Happening From' + ' To</p>'
+            + '<p><button type="button" id="delete">Delete</button>  ' 
+            +'<button type="button" id="done" onclick="$(&quot;#' + event_counter + '&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
     });
 };
-
 
 
