@@ -14,6 +14,16 @@ var event_counter = 0;
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
     .attr("height", height);
+    //.attr("class", "chart")
+
+//CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-graphics)
+//START WORKING HERE -AT
+/*
+timeline_svg.selectAll("line.x")
+    .data(x.ticks(10)) //CHOOSE TICKS LATER
+    .ENTER().APPEND("LINE)
+    .ATTR("CLASS", "X")
+*/
 
 timeline_svg.append("rect")
     .attr("class", "background")
@@ -28,35 +38,12 @@ $("#flashteam").popover({
     html: "true",
     title: '<h3>New Team</h3>',
     content: '<h4>Welcome.</h4>' 
-    + '<p><button type="button" id="delete">Delete</button> <button type="button" id="done" onclick="$(&quot;#flashteam&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
+    + '<p><button type="button" id="delete" onclick="$(&quot;#flashteam&quot;).popover(&quot;destroy&quot;);">Delete</button>  ' 
+    + '<button type="button" id="done" onclick="$(&quot;#flashteam&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
 });
 $("a[rel=flashpopover]").popover();
 
-//Taken from d3.gantt By Dimitry Kudrayvtsev
-//START WORKING HERE -AT
-/*var margin = { //MAY NEED TO ADJUST
-    top : 20,
-    right : 40,
-    bottom : 20,
-    left : 150
-};
-var timeDomainStart = d3.time.day.offset(new Date(),-3);
-var timeDomainEnd = d3.time.hour.offset(new Date(),+3);
-var timeDomainMode = "fixed";
-var tickFormat = "%H:%M";
-var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
-        .tickSize(8).tickPadding(8);
-var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
-var x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
-var y = d3.scale.ordinal().rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1); //SET DOMAIN
-var timeDomain = 10; //ARBITRARY LENGTH FOR INITIAL TIMELINE, CHOOSE BETTER TIME
-var initAxis = function() {
-    x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
-    y = d3.scale.ordinal()rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1); //SET DOMAIN
-    xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
-        .tickSize(8).tickPadding(8);
-    yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
-};*/
+
 
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
@@ -99,10 +86,9 @@ function restart() {
         .on('click', function(d) { 
             var did = d.id;
             $("a[rel=eventpopover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
-            console.log("you clicked " + d.id); //DEBUGGING
+            console.log("You clicked rect" + d.id); //DEBUGGING
         });
 
-    //console.log({x: dx, y: dy})
 
     //Event Popover
     $("#timeline-container").css("position","relative");
@@ -114,18 +100,30 @@ function restart() {
         rel: "eventpopover", 
         position:"absolute",
         "data-toggle": "popover",
-        title: "New Event",
+        title: '<form><input type = "text" name="eventtitle"></form>',
         html: "+", //TOGGLES ON THIS
     }).css("position","absolute").css("left",dx+90).css("top",dy+100)); //Ethan Fast help
 
     $("a[rel=eventpopover]").popover({
         placement: "bottom",
         html: "true",
-        content: '<h10>Total Runtime:</h10>' 
-            + '<p>Happening From' + ' To</p>'
-            + '<p><button type="button" id="delete">Delete</button>  ' 
-            +'<button type="button" id="done" onclick="$(&quot;#' + event_counter + '&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
+        content: '<form><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
+            +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime">'
+            +'Members<input type = "textfield" name="members"><br>'
+            +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
+            +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
+            +'</form>'
     });
+};
+function hidePopover(popId) {
+    $("#" + popId).popover("hide");
+    console.log("You hid popover" + popId);
+}
+
+function deleteRect(rectId) {
+    $("#" + rectId).popover("destroy");
+    d3.select("rect" + rectId).remove();
+    console.log("You deleted popover" + rectId);
 };
 
 
