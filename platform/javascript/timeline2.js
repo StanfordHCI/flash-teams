@@ -6,6 +6,14 @@
 var width = 960,
     height = 500;
 
+var x = d3.scale.linear()
+    .domain([0, 900])
+    .range([0, 900]);
+
+var y = d3.scale.linear()
+    .domain([0, 450])
+    .range([0, 450]);
+
 var rectangle_width = 100,
     rectangle_height = 50;
 
@@ -13,23 +21,43 @@ var event_counter = 0;
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
-    .attr("height", height);
-    //.attr("class", "chart")
+    .attr("height", height)
+    .attr("class", "chart");
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-graphics)
 //START WORKING HERE -AT
-/*
+//Draw x grid lines
 timeline_svg.selectAll("line.x")
     .data(x.ticks(10)) //CHOOSE TICKS LATER
-    .ENTER().APPEND("LINE)
-    .ATTR("CLASS", "X")
-*/
+    .enter().append("LINE")
+    .attr("class", "x")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", 0)
+    .attr("y2", height-50)
+    .style("stroke", "#1626DB");
+
+//Draw y axis grid lines
+timeline_svg.selectAll("line.y")
+    .data(y.ticks(10)) //CHOOSE TICKS LATER
+    .enter().append("line")
+    .attr("class", "y")
+    .attr("x1", 0)
+    .attr("x2", width-50)
+    .attr("y1", y)
+    .attr("y2", y)
+    .style("stroke", "#000");
+
+//Add X Axis Labels
+
+//Add Y Axis Labels
 
 timeline_svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
     .attr("fill", "white")
+    .attr("fill-opacity", 0)
     .on("mousedown", mousedown);
 
 //ALL FOR DEBUGGING
