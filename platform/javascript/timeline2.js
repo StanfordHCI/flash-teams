@@ -29,13 +29,13 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
 //Draw x grid lines
 timeline_svg.selectAll("line.x")
     .data(x.ticks(10)) //CHOOSE TICKS LATER
-    .enter().append("LINE")
+    .enter().append("line")
     .attr("class", "x")
     .attr("x1", x)
     .attr("x2", x)
     .attr("y1", 0)
     .attr("y2", height-50)
-    .style("stroke", "#1626DB");
+    .style("stroke", "#000");
 
 //Draw y axis grid lines
 timeline_svg.selectAll("line.y")
@@ -46,11 +46,30 @@ timeline_svg.selectAll("line.y")
     .attr("x2", width-50)
     .attr("y1", y)
     .attr("y2", y)
-    .style("stroke", "#000");
+    .style("stroke", "#5F5A5A");
 
 //Add X Axis Labels
+timeline_svg.selectAll(".rule")
+    .data(x.ticks(10)) //ADJUST LATER
+    .enter().append("text")
+    .attr("x", x)
+    .attr("y", 0)
+    .attr("dy", -3)
+    .attr("text-anchor", "middle")
+    .text(String);
 
-//Add Y Axis Labels
+//Darker First X and Y line
+timeline_svg.append("line")
+    .attr("x1", 0)
+    .attr("x2", width-50)
+    .style("stroke", "#000")
+    .style("stroke-width", "4")
+timeline_svg.append("line")
+    .attr("y1", 0)
+    .attr("y2", height-50)
+    .style("stroke", "#000")
+    .style("stroke-width", "4")
+
 
 timeline_svg.append("rect")
     .attr("class", "background")
@@ -75,8 +94,6 @@ $("a[rel=flashpopover]").popover();
 
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
-
-//restart();
 
 function mousedown() {
     event_counter++; //To generate id
@@ -109,13 +126,16 @@ function restart() {
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "red")
-        .attr("fill-opacity", .5)
+        .attr("fill-opacity", .6)
+        .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all') 
         .on('click', function(d) { 
             var did = d.id;
             $("a[rel=eventpopover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
             console.log("You clicked rect" + d.id); //DEBUGGING
-        });
+        })
+        
+    task_rectangle.exit().remove(); //SUGGESTION FROM ARVIND
 
 
     //Event Popover
@@ -136,13 +156,14 @@ function restart() {
         placement: "bottom",
         html: "true",
         content: '<form><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
-            +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime">'
+            +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
             +'Members<input type = "textfield" name="members"><br>'
             +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
             +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
             +'</form>'
     });
 };
+
 function hidePopover(popId) {
     $("#" + popId).popover("hide");
     console.log("You hid popover" + popId);
@@ -150,8 +171,22 @@ function hidePopover(popId) {
 
 function deleteRect(rectId) {
     $("#" + rectId).popover("destroy");
-    d3.select("rect" + rectId).remove();
-    console.log("You deleted popover" + rectId);
+    
+    //for each task_rectangle in task_rectangles
+    //if d.id == rectID, --> delete data (.exit().remove())
+    //var taskRectLength = task_rectangles.length;
+    var element = null;
+    for (var i = 0; i < task_rectangles.length; i++) {
+        element = task_rectangles[i];
+        console.log("elementid", element.id);
+        if (element.id == rectId) {
+            task_rectangles.splice(i, 1);
+            console.log("You deleted rect" + rectId);
+        }
+    }
+    var task_rectangle = timeline_svg.selectAll("rect").data(task_rectangles);
+    task_rectangle.exit().remove();
+    //restart();
 };
 
 
