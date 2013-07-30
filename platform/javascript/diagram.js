@@ -2,7 +2,6 @@ var diagram_width = $("#diagram-container").width(),
     diagram_height = 300,
     diagram_margin = 20;
 
-
 var workers = {
     "nodes": [
         {"name": "UX Researcher", "id": 0, "color": "green"},
@@ -17,7 +16,6 @@ var workers = {
         {"source":3,"target":1,"value":10},
         {"source":0,"target":2,"value":6},
     ]
-
 }
 
 var color = d3.scale.category20();
@@ -63,8 +61,6 @@ force.on("tick", function() {
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 });
-
-
 
 
 $(window).resize(function() {
