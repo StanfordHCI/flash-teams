@@ -129,6 +129,8 @@ function restart() {
             $(this).popover({
                 placement: "bottom",
                 html: "true",
+                class: "event",
+                id: '"popover' + event_counter + '"',
                 trigger: "click",
                 title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text"name="eventName"></form>',
                 content: '<form name="eventForm_' + event_counter + '"><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
@@ -139,9 +141,7 @@ function restart() {
                     +'</form>',
                 container: $("#timeline-container")
             });
-
         });
-
 
     //Event Popover
     /*$("#timeline-container").css("position","relative");
@@ -170,13 +170,12 @@ function restart() {
 };
 
 function hidePopover(popId) {
-    $("#" + popId).popover("hide");
-
+    $("#rect" + popId).popover("hide");
     console.log("You hid popover" + popId);
 }
 
 function deleteRect(rectId) {
-    $("#" + rectId).popover("destroy");
+    $("#rect" + rectId).popover("destroy");
     
     var element = null;
     var index = 0;
