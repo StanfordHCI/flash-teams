@@ -79,18 +79,6 @@ timeline_svg.append("rect")
     .attr("fill-opacity", 0)
     .on("mousedown", mousedown);
 
-//ALL FOR DEBUGGING
-$("#flashteam").popover({
-    placement: "bottom",
-    html: "true",
-    title: '<h3>New Team</h3>',
-    content: '<h4>Welcome.</h4>' 
-    + '<p><button type="button" id="delete" onclick="$(&quot;#flashteam&quot;).popover(&quot;destroy&quot;);">Delete</button>  ' 
-    + '<button type="button" id="done" onclick="$(&quot;#flashteam&quot;).popover(&quot;hide&quot;);">Done</button> </p>'
-});
-$("a[rel=flashpopover]").popover();
-
-
 
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
@@ -98,21 +86,20 @@ var task_rectangles = [],
 function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this),
-        task_rectangle = {x: point[0], y: point[1], id: event_counter},
-        t = task_rectangles.push(task_rectangle);
+        task_rectangle = {x: point[0], y: point[1], id: event_counter};
+    task_rectangles.push(task_rectangle);
 
     restart();
 }
 
 //Creates graphical elements from array of data (task_rectangles)
 function restart() {
-    task_rectangle = task_rectangle.data(task_rectangles); 
-
     var dx; 
     var dy;
     var rectId;
 
-    task_rectangle.enter().insert("rect")
+    task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d){ return d.id}) 
+        .enter().append("rect")
         .attr("class", "task_rectangle")
         .attr("x", function(d) { 
             dx = d.x;
@@ -130,11 +117,11 @@ function restart() {
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all') 
         .on('click', function(d) { 
-            var did = d.id;
             $("a[rel=eventpopover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
             console.log("You clicked rect" + d.id); //DEBUGGING
-        })
-        
+        });
+    
+    task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d) { return d.id});
     task_rectangle.exit().remove(); //SUGGESTION FROM ARVIND
 
 
@@ -164,6 +151,10 @@ function restart() {
     });
 };
 
+function key(d) {
+    return d.id;
+}
+
 function hidePopover(popId) {
     $("#" + popId).popover("hide");
     console.log("You hid popover" + popId);
@@ -172,21 +163,21 @@ function hidePopover(popId) {
 function deleteRect(rectId) {
     $("#" + rectId).popover("destroy");
     
-    //for each task_rectangle in task_rectangles
-    //if d.id == rectID, --> delete data (.exit().remove())
-    //var taskRectLength = task_rectangles.length;
     var element = null;
+    var index = 0;
     for (var i = 0; i < task_rectangles.length; i++) {
         element = task_rectangles[i];
-        console.log("elementid", element.id);
+        console.log("rectId", element.id, "index", i);
         if (element.id == rectId) {
-            task_rectangles.splice(i, 1);
-            console.log("You deleted rect" + rectId);
+            //START HERE
+            index = i;
+            break;
         }
     }
-    var task_rectangle = timeline_svg.selectAll("rect").data(task_rectangles);
-    task_rectangle.exit().remove();
-    //restart();
+    var deletedFromArr = task_rectangles.splice(index, 1);
+    restart();
+    console.log("deleted from array", deletedFromArr);
+    console.log("You deleted rect" + rectId + ", task_rectangles length is now " + task_rectangles.length);
 };
 
 
