@@ -19,15 +19,10 @@ var rectangle_width = 100,
 
 var event_counter = 0;
 
-var timeline_container = d3.select('#timeline-container')
-    .attr("width", width + "px")
-    .attr("height", height + "px");
-
-var timeline_svg = timeline_container.append("svg")
+var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("class", "chart");
-
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-graphics)
 //START WORKING HERE -AT
@@ -104,8 +99,7 @@ function restart() {
     var rectId;
 
     task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d){ return d.id}) 
-        .enter()
-        .append("rect")
+        .enter().append("rect")
         .attr("class", "task_rectangle")
         .attr("x", function(d) { 
             dx = d.x;
@@ -121,57 +115,68 @@ function restart() {
         .attr("fill", "red")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
-        .attr('pointer-events', 'all');
+        .attr('pointer-events', 'all') 
+        .on('click', function(d) { 
+            $("a[rel=eventpopover]").toggle(); //toggles visibility of elements, PROBLEM: SELECTS ALL EVENT POPOVERS
+            console.log("You clicked rect" + d.id); //DEBUGGING
+        });
     
     task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d) { return d.id});
     task_rectangle.exit().remove(); 
 
+    timeline_svg.selectAll(".task_rectangle").each(
+        function(d) {
+            $(this).popover({
+                placement: "bottom",
+                html: "true",
+                trigger: "click",
+                title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text"name="eventName"></form>',
+                content: '<form name="eventForm_' + event_counter + '"><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
+                    +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
+                    +'Members<input type = "textfield" name="members"><br>'
+                    +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
+                    +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
+                    +'</form>',
+                container: $("#timeline-container")
+            });
 
-
-    task_rectangle = timeline_svg.selectAll(".task_rectangle");
-    task_rectangle.each(function(d) {
-        var $el = $(this).popover({
-            placement: "bottom",
-            html: "true",
-            trigger: "click",
-            content: '<form name="eventForm_' + event_counter + '"><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
-                +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
-                +'Members<input type = "textfield" name="members"><br>'
-                +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
-                +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
-                +'</form>'
         });
-
-        $(this).on('click', function() { console.log("Clicking is cool", d); $el.toggle(); })
-
-    })
 
 
     //Event Popover
-    // $("#timeline-container").css("position","relative");
-    // $("#timeline-container").append($("<a>", 
-    // {
-    //     href: "#",
-    //     class: "event",
-    //     id: event_counter, 
-    //     rel: "eventpopover", 
-    //     position:"absolute",
-    //     "data-toggle": "popover",
-    //     title: '<form name="eventHeaderForm_' + event_counter + '"><input type = "text" name="eventtitle"></form>',
-    //     html: "+", //TOGGLES ON THIS
-    // }).css("position","absolute").css("left",dx+90).css("top",dy+100)); //Ethan Fast help
+    /*$("#timeline-container").css("position","relative");
+    $("#timeline-container").append($("<a>", 
+    {
+        href: "#",
+        class: "event",
+        id: event_counter, 
+        rel: "eventpopover", 
+        position:"absolute",
+        "data-toggle": "popover",
+        title: '<form name="eventHeaderForm_' + event_counter + '"><input type = "text" name="eventtitle"></form>',
+        html: "+", //TOGGLES ON THIS
+    }).css("position","absolute").css("left",dx+90).css("top",dy+100)); //Ethan Fast help
 
-
+    $("a[rel=eventpopover]").popover({
+        placement: "bottom",
+        html: "true",
+        content: '<form name="eventForm_' + event_counter + '"><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
+            +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
+            +'Members<input type = "textfield" name="members"><br>'
+            +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
+            +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
+            +'</form>'
+    });*/
 };
 
 function hidePopover(popId) {
     $("#" + popId).popover("hide");
+
     console.log("You hid popover" + popId);
 }
 
 function deleteRect(rectId) {
     $("#" + rectId).popover("destroy");
-    //STILL NEED TO DELETE THE '+'
     
     var element = null;
     var index = 0;
