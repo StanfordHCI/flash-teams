@@ -4,6 +4,9 @@
  *
  */
 
+var XTicks = 25,
+    YTicks = 5;
+
 var width = 960,
     height = 500;
 
@@ -11,21 +14,23 @@ var x = d3.scale.linear()
     .domain([0, 900])
     .range([0, 900]);
 
-var y = d3.scale.linear()
-    .domain([0, 450])
-    .range([0, 450]);
+var y = d3.scale.linear() //WORK HERE
+    .domain([15, 480])
+    .range([15, 480]);
 
 var rectangle_width = 100,
     rectangle_height = 100;
 
 var event_counter = 0;
 
-//var dragbar_width = 10;
+var dragbar_width = 10;
 
 var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
-        $(this).attr("x", d.x = Math.max(0, Math.min(width - rectangle_width, d3.event.x)));
+        var newX = (d3.event.x - (d3.event.x%(XTicks)));
+        console.log("draggedX", newX);
+        $(this).attr("x", d.x = Math.max(0, Math.min(width - rectangle_width, newX)));
         //dragbar_left.attr("x", function(d) { return d.x - (dragbar_width/2); })
         //dragbar_right.attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); });
     });
@@ -38,28 +43,6 @@ var drag_left = d3.behavior.drag()
     .origin(Object)
     .on("drag", leftResize);*/
 
-/*
-// Create the left handle
-var dragbar_left = newg.append("rect")
-    .attr("x", function(d) { return d.x - (dragbar_width/2); })
-    .attr("y", function(d) { return d.y + (dragbar_width/2); })
-    .attr("height", rectangle_height - dragbar_width)
-    .attr("width", dragbar_width)
-    .attr("fill", "lightblue")
-    .attr("fill-opacity", .5)
-    .attr("cursor", "ew-resize")
-    .call(drag_left);
-
-// Create the right handle
-var dragbar_right = newg.append("rect")
-    .attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); })
-    .attr("y", function(d) { return d.y + (dragbar_width/2); })
-    .attr("height", rectangle_height - dragbar_width)
-    .attr("width", dragbar_width)
-    .attr("fill", "lightblue")
-    .attr("fill-opacity", .5)
-    .attr("cursor", "ew-resize")
-    .call(drag_right);*/
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
@@ -67,8 +50,8 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("class", "chart");
 
 
-/*// leftResize: resize the rectangle by dragging the left handle
-function leftResize(d) {
+// leftResize: resize the rectangle by dragging the left handle
+/*function leftResize(d) {
     var old_x = d.x;
 
     d.x = Math.max(0, Math.min(d.x + rectangle_width - (dragbar_width / 2), d3.event.x));
@@ -88,8 +71,6 @@ function rightResize(d) {
     drag_rectangle.attr("width", rectangle_width);
 }*/
 
-var XTicks = 14,
-    YTicks = 5;
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-graphics)
 //Draw x grid lines
@@ -99,7 +80,7 @@ timeline_svg.selectAll("line.x")
     .attr("class", "x")
     .attr("x1", x)
     .attr("x2", x)
-    .attr("y1", 0)
+    .attr("y1", 15)
     .attr("y2", height-50)
     .style("stroke", "#000");
 
@@ -114,24 +95,37 @@ timeline_svg.selectAll("line.y")
     .attr("y2", y)
     .style("stroke", "#5F5A5A");
 
+//START HERE, FIX AXIS LABELS
+var formatAsHours = d3.format("%I");
+var numMins = -30;
+
 //Add X Axis Labels, FIX THIS
 timeline_svg.selectAll(".rule")
     .data(x.ticks(XTicks)) 
     .enter().append("text")
+    .attr("tickformat", formatAsHours)
     .attr("x", x)
-    .attr("y", 20)
+    .attr("y", 15)
     .attr("dy", -3)
     .attr("text-anchor", "middle")
-    .text(String);
+    .text(function(d) {
+        numMins+= 30;
+        var hours = Math.floor(numMins/60);
+        var minutes = numMins%60;
+        var hourLabel = hours + ":" + minutes; 
+        return hourLabel;
+    });
 
 //Darker First X and Y line
 timeline_svg.append("line")
     .attr("x1", 0)
     .attr("x2", width-50)
+    .attr("y1", 15)
+    .attr("y2", 15)
     .style("stroke", "#000")
     .style("stroke-width", "4")
 timeline_svg.append("line")
-    .attr("y1", 0)
+    .attr("y1", 15)
     .attr("y2", height-50)
     .style("stroke", "#000")
     .style("stroke-width", "4")
@@ -152,7 +146,7 @@ var task_rectangles = [],
 function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this);
-    var snapX = Math.floor(point[0]),
+    var snapX = Math.floor(point[0] - (point[0]%(XTicks/2))),
         snapY = Math.floor(point[1]/rectangle_height) * rectangle_height;
 
     var task_rectangle = {x: snapX, y: snapY, id: event_counter};
@@ -186,7 +180,29 @@ function restart() {
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
         .call(drag);
-    
+
+    /*timeline_svg.selectAll(".task_rectangle").each(
+        function(d) {
+            var dragbar_left = $(this).append("rect")
+                .attr("x", function() { return d.x - (dragbar_width/2); })
+                .attr("y", function() { return d.y + (dragbar_width/2); })
+                .attr("height", rectangle_height - dragbar_width)
+                .attr("width", dragbar_width)
+                .attr("fill", "lightblue")
+                .attr("fill-opacity", .5)
+                .attr("cursor", "ew-resize")
+                .call(drag_left);
+            var dragbar_right = $(this).append("rect")
+                .attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); })
+                .attr("y", function(d) { return d.y + (dragbar_width/2); })
+                .attr("height", rectangle_height - dragbar_width)
+                .attr("width", dragbar_width)
+                .attr("fill", "lightblue")
+                .attr("fill-opacity", .5)
+                .attr("cursor", "ew-resize")
+                .call(drag_right);
+        });*/
+
     task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d) { return d.id});
     task_rectangle.exit().remove(); 
 
