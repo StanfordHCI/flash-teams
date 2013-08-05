@@ -14,7 +14,7 @@ var x = d3.scale.linear()
     .domain([0, 900])
     .range([0, 900]);
 
-var y = d3.scale.linear() //WORK HERE
+var y = d3.scale.linear() 
     .domain([15, 480])
     .range([15, 480]);
 
@@ -29,7 +29,6 @@ var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
         var newX = (d3.event.x - (d3.event.x%(XTicks)));
-        console.log("draggedX", newX);
         $(this).attr("x", d.x = Math.max(0, Math.min(width - rectangle_width, newX)));
         //dragbar_left.attr("x", function(d) { return d.x - (dragbar_width/2); })
         //dragbar_right.attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); });
@@ -214,7 +213,7 @@ function restart() {
                 class: "event",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
-                title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text"name="eventName"></form>',
+                title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text"name="eventName" placeholder="New Event"></form>',
                 content: '<form name="eventForm_' + event_counter + '"><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
                     +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
                     +'Members<input type = "textfield" name="members"><br>'

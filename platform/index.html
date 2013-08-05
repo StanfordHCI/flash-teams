@@ -13,6 +13,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
+        <!--jQuery UI -->
+         <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
         <style>
 
 .node {
@@ -47,6 +50,14 @@ svg {
                     </div>
                     <div id="member-container" class="well">
                         <h3>Members</h3>
+
+                        <!--START HERE, WORK ON MEMBER PILLS-->
+                        <form name='memberForm' autocomplete="on">
+                            <div class="input-append">
+                                <input class="span10" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
+                                <button class="btn" type="button" onclick="addMember()">+Add</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
