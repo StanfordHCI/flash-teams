@@ -23,7 +23,7 @@ var rectangle_width = 100,
 
 var event_counter = 0;
 
-var dragbar_width = 10;
+var dragbar_width = 5;
 
 var drag = d3.behavior.drag()
     .origin(Object)
@@ -33,15 +33,6 @@ var drag = d3.behavior.drag()
         //dragbar_left.attr("x", function(d) { return d.x - (dragbar_width/2); })
         //dragbar_right.attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); });
     });
-
-/*var drag_right = d3.behavior.drag()
-    .origin(Object)
-    .on("drag", rightResize);
-
-var drag_left = d3.behavior.drag()
-    .origin(Object)
-    .on("drag", leftResize);*/
-
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
@@ -142,6 +133,12 @@ timeline_svg.append("rect")
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
 
+var rt_rectangles = [],
+    rt_rect = timeline_svg.selectAll(".rt_rect");
+
+var lt_rectangles = [],
+    lt_rect = timeline_svg.selectAll(".lt_rect");
+
 function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this);
@@ -149,16 +146,18 @@ function mousedown() {
         snapY = Math.floor(point[1]/rectangle_height) * rectangle_height;
 
     var task_rectangle = {x: snapX, y: snapY, id: event_counter};
+    var rt_rect = {x: snapX+rectangle_width-(dragbar_width/2), y: snapY, id: event_counter};
+    var lt_rect = {x: snapX-(dragbar_width/2), y: snapY, id: event_counter};
 
     task_rectangles.push(task_rectangle);
+    rt_rectangles.push(rt_rect);
+    lt_rectangles.push(lt_rect);
     restart();
 }
 
 //Creates graphical elements from array of data (task_rectangles)
 function restart() {
-    var dx; 
-    var dy;
-    var rectId;
+    var dx, dy, rectId;
 
     task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d){ return d.id}) 
         .enter().append("rect")
@@ -180,30 +179,42 @@ function restart() {
         .attr('pointer-events', 'all')
         .call(drag);
 
-    /*timeline_svg.selectAll(".task_rectangle").each(
-        function(d) {
-            var dragbar_left = $(this).append("rect")
-                .attr("x", function() { return d.x - (dragbar_width/2); })
-                .attr("y", function() { return d.y + (dragbar_width/2); })
-                .attr("height", rectangle_height - dragbar_width)
-                .attr("width", dragbar_width)
-                .attr("fill", "lightblue")
-                .attr("fill-opacity", .5)
-                .attr("cursor", "ew-resize")
-                .call(drag_left);
-            var dragbar_right = $(this).append("rect")
-                .attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); })
-                .attr("y", function(d) { return d.y + (dragbar_width/2); })
-                .attr("height", rectangle_height - dragbar_width)
-                .attr("width", dragbar_width)
-                .attr("fill", "lightblue")
-                .attr("fill-opacity", .5)
-                .attr("cursor", "ew-resize")
-                .call(drag_right);
-        });*/
-
     task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d) { return d.id});
     task_rectangle.exit().remove(); 
+
+    rt_rect = timeline_svg.selectAll(".rt_rect").data(rt_rectangles, function (d) {return d.id})
+        .enter().append("rect")
+        .attr("class", "rt_rect")
+        .attr("x", function(d) { return d.x})
+        .attr("y", function(d) {return d.y})
+        .attr("id", function(d) {
+            return "rt_rect" + d.id; })
+        .attr("height", rectangle_height)
+        .attr("width", dragbar_width)
+        .attr("fill", "#FFFFFF")
+        .attr("fill-opacity", .6)
+        .attr('pointer-events', 'all');
+        //.call(drag_right);
+
+    rt_rect = timeline_svg.selectAll(".rt_rect").data(rt_rectangles, function (d) {return d.id});
+    rt_rect.exit().remove();
+
+    lt_rect = timeline_svg.selectAll(".lt_rect").data(lt_rectangles, function (d) {return d.id})
+        .enter().append("rect")
+        .attr("class", "lt_rect")
+        .attr("x", function(d) { return d.x})
+        .attr("y", function(d) {return d.y})
+        .attr("id", function(d) {
+            return "lt_rect" + d.id; })
+        .attr("height", rectangle_height)
+        .attr("width", dragbar_width)
+        .attr("fill", "#FFFFFF")
+        .attr("fill-opacity", .6)
+        .attr('pointer-events', 'all');
+        //.call(drag_left);
+
+    lt_rect = timeline_svg.selectAll(".lt_rect").data(lt_rectangles, function (d) {return d.id});
+    lt_rect.exit().remove();
 
     timeline_svg.selectAll(".task_rectangle").each(
         function(d) {
