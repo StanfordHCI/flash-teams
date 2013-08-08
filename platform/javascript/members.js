@@ -2,10 +2,21 @@
  *
  *
  */
-
+var pillCounter = 0;
 
 function addMember() {
-	console.log("You clicked the Add button.");
+	pillCounter++;
+
+	//APPEND A LIST ITEM TO THE UNORDERED LIST, MEMBERPILLS
+	//PULL TEXT FROM BUTTON TEXT ENTRY
+	var memberName = $("#addMemberInput").val();
+	$("#member-container ul").append('<li class="active" id="pill_' + pillCounter + '""><a href="#">' + memberName + '</a></li> <br></br>');
+
+	//Clear Input
+	$("#addMemberInput").val(this.placeholder);
+
+	//APPEND A POPOVER TO THE PILL
+
 
 }
 
