@@ -6,6 +6,7 @@
 
 function addMember() {
 	console.log("You clicked the Add button.");
+
 }
 
 var availableMembers = [
@@ -88,7 +89,6 @@ var availableMembers = [
 
 $(document).ready(function() {
 	$("#addMemberInput").autocomplete({
-
 		source: availableMembers
 	});
 });

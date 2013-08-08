@@ -89,3 +89,6 @@ function rightResize(d) {
     dragbar_right.attr("x", function(d) { return dragx - (dragbar_width/2) });
     drag_rectangle.attr("width", rectangle_width);
 }
+
+
+

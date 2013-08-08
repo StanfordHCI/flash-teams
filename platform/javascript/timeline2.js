@@ -1,7 +1,7 @@
 /* Timeline2.js
  * ---------------------------------------------
  * 
- *
+ * 
  */
 
 var XTicks = 25,
@@ -18,21 +18,36 @@ var y = d3.scale.linear()
     .domain([15, 480])
     .range([15, 480]);
 
+//STARTER VALUES, MAY BE A PROBLEM LATER
 var rectangle_width = 100,
     rectangle_height = 100;
 
 var event_counter = 0;
 
-var dragbar_width = 5;
+var dragbar_width = 8;
 
 var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
+        //ADD STUFF ABOUT VERTICAL DRAGGING??
+
+        //Horiztonal dragging
         var newX = (d3.event.x - (d3.event.x%(XTicks)));
         $(this).attr("x", d.x = Math.max(0, Math.min(width - rectangle_width, newX)));
-        //dragbar_left.attr("x", function(d) { return d.x - (dragbar_width/2); })
-        //dragbar_right.attr("x", function(d) { return d.x + rectangle_width - (dragbar_width/2); });
+
+        //Dragbars
+        var idNum = this.id.split("_")[1]; //Get id number by parsing task_rectangle's id
+        var w = this.width.animVal.value; //Get animated width of this task_rectangle
+        thisrt_rect = timeline_svg.selectAll("#rt_rect_" + idNum);
+        thisrt_rect.attr("x", function(d) {return newX + w - (dragbar_width/2)});
+        thislt_rect = timeline_svg.selectAll("#lt_rect_" + idNum);
+        thislt_rect.attr("x", function(d) {return newX - (dragbar_width/2)});
     });
+
+var drag_right = d3.behavior.drag() 
+    .origin(Object)
+    .on("drag", rightResize);
+
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", width)
@@ -51,15 +66,20 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
         .attr("width", rectangle_width);
 
     dragbar_left.attr("x", function(d) { return d.x - (dragbar_width / 2); });
-}
+}*/
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-    var dragx = Math.max(d.x + dragbar_width/2, Math.min(w, d.x + rectangle_width + d3.event.dx));
-    rectangle_width = dragx - d.x;
-    dragbar_right.attr("x", function(d) { return dragx - (dragbar_width/2) });
-    drag_rectangle.attr("width", rectangle_width);
-}*/
+    /*var oldRect = timeline_svg.selectAll("#rect_" + d.id);
+    var leftX = timeline_svg.selectAll("#lt_rect_" + d.id).x;
+    var dragx = Math.max(leftX + dragbar_width/2, Math.min(width, d.x + oldRect.width.animVal.value + d3.event.dx));
+    rect_width = dragx - oldRect.x;
+    
+    $(this).attr("x", d.x = dragx);
+    console.log("d3EventX", d3.event.dx);
+
+    oldRect.attr("width", rect_width);*/
+}
 
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-graphics)
@@ -169,7 +189,7 @@ function restart() {
             dy = d.y;
             return d.y; })
         .attr("id", function(d) {
-            rectId = "rect" + d.id;
+            rectId = "rect_" + d.id;
             return rectId; }) 
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
@@ -188,13 +208,13 @@ function restart() {
         .attr("x", function(d) { return d.x})
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "rt_rect" + d.id; })
+            return "rt_rect_" + d.id; })
         .attr("height", rectangle_height)
         .attr("width", dragbar_width)
-        .attr("fill", "#FFFFFF")
+        .attr("fill", "#00")
         .attr("fill-opacity", .6)
-        .attr('pointer-events', 'all');
-        //.call(drag_right);
+        .attr('pointer-events', 'all')
+        .call(drag_right);
 
     rt_rect = timeline_svg.selectAll(".rt_rect").data(rt_rectangles, function (d) {return d.id});
     rt_rect.exit().remove();
@@ -205,10 +225,10 @@ function restart() {
         .attr("x", function(d) { return d.x})
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "lt_rect" + d.id; })
+            return "lt_rect_" + d.id; })
         .attr("height", rectangle_height)
         .attr("width", dragbar_width)
-        .attr("fill", "#FFFFFF")
+        .attr("fill", "#00")
         .attr("fill-opacity", .6)
         .attr('pointer-events', 'all');
         //.call(drag_left);
@@ -237,16 +257,18 @@ function restart() {
 };
 
 function hidePopover(popId) {
-    $("#rect" + popId).popover("hide");
+    $("#rect_" + popId).popover("hide");
 };
 
 function deleteRect(rectId) {
-    $("#rect" + rectId).popover("destroy");
+    $("#rect_" + rectId).popover("destroy");
     var element = null;
     for (var i = 0; i < task_rectangles.length; i++) {
         element = task_rectangles[i];
         if (element.id == rectId) {
             task_rectangles.splice(i, 1);
+            rt_rectangles.splice(i, 1);
+            lt_rectangles.splice(i, 1);
             restart();
             break;
         }
