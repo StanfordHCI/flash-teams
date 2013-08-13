@@ -39,30 +39,6 @@ svg {
     </head>
 
     <body>
-        <script language="javascript" type="text/javascript">
-            <!-- Browser Support Code-->
-            function ajaxFunction(){
-                var ajaxRequest;  // The variable that makes Ajax possible!
-                try{
-                    // Opera 8.0+, Firefox, Safari
-                    ajaxRequest = new XMLHttpRequest();
-                } catch (e){
-                    // Internet Explorer Browsers
-                    try{
-                        ajaxRequest = new ActiveXObject("Msxml2.XMLHTTP");
-                    } catch (e) {
-                        try{
-                            ajaxRequest = new ActiveXObject("Microsoft.XMLHTTP");
-                        } catch (e){
-                            // Something went wrong
-                            alert("Your browser broke!");
-                            return false;
-                        }
-                    }
-                }
-            }
-        </script>
-
         <!--Main Layout-->
         <div class="container-fluid">       
             <div class="row-fluid">
@@ -77,20 +53,15 @@ svg {
                     </div>
                     <div id="member-container" class="well">
                         <h3>Members</h3>
-
-                        <!--START HERE, WORK ON MEMBER PILLS-->
                         <form name='memberForm' autocomplete="on">
                             <div class="input-append">
-                                <input class="span10" id="addMemberInput" type="text" placeholder="New Member" 
-                                autocomplete="on">
+                                <input class="span10" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
                                 <button class="btn" type="button" onclick="addMember()">+Add</button>
-
-
                             </div>
                         </form>
 
                         <ul class = "nav nav-pills" id="memberPills">
-
+                            <!--Member Pills Appended Here in JS-->
                         </ul>
                     </div>
                 </div>

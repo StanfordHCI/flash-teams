@@ -74,7 +74,7 @@ function rightResize(d) {
     var taskRectWidth = taskRect.attr("width");
     var leftX = timeline_svg.selectAll("#lt_rect_" + d.id).x;
     var dragx = Math.max(leftX + dragbar_width/2, Math.min(width, d.x + taskRectWidth + d3.event.dx)); //BROKEN
-    rect_width = 200; 
+    //rect_width = 200; 
     //$(this).attr("x", d.x = dragx);
     console.log("rectWidth", rect_width);
 
@@ -247,7 +247,8 @@ function restart() {
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
                 title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text"name="eventName" placeholder="New Event"></form>',
-                content: '<form name="eventForm_' + event_counter + '"><h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
+                content: '<form name="eventForm_' + event_counter + '">'
+                    +'<h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
                     +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
                     +'Members<input type = "textfield" name="members"><br>'
                     +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 

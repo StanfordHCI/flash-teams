@@ -7,18 +7,42 @@ var pillCounter = 0;
 function addMember() {
 	pillCounter++;
 
-	//APPEND A LIST ITEM TO THE UNORDERED LIST, MEMBERPILLS
-	//PULL TEXT FROM BUTTON TEXT ENTRY
+	//Appends a list item pill to the memberPills ul
 	var memberName = $("#addMemberInput").val();
-	$("#member-container ul").append('<li class="active" id="pill_' + pillCounter + '""><a href="#">' + memberName + '</a></li> <br></br>');
+	$("#member-container ul").append('<li class="active" id="pill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
 
 	//Clear Input
 	$("#addMemberInput").val(this.placeholder);
 
-	//APPEND A POPOVER TO THE PILL
-
+	//Append a popover to the pill
+	$("#pill_" + pillCounter).popover({
+		placement: "right",
+		html: "true",
+		class: "member",
+		id: '"memberPopover' + pillCounter + '"',
+		trigger: "click",
+		title: memberName,
+		content: '<form name="memberForm_' + pillCounter + '">'
+		+'Skills:'
+		+'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
+		+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Done</button></p>'
+		+'</form>',
+		container: $("#member-container")
+	});
 
 }
+
+function hideMemberPopover(popId) {
+	$("#pill_" + popId).popover("hide");
+};
+
+function deleteMember(pillId) {
+	$("#pill_" + pillId).popover("destroy");
+	$('#pill_' + pillId).remove();
+
+	//REMOVE THE CIRCLES
+	//REMOVE THE MEMBER FROM EVENTS
+};
 
 var availableMembers = [
 	"3D Modeling & CAD",
