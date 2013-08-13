@@ -70,15 +70,17 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-    var oldRect = timeline_svg.selectAll("#rect_" + d.id);
+    var taskRect = timeline_svg.selectAll("#rect_" + d.id);
+    var taskRectWidth = taskRect.attr("width");
     var leftX = timeline_svg.selectAll("#lt_rect_" + d.id).x;
-    var dragx = Math.max(leftX + dragbar_width/2, Math.min(width, d.x + oldRect.width.animVal.value + d3.event.dx));
-    rect_width = dragx - oldRect.x;
-    
-    $(this).attr("x", d.x = dragx);
-    console.log("d3EventX", d3.event.dx);
+    var dragx = Math.max(leftX + dragbar_width/2, Math.min(width, d.x + taskRectWidth + d3.event.dx)); //BROKEN
+    rect_width = 200; 
+    //$(this).attr("x", d.x = dragx);
+    console.log("rectWidth", rect_width);
 
-    oldRect.attr("width", rect_width);
+    //console.log("oldWidth", taskRect.width);
+    taskRect.attr("width", rect_width);
+    //console.log("newWidth", taskRect.width);
 }
 
 
