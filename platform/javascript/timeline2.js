@@ -151,6 +151,8 @@ timeline_svg.append("rect")
     .attr("fill-opacity", 0)
     .on("mousedown", mousedown);
 
+var task_groups = [],
+    task_g = timeline_svg.selectAll(".task_g");
 
 var task_rectangles = [],
     task_rectangle = timeline_svg.selectAll(".task_rectangle");
@@ -167,10 +169,12 @@ function mousedown() {
     var snapX = Math.floor(point[0] - (point[0]%(XTicks/2))),
         snapY = Math.floor(point[1]/rectangle_height) * rectangle_height;
 
+    var task_g = {x: snapX, y: snapY, id: event_counter};
     var task_rectangle = {x: snapX, y: snapY, id: event_counter};
     var rt_rect = {x: snapX+rectangle_width-(dragbar_width/2), y: snapY, id: event_counter};
     var lt_rect = {x: snapX-(dragbar_width/2), y: snapY, id: event_counter};
 
+    task_groups.push(task_g);
     task_rectangles.push(task_rectangle);
     rt_rectangles.push(rt_rect);
     lt_rectangles.push(lt_rect);
