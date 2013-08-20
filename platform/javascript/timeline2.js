@@ -29,22 +29,27 @@ var dragbar_width = 8;
 var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
-        //ADD STUFF ABOUT VERTICAL DRAGGING??
+        var newX = (d3.event.x - (d3.event.x%(XTicks)));
 
+        var item = this.parentNode;
+        d3.select(item).attr("transform", "translate(200, 0)");
+
+
+        /*//ADD STUFF ABOUT VERTICAL DRAGGING??
         //Horiztonal dragging
         var newX = (d3.event.x - (d3.event.x%(XTicks)));
         $(this).attr("x", d.x = Math.max(0, Math.min(width - rectangle_width, newX)));
 
         //Dragbars
-        var idNum = this.id.split("_")[1]; //Get id number by parsing task_rectangle's id
+        var idNum = this.id.split("_")[3]; //Get id number by parsing task_rectangle's id
         var w = this.width.animVal.value; //Get animated width of this task_rectangle
         thisrt_rect = timeline_svg.selectAll("#rt_rect_" + idNum);
         thisrt_rect.attr("x", function(d) {return newX + w - (dragbar_width/2)});
         thislt_rect = timeline_svg.selectAll("#lt_rect_" + idNum);
-        thislt_rect.attr("x", function(d) {return newX - (dragbar_width/2)});
+        thislt_rect.attr("x", function(d) {return newX - (dragbar_width/2)});*/
     });
 
-var drag_right = d3.behavior.drag() 
+var drag_right = d3.behavior.drag()
     .origin(Object)
     .on("drag", rightResize);
 
@@ -154,14 +159,6 @@ timeline_svg.append("rect")
 var task_groups = [],
     task_g = timeline_svg.selectAll(".task_g");
 
-var task_rectangles = [],
-    task_rectangle = timeline_svg.selectAll(".task_rectangle");
-
-var rt_rectangles = [],
-    rt_rect = timeline_svg.selectAll(".rt_rect");
-
-var lt_rectangles = [],
-    lt_rect = timeline_svg.selectAll(".lt_rect");
 
 function mousedown() {
     event_counter++; //To generate id
@@ -169,79 +166,106 @@ function mousedown() {
     var snapX = Math.floor(point[0] - (point[0]%(XTicks/2))),
         snapY = Math.floor(point[1]/rectangle_height) * rectangle_height;
 
-    var task_g = {x: snapX, y: snapY, id: event_counter};
-    var task_rectangle = {x: snapX, y: snapY, id: event_counter};
-    var rt_rect = {x: snapX+rectangle_width-(dragbar_width/2), y: snapY, id: event_counter};
-    var lt_rect = {x: snapX-(dragbar_width/2), y: snapY, id: event_counter};
+    drawEvents(snapX, snapY);
 
-    task_groups.push(task_g);
-    task_rectangles.push(task_rectangle);
-    rt_rectangles.push(rt_rect);
-    lt_rectangles.push(lt_rect);
-    restart();
-}
+ 
+
+    //D3, Exit to Remove Deleted Data
+    task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
+    task_g.exit().remove();
+
+    addPopovers();
+};
 
 //Creates graphical elements from array of data (task_rectangles)
-function restart() {
-    var dx, dy, rectId;
+function  drawEvents(x, y) {
+    var task_g = timeline_svg.append("g")
+        .data([{x: x, y: y, id: "task_g_" + event_counter}]);
 
-    task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d){ return d.id}) 
-        .enter().append("rect")
+    //Task Rectangle, Holds Event Info
+    var task_rectangle = task_g.append("rect")
         .attr("class", "task_rectangle")
-        .attr("x", function(d) { 
-            dx = d.x;
-            return d.x; }) 
-        .attr("y", function(d) { 
-            dy = d.y;
-            return d.y; })
+        .attr("x", function(d) {return d.x})
+        .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            rectId = "rect_" + d.id;
-            return rectId; }) 
+            return "rect_" + event_counter; })
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "#C9C9C9")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
-        .call(drag);
+        .call(drag);    //FIX DRAGGING
 
-    task_rectangle = timeline_svg.selectAll(".task_rectangle").data(task_rectangles, function (d) { return d.id});
-    task_rectangle.exit().remove(); 
-
-    rt_rect = timeline_svg.selectAll(".rt_rect").data(rt_rectangles, function (d) {return d.id})
-        .enter().append("rect")
+    //Right Dragbar
+    var rt_rect = task_g.append("rect")
         .attr("class", "rt_rect")
-        .attr("x", function(d) { return d.x})
+        .attr("x", function(d) { 
+            return d.x + rectangle_width; })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "rt_rect_" + d.id; })
+            return "rt_rect_" + event_counter; })
         .attr("height", rectangle_height)
         .attr("width", dragbar_width)
         .attr("fill", "#00")
         .attr("fill-opacity", .6)
-        .attr('pointer-events', 'all')
-        .call(drag_right);
+        .attr('pointer-events', 'all'); 
 
-    rt_rect = timeline_svg.selectAll(".rt_rect").data(rt_rectangles, function (d) {return d.id});
-    rt_rect.exit().remove();
-
-    lt_rect = timeline_svg.selectAll(".lt_rect").data(lt_rectangles, function (d) {return d.id})
-        .enter().append("rect")
+    //Left Dragbar
+    var lt_rect = task_g.append("rect")
         .attr("class", "lt_rect")
         .attr("x", function(d) { return d.x})
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "lt_rect_" + d.id; })
+            return "lt_rect_" + event_counter; })
         .attr("height", rectangle_height)
         .attr("width", dragbar_width)
         .attr("fill", "#00")
         .attr("fill-opacity", .6)
         .attr('pointer-events', 'all');
-        //.call(drag_left);
 
-    lt_rect = timeline_svg.selectAll(".lt_rect").data(lt_rectangles, function (d) {return d.id});
-    lt_rect.exit().remove();
+    //ADD TITLE
+    var title_text = task_g.append("text")
+        .text(function (d) {
+            return "New Event";
+        })
+        .attr("id", function(d) { return "title_text_" + event_counter; })
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 14})
+        .attr("font-weight", "bold")
+        .attr("font-size", "12px");
 
+    //ADD TIME
+    var time_text = task_g.append("text")
+        .text(function (d) {
+            return "1hrs 0min";
+        })
+        .attr("id", function(d) {return "time_text_" + event_counter;})
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 26})
+        .attr("font-size", "12px");
+
+
+    //ADD INTERACTION BUTTONS
+
+    //ADD MEMBER LINES
+
+    //MAY DELETE LATER, DYNAMICALLY ADDED
+    //ADD ACRONYMS FOR MEMBERS
+    var acronym_text = task_g.append("text")
+        .text(function (d) {
+            return "[  ]";
+        })
+        .attr("id", function(d) {return "acronym_text_" + event_counter;})
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + rectangle_height - 10});
+
+    task_groups.push(task_g);    
+
+};
+
+function addPopovers() {
+    //Add Popovers
     timeline_svg.selectAll(".task_rectangle").each(
         function(d) {
             $(this).popover({
@@ -250,7 +274,8 @@ function restart() {
                 class: "event",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
-                title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text"name="eventName" placeholder="New Event"></form>',
+                title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text" name="eventName"' 
+                    + 'id="eventName_' + event_counter + '" placeholder="New Event"></form>',
                 content: '<form name="eventForm_' + event_counter + '">'
                     +'<h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
                     +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
@@ -263,23 +288,21 @@ function restart() {
         });
 };
 
-function hidePopover(popId) {
+function hidePopover (popId) {
     $("#rect_" + popId).popover("hide");
 };
 
-function deleteRect(rectId) {
+function deleteRect (rectId) {
     $("#rect_" + rectId).popover("destroy");
-    var element = null;
-    for (var i = 0; i < task_rectangles.length; i++) {
-        element = task_rectangles[i];
-        if (element.id == rectId) {
-            task_rectangles.splice(i, 1);
-            rt_rectangles.splice(i, 1);
-            lt_rectangles.splice(i, 1);
-            restart();
-            break;
-        }
-    }
+
+    //WOULD BE BETTER AS A DELETE OF THE GROUP, BUT TEMP FIX
+    $("#rect_" + rectId).remove();
+    $("#lt_rect_" + rectId).remove();
+    $("#rt_rect_" + rectId).remove();
+    $("#title_text_" + rectId).remove();
+    $("#time_text_" + rectId).remove();
+    $("#acronym_text_" + rectId).remove();
+
 };
 
 

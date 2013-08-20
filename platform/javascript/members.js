@@ -21,22 +21,23 @@ function addMember() {
 		class: "member",
 		id: '"memberPopover' + pillCounter + '"',
 		trigger: "click",
-		title: memberName,
-		content: '<form name="memberForm_' + pillCounter + '">'
-		+ '<div class="input-append"><input class="span8" id="addSkillInput_' + pillCounter + '" type="text" placeholder="New Skill" autocomplete="on">'
-		+ '<button class="btn" type="button" onclick="addSkill(' + pillCounter + ');">+</button></div>'
+		title: '<b>' + memberName + ' [  ]</b>',
+		content: '<div class="mForm_' + pillCounter + '"><form name="memberForm_' + pillCounter + '" autocomplete="on">'
+		+'<div class="input-append"><input class="skillInput" id="addSkillInput_' + pillCounter 
+			+'" type="text" placeholder="New Skill" autocomplete="on">'
+		+'<button class="btn" type="button" onclick="addSkill(' + pillCounter + ');">+</button>'
+		+'</div></form>'
 		+'Skills:'	
 		+'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
 		+'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
-		+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Done</button></p>'
-		+'</form>',
+		+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Done</button></p></div>',
 		container: $("#member-container")
 	});
 };
 
 function addSkill(pillId) {
 	var skillName = $("#addSkillInput").val();
-	$("#memberPopover" + pillId + "ul").append('<li class="active" id="sPill_' + pillId + '"><a>' + skillName + '</a></li>');
+	$('"#mForm_' + pillId + '"').append('<li class="active" id="sPill_' + pillId + '"><a>' + skillName + '</a></li>');
 }
 
 function hideMemberPopover(popId) {
@@ -58,19 +59,18 @@ var availableSkills = [
 ];
 
 $(document).ready(function() {
+	$(".skillInput").each(function () {
+		$(this).autocomplete({
+			source: availableSkills
+		});
+	});
+
 	$("#addMemberInput").autocomplete({
 		source: availableMembers
 	});
 
-	//FIX THIS NEXT
-	for (var i = 1; i <= pillCounter; i++) {
-		$("#addSkillInput_" + i).autocomplete({
-			source: availableSkills
-		})
-	}
 
 });
-
 
 
 
