@@ -9,7 +9,7 @@ function addMember() {
 
 	//Appends a list item pill to the memberPills ul
 	var memberName = $("#addMemberInput").val();
-	$("#member-container ul").append('<li class="active" id="mPill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
+	$("#memberPills").append('<li class="active" id="mPill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
 
 	//Clear Input
 	$("#addMemberInput").val(this.placeholder);
@@ -21,23 +21,36 @@ function addMember() {
 		class: "member",
 		id: '"memberPopover' + pillCounter + '"',
 		trigger: "click",
-		title: '<b>' + memberName + ' [  ]</b>',
-		content: '<div class="mForm_' + pillCounter + '"><form name="memberForm_' + pillCounter + '" autocomplete="on">'
-		+'<div class="input-append"><input class="skillInput" id="addSkillInput_' + pillCounter 
-			+'" type="text" placeholder="New Skill" autocomplete="on">'
-		+'<button class="btn" type="button" onclick="addSkill(' + pillCounter + ');">+</button>'
-		+'</div></form>'
-		+'Skills:'	
-		+'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
-		+'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
-		+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Done</button></p></div>',
+		title: '<b>' + memberName + ' [ ]</b>',
+		content:  '<form name="memberForm_' + pillCounter + '" autocomplete="on">'
+		+'<div class="mForm_' + pillCounter + '">'
+			+'<div class="input-append">' 
+			+'<input class="skillInput" id="addSkillInput_' + pillCounter + '" type="text" onclick="addAuto()" placeholder="New Skill" autocomplete="on">'
+			+'<button class="btn" type="button" onclick="addSkill(' + pillCounter + ');">+</button>'
+			+'</div>'
+			+'Skills:'	
+			+'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
+			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
+			+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Done</button>'
+		+'</p></form>' 
+		+'</div>',
 		container: $("#member-container")
 	});
+
 };
 
+function addAuto() {
+	$(".skillInput").each(function () {
+		$(this).autocomplete({
+			source: oSkills
+		});
+	});
+}
+
 function addSkill(pillId) {
-	var skillName = $("#addSkillInput").val();
-	$('"#mForm_' + pillId + '"').append('<li class="active" id="sPill_' + pillId + '"><a>' + skillName + '</a></li>');
+	var skillName = $("#addSkillInput_" + pillId).val();
+	$("#skillPills_" + pillId).append('<li class="active" id="sPill_' + pillId + '"><a>' + skillName + '</a></li>');
+	$("#addSkillInput_" + pillId).val(this.placeholder);
 }
 
 function hideMemberPopover(popId) {
@@ -52,24 +65,11 @@ function deleteMember(pillId) {
 	//REMOVE THE MEMBER FROM EVENTS
 };
 
-var availableSkills = [
-	"AJAX",
-	"Javascript",
-	"JQuery"
-];
 
 $(document).ready(function() {
-	$(".skillInput").each(function () {
-		$(this).autocomplete({
-			source: availableSkills
-		});
-	});
-
 	$("#addMemberInput").autocomplete({
 		source: availableMembers
 	});
-
-
 });
 
 

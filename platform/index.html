@@ -21,22 +21,28 @@
 
 
         <style>
+            .node {
+              stroke: #fff;
+              stroke-width: 1.5px;
+            }
 
-.node {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
+            .link {
+              stroke: #999;
+              stroke-opacity: .6;
+            }
 
-.link {
-  stroke: #999;
-  stroke-opacity: .6;
-}
+            svg {
+                display: block;
+            }
 
-svg {
-    display: block;
-}
-
-</style>
+            .ui-autocomplete {
+                max-height: : 150px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                height: 150px;
+                z-index: 10000;
+            }
+        </style>
     </head>
 
     <body>
@@ -54,9 +60,9 @@ svg {
                     </div>
                     <div id="member-container" class="well">
                         <h3>Members</h3>
-                        <form name='memberForm' autocomplete="on">
+                        <form name='newMemberForm' autocomplete="on">
                             <div class="input-append">
-                                <input class="span10" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
+                                <input class="span12" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
                                 <button class="btn" type="button" onclick="addMember()">+Add</button>
                             </div>
                             <input type="text" name="enterAndReloadBugFix" style="display: none;"> 

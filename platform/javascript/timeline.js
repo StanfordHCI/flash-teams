@@ -29,18 +29,16 @@ var dragbar_width = 8;
 var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
-        var item = this.parentNode;
-
-        //ADD STUFF ABOUT VERTICAL DRAGGING??
+        var group = this.parentNode;
 
         //Horiztonal draggingx
-        var dragX = (d3.event.x - (d3.event.x%(XTicks)));
+        var dragX = (d3.event.dx - (d3.event.dx%(XTicks)));
         var newX = Math.max(0, Math.min(width-rectangle_width, dragX));
 
-        d3.select(item).attr("transform", function(d, i) {
-            return "translate(" + [d3.event.x] + ")"
-        })
-
+        d.x += d3.event.dx;
+        //ADD Y??
+        redraw(group);
+        console.log(d);
 
        /* //Dragbars
         var idNum = this.id.split("_")[3]; //Get id number by parsing task_rectangle's id
@@ -231,6 +229,7 @@ function  drawEvents(x, y) {
         .text(function (d) {
             return "New Event";
         })
+        .attr("class", "title_text")
         .attr("id", function(d) { return "title_text_" + event_counter; })
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 14})
@@ -243,6 +242,7 @@ function  drawEvents(x, y) {
         .text(function (d) {
             return "1hrs 0min";
         })
+        .attr("class", "time_text")
         .attr("id", function(d) {return "time_text_" + event_counter;})
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 26})
@@ -260,6 +260,7 @@ function  drawEvents(x, y) {
         .text(function (d) {
             return "[  ]";
         })
+        .attr("class", "acronym_text")
         .attr("id", function(d) {return "acronym_text_" + event_counter;})
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + rectangle_height - 10});
@@ -267,6 +268,32 @@ function  drawEvents(x, y) {
     task_groups.push(task_g);    
 
 };
+
+function redraw(group) {
+    var d3Group = d3.select(group)
+    d3Group.selectAll(".task_rectangle")
+        .attr("x", function(d) {return d.x})
+        .attr("y", function(d) {return d.y});
+
+    //WHEN RESIZING WORKS, NEED TO USE NEW DATA, SIZE
+    d3Group.selectAll(".rt_rect")
+        .attr("x", function(d) {return d.x + rectangle_width})
+        .attr("y", function(d) {return d.y});
+    d3Group.selectAll(".lt_rect")
+        .attr("x", function(d) {return d.x})
+        .attr("y", function(d) {return d.y});
+    d3Group.selectAll(".title_text")
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 14})
+    d3Group.selectAll(".time_text")
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 26})
+    d3Group.selectAll(".acronym_text")
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + rectangle_height - 10});
+
+    //REDRAW EACH ITEM INDIVIDUALLY
+}
 
 function addPopovers() {
     //Add Popovers
@@ -281,7 +308,7 @@ function addPopovers() {
                 title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text" name="eventName"' 
                     + 'id="eventName_' + event_counter + '" placeholder="New Event"></form>',
                         content: '<form name="eventForm_' + event_counter + '">'
-                    +'<h10>Total Runtime: <input type = "text" name = "totalruntime"></h10>' 
+                    +'<h10>Total Runtime: <input type = "text" name = "totalruntime" placeholder="1hrs 0min"></h10>' 
                     +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
                     +'Members<input type = "textfield" name="members"><br>'
                     +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
