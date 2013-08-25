@@ -7,8 +7,9 @@
 var XTicks = 25,
     YTicks = 5;
 
-var width = 960,
-    height = 500;
+//CHANGE TO ALL CAPS AND BETTER NAME LATER
+var SVG_WIDTH = 960,
+    SVG_HEIGHT = 500;
 
 var x = d3.scale.linear()
     .domain([0, 900])
@@ -30,66 +31,73 @@ var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
         var group = this.parentNode;
+        var oldX = d.x;
+        var groupNumber = this.id.split("_")[1];
 
         //Horiztonal draggingx
         var dragX = (d3.event.dx - (d3.event.dx%(XTicks)));
-        var newX = Math.max(0, Math.min(width-rectangle_width, dragX));
+        var newX = Math.max(0, Math.min(SVG_WIDTH-rectangle_width, dragX));
 
-        d.x += d3.event.dx;
+        if (d3.event.dx + d.x < 0) { //'Start' End Case
+            d.x = 0 - (dragbar_width/2);
+        } else {
+            d.x += d3.event.dx;
+        }
+        var rectWidth = $("#rect_" + groupNumber)[0].width.animVal.value;
         //ADD Y??
-        redraw(group);
-        console.log(d);
-
-       /* //Dragbars
-        var idNum = this.id.split("_")[3]; //Get id number by parsing task_rectangle's id
-        var w = this.width.animVal.value; //Get animated width of this task_rectangle
-        thisrt_rect = timeline_svg.selectAll("#rt_rect_" + idNum);
-        thisrt_rect.attr("x", function(d) {return newX + w - (dragbar_width/2)});
-        thislt_rect = timeline_svg.selectAll("#lt_rect_" + idNum);
-        thislt_rect.attr("x", function(d) {return newX - (dragbar_width/2)});*/
+        redraw(group, rectWidth);
     });
 
-/*var drag_right = d3.behavior.drag()
+var drag_right = d3.behavior.drag()
     .origin(Object)
-    .on("drag", rightResize);*/
+    .on("drag", rightResize);
 
+var drag_left = d3.behavior.drag()
+    .origin(Object)
+    .on("drag", leftResize);
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", SVG_WIDTH)
+    .attr("height", SVG_HEIGHT)
     .attr("class", "chart");
 
-
 // leftResize: resize the rectangle by dragging the left handle
-/*function leftResize(d) {
-    var old_x = d.x;
+function leftResize(d) {
+    //var group = this.parentNode;
+    var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
 
-    d.x = Math.max(0, Math.min(d.x + rectangle_width - (dragbar_width / 2), d3.event.x));
-    rectangle_width = rectangle_width + (old_x - d.x);
+    var oldX = $("#rect_" + d.groupNum).get(0).x.animVal.value;
+    var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
+    var oldWidth = $("#rect_" + d.groupNum).get(0).width.animVal.value;
 
-    drag_rectangle.attr("x", function(d) { return d.x; })
-        .attr("width", rectangle_width);
+    var newX = Math.max(0, Math.min(d.x + oldWidth, d3.event.x));
 
-    dragbar_left.attr("x", function(d) { return d.x - (dragbar_width / 2); });
-}*/
+    taskRect.attr("x", newX);
+    $("#lt_rect_" + d.groupNum).attr("x", newX - dragbar_width/2);
+    $("#title_text_" + d.groupNum).attr("x", newX + 10);
+    $("#time_text_" + d.groupNum).attr("x", newX + 10);
+    $("#acronym_text_" + d.groupNum).attr("x", newX + 10);
+    taskRect.attr("width", rightX - newX);
+}
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-    var taskRect = timeline_svg.selectAll("#rect_" + d.id);
-    var taskRectWidth = taskRect.attr("width");
-    var leftX = timeline_svg.selectAll("#lt_rect_" + d.id).x;
-    var dragx = Math.max(leftX + dragbar_width/2, Math.min(width, d.x + taskRectWidth + d3.event.dx)); //BROKEN
-    //rect_width = 200; 
-    //$(this).attr("x", d.x = dragx);
-    console.log("rectWidth", rect_width);
 
-    //console.log("oldWidth", taskRect.width);
-    taskRect.attr("width", rect_width);
-    //console.log("newWidth", taskRect.width);
+    var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
+
+    var taskRectWidth = taskRect.attr("width"); //DELETE??
+
+    var oldX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
+    var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
+    var newx = Math.max(leftX + dragbar_width/2 ,Math.min(oldX + d3.event.dx, SVG_WIDTH));
+    //Math.max(leftX + dragbar_width/2, Math.min(width, d.x + taskRectWidth + d3.event.dx)); 
+
+    $(this).attr("x", newx);
+
+    taskRect.attr("width", newx - leftX);
 }
 
-
-//CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-graphics)
+//CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-gr_hics)
 //Draw x grid lines
 timeline_svg.selectAll("line.x")
     .data(x.ticks(XTicks))
@@ -98,7 +106,7 @@ timeline_svg.selectAll("line.x")
     .attr("x1", x)
     .attr("x2", x)
     .attr("y1", 15)
-    .attr("y2", height-50)
+    .attr("y2", SVG_HEIGHT-50)
     .style("stroke", "#000");
 
 //Draw y axis grid lines
@@ -107,7 +115,7 @@ timeline_svg.selectAll("line.y")
     .enter().append("line")
     .attr("class", "y")
     .attr("x1", 0)
-    .attr("x2", width-50)
+    .attr("x2", SVG_WIDTH-50)
     .attr("y1", y)
     .attr("y2", y)
     .style("stroke", "#5F5A5A");
@@ -136,29 +144,27 @@ timeline_svg.selectAll(".rule")
 //Darker First X and Y line
 timeline_svg.append("line")
     .attr("x1", 0)
-    .attr("x2", width-50)
+    .attr("x2", SVG_WIDTH-50)
     .attr("y1", 15)
     .attr("y2", 15)
     .style("stroke", "#000")
     .style("stroke-width", "4")
 timeline_svg.append("line")
     .attr("y1", 15)
-    .attr("y2", height-50)
+    .attr("y2", SVG_HEIGHT-50)
     .style("stroke", "#000")
     .style("stroke-width", "4")
 
-
 timeline_svg.append("rect")
     .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", SVG_WIDTH)
+    .attr("height", SVG_HEIGHT)
     .attr("fill", "white")
     .attr("fill-opacity", 0)
     .on("mousedown", mousedown);
 
 var task_groups = [],
     task_g = timeline_svg.selectAll(".task_g");
-
 
 function mousedown() {
     event_counter++; //To generate id
@@ -167,8 +173,6 @@ function mousedown() {
         snapY = Math.floor(point[1]/rectangle_height) * rectangle_height;
 
     drawEvents(snapX, snapY);
-
- 
 
     //D3, Exit to Remove Deleted Data
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
@@ -180,7 +184,7 @@ function mousedown() {
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvents(x, y) {
     var task_g = timeline_svg.append("g")
-        .data([{x: x, y: y, id: "task_g_" + event_counter, class: "task_g"}]);
+        .data([{x: x, y: y, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
 
     //Task Rectangle, Holds Event Info
     var task_rectangle = task_g.append("rect")
@@ -189,6 +193,7 @@ function  drawEvents(x, y) {
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rect_" + event_counter; })
+        .attr("groupNum", event_counter)
         .attr("height", rectangle_height)
         .attr("width", rectangle_width)
         .attr("fill", "#C9C9C9")
@@ -205,11 +210,13 @@ function  drawEvents(x, y) {
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rt_rect_" + event_counter; })
+        .attr("groupNum", event_counter)
         .attr("height", rectangle_height)
         .attr("width", dragbar_width)
         .attr("fill", "#00")
         .attr("fill-opacity", .6)
-        .attr('pointer-events', 'all'); 
+        .attr('pointer-events', 'all')
+        .call(drag_right); 
 
     //Left Dragbar
     var lt_rect = task_g.append("rect")
@@ -218,11 +225,13 @@ function  drawEvents(x, y) {
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "lt_rect_" + event_counter; })
+        .attr("groupNum", event_counter)
         .attr("height", rectangle_height)
         .attr("width", dragbar_width)
         .attr("fill", "#00")
         .attr("fill-opacity", .6)
-        .attr('pointer-events', 'all');
+        .attr('pointer-events', 'all')
+        .call(drag_left);
 
     //ADD TITLE
     var title_text = task_g.append("text")
@@ -231,6 +240,7 @@ function  drawEvents(x, y) {
         })
         .attr("class", "title_text")
         .attr("id", function(d) { return "title_text_" + event_counter; })
+        .attr("groupNum", event_counter)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 14})
         .attr("font-weight", "bold")
@@ -244,6 +254,7 @@ function  drawEvents(x, y) {
         })
         .attr("class", "time_text")
         .attr("id", function(d) {return "time_text_" + event_counter;})
+        .attr("groupNum", event_counter)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px")
@@ -262,22 +273,23 @@ function  drawEvents(x, y) {
         })
         .attr("class", "acronym_text")
         .attr("id", function(d) {return "acronym_text_" + event_counter;})
+        .attr("groupNum", event_counter)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + rectangle_height - 10});
 
     task_groups.push(task_g);    
-
 };
 
-function redraw(group) {
+function redraw(group, newWidth) {
     var d3Group = d3.select(group)
     d3Group.selectAll(".task_rectangle")
         .attr("x", function(d) {return d.x})
         .attr("y", function(d) {return d.y});
+    console.log("newWidth", newWidth);
 
     //WHEN RESIZING WORKS, NEED TO USE NEW DATA, SIZE
     d3Group.selectAll(".rt_rect")
-        .attr("x", function(d) {return d.x + rectangle_width})
+        .attr("x", function(d) {return d.x + newWidth})
         .attr("y", function(d) {return d.y});
     d3Group.selectAll(".lt_rect")
         .attr("x", function(d) {return d.x})
@@ -291,8 +303,6 @@ function redraw(group) {
     d3Group.selectAll(".acronym_text")
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + rectangle_height - 10});
-
-    //REDRAW EACH ITEM INDIVIDUALLY
 }
 
 function addPopovers() {
