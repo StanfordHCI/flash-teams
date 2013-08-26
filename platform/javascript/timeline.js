@@ -20,12 +20,12 @@ var y = d3.scale.linear()
     .range([15, 480]);
 
 //STARTER VALUES, MAY BE A PROBLEM LATER
-var rectangle_width = 100,
-    rectangle_height = 100;
+var RECTANGLE_WIDTH = 100,
+    RECTANGLE_HEIGHT = 100;
 
 var event_counter = 0;
 
-var dragbar_width = 8;
+var DRAGBAR_WIDTH = 6;
 
 var drag = d3.behavior.drag()
     .origin(Object)
@@ -34,16 +34,18 @@ var drag = d3.behavior.drag()
         var oldX = d.x;
         var groupNumber = this.id.split("_")[1];
 
+        var rectWidth = $("#rect_" + groupNumber)[0].width.animVal.value;
+
         //Horiztonal draggingx
-        var dragX = (d3.event.dx - (d3.event.dx%(XTicks)));
-        var newX = Math.max(0, Math.min(SVG_WIDTH-rectangle_width, dragX));
+        var dragX = (d3.event.x - (d3.event.x%(XTicks)));
+        var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
 
         if (d3.event.dx + d.x < 0) { //'Start' End Case
-            d.x = 0 - (dragbar_width/2);
+            d.x = 0 - (DRAGBAR_WIDTH/2);
         } else {
-            d.x += d3.event.dx;
+            d.x = newX;
         }
-        var rectWidth = $("#rect_" + groupNumber)[0].width.animVal.value;
+
         //ADD Y??
         redraw(group, rectWidth);
     });
@@ -73,7 +75,7 @@ function leftResize(d) {
     var newX = Math.max(0, Math.min(d.x + oldWidth, d3.event.x));
 
     taskRect.attr("x", newX);
-    $("#lt_rect_" + d.groupNum).attr("x", newX - dragbar_width/2);
+    $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2);
     $("#title_text_" + d.groupNum).attr("x", newX + 10);
     $("#time_text_" + d.groupNum).attr("x", newX + 10);
     $("#acronym_text_" + d.groupNum).attr("x", newX + 10);
@@ -89,7 +91,7 @@ function rightResize(d) {
 
     var oldX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
-    var newx = Math.max(leftX + dragbar_width/2 ,Math.min(oldX + d3.event.dx, SVG_WIDTH));
+    var newx = Math.max(leftX + DRAGBAR_WIDTH/2 ,Math.min(oldX + d3.event.dx, SVG_WIDTH));
     //Math.max(leftX + dragbar_width/2, Math.min(width, d.x + taskRectWidth + d3.event.dx)); 
 
     $(this).attr("x", newx);
@@ -170,7 +172,7 @@ function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this);
     var snapX = Math.floor(point[0] - (point[0]%(XTicks/2))),
-        snapY = Math.floor(point[1]/rectangle_height) * rectangle_height;
+        snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
 
     drawEvents(snapX, snapY);
 
@@ -194,8 +196,8 @@ function  drawEvents(x, y) {
         .attr("id", function(d) {
             return "rect_" + event_counter; })
         .attr("groupNum", event_counter)
-        .attr("height", rectangle_height)
-        .attr("width", rectangle_width)
+        .attr("height", RECTANGLE_HEIGHT)
+        .attr("width", RECTANGLE_WIDTH)
         .attr("fill", "#C9C9C9")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
@@ -206,13 +208,13 @@ function  drawEvents(x, y) {
     var rt_rect = task_g.append("rect")
         .attr("class", "rt_rect")
         .attr("x", function(d) { 
-            return d.x + rectangle_width; })
+            return d.x + RECTANGLE_WIDTH; })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rt_rect_" + event_counter; })
         .attr("groupNum", event_counter)
-        .attr("height", rectangle_height)
-        .attr("width", dragbar_width)
+        .attr("height", RECTANGLE_HEIGHT)
+        .attr("width", DRAGBAR_WIDTH)
         .attr("fill", "#00")
         .attr("fill-opacity", .6)
         .attr('pointer-events', 'all')
@@ -226,8 +228,8 @@ function  drawEvents(x, y) {
         .attr("id", function(d) {
             return "lt_rect_" + event_counter; })
         .attr("groupNum", event_counter)
-        .attr("height", rectangle_height)
-        .attr("width", dragbar_width)
+        .attr("height", RECTANGLE_HEIGHT)
+        .attr("width", DRAGBAR_WIDTH)
         .attr("fill", "#00")
         .attr("fill-opacity", .6)
         .attr('pointer-events', 'all')
@@ -275,7 +277,7 @@ function  drawEvents(x, y) {
         .attr("id", function(d) {return "acronym_text_" + event_counter;})
         .attr("groupNum", event_counter)
         .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + rectangle_height - 10});
+        .attr("y", function(d) {return d.y + RECTANGLE_HEIGHT - 10});
 
     task_groups.push(task_g);    
 };
@@ -285,14 +287,13 @@ function redraw(group, newWidth) {
     d3Group.selectAll(".task_rectangle")
         .attr("x", function(d) {return d.x})
         .attr("y", function(d) {return d.y});
-    console.log("newWidth", newWidth);
 
     //WHEN RESIZING WORKS, NEED TO USE NEW DATA, SIZE
     d3Group.selectAll(".rt_rect")
         .attr("x", function(d) {return d.x + newWidth})
         .attr("y", function(d) {return d.y});
     d3Group.selectAll(".lt_rect")
-        .attr("x", function(d) {return d.x})
+        .attr("x", function(d) {return d.x}) 
         .attr("y", function(d) {return d.y});
     d3Group.selectAll(".title_text")
         .attr("x", function(d) {return d.x + 10})
@@ -302,7 +303,7 @@ function redraw(group, newWidth) {
         .attr("y", function(d) {return d.y + 26})
     d3Group.selectAll(".acronym_text")
         .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + rectangle_height - 10});
+        .attr("y", function(d) {return d.y + RECTANGLE_HEIGHT - 10});
 }
 
 function addPopovers() {
