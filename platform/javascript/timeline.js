@@ -4,23 +4,26 @@
  * 
  */
 
-var XTicks = 25,
+var XTicks = 50,
     YTicks = 5;
 
 //CHANGE TO ALL CAPS AND BETTER NAME LATER
-var SVG_WIDTH = 960,
-    SVG_HEIGHT = 500;
+var SVG_WIDTH = 2450,
+    SVG_HEIGHT = 570;
 
 var X_WIDTH = 25;
     Y_WIDTH = 100;
 
+var timelineHours = 25;
+var hours = timelineHours*Y_WIDTH;
+
 var x = d3.scale.linear()
-    .domain([0, 900])
-    .range([0, 900]);
+    .domain([0, hours])
+    .range([0, hours]);
 
 var y = d3.scale.linear() 
-    .domain([15, 480])
-    .range([15, 480]);
+    .domain([15, 600])
+    .range([15, 600]);
 
 //STARTER VALUES, MAY BE A PROBLEM LATER
 var RECTANGLE_WIDTH = 100,
@@ -40,7 +43,7 @@ var drag = d3.behavior.drag()
         var rectWidth = $("#rect_" + groupNumber)[0].width.animVal.value;
 
         //Horiztonal draggingx
-        var dragX = (d3.event.x - (d3.event.x%(X_WIDTH)));
+        var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
         var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
         if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
         else d.x = newX;
@@ -87,8 +90,8 @@ function leftResize(d) {
 function rightResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
-    var dragX = (d3.event.x - (d3.event.x%(X_WIDTH)));
-    var newx = Math.max(leftX + 25, Math.min(dragX, SVG_WIDTH));
+    var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
+    var newx = Math.max(leftX + 50, Math.min(dragX, SVG_WIDTH));
 
     $(this).attr("x", newx);
     taskRect.attr("width", newx - leftX);
@@ -169,7 +172,7 @@ var task_groups = [],
 function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this);
-    var snapX = Math.floor(point[0] - (point[0]%(XTicks))),
+    var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
         snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
 
     drawEvents(snapX, snapY);
@@ -314,13 +317,13 @@ function addPopovers() {
                 class: "event",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
-                title: '<form name="eventHeaderForm_' + event_counter + '"><input type ="text" name="eventName"' 
-                    + 'id="eventName_' + event_counter + '" placeholder="New Event"></form>',
-                        content: '<form name="eventForm_' + event_counter + '">'
+                title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event">',
+                content: '<form name="eventForm_' + event_counter + '">'
                     +'<h10>Total Runtime: <input type = "text" name = "totalruntime" placeholder="1hrs 0min"></h10>' 
-                    +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime>'
-                    +'Members<input type = "textfield" name="members"><br>'
-                    +'<p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
+                    +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime">'
+                    +'Members<input type = "textfield" name="members">'
+                    +'<button class="btn" type="button" onclick="addEventMember()">+Add</button>'
+                    +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
                     +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
                     +'</form>',
                 container: $("#timeline-container")
@@ -344,5 +347,10 @@ function deleteRect (rectId) {
     $("#acronym_text_" + rectId).remove();
 
 };
+
+function addEventMember() {
+    console.log("Member added to event" );
+
+}
 
 
