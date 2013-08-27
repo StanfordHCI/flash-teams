@@ -1,3 +1,9 @@
+/* diagramOLD.js
+ * ---------------------------------------------
+ * OLD VERSION OF DIAGRAM
+ * SHOWS MOCK-UP VERSION OF A PARTIAL TEAM
+ */
+
 var diagram_width = $("#diagram-container").width(),
     diagram_height = 300,
     diagram_margin = 20;

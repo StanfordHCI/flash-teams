@@ -11,6 +11,9 @@ var XTicks = 25,
 var SVG_WIDTH = 960,
     SVG_HEIGHT = 500;
 
+var X_WIDTH = 25;
+    Y_WIDTH = 100;
+
 var x = d3.scale.linear()
     .domain([0, 900])
     .range([0, 900]);
@@ -37,16 +40,18 @@ var drag = d3.behavior.drag()
         var rectWidth = $("#rect_" + groupNumber)[0].width.animVal.value;
 
         //Horiztonal draggingx
-        var dragX = (d3.event.x - (d3.event.x%(XTicks)));
+        var dragX = (d3.event.x - (d3.event.x%(X_WIDTH)));
         var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
+        if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
+        else d.x = newX;
 
-        if (d3.event.dx + d.x < 0) { //'Start' End Case
-            d.x = 0 - (DRAGBAR_WIDTH/2);
-        } else {
-            d.x = newX;
-        }
+        //Vertical Dragging
+        var Y_WIDTH = RECTANGLE_HEIGHT;
+        var dragY = d3.event.y - (d3.event.y%(Y_WIDTH)) + 17;
+        var newY = Math.min(SVG_HEIGHT - RECTANGLE_HEIGHT, dragY);
+        if (d3.event.dy + d.y < 20) d.y = 17;
+        else d.y = newY;
 
-        //ADD Y??
         redraw(group, rectWidth);
     });
 
@@ -65,14 +70,10 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
-    //var group = this.parentNode;
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
-
-    var oldX = $("#rect_" + d.groupNum).get(0).x.animVal.value;
     var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
-    var oldWidth = $("#rect_" + d.groupNum).get(0).width.animVal.value;
-
-    var newX = Math.max(0, Math.min(d.x + oldWidth, d3.event.x));
+    var dragX = d3.event.x - (d3.event.x%(X_WIDTH));
+    var newX = Math.max(0, Math.min(rightX - 25 - (DRAGBAR_WIDTH/2), dragX));
 
     taskRect.attr("x", newX);
     $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2);
@@ -84,18 +85,12 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
-
-    var taskRectWidth = taskRect.attr("width"); //DELETE??
-
-    var oldX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
-    var newx = Math.max(leftX + DRAGBAR_WIDTH/2 ,Math.min(oldX + d3.event.dx, SVG_WIDTH));
-    //Math.max(leftX + dragbar_width/2, Math.min(width, d.x + taskRectWidth + d3.event.dx)); 
+    var dragX = (d3.event.x - (d3.event.x%(X_WIDTH)));
+    var newx = Math.max(leftX + 25, Math.min(dragX, SVG_WIDTH));
 
     $(this).attr("x", newx);
-
     taskRect.attr("width", newx - leftX);
 }
 
@@ -111,9 +106,14 @@ timeline_svg.selectAll("line.x")
     .attr("y2", SVG_HEIGHT-50)
     .style("stroke", "#000");
 
+var yLines = y.ticks(YTicks);
+for (i = 0; i<yLines.length; i++) {
+    yLines[i] += 17;
+}
+
 //Draw y axis grid lines
 timeline_svg.selectAll("line.y")
-    .data(y.ticks(YTicks)) 
+    .data(yLines) 
     .enter().append("line")
     .attr("class", "y")
     .attr("x1", 0)
@@ -122,15 +122,12 @@ timeline_svg.selectAll("line.y")
     .attr("y2", y)
     .style("stroke", "#5F5A5A");
 
-//START HERE, FIX AXIS LABELS
-var formatAsHours = d3.format("%I");
 var numMins = -30;
 
-//Add X Axis Labels, FIX THIS
+//Add X Axis Labels
 timeline_svg.selectAll(".rule")
     .data(x.ticks(XTicks)) 
     .enter().append("text")
-    .attr("tickformat", formatAsHours)
     .attr("x", x)
     .attr("y", 15)
     .attr("dy", -3)
@@ -139,8 +136,9 @@ timeline_svg.selectAll(".rule")
         numMins+= 30;
         var hours = Math.floor(numMins/60);
         var minutes = numMins%60;
-        var hourLabel = hours + ":" + minutes; 
-        return hourLabel;
+        if (minutes == 0 && hours == 0) return ".     .      .    .    0:00";
+        else if (minutes == 0) return hours + ":00";
+        else return hours + ":" + minutes; 
     });
 
 //Darker First X and Y line
@@ -171,7 +169,7 @@ var task_groups = [],
 function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this);
-    var snapX = Math.floor(point[0] - (point[0]%(XTicks/2))),
+    var snapX = Math.floor(point[0] - (point[0]%(XTicks))),
         snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
 
     drawEvents(snapX, snapY);
@@ -186,7 +184,7 @@ function mousedown() {
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvents(x, y) {
     var task_g = timeline_svg.append("g")
-        .data([{x: x, y: y, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
+        .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
 
     //Task Rectangle, Holds Event Info
     var task_rectangle = task_g.append("rect")

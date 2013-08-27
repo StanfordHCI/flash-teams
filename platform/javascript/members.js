@@ -37,6 +37,7 @@ function addMember() {
 		container: $("#member-container")
 	});
 
+	addMemberNode(memberName);
 };
 
 function addAuto() {

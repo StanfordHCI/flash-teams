@@ -1,3 +1,10 @@
+/* diagram.js
+ * ---------------------------------------------
+ * 
+ * 
+ */
+var member_Counter = 0;
+
 var diagram_width = $("#diagram-container").width(),
     diagram_height = 300,
     diagram_margin = 20;
@@ -29,7 +36,6 @@ var force = d3.layout.force()
 var diagram_svg = d3.select("#diagram-container").append("svg")
     .attr("width", diagram_width)
     .attr("height", diagram_height);
-    // .style("background-color", "white");
 
 force.nodes(workers.nodes)
     .links(workers.links)
@@ -62,6 +68,11 @@ force.on("tick", function() {
         .attr("cy", function(d) { return d.y; });
 });
 
+function addMemberNode(memberTitle) {
+    var newNode = {"name" : memberTitle, "id" : member_Counter, "color" : "blue"};
+    member_Counter++;
+    workers.nodes.push(newNode);
+}
 
 $(window).resize(function() {
     diagram_width = $("#diagram-container").width();
@@ -69,3 +80,4 @@ $(window).resize(function() {
     force.size([diagram_width, diagram_height])
         .start();
 });
+
