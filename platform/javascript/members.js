@@ -4,6 +4,8 @@
  */
 var pillCounter = 0;
 
+var currentMembers = []; //For Event Autocomplete
+
 function addMember() {
 	pillCounter++;
 
@@ -38,6 +40,7 @@ function addMember() {
 		container: $("#member-container")
 	});
 
+	currentMembers.push(memberName);
 	var newMember = {"name":memberName, "id": pillCounter}
 	foundryJSONObject.members.push(newMember);
 	addMemberNode(memberName);
