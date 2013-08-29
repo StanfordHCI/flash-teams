@@ -30,6 +30,7 @@ function addMember() {
 			+'</div>'
 			+'Skills:'	
 			+'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
+			+'Member Color:  <input type="color" id="member_Color" style="width:40px" color="blue"/>'
 			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
 			+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Done</button>'
 		+'</p></form>' 
@@ -37,6 +38,8 @@ function addMember() {
 		container: $("#member-container")
 	});
 
+	var newMember = {"name":memberName, "id": pillCounter}
+	foundryJSONObject.members.push(newMember);
 	addMemberNode(memberName);
 };
 

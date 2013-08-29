@@ -4,6 +4,11 @@
  * 
  */
 
+var foundryJSONObject = {
+    "members": [],
+    "events": []
+};
+
 var XTicks = 50,
     YTicks = 5;
 
@@ -31,7 +36,7 @@ var RECTANGLE_WIDTH = 100,
 
 var event_counter = 0;
 
-var DRAGBAR_WIDTH = 6;
+var DRAGBAR_WIDTH = 8;
 
 var drag = d3.behavior.drag()
     .origin(Object)
@@ -75,8 +80,8 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
 function leftResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
-    var dragX = d3.event.x - (d3.event.x%(X_WIDTH));
-    var newX = Math.max(0, Math.min(rightX - 25 - (DRAGBAR_WIDTH/2), dragX));
+    var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
+    var newX = Math.max(0, Math.min(rightX - 25, dragX));
 
     taskRect.attr("x", newX);
     $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2);
@@ -84,6 +89,7 @@ function leftResize(d) {
     $("#time_text_" + d.groupNum).attr("x", newX + 10);
     $("#acronym_text_" + d.groupNum).attr("x", newX + 10);
     taskRect.attr("width", rightX - newX);
+    updateTime(d.groupNum);
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -95,6 +101,7 @@ function rightResize(d) {
 
     $(this).attr("x", newx);
     taskRect.attr("width", newx - leftX);
+    updateTime(d.groupNum);
 }
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-gr_hics)
@@ -247,8 +254,7 @@ function  drawEvents(x, y) {
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 14})
         .attr("font-weight", "bold")
-        .attr("font-size", "12px")
-        .call(drag);
+        .attr("font-size", "12px");
 
     //ADD TIME
     var time_text = task_g.append("text")
@@ -260,8 +266,7 @@ function  drawEvents(x, y) {
         .attr("groupNum", event_counter)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 26})
-        .attr("font-size", "12px")
-        .call(drag);
+        .attr("font-size", "12px");
 
 
     //ADD INTERACTION BUTTONS
@@ -309,29 +314,45 @@ function redraw(group, newWidth) {
 
 function addPopovers() {
     //Add Popovers
-    timeline_svg.selectAll(".task_rectangle").each(
+    timeline_svg.selectAll("#rect_" + event_counter).each(
         function(d) {
             $(this).popover({
                 placement: "right",
                 html: "true",
                 class: "event",
+                style: "width: 500",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
                 title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event">',
                 content: '<form name="eventForm_' + event_counter + '">'
-                    +'<h10>Total Runtime: <input type = "text" name = "totalruntime" placeholder="1hrs 0min"></h10>' 
-                    +'Happening From: <input type = "time" name="starttime"><br>' + ' To: <input type = "time" name="endtime">'
-                    +'Members<input type = "textfield" name="members">'
-                    +'<button class="btn" type="button" onclick="addEventMember()">+Add</button>'
-                    +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>  ' 
-                    +'<button type="button" id="done" onclick="hidePopover(' + event_counter + ');">Done</button> </p>' 
-                    +'</form>',
+                +'<h10>Total Runtime: <input type = "text" name = "totalruntime" placeholder="1hrs 0min"></h10>' 
+                +'Happening From: <input type ="time" style="width:90px" name="starttime"><br> ' 
+                +'To: <input type = "time" style="width:90px" name="endtime">'
+                +'<br>Members<input class="eventMemberInput" id="eventMember_' + event_counter + 'style="width:60px" type="text" name="members" onclick="addMemAuto()">'
+                +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
+                +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
+                +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+                +'<button type="button" id="save" onclick="hidePopover(' + event_counter + ');">Save</button> </p>' 
+                +'</form>',
                 container: $("#timeline-container")
             });
+            $(this).popover("show"); 
         });
 };
 
+function addMemAuto() {
+    $(".eventMemberInput").each(function() {
+        $(this).autocomplete({
+            source: currentMembers
+        });
+    })
+}
+
 function hidePopover (popId) {
+    var newTitle = $("#eventName_" + popId).val();
+    if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
+    $("#eventName_" + popId).attr("placeholder", newTitle);
+
     $("#rect_" + popId).popover("hide");
 };
 
@@ -348,9 +369,20 @@ function deleteRect (rectId) {
 
 };
 
-function addEventMember() {
-    console.log("Member added to event" );
+function addEventMember(memId) {
+    var memberName = $("#eventMember_" + memId).val();
+    console.log(memberName, 'added to event.');
 
 }
+
+function updateTime(idNum) {
+    var eventLength = $("#rect_" + idNum)[0].width.animVal.value;
+    var hours = Math.floor(eventLength/100);
+    var minutes = (eventLength%(hours*100))/25*15;
+
+    $("#time_text_" + idNum).text(hours + "hrs " + minutes + "min");
+}
+
+
 
 
