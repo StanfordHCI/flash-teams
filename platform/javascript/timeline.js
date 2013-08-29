@@ -81,7 +81,7 @@ function leftResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
-    var newX = Math.max(0, Math.min(rightX - 25, dragX));
+    var newX = Math.max(0, Math.min(rightX - 50, dragX));
 
     taskRect.attr("x", newX);
     $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2);
@@ -378,7 +378,9 @@ function addEventMember(memId) {
 function updateTime(idNum) {
     var eventLength = $("#rect_" + idNum)[0].width.animVal.value;
     var hours = Math.floor(eventLength/100);
-    var minutes = (eventLength%(hours*100))/25*15;
+    if (hours == 0) var minutes = (eventLength)/25*15;
+    else var minutes = (eventLength%(hours*100))/25*15;
+    
 
     $("#time_text_" + idNum).text(hours + "hrs " + minutes + "min");
 }
