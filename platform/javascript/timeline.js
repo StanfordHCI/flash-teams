@@ -4,9 +4,11 @@
  * 
  */
 
+//"members": [ {name, id, color } ]
+//"events" : [{name, id, members}]
 var foundryJSONObject = {
-    "members": [],
-    "events": []
+    "events": [],
+    "members": []
 };
 
 var XTicks = 50,
@@ -31,7 +33,7 @@ var y = d3.scale.linear()
     .range([15, 600]);
 
 //STARTER VALUES, MAY BE A PROBLEM LATER
-var RECTANGLE_WIDTH = 100,
+var RECTANGLE_WIDTH = 150,
     RECTANGLE_HEIGHT = 100;
 
 var event_counter = 0;
@@ -97,10 +99,12 @@ function rightResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
-    var newx = Math.max(leftX + 50, Math.min(dragX, SVG_WIDTH));
+    var newX = Math.max(leftX + 50, Math.min(dragX, SVG_WIDTH));
 
-    $(this).attr("x", newx);
-    taskRect.attr("width", newx - leftX);
+    $(this).attr("x", newX);
+    $("#handoff_btn_" + d.groupNum).attr("x", newX-18);
+    $("#collab_btn_" + d.groupNum).attr("x", newX - 38);
+    taskRect.attr("width", newX - leftX);
     updateTime(d.groupNum);
 }
 
@@ -188,7 +192,10 @@ function mousedown() {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
 
-    addPopovers();
+    addEventPopover();
+
+    var newEvent = {"eventName":"New Event", "id":event_counter, "hours":1, "minutes":0, "teamMembers":""};
+    foundryJSONObject.events.push(newEvent);
 };
 
 //Creates graphical elements from array of data (task_rectangles)
@@ -210,7 +217,7 @@ function  drawEvents(x, y) {
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
-        .call(drag);    //FIX DRAGGING
+        .call(drag);
 
     //Right Dragbar
     var rt_rect = task_g.append("rect")
@@ -270,6 +277,23 @@ function  drawEvents(x, y) {
 
 
     //ADD INTERACTION BUTTONS
+    var handoff_btn = task_g.append("image")
+        .attr("xlink:href", "images/rightArrow.png")
+        .attr("class", "handoff_btn")
+        .attr("id", function(d) {return "handoff_btn_" + event_counter;})
+        .attr("width", 16)
+        .attr("height", 16)
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38})
+        .attr("y", function(d) {return d.y+23});
+    var collab_btn = task_g.append("image")
+        .attr("xlink:href", "images/doubleArrow.png")
+        .attr("class", "collab_btn")
+        .attr("id", function(d) {return "collab_btn_" + event_counter;})
+        .attr("width", 16)
+        .attr("height", 16)
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18; })
+        .attr("y", function(d) {return d.y+23});
+
 
     //ADD MEMBER LINES
 
@@ -303,16 +327,22 @@ function redraw(group, newWidth) {
         .attr("y", function(d) {return d.y});
     d3Group.selectAll(".title_text")
         .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + 14})
+        .attr("y", function(d) {return d.y + 14});
     d3Group.selectAll(".time_text")
         .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + 26})
+        .attr("y", function(d) {return d.y + 26});
     d3Group.selectAll(".acronym_text")
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + RECTANGLE_HEIGHT - 10});
+    d3Group.selectAll(".handoff_btn")
+        .attr("x", function(d) {return d.x + newWidth - 18})
+        .attr("y", function(d) {return d.y + 23});
+    d3Group.selectAll(".collab_btn")
+        .attr("x", function(d) {return d.x + newWidth - 38})
+        .attr("y", function(d) {return d.y + 23});
 }
 
-function addPopovers() {
+function addEventPopover() {
     //Add Popovers
     timeline_svg.selectAll("#rect_" + event_counter).each(
         function(d) {
@@ -320,15 +350,17 @@ function addPopovers() {
                 placement: "right",
                 html: "true",
                 class: "event",
-                style: "width: 500",
+                style: "width: 650",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
                 title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event">',
                 content: '<form name="eventForm_' + event_counter + '">'
-                +'<h10>Total Runtime: <input type = "text" name = "totalruntime" placeholder="1hrs 0min"></h10>' 
-                +'Happening From: <input type ="time" style="width:90px" name="starttime"><br> ' 
+                +'<b>Total Runtime: </b><br>' 
+                +'Hours: <input type = "number" name = "hours' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
+                +'Minutes: <input type = "number" name = "minutes_' + event_counter + '" placeholder="0" style="width:35px" step="15" max="45"/>'
+                +'From: <input type ="time" style="width:90px" name="starttime"><br> ' 
                 +'To: <input type = "time" style="width:90px" name="endtime">'
-                +'<br>Members<input class="eventMemberInput" id="eventMember_' + event_counter + 'style="width:60px" type="text" name="members" onclick="addMemAuto()">'
+                +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
                 +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
                 +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
@@ -338,6 +370,19 @@ function addPopovers() {
             });
             $(this).popover("show"); 
         });
+    timeline_svg.selectAll("#collab_btn_" + event_counter).each(
+        function(d) {
+            $(this).tooltip({
+                placement: "right",
+                html: "true",
+                id: '"c_tooltip' + event_counter + '"',
+                trigger: "hover",
+                content: 'Collaborations Coming Soon',
+                container: $("timeline-container")
+            });
+            $(this).tooltip("show");
+        });
+
 };
 
 function addMemAuto() {
@@ -352,6 +397,7 @@ function hidePopover (popId) {
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
     $("#eventName_" + popId).attr("placeholder", newTitle);
+    $("#eventName_" + popId).val(newTitle);
 
     $("#rect_" + popId).popover("hide");
 };
@@ -366,13 +412,21 @@ function deleteRect (rectId) {
     $("#title_text_" + rectId).remove();
     $("#time_text_" + rectId).remove();
     $("#acronym_text_" + rectId).remove();
+    $("#collab_btn_" + rectId).remove();
+    $("#handoff_btn_" + rectId).remove();
 
+    //REMOVE FROM THE JSON OBJECT
 };
 
 function addEventMember(memId) {
-    var memberName = $("#eventMember_" + memId).val();
-    console.log(memberName, 'added to event.');
+    //GRAB PILL COLORS
 
+    var memberName = $("#eventMember_" + memId).val();
+    $("#eventMembers_" + memId).append('<li class="active"><a>' + memberName + '</a><li>');
+
+    //ADD LINE
+    var thisGroup = $("#rect_" + memId).parentNode;
+    console.log("group", thisGroup);
 }
 
 function updateTime(idNum) {
@@ -381,8 +435,19 @@ function updateTime(idNum) {
     if (hours == 0) var minutes = (eventLength)/25*15;
     else var minutes = (eventLength%(hours*100))/25*15;
     
-
     $("#time_text_" + idNum).text(hours + "hrs " + minutes + "min");
+
+    //UPDATE THE JSON OBJECT EVENT
+}
+
+function useEventTime(idNum) {
+    //USE THE EVENT TIME TO CHANGE POSITION OF THE EVENT
+
+
+}
+
+function writeHandoff() {
+    console.log("Trying to write a handoff");
 }
 
 
