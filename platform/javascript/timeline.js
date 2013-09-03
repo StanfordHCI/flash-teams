@@ -370,7 +370,7 @@ function addEventPopover() {
             });
             $(this).popover("show"); 
         });
-    timeline_svg.selectAll("#collab_btn_" + event_counter).each(
+    /*timeline_svg.selectAll("#collab_btn_" + event_counter).each(
         function(d) {
             $(this).tooltip({
                 placement: "right",
@@ -381,7 +381,7 @@ function addEventPopover() {
                 container: $("timeline-container")
             });
             $(this).tooltip("show");
-        });
+        });*/
 
 };
 
