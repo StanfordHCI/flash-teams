@@ -3,6 +3,7 @@
  *
  */
 var pillCounter = 0;
+var colorToChange = "#ff0000";
 
 var currentMembers = []; //For Event Autocomplete
 
@@ -11,7 +12,7 @@ function addMember() {
 
 	//Appends a list item pill to the memberPills ul
 	var memberName = $("#addMemberInput").val();
-	$("#memberPills").append('<li class="active" id="mPill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
+	$("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
 
 
 	//Clear Input
@@ -35,7 +36,7 @@ function addMember() {
 			+'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
 			+'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
 			+'<script type="text/javascript"> initializeColorPicker(); </script>'
-			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ', ' + memberName + ');">Delete</button>     '
+			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ',' + memberName + ');">Delete</button>     '
 			+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Save</button>'
 		+'</p></form>' 
 		+'</div>',
@@ -65,38 +66,55 @@ function addSkill(pillId) {
 }
 
 function hideMemberPopover(popId) {
-	$("#mPill_" + popId).popover("hide");
-
 	//Save Changes?
+	var newColor = $("#color_" + popId).spectrum("get");
+	console.log("color", newColor);
+
+	updateMemberPillColor(newColor, popId);
+
+	$("#mPill_" + popId).popover("hide");
 };
 
 function deleteMember(pillId, memberName) {
-	$("#mPill_" + pillId).popover("destroy");
-	$('#mPill_' + pillId).remove();
-
 	//Remove Member from Current Members
 
-	var i = currentMembers.indexOf(memberName);
-
-    if(i != -1) array.splice(i, 1);
+	$("#mPill_" + pillId).popover("destroy");
+	$("#mPill_" + pillId).remove();
 
 	//REMOVE THE CIRCLES
 	//REMOVE THE MEMBER FROM EVENTS
 };
 
-function updateMemberPillColor() {
-	//var data = d3.select("#mPill_" + pillId).data();
-	//data.color = "#000000";
+function updateMemberPillColor(color, colorId) {
+	var newColor = color.toHexString();
+	var pillLi = document.getElementById("mPill_" + colorId);
+	pillLi.childNodes[0].style.backgroundColor = newColor;
+};
 
-	//CALL 'ONCHANGE' FOR COLORPICKER
-	//ALSO CALL 'ONSUBMIT' FOR COLOPICKER
-}
-
-function initializeColorPicker(color) {
+function initializeColorPicker() {
 	$(".full-spectrum").spectrum({
-	    color: color,
+		showPaletteOnly: true,
+		showPalette: true,
+	    color: "rgb(60, 120, 216)",
+	    palette: [
+        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
+        "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
+        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+        "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"], 
+        ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)", 
+        "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)", 
+        "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)", 
+        "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)", 
+        "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)", 
+        "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+        "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+        "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+        "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)", 
+        "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
+    ],
+
 	    change: function(color) {
-	        updateMemberPillColor();
+	        colorToChange = color.toHexString();
 	    }
 	});
 }

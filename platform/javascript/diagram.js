@@ -6,7 +6,7 @@
 var member_Counter = 0;
 
 var diagram_width = $("#diagram-container").width(),
-    diagram_height = 300,
+    diagram_height = 250,
     diagram_margin = 20;
 
 var workers = {

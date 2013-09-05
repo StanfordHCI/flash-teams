@@ -425,8 +425,12 @@ function addEventMember(memId) {
     $("#eventMembers_" + memId).append('<li class="active"><a>' + memberName + '</a><li>');
 
     //ADD LINE
-    var thisGroup = $("#rect_" + memId).parentNode;
-    console.log("group", thisGroup);
+    var thisGroup = $("#rect_" + memId)[0].parentNode;
+    var memLine = thisGroup.append("line")
+        .attr("x1", 20)
+        .attr("y1", 20)
+        .attr("x2", 100)
+        .attr("y2", 100);
 }
 
 function updateTime(idNum) {

@@ -4,10 +4,6 @@
         <meta charset="utf-8">
         <title>Flash Teams Platform</title>
 
-        <link rel='stylesheet' href='stylesheets/custom.css' />
-
-
-
         <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 
@@ -47,7 +43,13 @@
                 height: 150px;
                 z-index: 10000;
             }
+
+            .nav-pills > .active > a, .nav-pills > .active > a:hover {
+                background-color: gray;
+            }
         </style>
+
+        <link rel='stylesheet' href='stylesheets/custom.css' />
     </head>
 
     <body>
@@ -67,13 +69,13 @@
                         <h3>Team Members</h3>
                         <form name='newMemberForm' autocomplete="on">
                             <div class="input-append">
-                                <input class="span12" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
+                                <input class="span10" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
                                 <button class="btn" type="button" onclick="addMember()">+Add</button>
                             </div>
                             <input type="text" name="enterAndReloadBugFix" style="display: none;"> 
                         </form>
 
-                        <ul class = "nav nav-pills" id="memberPills">
+                        <ul class = "nav nav-pills customPill" id="memberPills">
                             <!--Member Pills Appended Here in JS-->
                         </ul>
                     </div>
