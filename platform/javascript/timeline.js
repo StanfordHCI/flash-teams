@@ -1,11 +1,11 @@
 /* Timeline.js
  * ---------------------------------------------
- * 
+ * Code that manages the workflow timeline in Foundry. 
  * 
  */
 
 //"members": [ {name, id, color } ]
-//"events" : [{name, id, members}]
+//"events" : [ {"event1" : {eventName, id, teamMembers, hours, minutes}}, {"event2": {eventname, id, teamMembers, hours, minutes}}, ] 
 var foundryJSONObject = {
     "events": [],
     "members": []
@@ -33,7 +33,7 @@ var y = d3.scale.linear()
     .range([15, 600]);
 
 //STARTER VALUES, MAY BE A PROBLEM LATER
-var RECTANGLE_WIDTH = 150,
+var RECTANGLE_WIDTH = 100,
     RECTANGLE_HEIGHT = 100;
 
 var event_counter = 0;
@@ -356,8 +356,8 @@ function addEventPopover() {
                 title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event">',
                 content: '<form name="eventForm_' + event_counter + '">'
                 +'<b>Total Runtime: </b><br>' 
-                +'Hours: <input type = "number" name = "hours' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
-                +'Minutes: <input type = "number" name = "minutes_' + event_counter + '" placeholder="0" style="width:35px" step="15" max="45"/>'
+                +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
+                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="0" style="width:35px" step="15" max="45"/>'
                 +'From: <input type ="time" style="width:90px" name="starttime"><br> ' 
                 +'To: <input type = "time" style="width:90px" name="endtime">'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
@@ -394,10 +394,17 @@ function addMemAuto() {
 }
 
 function hidePopover (popId) {
+    //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
     $("#eventName_" + popId).attr("placeholder", newTitle);
     $("#eventName_" + popId).val(newTitle);
+
+    //Update width
+    var newHours = $("#hours_" + popId).val();
+    var newMin = $("#minutes_" + popId).val();
+    if (newHours == "") newHours = 1;
+    updateWidth(popId, newHours, newMin);
 
     $("#rect_" + popId).popover("hide");
 };
@@ -418,14 +425,15 @@ function deleteRect (rectId) {
     //REMOVE FROM THE JSON OBJECT
 };
 
-function addEventMember(memId) {
+function addEventMember(eventId) {
+
     //GRAB PILL COLORS
 
-    var memberName = $("#eventMember_" + memId).val();
-    $("#eventMembers_" + memId).append('<li class="active"><a>' + memberName + '</a><li>');
+    var memberName = $("#eventMember_" + eventId).val();
+    $("#eventMembers_" + eventId).append('<li class="active"><a>' + memberName + '</a><li>');
 
     //ADD LINE
-    var thisGroup = $("#rect_" + memId)[0].parentNode;
+    var thisGroup = $("#rect_" + eventId)[0].parentNode;
     var memLine = thisGroup.append("line")
         .attr("x1", 20)
         .attr("y1", 20)
@@ -442,6 +450,19 @@ function updateTime(idNum) {
     $("#time_text_" + idNum).text(hours + "hrs " + minutes + "min");
 
     //UPDATE THE JSON OBJECT EVENT
+}
+
+function updateWidth(idNum, hrs, min) {
+    var newWidth = (hrs * 100) + (min/25*15);
+    var newX = $("#rect_" + idNum).get(0).x.animVal.value + newWidth;
+    console.log("Old X" ,$("#rt_rect_" + idNum).attr("x"), "New X", newX);
+
+    $("#rt_rect_" + idNum).attr("x", newX);
+    $("#handoff_btn_" + idNum).attr("x", newX-18);
+    $("#collab_btn_" + idNum).attr("x", newX-38);
+
+    $("#rect_" + idNum).attr("width", newWidth);
+    updateTime(idNum);
 }
 
 function useEventTime(idNum) {
