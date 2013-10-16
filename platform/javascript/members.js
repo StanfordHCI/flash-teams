@@ -96,7 +96,7 @@ function initializeColorPicker() {
 	$(".full-spectrum").spectrum({
 		showPaletteOnly: true,
 		showPalette: true,
-	    color: "rgb(60, 120, 216)",
+	    color: "GRAY",
 	    palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],

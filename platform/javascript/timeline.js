@@ -4,7 +4,7 @@
  * 
  */
 
-//"members": [ {name, id, color } ]
+//"members": [ {"member1" : {name, id, color}},  ]
 //"events" : [ {"event1" : {eventName, id, teamMembers, hours, minutes}}, {"event2": {eventname, id, teamMembers, hours, minutes}}, ] 
 var foundryJSONObject = {
     "events": [],
@@ -86,12 +86,21 @@ function leftResize(d) {
     var newX = Math.max(0, Math.min(rightX - 50, dragX));
 
     taskRect.attr("x", newX);
+
+    //Update task rectangle graphics
     $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2);
     $("#title_text_" + d.groupNum).attr("x", newX + 10);
     $("#time_text_" + d.groupNum).attr("x", newX + 10);
     $("#acronym_text_" + d.groupNum).attr("x", newX + 10);
     taskRect.attr("width", rightX - newX);
     updateTime(d.groupNum);
+
+    //Update popover
+    var hrs = Math.floor(((rightX-newX)/100));
+    var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
+    console.log("minutes" , min);
+    updatePopover(d.groupNum, hrs, min);
+    
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -353,35 +362,24 @@ function addEventPopover() {
                 style: "width: 650",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
-                title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event">',
+                title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event" >',
                 content: '<form name="eventForm_' + event_counter + '">'
                 +'<b>Total Runtime: </b><br>' 
+                +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" style="width:35px">'
+                +'<input type="number" id="startMin_' + event_counter + '" placeholder="00" step="15" max="45" style="width:35px"><br>'
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
-                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="0" style="width:35px" step="15" max="45"/>'
-                +'From: <input type ="time" style="width:90px" name="starttime"><br> ' 
-                +'To: <input type = "time" style="width:90px" name="endtime">'
+                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="0" style="width:35px" step="15" max="45"/><br>'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
                 +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
+                +'Notes: <input type="text" id="notes_' + event_counter + '">'
                 +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-                +'<button type="button" id="save" onclick="hidePopover(' + event_counter + ');">Save</button> </p>' 
+                +'<button type="button" id="save" onclick="saveInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
                 container: $("#timeline-container")
             });
             $(this).popover("show"); 
         });
-    /*timeline_svg.selectAll("#collab_btn_" + event_counter).each(
-        function(d) {
-            $(this).tooltip({
-                placement: "right",
-                html: "true",
-                id: '"c_tooltip' + event_counter + '"',
-                trigger: "hover",
-                content: 'Collaborations Coming Soon',
-                container: $("timeline-container")
-            });
-            $(this).tooltip("show");
-        });*/
 
 };
 
@@ -393,7 +391,7 @@ function addMemAuto() {
     })
 }
 
-function hidePopover (popId) {
+function saveInfo (popId) {
     //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
@@ -403,10 +401,15 @@ function hidePopover (popId) {
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
-    if (newHours == "") newHours = 1;
+    if (newHours == "") newHours = 1; //FIX THIS
     updateWidth(popId, newHours, newMin);
 
+    //Update Popover
+    updatePopover(popId, newTitle, newHours, newMin);
+
     $("#rect_" + popId).popover("hide");
+
+
 };
 
 function deleteRect (rectId) {
@@ -434,11 +437,14 @@ function addEventMember(eventId) {
 
     //ADD LINE
     var thisGroup = $("#rect_" + eventId)[0].parentNode;
-    var memLine = thisGroup.append("line")
+    /*var memLine = thisGroup.append("line")
         .attr("x1", 20)
         .attr("y1", 20)
         .attr("x2", 100)
-        .attr("y2", 100);
+        .attr("y2", 100);*/
+
+    //Clear Input
+    $("#eventMember_" + eventId).val("");
 }
 
 function updateTime(idNum) {
@@ -453,9 +459,8 @@ function updateTime(idNum) {
 }
 
 function updateWidth(idNum, hrs, min) {
-    var newWidth = (hrs * 100) + (min/25*15);
+    var newWidth = (hrs * 100) + (min/15*25);
     var newX = $("#rect_" + idNum).get(0).x.animVal.value + newWidth;
-    console.log("Old X" ,$("#rt_rect_" + idNum).attr("x"), "New X", newX);
 
     $("#rt_rect_" + idNum).attr("x", newX);
     $("#handoff_btn_" + idNum).attr("x", newX-18);
@@ -463,6 +468,24 @@ function updateWidth(idNum, hrs, min) {
 
     $("#rect_" + idNum).attr("width", newWidth);
     updateTime(idNum);
+}
+
+function updatePopover(idNum, title, hrs, min) {
+    $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
+
+    $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
+        +'<b>Total Runtime: </b><br>' 
+        +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" style="width:35px">'
+        +'<input type="number" id="startMin_' + event_counter + '" placeholder="00" step="15" max="45" style="width:35px"><br>'
+        +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" style="width:35px"/>          ' 
+        +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" step="15" max="45"/>'
+        +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
+        +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
+        +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
+        +'Notes: <input type="text" id="notes_' + event_counter + '">'
+        +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+        +'<button type="button" id="save" onclick="saveInfo(' + event_counter + ');">Save</button> </p>' 
+        +'</form>';
 }
 
 function useEventTime(idNum) {
