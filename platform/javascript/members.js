@@ -1,7 +1,8 @@
-/*
- *
+/* Members.js
+ * ---------------------------------
  *
  */
+ 
 var pillCounter = 0;
 var colorToChange = "#ff0000";
 
@@ -37,7 +38,7 @@ function addMember() {
 			+'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
 			+'<script type="text/javascript"> initializeColorPicker(); </script>'
 			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ',' + memberName + ');">Delete</button>     '
-			+'<button type="button" onclick="hideMemberPopover(' + pillCounter + ');">Save</button>'
+			+'<button type="button" onclick="saveMemberInfo(' + pillCounter + ');">Save</button>'
 		+'</p></form>' 
 		+'</div>',
 		container: $("#member-container")
@@ -46,8 +47,9 @@ function addMember() {
 	
 
 	currentMembers.push(memberName);
-	var newMember = {"name":memberName, "id": pillCounter}
-	foundryJSONObject.members.push(newMember);
+	var memberId = "member_" + pillCounter;
+	var newMember = {"name":memberName, "id": pillCounter, "color":"GRAY"}
+	foundryJSONObject.members.push( newMember); //HELP HERE
 	addMemberNode(memberName);
 };
 
@@ -65,11 +67,11 @@ function addSkill(pillId) {
 	$("#addSkillInput_" + pillId).val(this.placeholder);
 }
 
-function hideMemberPopover(popId) {
+function saveMemberInfo(popId) {
 	var newColor = $("#color_" + popId).spectrum("get");
 	updateMemberPillColor(newColor, popId);
 
-	//UPDATE POPOVER INFO?
+	updateMemberPopover(popId);
 
 	//UPDATE MEMBER JSON
 
@@ -92,6 +94,10 @@ function updateMemberPillColor(color, colorId) {
 	pillLi.childNodes[0].style.backgroundColor = newColor;
 };
 
+function updateMemberPopover(idNum) {
+	$("#mPill_" + idNum).data('popover').options.content = "";
+};
+
 function initializeColorPicker() {
 	$(".full-spectrum").spectrum({
 		showPaletteOnly: true,
@@ -111,7 +117,6 @@ function initializeColorPicker() {
         "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)", 
         "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
     ],
-
 	    change: function(color) {
 	        colorToChange = color.toHexString();
 	    }

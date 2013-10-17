@@ -99,7 +99,7 @@ function leftResize(d) {
     var hrs = Math.floor(((rightX-newX)/100));
     var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
     console.log("minutes" , min);
-    updatePopover(d.groupNum, hrs, min);
+    updateEventPopover(d.groupNum, hrs, min);
     
 }
 
@@ -374,7 +374,7 @@ function addEventPopover() {
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
                 +'Notes: <input type="text" id="notes_' + event_counter + '">'
                 +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-                +'<button type="button" id="save" onclick="saveInfo(' + event_counter + ');">Save</button> </p>' 
+                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
                 container: $("#timeline-container")
             });
@@ -391,21 +391,30 @@ function addMemAuto() {
     })
 }
 
-function saveInfo (popId) {
+function saveEventInfo (popId) {
     //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
     $("#eventName_" + popId).attr("placeholder", newTitle);
     $("#eventName_" + popId).val(newTitle);
 
+    //Update Start Time
+    var startHour = $("#startHr_" + popId).val();
+    var startMin = $("#startMin_" + popId).val();
+    //START HERE
+
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
-    if (newHours == "") newHours = 1; //FIX THIS
+    if (newHours == "") newHours = $("#hours_" + popId)[0].placeholder;
+    if (newMin == "") newMin = $("#minutes_" + popId)[0].placeholder;
     updateWidth(popId, newHours, newMin);
 
+    //Update event members
+    //NEED TO DO
+
     //Update Popover
-    updatePopover(popId, newTitle, newHours, newMin);
+    updateEventPopover(popId, newTitle, newHours, newMin);
 
     $("#rect_" + popId).popover("hide");
 
@@ -470,21 +479,21 @@ function updateWidth(idNum, hrs, min) {
     updateTime(idNum);
 }
 
-function updatePopover(idNum, title, hrs, min) {
+function updateEventPopover(idNum, title, hrs, min) {
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
 
     $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
         +'<b>Total Runtime: </b><br>' 
-        +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" style="width:35px">'
-        +'<input type="number" id="startMin_' + event_counter + '" placeholder="00" step="15" max="45" style="width:35px"><br>'
-        +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" style="width:35px"/>          ' 
-        +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" step="15" max="45"/>'
+        +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" min="1" style="width:35px">'
+        +'<input type="number" id="startMin_' + event_counter + '" placeholder="00" step="15" max="45" min="0" style="width:35px"><br>'
+        +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="1" style="width:35px"/>          ' 
+        +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" step="15" max="45" min="0"/>'
         +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
         +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
         +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
         +'Notes: <input type="text" id="notes_' + event_counter + '">'
         +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveInfo(' + event_counter + ');">Save</button> </p>' 
+        +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
 }
 
