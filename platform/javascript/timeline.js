@@ -4,11 +4,14 @@
  * 
  */
 
-//"members": [ {"member1" : {name, id, color}},  ]
-//"events" : [ {"event1" : {eventName, id, teamMembers, hours, minutes}}, {"event2": {eventname, id, teamMembers, hours, minutes}}, ] 
-var foundryJSONObject = {
+
+var flashTeamsJSON = {
+    "title" : "New Flash Team",
+    "id" : 1,
     "events": [],
-    "members": []
+    "members": [],
+    "handoffs" : [],
+    "collaborations" : []
 };
 
 var XTicks = 50,
@@ -204,7 +207,7 @@ function mousedown() {
     addEventPopover();
 
     var newEvent = {"eventName":"New Event", "id":event_counter, "hours":1, "minutes":0, "teamMembers":""};
-    foundryJSONObject.events.push(newEvent);
+    flashTeamsJSON.events.push(newEvent);
 };
 
 //Creates graphical elements from array of data (task_rectangles)
@@ -302,7 +305,6 @@ function  drawEvents(x, y) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18; })
         .attr("y", function(d) {return d.y+23});
-
 
     //ADD MEMBER LINES
 
@@ -418,6 +420,17 @@ function saveEventInfo (popId) {
 
     $("#rect_" + popId).popover("hide");
 
+    //Update JSON
+    var indexOfJSON = 0;
+    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        if (flashTeamsJSON["events"][i].id == popId) {
+            indexOfJSON = i;
+        }
+    }
+    flashTeamsJSON["events"][indexOfJSON].eventName = newTitle;
+    flashTeamsJSON["events"][indexOfJSON].hours = newHours;
+    flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
+    flashTeamsJSON["events"][indexOfJSON].eventName = newTitle;
 
 };
 
@@ -446,11 +459,13 @@ function addEventMember(eventId) {
 
     //ADD LINE
     var thisGroup = $("#rect_" + eventId)[0].parentNode;
-    /*var memLine = thisGroup.append("line")
-        .attr("x1", 20)
-        .attr("y1", 20)
-        .attr("x2", 100)
-        .attr("y2", 100);*/
+    DEBUGGER;
+    var memLine = thisGroup.append("line")
+        .attr("x1", "50")
+        .attr("y1", "50")
+        .attr("x2", "100")
+        .attr("y2", "100")
+        .attr("stroke-width", "10");
 
     //Clear Input
     $("#eventMember_" + eventId).val("");

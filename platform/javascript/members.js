@@ -2,7 +2,7 @@
  * ---------------------------------
  *
  */
- 
+
 var pillCounter = 0;
 var colorToChange = "#ff0000";
 
@@ -48,8 +48,10 @@ function addMember() {
 
 	currentMembers.push(memberName);
 	var memberId = "member_" + pillCounter;
+
+	if (flashTeamsJSON.members[0].memberName )
 	var newMember = {"name":memberName, "id": pillCounter, "color":"GRAY"}
-	foundryJSONObject.members.push( newMember); //HELP HERE
+	flashTeamsJSON.members.push( newMember); //HELP HERE
 	addMemberNode(memberName);
 };
 
