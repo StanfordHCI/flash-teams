@@ -8,10 +8,9 @@
 var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
-    "events": [],
-    "members": [],
-    "handoffs" : [],
-    "collaborations" : []
+    "events": [],           //{"title", "id", "startTime", "duration", "notes", "members", "dri"}
+    "members": [],                  //{"id", "role", "skills":[], "color"}
+    "interactions" : []  //{"event1", "event2", "type", "description"}
 };
 
 var XTicks = 50,
@@ -48,15 +47,24 @@ var drag = d3.behavior.drag()
     .on("drag", function (d) {
         var group = this.parentNode;
         var oldX = d.x;
-        var groupNumber = this.id.split("_")[1];
+        var groupNum = this.id.split("_")[1];
 
-        var rectWidth = $("#rect_" + groupNumber)[0].width.animVal.value;
+        var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
 
         //Horiztonal draggingx
         var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
         var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
         if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
         else d.x = newX;
+
+        var startHour = Math.floor((d.x/100));
+        var startMin = (d.x%100/25*15);
+        $("#rect_" + groupNum).popover("show");
+        var title = $("#eventName_" + groupNum).attr("placeholder");
+        var hours = $("#hours_" + groupNum).attr("placeholder");
+        var min = $("#minutes_" + groupNum).attr("placeholder");
+        updateEventPopover(groupNum, title, startHour, startMin, hours, min);  
+        $("#rect_" + groupNum).popover("hide");     
 
         //Vertical Dragging
         var Y_WIDTH = RECTANGLE_HEIGHT;
@@ -101,8 +109,12 @@ function leftResize(d) {
     //Update popover
     var hrs = Math.floor(((rightX-newX)/100));
     var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
+    var title = $("#eventName_" + d.groupNum).attr("placeholder");
+    var startHr = 0;
+    var startMin = 0;
+    //FIND THE STARTHR AND THE START MIN
     console.log("minutes" , min);
-    updateEventPopover(d.groupNum, hrs, min);
+    updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min);
     
 }
 
@@ -329,7 +341,6 @@ function redraw(group, newWidth) {
         .attr("x", function(d) {return d.x})
         .attr("y", function(d) {return d.y});
 
-    //WHEN RESIZING WORKS, NEED TO USE NEW DATA, SIZE
     d3Group.selectAll(".rt_rect")
         .attr("x", function(d) {return d.x + newWidth})
         .attr("y", function(d) {return d.y});
@@ -368,9 +379,9 @@ function addEventPopover() {
                 content: '<form name="eventForm_' + event_counter + '">'
                 +'<b>Total Runtime: </b><br>' 
                 +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" style="width:35px">'
-                +'<input type="number" id="startMin_' + event_counter + '" placeholder="00" step="15" max="45" style="width:35px"><br>'
+                +'<input type="number" id="startMin_' + event_counter + '" placeholder="0" step="15" max="45" style="width:35px"><br>'
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
-                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="0" style="width:35px" step="15" max="45"/><br>'
+                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" step="15" max="45"/><br>'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
                 +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
@@ -397,26 +408,28 @@ function saveEventInfo (popId) {
     //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
-    $("#eventName_" + popId).attr("placeholder", newTitle);
-    $("#eventName_" + popId).val(newTitle);
-
-    //Update Start Time
-    var startHour = $("#startHr_" + popId).val();
-    var startMin = $("#startMin_" + popId).val();
-    //START HERE
+    else newTitle = $("#eventName_" + popId).attr("placeholder");
 
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
     if (newHours == "") newHours = $("#hours_" + popId)[0].placeholder;
     if (newMin == "") newMin = $("#minutes_" + popId)[0].placeholder;
+    var newWidth = (newHours * 100) + (newMin/15*25);
     updateWidth(popId, newHours, newMin);
+
+    //Update Start Time
+    var startHour = $("#startHr_" + popId).val();
+    if (startHour == "") startHour = parseInt($("#startHr_" + popId).attr("placeholder"));
+    var startMin = $("#startMin_" + popId).val();
+    if (startMin == "") startMin = $("#startMin_" + popId).attr("placeholder");
+    updateStartPlace(popId, startHour, startMin, newWidth);
 
     //Update event members
     //NEED TO DO
 
     //Update Popover
-    updateEventPopover(popId, newTitle, newHours, newMin);
+    updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin);
 
     $("#rect_" + popId).popover("hide");
 
@@ -459,7 +472,6 @@ function addEventMember(eventId) {
 
     //ADD LINE
     var thisGroup = $("#rect_" + eventId)[0].parentNode;
-    DEBUGGER;
     var memLine = thisGroup.append("line")
         .attr("x1", "50")
         .attr("y1", "50")
@@ -479,7 +491,27 @@ function updateTime(idNum) {
     
     $("#time_text_" + idNum).text(hours + "hrs " + minutes + "min");
 
+    $("#rect_" + idNum).popover("show");
+    var title = $("#eventName_" + idNum).attr("placeholder");
+    var startHr = $("#startHr_" + idNum).attr("placeholder");
+    var startMin = $("#startMin_" + idNum).attr("placeholder");
+    updateEventPopover(idNum, title, startHr, startMin, hours, minutes);
+    $("#rect_" + idNum).popover("hide");
+
     //UPDATE THE JSON OBJECT EVENT
+}
+
+function updateStartPlace(idNum, startHr, startMin, width) {
+    var newX = (startHr*100) + (startMin/15*25);
+
+    $("#rect_" + idNum).attr("x", newX);
+    $("#rt_rect_" + idNum).attr("x", newX + width);
+    $("#lt_rect_" + idNum).attr("x", newX);
+    $("#title_text_" + idNum).attr("x", newX + 10);
+    $("#time_text_" + idNum).attr("x", newX + 10);
+    $("#acronym_text_" + idNum).attr("x", newX + 10);
+    $("#handoff_btn_" + idNum).attr("x", newX + width - 18);
+    $("#collab_btn_" + idNum).attr("x", newX + width - 38);
 }
 
 function updateWidth(idNum, hrs, min) {
@@ -494,13 +526,13 @@ function updateWidth(idNum, hrs, min) {
     updateTime(idNum);
 }
 
-function updateEventPopover(idNum, title, hrs, min) {
+function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
 
     $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
         +'<b>Total Runtime: </b><br>' 
-        +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" min="1" style="width:35px">'
-        +'<input type="number" id="startMin_' + event_counter + '" placeholder="00" step="15" max="45" min="0" style="width:35px"><br>'
+        +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="1" style="width:35px">'
+        +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="1" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" step="15" max="45" min="0"/>'
         +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
@@ -510,12 +542,6 @@ function updateEventPopover(idNum, title, hrs, min) {
         +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
-}
-
-function useEventTime(idNum) {
-    //USE THE EVENT TIME TO CHANGE POSITION OF THE EVENT
-
-
 }
 
 function writeHandoff() {
