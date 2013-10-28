@@ -71,6 +71,7 @@ var drag = d3.behavior.drag()
         var title = $("#eventName_" + groupNum).attr("placeholder");
         var hours = $("#hours_" + groupNum).attr("placeholder");
         var min = $("#minutes_" + groupNum).attr("placeholder");
+        console.log("hours", hours, "min", min);
         updateEventPopover(groupNum, title, startHour, startMin, hours, min);  
         $("#rect_" + groupNum).popover("hide");     
 
@@ -117,11 +118,13 @@ function leftResize(d) {
     updateTime(d.groupNum);
 
     //Update popover
+    $("#rect_" + d.groupNum).popover("show");
     var hrs = Math.floor(((rightX-newX)/100));
     var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
     var title = $("#eventName_" + d.groupNum).attr("placeholder");
     var startHr = newX-(newX%100)/100;
     var startMin = newX%100/25*15;
+    $("#rect_" + d.groupNum).popover("hide");
     updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min);
     
 }
@@ -393,9 +396,10 @@ function addEventPopover(startHr, startMin) {
                 trigger: "click",
                 title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event" >',
                 content: '<form name="eventForm_' + event_counter + '">'
-                +'<b>Total Runtime: </b><br>' 
-                +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" style="width:35px">'
+                +'<b>Event Start:          </b>' 
+                +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" style="width:35px">'
                 +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" style="width:35px"><br>'
+                +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" step="15" max="45"/><br>'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
@@ -421,6 +425,8 @@ function addMemAuto() {
 }
 
 function saveEventInfo (popId) {
+    $("#rect_" + popId).popover("show");
+
     //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
@@ -554,9 +560,10 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
 
     $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
-        +'<b>Total Runtime: </b><br>' 
-        +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="1" style="width:35px">'
+        +'<b>Event Start</b><br>' 
+        +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="1" style="width:35px">'
         +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
+        +'<b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="1" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" step="15" max="45" min="0"/>'
         +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'

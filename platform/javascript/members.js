@@ -37,7 +37,7 @@ function addMember() {
 			+'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
 			+'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
 			+'<script type="text/javascript"> initializeColorPicker(); </script>'
-			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ',' + memberName + ');">Delete</button>     '
+			+'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
 			+'<button type="button" onclick="saveMemberInfo(' + pillCounter + ');">Save</button>'
 		+'</p></form>' 
 		+'</div>',
@@ -47,7 +47,7 @@ function addMember() {
 	
 	currentMembers.push(memberName);
 	
-	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":""};
+	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[]};
 	flashTeamsJSON.members.push(newMember); 
 	addMemberNode(memberName);
 };
@@ -64,6 +64,16 @@ function addSkill(pillId) {
 	var skillName = $("#addSkillInput_" + pillId).val();
 	$("#skillPills_" + pillId).append('<li class="active" id="sPill_' + pillId + '"><a>' + skillName + '</a></li>');
 	$("#addSkillInput_" + pillId).val(this.placeholder);
+
+	//Update JSON
+	var indexOfJSON = 0;
+	for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].id == pillId) {
+            indexOfJSON = i;
+        }
+    }
+    flashTeamsJSON["members"][indexOfJSON].skills.push(skillName);
+
 }
 
 function saveMemberInfo(popId) {
@@ -72,13 +82,37 @@ function saveMemberInfo(popId) {
 
 	updateMemberPopover(popId);
 
-	//UPDATE MEMBER JSON
+	//Update Member JSON Object
+	var indexOfJSON = 0;
+	for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].id == popId) {
+            indexOfJSON = i;
+        }
+    }
+
 
 	$("#mPill_" + popId).popover("hide");
 };
 
-function deleteMember(pillId, memberName) {
-	//Remove Member from Current Members
+function deleteMember(pillId) {
+	//Remove Member from JSON
+	var indexOfJSON = 0;
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].id == pillId) {
+            indexOfJSON = i;
+        }
+    }
+    var memberName = flashTeamsJSON["members"][indexOfJSON].role;
+    flashTeamsJSON["members"].splice(indexOfJSON, 1);
+
+    //MAY RUN INTO PROBLEMS WITH UNIQUE MEMBER NAMES (I.E. UI DESIGN 1, UI DESIGN 2)
+    //Remove Member from Current Members
+    for (i = 0; i < currentMembers.length; i++) {
+    	if (currentMembers[i] == memberName) {
+    		currentMembers.splice(i, 1);
+    		break;
+    	}
+    }
 
 	$("#mPill_" + pillId).popover("destroy");
 	$("#mPill_" + pillId).remove();
