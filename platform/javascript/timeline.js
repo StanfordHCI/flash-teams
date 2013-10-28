@@ -456,12 +456,7 @@ function saveEventInfo (popId) {
     $("#rect_" + popId).popover("hide");
 
     //Update JSON
-    var indexOfJSON = 0;
-    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
-        if (flashTeamsJSON["events"][i].id == popId) {
-            indexOfJSON = i;
-        }
-    }
+    var indexOfJSON = getEventJSONIndex(popId);
     flashTeamsJSON["events"][indexOfJSON].eventName = newTitle;
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
@@ -482,7 +477,9 @@ function deleteRect (rectId) {
     $("#collab_btn_" + rectId).remove();
     $("#handoff_btn_" + rectId).remove();
 
-    //REMOVE FROM THE JSON OBJECT
+    //Remove from JSON
+    var indexOfJSON = getEventJSONIndex(rectId);
+    flashTeamsJSON["events"].splice(indexOfJSON, 1);
 };
 
 function addEventMember(eventId) {
@@ -522,12 +519,7 @@ function updateTime(idNum) {
     updateEventPopover(idNum, title, startHr, startMin, hours, minutes);
     $("#rect_" + idNum).popover("hide");
 
-    var indexOfJSON = 0;
-    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
-        if (flashTeamsJSON["events"][i].id == idNum) {
-            indexOfJSON = i;
-        }
-    }
+    var indexOfJSON = getEventJSONIndex(idNum);
     flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
     flashTeamsJSON["events"][indexOfJSON].startTime = (startHr*60) + startMin;
 }
@@ -573,10 +565,20 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
         +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
+
+    var indexOfJSON = getEventJSONIndex(idNum);
 }
 
 function writeHandoff() {
     console.log("Trying to write a handoff");
+}
+
+function getEventJSONIndex(idNum) {
+    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        if (flashTeamsJSON["events"][i].id == idNum) {
+            return i;
+        }
+    }
 }
 
 

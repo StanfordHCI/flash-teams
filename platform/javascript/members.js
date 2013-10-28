@@ -96,12 +96,7 @@ function saveMemberInfo(popId) {
 
 function deleteMember(pillId) {
 	//Remove Member from JSON
-	var indexOfJSON = 0;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].id == pillId) {
-            indexOfJSON = i;
-        }
-    }
+	var indexOfJSON = getMemberJSONIndex(pillId);
     var memberName = flashTeamsJSON["members"][indexOfJSON].role;
     flashTeamsJSON["members"].splice(indexOfJSON, 1);
 
