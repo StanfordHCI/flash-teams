@@ -45,13 +45,10 @@ function addMember() {
 	});
 	$("#mPill_"+pillCounter).popover("show");
 	
-
 	currentMembers.push(memberName);
-	var memberId = "member_" + pillCounter;
-
-	if (flashTeamsJSON.members[0].memberName )
-	var newMember = {"name":memberName, "id": pillCounter, "color":"GRAY"}
-	flashTeamsJSON.members.push( newMember); //HELP HERE
+	
+	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":""};
+	flashTeamsJSON.members.push(newMember); 
 	addMemberNode(memberName);
 };
 

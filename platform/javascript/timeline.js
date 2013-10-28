@@ -8,8 +8,8 @@
 var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
-    "events": [],           //{"title", "id", "startTime", "duration", "notes", "members", "dri"}
-    "members": [],                  //{"id", "role", "skills":[], "color"}
+    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members", "dri"}
+    "members": [],       //{"id", "role", "skills":[], "color"}
     "interactions" : []  //{"event1", "event2", "type", "description"}
 };
 
@@ -42,6 +42,7 @@ var event_counter = 0;
 
 var DRAGBAR_WIDTH = 8;
 
+//Called when task rectangles are dragged
 var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
@@ -59,6 +60,13 @@ var drag = d3.behavior.drag()
 
         var startHour = Math.floor((d.x/100));
         var startMin = (d.x%100/25*15);
+        if(startMin == 57.599999999999994) {
+            startHour++;
+            startMin = 0;
+        } else {
+            startMin += 2.41
+            startMin = Math.floor(startMin);
+        }
         $("#rect_" + groupNum).popover("show");
         var title = $("#eventName_" + groupNum).attr("placeholder");
         var hours = $("#hours_" + groupNum).attr("placeholder");
@@ -76,10 +84,12 @@ var drag = d3.behavior.drag()
         redraw(group, rectWidth);
     });
 
+//Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
     .origin(Object)
     .on("drag", rightResize);
 
+//Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
     .origin(Object)
     .on("drag", leftResize);
@@ -110,10 +120,8 @@ function leftResize(d) {
     var hrs = Math.floor(((rightX-newX)/100));
     var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
     var title = $("#eventName_" + d.groupNum).attr("placeholder");
-    var startHr = 0;
-    var startMin = 0;
-    //FIND THE STARTHR AND THE START MIN
-    console.log("minutes" , min);
+    var startHr = newX-(newX%100)/100;
+    var startMin = newX%100/25*15;
     updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min);
     
 }
@@ -209,16 +217,24 @@ function mousedown() {
     var point = d3.mouse(this);
     var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
         snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
-
     drawEvents(snapX, snapY);
+
+    //FIND START TIME
+    var startHr = (snapX-(snapX%100))/100;
+    var startMin = (snapX%100)/25*15;
+    if(startMin == 57.599999999999994) {
+        startHr++;
+        startMin = 0;
+    } else startMin += 2.4
+    var startTimeinMinutes = (startHr*60) + startMin;
 
     //D3, Exit to Remove Deleted Data
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
 
-    addEventPopover();
+    addEventPopover(startHr, startMin);
 
-    var newEvent = {"eventName":"New Event", "id":event_counter, "hours":1, "minutes":0, "teamMembers":""};
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":"", "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
 };
 
@@ -364,7 +380,7 @@ function redraw(group, newWidth) {
         .attr("y", function(d) {return d.y + 23});
 }
 
-function addEventPopover() {
+function addEventPopover(startHr, startMin) {
     //Add Popovers
     timeline_svg.selectAll("#rect_" + event_counter).each(
         function(d) {
@@ -378,8 +394,8 @@ function addEventPopover() {
                 title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event" >',
                 content: '<form name="eventForm_' + event_counter + '">'
                 +'<b>Total Runtime: </b><br>' 
-                +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="1" style="width:35px">'
-                +'<input type="number" id="startMin_' + event_counter + '" placeholder="0" step="15" max="45" style="width:35px"><br>'
+                +'Start <input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" style="width:35px">'
+                +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" style="width:35px"><br>'
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" step="15" max="45"/><br>'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
@@ -467,6 +483,7 @@ function addEventMember(eventId) {
 
     //GRAB PILL COLORS
 
+
     var memberName = $("#eventMember_" + eventId).val();
     $("#eventMembers_" + eventId).append('<li class="active"><a>' + memberName + '</a><li>');
 
@@ -483,6 +500,7 @@ function addEventMember(eventId) {
     $("#eventMember_" + eventId).val("");
 }
 
+//Updates the physical task rectangle representation of start and duration, also update JSON
 function updateTime(idNum) {
     var eventLength = $("#rect_" + idNum)[0].width.animVal.value;
     var hours = Math.floor(eventLength/100);
@@ -498,12 +516,18 @@ function updateTime(idNum) {
     updateEventPopover(idNum, title, startHr, startMin, hours, minutes);
     $("#rect_" + idNum).popover("hide");
 
-    //UPDATE THE JSON OBJECT EVENT
+    var indexOfJSON = 0;
+    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        if (flashTeamsJSON["events"][i].id == idNum) {
+            indexOfJSON = i;
+        }
+    }
+    flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
+    flashTeamsJSON["events"][indexOfJSON].startTime = (startHr*60) + startMin;
 }
 
 function updateStartPlace(idNum, startHr, startMin, width) {
     var newX = (startHr*100) + (startMin/15*25);
-
     $("#rect_" + idNum).attr("x", newX);
     $("#rt_rect_" + idNum).attr("x", newX + width);
     $("#lt_rect_" + idNum).attr("x", newX);
