@@ -89,7 +89,7 @@ function saveMemberInfo(popId) {
             indexOfJSON = i;
         }
     }
-
+    //START HERE THIS IS NOT DONE
 
 	$("#mPill_" + popId).popover("hide");
 };
@@ -149,6 +149,14 @@ function initializeColorPicker() {
 	        colorToChange = color.toHexString();
 	    }
 	});
+}
+
+function getMemberJSONIndex(idNum) {
+	for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].id == idNum) {
+            return i; 
+        }
+    }
 }
 
 $(document).ready(function() {

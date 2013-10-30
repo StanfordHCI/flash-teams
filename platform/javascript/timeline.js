@@ -71,7 +71,6 @@ var drag = d3.behavior.drag()
         var title = $("#eventName_" + groupNum).attr("placeholder");
         var hours = $("#hours_" + groupNum).attr("placeholder");
         var min = $("#minutes_" + groupNum).attr("placeholder");
-        console.log("hours", hours, "min", min);
         updateEventPopover(groupNum, title, startHour, startMin, hours, min);  
         $("#rect_" + groupNum).popover("hide");     
 
@@ -327,7 +326,8 @@ function  drawEvents(x, y) {
         .attr("width", 16)
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38})
-        .attr("y", function(d) {return d.y+23});
+        .attr("y", function(d) {return d.y+23})
+        .attr("onclick", writeHandoff());
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "images/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -337,9 +337,7 @@ function  drawEvents(x, y) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18; })
         .attr("y", function(d) {return d.y+23});
 
-    //ADD MEMBER LINES
 
-    //MAY DELETE LATER, DYNAMICALLY ADDED
     //ADD ACRONYMS FOR MEMBERS
     var acronym_text = task_g.append("text")
         .text(function (d) {
@@ -381,6 +379,9 @@ function redraw(group, newWidth) {
     d3Group.selectAll(".collab_btn")
         .attr("x", function(d) {return d.x + newWidth - 38})
         .attr("y", function(d) {return d.y + 23});
+
+    //REDRAW MEMBER LINES
+    //START HERE
 }
 
 function addEventPopover(startHr, startMin) {
@@ -425,8 +426,6 @@ function addMemAuto() {
 }
 
 function saveEventInfo (popId) {
-    $("#rect_" + popId).popover("show");
-
     //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
@@ -490,14 +489,21 @@ function addEventMember(eventId) {
     var memberName = $("#eventMember_" + eventId).val();
     $("#eventMembers_" + eventId).append('<li class="active"><a>' + memberName + '</a><li>');
 
-    //ADD LINE
-    var thisGroup = $("#rect_" + eventId)[0].parentNode;
-    var memLine = thisGroup.append("line")
-        .attr("x1", "50")
-        .attr("y1", "50")
-        .attr("x2", "100")
-        .attr("y2", "100")
-        .attr("stroke-width", "10");
+    //ADD LINE, START HERE
+    var group = $("#rect_" + eventId)[0].parentNode;
+    var thisGroup = d3.select(group);
+    thisGroup.append("rect")
+        .attr("class", "member_line")
+        .attr("x", function(d) {
+            return parseInt($("#rect_" + eventId).attr("x")) + 8;})
+        .attr("y", function(d) {
+            return parseInt($("#rect_" + eventId).attr("y")) + 40;})
+        .attr("groupNum", eventId)
+        .attr("height", 5)
+        .attr("width", function(d) {
+            return parseInt($("#rect_" + eventId).attr("width")) - 8;})
+        .attr("fill", "RED")
+        .attr("fill-opacity", .9);
 
     //Clear Input
     $("#eventMember_" + eventId).val("");
