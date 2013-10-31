@@ -337,7 +337,6 @@ function  drawEvents(x, y) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18; })
         .attr("y", function(d) {return d.y+23});
 
-
     //ADD ACRONYMS FOR MEMBERS
     var acronym_text = task_g.append("text")
         .text(function (d) {
@@ -431,6 +430,14 @@ function saveEventInfo (popId) {
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
     else newTitle = $("#eventName_" + popId).attr("placeholder");
 
+
+    //Update Start Time
+    var startHour = $("#startHr_" + popId).val();    
+    if (startHour == "") startHour = parseInt($("#startHr_" + popId).attr("placeholder"));
+    var startMin = $("#startMin_" + popId).val();
+    if (startMin == "") startMin = $("#startMin_" + popId).attr("placeholder");
+    updateStartPlace(popId, startHour, startMin, newWidth);
+
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
@@ -438,13 +445,6 @@ function saveEventInfo (popId) {
     if (newMin == "") newMin = $("#minutes_" + popId)[0].placeholder;
     var newWidth = (newHours * 100) + (newMin/15*25);
     updateWidth(popId, newHours, newMin);
-
-    //Update Start Time
-    var startHour = $("#startHr_" + popId).val();
-    if (startHour == "") startHour = parseInt($("#startHr_" + popId).attr("placeholder"));
-    var startMin = $("#startMin_" + popId).val();
-    if (startMin == "") startMin = $("#startMin_" + popId).attr("placeholder");
-    updateStartPlace(popId, startHour, startMin, newWidth);
 
     //Update event members
     //NEED TO DO
