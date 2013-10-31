@@ -356,7 +356,6 @@ function redraw(group, newWidth) {
     d3Group.selectAll(".task_rectangle")
         .attr("x", function(d) {return d.x})
         .attr("y", function(d) {return d.y});
-
     d3Group.selectAll(".rt_rect")
         .attr("x", function(d) {return d.x + newWidth})
         .attr("y", function(d) {return d.y});
@@ -380,7 +379,10 @@ function redraw(group, newWidth) {
         .attr("y", function(d) {return d.y + 23});
 
     //REDRAW MEMBER LINES
-    //START HERE
+    //START HERE, THE Y IS WRONG
+    d3Group.selectAll(".member_line")
+        .attr("x", function(d) {return d.x + 8})
+        .attr("y", function(d) {return d.y + 40});
 }
 
 function addEventPopover(startHr, startMin) {
