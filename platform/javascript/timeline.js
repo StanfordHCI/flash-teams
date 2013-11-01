@@ -580,13 +580,34 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
 
 function writeHandoff() {
     console.log("Trying to write a handoff");
-
+    var m = d3.mouse(this);
+    console.log("x: " + m[0] + " y: " + m[1]);
+    line = timeline_svg.append("line")
+        .attr("x1", m[0])
+        .attr("y1", m[1])
+        .attr("x2", m[0])
+        .attr("y2", m[1])
+        .attr("stroke-width", 2)
+        .attr("stroke", "black");
     
+    timeline_svg.on("mousemove", handoffMouseMove);
+}
+
+function handoffMouseMove() {
+    console.log("in da mousemove");
+    var m = d3.mouse(this);
+    line.attr("x2", m[0])
+        .attr("y2", m[1]);
+
+    timeline_svg.on("click", handoffMouseClick);
+}
+
+function handoffMouseClick() {
+    timeline_svg.on("mousemove", null);
 }
 
 function writeCollaboration() {
     console.log("Trying to write a collaboration");
-
 
 }
 
