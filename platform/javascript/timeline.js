@@ -327,7 +327,7 @@ function  drawEvents(x, y) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38})
         .attr("y", function(d) {return d.y+23})
-        .on("click", writeHandoff());
+        .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "images/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -335,7 +335,8 @@ function  drawEvents(x, y) {
         .attr("width", 16)
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18; })
-        .attr("y", function(d) {return d.y+23});
+        .attr("y", function(d) {return d.y+23})
+        .on("click", writeCollaboration);
 
     //ADD ACRONYMS FOR MEMBERS
     var acronym_text = task_g.append("text")
@@ -579,6 +580,14 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
 
 function writeHandoff() {
     console.log("Trying to write a handoff");
+
+    
+}
+
+function writeCollaboration() {
+    console.log("Trying to write a collaboration");
+
+
 }
 
 function getEventJSONIndex(idNum) {

@@ -63,7 +63,10 @@
             <div class="row-fluid">
                 <div class="span3"> <!--Sidebar content-->
                     <div id = "title-container" class="well">
-                        <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
+                        <form name="titleForm" id="title_form">
+                            <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
+                            <input type="submit" style="display:none">
+                        </form>
                     </div>
                     <div id="diagram-container" class="well">
                         <h3>Team Structure</h3>
@@ -74,6 +77,7 @@
                             <div class="input-append">
                                 <input class="span9" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
                                 <button class="btn" type="button" onclick="addMember()">+Add</button>
+                                <input type="submit" style="display:none">
                             </div>
                             <input type="text" name="enterAndReloadBugFix" style="display: none;"> 
                         </form>
