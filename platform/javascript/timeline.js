@@ -327,7 +327,7 @@ function  drawEvents(x, y) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38})
         .attr("y", function(d) {return d.y+23})
-        .attr("onclick", writeHandoff());
+        .on("click", writeHandoff());
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "images/doubleArrow.png")
         .attr("class", "collab_btn")
