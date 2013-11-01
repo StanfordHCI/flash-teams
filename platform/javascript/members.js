@@ -10,11 +10,13 @@ var currentMembers = []; //For Event Autocomplete
 
 function addMember() {
 	pillCounter++;
-
-	//Appends a list item pill to the memberPills ul
 	var memberName = $("#addMemberInput").val();
+	if (memberName == "") {
+		alert("Not a valid member");
+		return;
+	}
+	//Appends a list item pill to the memberPills ul
 	$("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
-
 
 	//Clear Input
 	$("#addMemberInput").val(this.placeholder);
@@ -45,8 +47,9 @@ function addMember() {
 	});
 	$("#mPill_"+pillCounter).popover("show");
 	
-	currentMembers.push(memberName);
+	currentMembers.push(memberName); //Push to autocomplete array of current members
 	
+	//Add to Flash Teams JSON Object
 	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[]};
 	flashTeamsJSON.members.push(newMember); 
 	addMemberNode(memberName);
@@ -58,42 +61,48 @@ function addAuto() {
 			source: oSkills
 		});
 	});
-}
+};
 
-function addSkill(pillId) {
-	var skillName = $("#addSkillInput_" + pillId).val();
-	$("#skillPills_" + pillId).append('<li class="active" id="sPill_' + pillId + '"><a>' + skillName + '</a></li>');
-	$("#addSkillInput_" + pillId).val(this.placeholder);
+//Adds a needed skill to a member and updates JSON
+function addSkill(memberId) {
+	var skillName = $("#addSkillInput_" + memberId).val();
+	if (skillName == "") {
+		alert("Not a valid skill");
+		return;
+	}
 
 	//Update JSON
-	var indexOfJSON = 0;
-	for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].id == pillId) {
-            indexOfJSON = i;
-        }
-    }
+	var indexOfJSON = getMemberJSONIndex(memberId);
     flashTeamsJSON["members"][indexOfJSON].skills.push(skillName);
 
-}
+	var memberSkillNumber = flashTeamsJSON["members"][indexOfJSON].skills.length;
+	$("#skillPills_" + memberId).append('<li class="active" id="sPill_mem' + memberId + '_skill' + memberSkillNumber + '"><a>' + skillName 
+		+ '<div class="close" onclick="deleteSkill(' + memberId + ', ' + memberSkillNumber + ', &#39' + skillName + '&#39)">  X</div></a></li>');
+	$("#addSkillInput_" + memberId).val(this.placeholder);
+};
 
+function deleteSkill(memberId, pillId, skillName) {
+	//Remove skill pill
+	$("#sPill_mem" + memberId + '_skill' + pillId).remove();
+	//Update JSON
+	var indexOfJSON = getMemberJSONIndex(memberId);
+	for (i = 0; i < flashTeamsJSON["members"][indexOfJSON].skills.length; i++) {
+    	if (flashTeamsJSON["members"][indexOfJSON].skills[i] == skillName) {
+    		flashTeamsJSON["members"][indexOfJSON].skills.splice(i, 1);
+    		break;
+    	}
+    }
+};
+
+//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
 	var newColor = $("#color_" + popId).spectrum("get");
 	updateMemberPillColor(newColor, popId);
-
 	updateMemberPopover(popId);
-
-	//Update Member JSON Object
-	var indexOfJSON = 0;
-	for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].id == popId) {
-            indexOfJSON = i;
-        }
-    }
-    //START HERE THIS IS NOT DONE
-
 	$("#mPill_" + popId).popover("hide");
 };
 
+//Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
 	//Remove Member from JSON
 	var indexOfJSON = getMemberJSONIndex(pillId);
@@ -113,19 +122,26 @@ function deleteMember(pillId) {
 	$("#mPill_" + pillId).remove();
 
 	//REMOVE THE CIRCLES
+
 	//REMOVE THE MEMBER FROM EVENTS
+
 };
 
-function updateMemberPillColor(color, colorId) {
+//Takes the new color, turns into hex and changes background color of a pill list item
+function updateMemberPillColor(color, memberId) {
 	var newColor = color.toHexString();
-	var pillLi = document.getElementById("mPill_" + colorId);
+	var pillLi = document.getElementById("mPill_" + memberId);
 	pillLi.childNodes[0].style.backgroundColor = newColor;
+	var indexOfJSON = getMemberJSONIndex(memberId);
+	flashTeamsJSON["members"][indexOfJSON].color = newColor;
 };
 
+//Necessary to save member popover information
 function updateMemberPopover(idNum) {
 	$("#mPill_" + idNum).data('popover').options.content = "";
 };
 
+//Draws the color picker on a member popover
 function initializeColorPicker() {
 	$(".full-spectrum").spectrum({
 		showPaletteOnly: true,
@@ -151,6 +167,7 @@ function initializeColorPicker() {
 	});
 }
 
+//Find the index of a member in the JSON object "members" array by using unique id
 function getMemberJSONIndex(idNum) {
 	for (i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (flashTeamsJSON["members"][i].id == idNum) {
