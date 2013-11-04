@@ -16,7 +16,8 @@ function addMember() {
 		return;
 	}
 	//Appends a list item pill to the memberPills ul
-	$("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName + '</a></li> <br></br>');
+	$("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName 
+		+ '<div class="close" onclick="deleteMember(' + pillCounter + ')">  X</div>' + '</a></li> <br></br>');
 
 	//Clear Input
 	$("#addMemberInput").val(this.placeholder);
