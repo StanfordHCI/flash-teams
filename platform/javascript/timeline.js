@@ -433,21 +433,20 @@ function saveEventInfo (popId) {
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
     else newTitle = $("#eventName_" + popId).attr("placeholder");
 
-
-    //Update Start Time
+    //Get Start Time
     var startHour = $("#startHr_" + popId).val();    
     if (startHour == "") startHour = parseInt($("#startHr_" + popId).attr("placeholder"));
     var startMin = $("#startMin_" + popId).val();
-    if (startMin == "") startMin = $("#startMin_" + popId).attr("placeholder");
-    updateStartPlace(popId, startHour, startMin, newWidth);
+    if (startMin == "") startMin = parseInt($("#startMin_" + popId).attr("placeholder"));
 
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
-    if (newHours == "") newHours = $("#hours_" + popId)[0].placeholder;
-    if (newMin == "") newMin = $("#minutes_" + popId)[0].placeholder;
+    if (newHours == "") newHours = parseInt($("#hours_" + popId)[0].placeholder);
+    if (newMin == "") newMin = parseInt($("#minutes_" + popId)[0].placeholder);
     var newWidth = (newHours * 100) + (newMin/15*25);
     updateWidth(popId, newHours, newMin);
+    updateStartPlace(popId, startHour, startMin, newWidth);
 
     //Update event members
     //NEED TO DO

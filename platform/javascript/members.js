@@ -17,7 +17,7 @@ function addMember() {
 	}
 	//Appends a list item pill to the memberPills ul
 	$("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName 
-		+ '<div class="close" onclick="deleteMember(' + pillCounter + ')">  X</div>' + '</a></li> <br></br>');
+		+ '<div class="close" onclick="deleteMember(' + pillCounter + ')">  X</div>' + '</a></li>');
 
 	//Clear Input
 	$("#addMemberInput").val(this.placeholder);
@@ -67,7 +67,7 @@ function addAuto() {
 //Adds a needed skill to a member and updates JSON
 function addSkill(memberId) {
 	var skillName = $("#addSkillInput_" + memberId).val();
-	if (skillName == "") {
+	if (skillName == "" || oSkills.indexOf(skillName) < 0) {
 		alert("Not a valid skill");
 		return;
 	}
