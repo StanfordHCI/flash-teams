@@ -53,7 +53,7 @@ function addMember() {
 	//Add to Flash Teams JSON Object
 	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[]};
 	flashTeamsJSON.members.push(newMember); 
-	addMemberNode(memberName);
+	addMemberNode(memberName, pillCounter, "#808080");
 };
 
 function addAuto() {
@@ -123,6 +123,7 @@ function deleteMember(pillId) {
 	$("#mPill_" + pillId).remove();
 
 	//REMOVE THE CIRCLES
+	removeMemberNode(pillId);
 
 	//REMOVE THE MEMBER FROM EVENTS
 
@@ -135,6 +136,10 @@ function updateMemberPillColor(color, memberId) {
 	pillLi.childNodes[0].style.backgroundColor = newColor;
 	var indexOfJSON = getMemberJSONIndex(memberId);
 	flashTeamsJSON["members"][indexOfJSON].color = newColor;
+
+	// Update JSON for team diagram
+	workers.nodes[searchById(workers.nodes, memberId)].color = newColor;
+	updateNodeColor();
 };
 
 //Necessary to save member popover information
@@ -175,6 +180,14 @@ function getMemberJSONIndex(idNum) {
             return i; 
         }
     }
+}
+
+function searchById (arr, id) {
+	for (i = 0; i < arr.length; i++) {
+		if (arr[i].id == id) {
+			return i;
+		}
+	}
 }
 
 $(document).ready(function() {
