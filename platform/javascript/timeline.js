@@ -9,14 +9,13 @@ var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
     "events": [],        //{"title", "id", "startTime", "duration", "notes", "members", "dri"}
-    "members": [],       //{"id", "role", "skills":[], "color"}
+    "members": [],       //{"id", "role", "skills":[], "color", "counter"}
     "interactions" : []  //{"event1", "event2", "type", "description"}
 };
 
 var XTicks = 50,
     YTicks = 5;
 
-//CHANGE TO ALL CAPS AND BETTER NAME LATER
 var SVG_WIDTH = 2450,
     SVG_HEIGHT = 570;
 
@@ -34,7 +33,6 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-//STARTER VALUES, MAY BE A PROBLEM LATER
 var RECTANGLE_WIDTH = 100,
     RECTANGLE_HEIGHT = 100;
 
@@ -81,7 +79,7 @@ var drag = d3.behavior.drag()
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
 
-        redraw(group, rectWidth);
+        redraw(group, rectWidth, groupNum);
     });
 
 //Called when the right dragbar of a task rectangle is dragged
@@ -236,7 +234,7 @@ function mousedown() {
 
     addEventPopover(startHr, startMin);
 
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":"", "dri":"", "notes":""};
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
 };
 
@@ -292,7 +290,7 @@ function  drawEvents(x, y) {
         .attr('pointer-events', 'all')
         .call(drag_left);
 
-    //ADD TITLE
+    //Add title text
     var title_text = task_g.append("text")
         .text(function (d) {
             return "New Event";
@@ -305,7 +303,7 @@ function  drawEvents(x, y) {
         .attr("font-weight", "bold")
         .attr("font-size", "12px");
 
-    //ADD TIME
+    //Add duration text
     var time_text = task_g.append("text")
         .text(function (d) {
             return "1hrs 0min";
@@ -318,14 +316,14 @@ function  drawEvents(x, y) {
         .attr("font-size", "12px");
 
 
-    //ADD INTERACTION BUTTONS
+    //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
         .attr("xlink:href", "images/rightArrow.png")
         .attr("class", "handoff_btn")
         .attr("id", function(d) {return "handoff_btn_" + event_counter;})
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38})
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
@@ -334,7 +332,7 @@ function  drawEvents(x, y) {
         .attr("id", function(d) {return "collab_btn_" + event_counter;})
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18; })
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", writeCollaboration);
 
@@ -352,7 +350,7 @@ function  drawEvents(x, y) {
     task_groups.push(task_g);    
 };
 
-function redraw(group, newWidth) {
+function redraw(group, newWidth, gNum) {
     var d3Group = d3.select(group)
     d3Group.selectAll(".task_rectangle")
         .attr("x", function(d) {return d.x})
@@ -379,11 +377,13 @@ function redraw(group, newWidth) {
         .attr("x", function(d) {return d.x + newWidth - 38})
         .attr("y", function(d) {return d.y + 23});
 
-    //REDRAW MEMBER LINES
-    //START HERE, THE Y IS WRONG
-    d3Group.selectAll(".member_line")
-        .attr("x", function(d) {return d.x + 8})
-        .attr("y", function(d) {return d.y + 40});
+    //Redraw member lines
+    var indexOfJSON = getEventJSONIndex(gNum);
+    for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
+        $("#event_" + gNum + "_eventMemLine_" + i)
+            .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); })
+            .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))});
+    }
 }
 
 function addEventPopover(startHr, startMin) {
@@ -416,7 +416,6 @@ function addEventPopover(startHr, startMin) {
             });
             $(this).popover("show"); 
         });
-
 };
 
 function addMemAuto() {
@@ -467,8 +466,6 @@ function saveEventInfo (popId) {
 
 function deleteRect (rectId) {
     $("#rect_" + rectId).popover("destroy");
-
-    //WOULD BE BETTER AS A DELETE OF THE GROUP, BUT TEMP FIX
     $("#rect_" + rectId).remove();
     $("#lt_rect_" + rectId).remove();
     $("#rt_rect_" + rectId).remove();
@@ -484,29 +481,43 @@ function deleteRect (rectId) {
 };
 
 function addEventMember(eventId) {
-
-    //GRAB PILL COLORS
-
-
     var memberName = $("#eventMember_" + eventId).val();
-    $("#eventMembers_" + eventId).append('<li class="active"><a>' + memberName + '</a><li>');
 
-    //ADD LINE, START HERE
+    //Update JSON
+    var indexOfJSON = getEventJSONIndex(eventId);
+    flashTeamsJSON["events"][indexOfJSON].members.push(memberName);
+    var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    $("#eventMembers_" + eventId).append('<li class="active" id="event_' + eventId + '_eventMemPill_' + numMembers + '"><a>' + memberName + '</a><li>');
+
+    //Grab color of member
+    var newColor;
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].role == memberName) {
+            newColor = flashTeamsJSON["members"][i].color;
+        }
+    }
+
+    //CHANGE THE COLOR OF THE EVENT MEMBER PILL
+
+    //Add new line to represent member
     var group = $("#rect_" + eventId)[0].parentNode;
+
     var thisGroup = d3.select(group);
     thisGroup.append("rect")
         .attr("class", "member_line")
+        .attr("id", function(d) {
+            return "event_" + eventId + "_eventMemLine_" + numMembers;
+        })
         .attr("x", function(d) {
             return parseInt($("#rect_" + eventId).attr("x")) + 8;})
         .attr("y", function(d) {
-            return parseInt($("#rect_" + eventId).attr("y")) + 40;})
+            return parseInt($("#rect_" + eventId).attr("y")) + 40 + ((numMembers-1)*8);})
         .attr("groupNum", eventId)
         .attr("height", 5)
         .attr("width", function(d) {
             return parseInt($("#rect_" + eventId).attr("width")) - 8;})
-        .attr("fill", "RED")
+        .attr("fill", newColor)
         .attr("fill-opacity", .9);
-
     //Clear Input
     $("#eventMember_" + eventId).val("");
 }

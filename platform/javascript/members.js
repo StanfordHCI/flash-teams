@@ -51,7 +51,9 @@ function addMember() {
 	currentMembers.push(memberName); //Push to autocomplete array of current members
 	
 	//Add to Flash Teams JSON Object
-	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[]};
+	var numMemberSameName = 1;
+	//SEARCH THROUGH THE JSON OBJECT HERE AND MAKE A COUNTER
+	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[], "counter":numMemberSameName};
 	flashTeamsJSON.members.push(newMember); 
 	addMemberNode(memberName);
 };
