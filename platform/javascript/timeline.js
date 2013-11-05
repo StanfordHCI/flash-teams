@@ -219,7 +219,7 @@ function mousedown() {
         snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
     drawEvents(snapX, snapY);
 
-    //FIND START TIME
+    //Find the start time
     var startHr = (snapX-(snapX%100))/100;
     var startMin = (snapX%100)/25*15;
     if(startMin == 57.599999999999994) {
@@ -461,7 +461,6 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
     flashTeamsJSON["events"][indexOfJSON].eventName = newTitle;
-
 };
 
 function deleteRect (rectId) {
