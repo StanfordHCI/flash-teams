@@ -17,7 +17,7 @@ function addMember() {
 	}
 	//Appends a list item pill to the memberPills ul
 	$("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName 
-		+ '<div class="close" onclick="deleteMember(' + pillCounter + ')">  X</div>' + '</a></li> <br></br>');
+		+ '<div class="close" onclick="deleteMember(' + pillCounter + ')">  X</div>' + '</a></li>');
 
 	//Clear Input
 	$("#addMemberInput").val(this.placeholder);
@@ -51,7 +51,9 @@ function addMember() {
 	currentMembers.push(memberName); //Push to autocomplete array of current members
 	
 	//Add to Flash Teams JSON Object
-	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[]};
+	var numMemberSameName = 1;
+	//SEARCH THROUGH THE JSON OBJECT HERE AND MAKE A COUNTER
+	var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[], "counter":numMemberSameName};
 	flashTeamsJSON.members.push(newMember); 
 	addMemberNode(memberName, pillCounter, "#808080");
 };
@@ -67,7 +69,7 @@ function addAuto() {
 //Adds a needed skill to a member and updates JSON
 function addSkill(memberId) {
 	var skillName = $("#addSkillInput_" + memberId).val();
-	if (skillName == "") {
+	if (skillName == "" || oSkills.indexOf(skillName) < 0) {
 		alert("Not a valid skill");
 		return;
 	}

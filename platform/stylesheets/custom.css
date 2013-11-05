@@ -1,3 +1,8 @@
+#member-container li {
+    float: none!important;
+    padding: 5px 0;
+}
+
 $(".full-spectrum").spectrum({
     color: "#ECC",
     showInput: true,
