@@ -497,6 +497,9 @@ function addEventMember(eventId) {
     }
 
     //CHANGE THE COLOR OF THE EVENT MEMBER PILL
+    var pillLi = $("#event_" + eventId + "_eventMemPill_" + numMembers);
+    debugger;
+    pillLi.childNodes[0].style.backgroundColor = newColor;
 
     //Add new line to represent member
     var group = $("#rect_" + eventId)[0].parentNode;
