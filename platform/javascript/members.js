@@ -197,11 +197,7 @@ $(document).ready(function() {
         source: availableMembers
     });
 
-    $("#addMemberInput").keyup(function(event){
-        if(event.keyCode == 13){
-            $("#addMemberButton").click();
-        }
-    });
+    pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
 });
 
 
