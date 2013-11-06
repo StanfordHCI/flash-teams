@@ -406,7 +406,7 @@ function addEventPopover(startHr, startMin) {
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
-                +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
+                +'<button class="btn" id="eventMemberButton_' + event_counter + ' type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
                 +'Notes: <input type="text" id="notes_' + event_counter + '">'
                 +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
