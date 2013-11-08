@@ -474,11 +474,8 @@ function saveEventInfo (popId) {
     if (newHours == "") newHours = parseInt($("#hours_" + popId)[0].placeholder);
     if (newMin == "") newMin = parseInt($("#minutes_" + popId)[0].placeholder);
     var newWidth = (newHours * 100) + (newMin/15*25);
-    updateWidth(popId, newHours, newMin);
+    updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
-
-    //Update event members
-    //NEED TO DO
 
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
@@ -610,6 +607,11 @@ function updateWidth(idNum, hrs, min) {
     $("#rt_rect_" + idNum).attr("x", newX);
     $("#handoff_btn_" + idNum).attr("x", newX-18);
     $("#collab_btn_" + idNum).attr("x", newX-38);
+
+    var indexOfJSON = getEventJSONIndex(idNum);
+    for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
+        $("#event_" + idNum + "_eventMemLine_" + i).attr("width", newWidth-8);
+    }
 
     $("#rect_" + idNum).attr("width", newWidth);
     updateTime(idNum);
