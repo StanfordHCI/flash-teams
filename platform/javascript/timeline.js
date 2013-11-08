@@ -598,6 +598,11 @@ function updateStartPlace(idNum, startHr, startMin, width) {
     $("#acronym_text_" + idNum).attr("x", newX + 10);
     $("#handoff_btn_" + idNum).attr("x", newX + width - 18);
     $("#collab_btn_" + idNum).attr("x", newX + width - 38);
+
+    var indexOfJSON = getEventJSONIndex(idNum);
+    for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
+        $("#event_" + idNum + "_eventMemLine_" + i).attr("x", newX+8);
+    }
 }
 
 function updateWidth(idNum, hrs, min) {
