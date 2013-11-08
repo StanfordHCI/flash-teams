@@ -80,6 +80,9 @@ var drag = d3.behavior.drag()
         else d.y = newY;
 
         redraw(group, rectWidth, groupNum);
+
+        //Update JSON
+        //NOT DONE
     });
 
 //Called when the right dragbar of a task rectangle is dragged
@@ -114,6 +117,14 @@ function leftResize(d) {
     taskRect.attr("width", rightX - newX);
     updateTime(d.groupNum);
 
+    //Update event member lines
+    var indexOfJSON = getEventJSONIndex(d.groupNum);
+    var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    for (i = 1; i <= numEventMembers; i++) {
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("x", (newX + 4))
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX-4));
+    }
+
     //Update popover
     $("#rect_" + d.groupNum).popover("show");
     var hrs = Math.floor(((rightX-newX)/100));
@@ -123,7 +134,6 @@ function leftResize(d) {
     var startMin = newX%100/25*15;
     $("#rect_" + d.groupNum).popover("hide");
     updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min);
-    
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -138,6 +148,12 @@ function rightResize(d) {
     $("#collab_btn_" + d.groupNum).attr("x", newX - 38);
     taskRect.attr("width", newX - leftX);
     updateTime(d.groupNum);
+
+    var indexOfJSON = getEventJSONIndex(d.groupNum);
+    var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    for (i = 1; i <= numEventMembers; i++) {
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (newX - leftX-4));
+    }
 }
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-gr_hics)
@@ -408,8 +424,8 @@ function addEventPopover(startHr, startMin) {
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
                 +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
-                +'Notes: <input type="text" id="notes_' + event_counter + '">'
-                +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+                +'Notes: <textarea rows="3" id="notes_' + event_counter + '"> </textarea>'
+                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
                 container: $("#timeline-container")
@@ -486,7 +502,8 @@ function addEventMember(eventId) {
     var indexOfJSON = getEventJSONIndex(eventId);
     flashTeamsJSON["events"][indexOfJSON].members.push(memberName);
     var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
-    $("#eventMembers_" + eventId).append('<li class="active" id="event_' + eventId + '_eventMemPill_' + numMembers + '"><a>' + memberName + '</a><li>');
+    $("#eventMembers_" + eventId).append('<li class="active" id="event_' + eventId + '_eventMemPill_' + numMembers + '"><a>' + memberName 
+        + '<div class="close" onclick="deleteEventMember(' + eventId + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>');
 
     //Grab color of member
     var newColor;
@@ -495,15 +512,11 @@ function addEventMember(eventId) {
             newColor = flashTeamsJSON["members"][i].color;
         }
     }
-
-    //CHANGE THE COLOR OF THE EVENT MEMBER PILL
-    var pillLi = $("#event_" + eventId + "_eventMemPill_" + numMembers);
-    debugger;
+    var pillLi = document.getElementById("event_" + eventId + "_eventMemPill_" + numMembers);
     pillLi.childNodes[0].style.backgroundColor = newColor;
 
     //Add new line to represent member
     var group = $("#rect_" + eventId)[0].parentNode;
-
     var thisGroup = d3.select(group);
     thisGroup.append("rect")
         .attr("class", "member_line")
@@ -524,6 +537,20 @@ function addEventMember(eventId) {
     $("#eventMember_" + eventId).val("");
 }
 
+function deleteEventMember(eventId, memberNum, memberName) {
+    //Delete the pill and line
+    $("#event_" + eventId + "_eventMemPill_" + memberNum).remove();
+    $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
+
+    //Update the JSON
+    var indexOfJSON = getEventJSONIndex(eventId);
+    for (i = 0; i < flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
+        if (flashTeamsJSON["events"][indexOfJSON].members[i] == memberName) {
+            flashTeamsJSON["events"][indexOfJSON].members.splice(i, 1);
+        }
+    }
+}
+
 //Updates the physical task rectangle representation of start and duration, also update JSON
 function updateTime(idNum) {
     var eventLength = $("#rect_" + idNum)[0].width.animVal.value;
@@ -540,13 +567,14 @@ function updateTime(idNum) {
     updateEventPopover(idNum, title, startHr, startMin, hours, minutes);
     $("#rect_" + idNum).popover("hide");
 
+    //Update JSON
     var indexOfJSON = getEventJSONIndex(idNum);
     flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
     flashTeamsJSON["events"][indexOfJSON].startTime = (startHr*60) + startMin;
 }
 
 function updateStartPlace(idNum, startHr, startMin, width) {
-    var newX = (startHr*100) + (startMin/15*25);
+    var newX = (startHr*100) + (startMin/15*25) - 4;
     $("#rect_" + idNum).attr("x", newX);
     $("#rt_rect_" + idNum).attr("x", newX + width);
     $("#lt_rect_" + idNum).attr("x", newX);
@@ -582,8 +610,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
         +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
         +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
         +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
-        +'Notes: <input type="text" id="notes_' + event_counter + '">'
-        +'<br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+        +'Notes: <textarea rows="3" id="notes_' + event_counter + '"> </textarea>'
+        +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
 
