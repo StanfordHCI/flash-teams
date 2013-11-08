@@ -442,9 +442,14 @@ function addEventPopover(startHr, startMin) {
 };
 
 function addMemAuto() {
+    var memberArray = new Array(flashTeamsJSON["members"].length);
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        memberArray[i] = flashTeamsJSON["members"][i].role;
+    }
+
     $(".eventMemberInput").each(function() {
         $(this).autocomplete({
-            source: currentMembers
+            source: memberArray
         });
     })
 }
@@ -499,8 +504,11 @@ function deleteRect (rectId) {
     $("#collab_btn_" + rectId).remove();
     $("#handoff_btn_" + rectId).remove();
 
-    //Remove from JSON
     var indexOfJSON = getEventJSONIndex(rectId);
+    for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
+        $("#event_" + rectId + "_eventMemLine_" + i).remove();
+    }
+    //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
 };
 
@@ -619,13 +627,28 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
         +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
         +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
-        +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
+        +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '">'+  writeEventMembers(idNum) +' </ul>'
         +'Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
 
+
+
     var indexOfJSON = getEventJSONIndex(idNum);
+}
+
+function writeEventMembers(idNum) {
+    var indexOfJSON = getEventJSONIndex(idNum); 
+    var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    var memberString = "";
+    for (i = 0; i < numMembers; i++) {
+        var memberName = flashTeamsJSON["events"][indexOfJSON].members[i];
+
+        memberString += '<li class="active" id="event_' + idNum + '_eventMemPill_' + numMembers + '"><a>' + memberName 
+        + '<div class="close" onclick="deleteEventMember(' + idNum + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>';
+    }
+    return memberString;
 }
 
 function writeHandoff() {

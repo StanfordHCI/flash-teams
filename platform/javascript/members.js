@@ -6,8 +6,6 @@
 var pillCounter = 0;
 var colorToChange = "#ff0000";
 
-var currentMembers = []; //For Event Autocomplete
-
 function addMember() {
     pillCounter++;
     var memberName = $("#addMemberInput").val();
@@ -47,9 +45,7 @@ function addMember() {
         container: $("#member-container")
     });
     $("#mPill_"+pillCounter).popover("show");
-    
-    currentMembers.push(memberName); //Push to autocomplete array of current members
-    
+        
     //Add to Flash Teams JSON Object
     var numMemberSameName = 1;
     //SEARCH THROUGH THE JSON OBJECT HERE AND MAKE A COUNTER
@@ -111,15 +107,6 @@ function deleteMember(pillId) {
     var indexOfJSON = getMemberJSONIndex(pillId);
     var memberName = flashTeamsJSON["members"][indexOfJSON].role;
     flashTeamsJSON["members"].splice(indexOfJSON, 1);
-
-    //MAY RUN INTO PROBLEMS WITH UNIQUE MEMBER NAMES (I.E. UI DESIGN 1, UI DESIGN 2)
-    //Remove Member from Current Members
-    for (i = 0; i < currentMembers.length; i++) {
-        if (currentMembers[i] == memberName) {
-            currentMembers.splice(i, 1);
-            break;
-        }
-    }
 
     $("#mPill_" + pillId).popover("destroy");
     $("#mPill_" + pillId).remove();
