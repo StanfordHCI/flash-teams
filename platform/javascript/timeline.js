@@ -110,7 +110,7 @@ function leftResize(d) {
     taskRect.attr("x", newX);
 
     //Update task rectangle graphics
-    $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2);
+    $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2 + 4);
     $("#title_text_" + d.groupNum).attr("x", newX + 10);
     $("#time_text_" + d.groupNum).attr("x", newX + 10);
     $("#acronym_text_" + d.groupNum).attr("x", newX + 10);
@@ -121,8 +121,8 @@ function leftResize(d) {
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
     for (i = 1; i <= numEventMembers; i++) {
-        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("x", (newX + 4))
-        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX-4));
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("x", (newX+4));
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX - 4));        
     }
 
     //Update popover
@@ -130,8 +130,13 @@ function leftResize(d) {
     var hrs = Math.floor(((rightX-newX)/100));
     var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
     var title = $("#eventName_" + d.groupNum).attr("placeholder");
-    var startHr = newX-(newX%100)/100;
+    var startHr = Math.floor(newX/100);
     var startMin = newX%100/25*15;
+    if(startMin == 57.599999999999994) {
+        startHr++;
+        startMin = 0;
+    } else startMin += 2.41
+    startMin = Math.floor(startMin);
     $("#rect_" + d.groupNum).popover("hide");
     updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min);
 }
@@ -152,7 +157,7 @@ function rightResize(d) {
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
     for (i = 1; i <= numEventMembers; i++) {
-        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (newX - leftX-4));
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (newX-leftX-8));        
     }
 }
 
@@ -422,7 +427,7 @@ function addEventPopover(startHr, startMin) {
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
-                +'<button class="btn" id="eventMemberButton_' + event_counter + ' type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
+                +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
                 +'Notes: <textarea rows="3" id="notes_' + event_counter + '"> </textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
