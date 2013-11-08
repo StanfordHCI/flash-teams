@@ -69,7 +69,8 @@ var drag = d3.behavior.drag()
         var title = $("#eventName_" + groupNum).attr("placeholder");
         var hours = $("#hours_" + groupNum).attr("placeholder");
         var min = $("#minutes_" + groupNum).attr("placeholder");
-        updateEventPopover(groupNum, title, startHour, startMin, hours, min);  
+        var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
+        updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
         $("#rect_" + groupNum).popover("hide");     
 
         //Vertical Dragging
@@ -138,7 +139,8 @@ function leftResize(d) {
     } else startMin += 2.41
     startMin = Math.floor(startMin);
     $("#rect_" + d.groupNum).popover("hide");
-    updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min);
+    var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(d.groupNum)].notes;
+    updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min, eventNotes);
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -571,7 +573,8 @@ function updateTime(idNum) {
     var title = $("#eventName_" + idNum).attr("placeholder");
     var startHr = $("#startHr_" + idNum).attr("placeholder");
     var startMin = $("#startMin_" + idNum).attr("placeholder");
-    updateEventPopover(idNum, title, startHr, startMin, hours, minutes);
+    var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(idNum)].notes;
+    updateEventPopover(idNum, title, startHr, startMin, hours, minutes, eventNotes);
     $("#rect_" + idNum).popover("hide");
 
     //Update JSON
@@ -617,7 +620,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
         +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
         +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
-        +'Notes: <textarea rows="3" id="notes_' + event_counter + '"> </textarea>'
+        +'Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
