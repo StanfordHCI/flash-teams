@@ -633,9 +633,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
 
-
-
-    var indexOfJSON = getEventJSONIndex(idNum);
+    var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
 }
 
 function writeEventMembers(idNum) {
@@ -645,7 +643,13 @@ function writeEventMembers(idNum) {
     for (i = 0; i < numMembers; i++) {
         var memberName = flashTeamsJSON["events"][indexOfJSON].members[i];
 
-        memberString += '<li class="active" id="event_' + idNum + '_eventMemPill_' + numMembers + '"><a>' + memberName 
+        var newColor; 
+        for (j = 0; j < flashTeamsJSON["members"].length; j++) {
+            if (flashTeamsJSON["members"][j].role == memberName) {
+                newColor = flashTeamsJSON["members"][j].color;
+            }
+        }
+        memberString += '<li class="active" id="event_' + idNum + '_eventMemPill_' + numMembers + '"><a style="background-color:' + newColor + '">' + memberName 
         + '<div class="close" onclick="deleteEventMember(' + idNum + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>';
     }
     return memberString;
