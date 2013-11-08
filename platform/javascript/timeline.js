@@ -429,7 +429,7 @@ function addEventPopover(startHr, startMin) {
                 +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
                 +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
-                +'Notes: <textarea rows="3" id="notes_' + event_counter + '"> </textarea>'
+                +'Notes: <textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
@@ -459,6 +459,8 @@ function saveEventInfo (popId) {
     var startMin = $("#startMin_" + popId).val();
     if (startMin == "") startMin = parseInt($("#startMin_" + popId).attr("placeholder"));
 
+    var eventNotes = $("#notes_" + popId).val();
+
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
@@ -472,16 +474,16 @@ function saveEventInfo (popId) {
     //NEED TO DO
 
     //Update Popover
-    updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin);
+    updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
 
     $("#rect_" + popId).popover("hide");
 
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
-    flashTeamsJSON["events"][indexOfJSON].eventName = newTitle;
+    flashTeamsJSON["events"][indexOfJSON].title = newTitle;
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
-    flashTeamsJSON["events"][indexOfJSON].eventName = newTitle;
+    flashTeamsJSON["events"][indexOfJSON].notes = eventNotes;
 };
 
 function deleteRect (rectId) {
@@ -602,7 +604,7 @@ function updateWidth(idNum, hrs, min) {
     updateTime(idNum);
 }
 
-function updateEventPopover(idNum, title, startHr, startMin, hrs, min) {
+function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
 
     $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
