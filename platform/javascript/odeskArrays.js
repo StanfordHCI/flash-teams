@@ -1,13 +1,105 @@
-var oDeskCategories = [
-	"Web Development", 
-	"Writing & Translation", 
-	"Customer Service", 
-	"Software Development", 
-	"Administrative Support", 
-	"Sales & Marketing", 
-	"Networking & Information Systems", 
-	"Design & Multimedia",
-	"Business Services"
+var oDeskCategories = {
+	"Web Development": [
+		"All Web Development",
+		"Ecommerce",
+		"UI Design",
+		"Web Design",
+		"Web Programming",
+		"Website Project Management",
+		"Website QA",
+		"Other - Web Development"
+	],
+	"Software Development": [
+		"All Software Development",
+		"Application Interface Design",
+		"Desktop Applications",
+		"Game Development",
+		"Mobile Apps",
+		"Scripts & Utilities",
+		"Software Plug-ins",
+		"Software Project Management",
+		"Software QA",
+		"VOIP",
+		"Other - Software Development",
+	],
+	"Networking & Information Systems": [
+		"All Networking & Information Systems",
+		"DBA - Database Administration",
+		"ERP / CRM Implementation",
+		"Network Administration",
+		"Server Administration",
+		"Other - Networking & Information Systems"
+	], 
+	"Writing & Translation": [
+		"All Writing & Translation",
+		"Blog & Article Writing",
+		"Copywriting",
+		"Creative Writing",
+		"Technical Writing",
+		"Translation",
+		"Website Content",
+		"Other - Writing & Translation"
+	],
+	"Administrative Support": [
+		"All Administrative Support",
+		"Data Entry",
+		"Email Response Handling",
+		"Personal Assistant",
+		"Transcription",
+		"Web Research",
+		"Other - Administrative Support"
+	],
+	"Design & Multimedia": [
+		"All Design & Multimedia",
+		"3D Modeling & CAD",
+		"Animation",
+		"Audio Production",
+		"Engineering & Technical Design",
+		"Graphic Design",
+		"Illustration",
+		"Logo Design",
+		"Presentations",
+		"Print Design",
+		"Video Production",
+		"Voice Talent",
+		"Other - Design & Multimedia"
+	],
+	"Customer Service": [
+		"All Customer Service",
+		"Customer Service & Support",
+		"Order Processing",
+		"Phone Support",
+		"Technical Support",
+		"Other - Customer Service"
+	],
+	"Sales & Marketing": [
+		"All Sales & Marketing",
+		"Advertising",
+		"Business Plans & Marketing Strategy",
+		"Email Marketing",
+		"Market Research & Surveys",
+		"PR - Public Relations",
+		"SEM - Search Engine Marketing",
+		"SEO - Search Engine Optimization",
+		"SMM - Social Media Marketing",
+		"Sales & Lead Generation",
+		"Telemarketing & Telesales",
+		"Other - Sales & Marketing"
+	], 
+	"Business Services": [
+		"All Business Services",
+		"Accounting",
+		"Bookkeeping",
+		"Business Consulting",
+		"Financial Services & Planning",
+		"HR / Payroll",
+		"Legal",
+		"Payment Processing",
+		"Project Management",
+		"Recruiting",
+		"Statistical Analysis",
+		"Other - Business Services"
+	]
 ];
 
 var availableMembers = [
