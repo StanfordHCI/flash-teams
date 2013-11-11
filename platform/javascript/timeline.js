@@ -9,7 +9,7 @@ var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
     "events": [],        //{"title", "id", "startTime", "duration", "notes", "members", "dri"}
-    "members": [],       //{"id", "role", "skills":[], "color", "counter"}
+    "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
     "interactions" : []  //{"event1", "event2", "type", "description"}
 };
 
