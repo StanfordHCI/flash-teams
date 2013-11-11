@@ -1,3 +1,15 @@
+var oDeskCategories = [
+	"Web Development", 
+	"Writing & Translation", 
+	"Customer Service", 
+	"Software Development", 
+	"Administrative Support", 
+	"Sales & Marketing", 
+	"Networking & Information Systems", 
+	"Design & Multimedia",
+	"Business Services"
+];
+
 var availableMembers = [
 	"3D Modeling & CAD",
 	"Accounting",
