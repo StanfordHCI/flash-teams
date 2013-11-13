@@ -114,7 +114,6 @@ function leftResize(d) {
     $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2 + 4);
     $("#title_text_" + d.groupNum).attr("x", newX + 10);
     $("#time_text_" + d.groupNum).attr("x", newX + 10);
-    $("#acronym_text_" + d.groupNum).attr("x", newX + 10);
     taskRect.attr("width", rightX - newX);
     updateTime(d.groupNum);
 
@@ -338,7 +337,6 @@ function  drawEvents(x, y) {
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px");
 
-
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
         .attr("xlink:href", "images/rightArrow.png")
@@ -358,17 +356,6 @@ function  drawEvents(x, y) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", writeCollaboration);
-
-    //ADD ACRONYMS FOR MEMBERS
-    var acronym_text = task_g.append("text")
-        .text(function (d) {
-            return "[  ]";
-        })
-        .attr("class", "acronym_text")
-        .attr("id", function(d) {return "acronym_text_" + event_counter;})
-        .attr("groupNum", event_counter)
-        .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + RECTANGLE_HEIGHT - 10});
 
     task_groups.push(task_g);    
 };
@@ -390,9 +377,6 @@ function redraw(group, newWidth, gNum) {
     d3Group.selectAll(".time_text")
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 26});
-    d3Group.selectAll(".acronym_text")
-        .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + RECTANGLE_HEIGHT - 10});
     d3Group.selectAll(".handoff_btn")
         .attr("x", function(d) {return d.x + newWidth - 18})
         .attr("y", function(d) {return d.y + 23});
@@ -422,9 +406,9 @@ function addEventPopover(startHr, startMin) {
                 trigger: "click",
                 title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event" >',
                 content: '<form name="eventForm_' + event_counter + '">'
-                +'<b>Event Start:          </b>' 
-                +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">'
-                +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px"><br>'
+                +'<b>Event Start:          </b><br>' 
+                +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">  hrs'
+                +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px">  min<br>'
                 +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
@@ -497,7 +481,6 @@ function deleteRect (rectId) {
     $("#rt_rect_" + rectId).remove();
     $("#title_text_" + rectId).remove();
     $("#time_text_" + rectId).remove();
-    $("#acronym_text_" + rectId).remove();
     $("#collab_btn_" + rectId).remove();
     $("#handoff_btn_" + rectId).remove();
 
@@ -595,7 +578,6 @@ function updateStartPlace(idNum, startHr, startMin, width) {
     $("#lt_rect_" + idNum).attr("x", newX);
     $("#title_text_" + idNum).attr("x", newX + 10);
     $("#time_text_" + idNum).attr("x", newX + 10);
-    $("#acronym_text_" + idNum).attr("x", newX + 10);
     $("#handoff_btn_" + idNum).attr("x", newX + width - 18);
     $("#collab_btn_" + idNum).attr("x", newX + width - 38);
 

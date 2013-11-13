@@ -1,4 +1,5 @@
 var oDeskCategories = {
+	"--oDesk Category--": [],
 	"Web Development": [
 		"All Web Development",
 		"Ecommerce",
@@ -100,7 +101,7 @@ var oDeskCategories = {
 		"Statistical Analysis",
 		"Other - Business Services"
 	]
-];
+};
 
 var availableMembers = [
 	"3D Modeling & CAD",

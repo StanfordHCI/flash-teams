@@ -27,11 +27,11 @@ function addMember() {
         class: "member",
         id: '"memberPopover' + pillCounter + '"',
         trigger: "click",
-        title: '<b>' + memberName + ' [ ]</b>',
+        title: '<b>' + memberName + '</b>',
         content:  '<form name="memberForm_' + pillCounter + '" autocomplete="on">'
         +'<div class="mForm_' + pillCounter + '">'
             +'<div class="input-append" > ' 
-            +'<select class="category1Input" id="member' + pillCounter + '_category1"> <option value="0">--oDesk Category--</option></select>'
+            +'<select class="category1Input" id="member' + pillCounter + '_category1"></select>'
             +'<br><br><select class="category2Input" id="member' + pillCounter + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
             +'<br><br><input class="skillInput" id="addSkillInput_' + pillCounter + '" type="text" onclick="addAuto()" placeholder="New Skill" autocomplete="on">'
             +'<button class="btn" type="button" onclick="addSkill(' + pillCounter + ');">+</button>'
@@ -48,19 +48,25 @@ function addMember() {
     });
     $("#mPill_"+pillCounter).popover("show");
 
-    for (i = 0; i < oDeskCategories.length; i++) {
+    for (var key in oDeskCategories) {
         var option = document.createElement("option");
-        $("#member" + pillCounter + "_category1").append("<option>" + oDeskCategories[i] + "</option>");
+        $("#member" + pillCounter + "_category1").append('<option value="' + key + '">' + key + '</option>');
     }
-
     $("#member" + pillCounter + "_category1").change(function() {
-        $("#member" + pillCounter + "_category2").removeAttr("disabled");
-        if ($("#member" + pillCounter + "_category1").value == 0) {
+        if ($("#member" + pillCounter + "_category1").value == "--oDesk Category--") {
             $("#member" + pillCounter + "_category2").attr("disabled", "disabled");
+        } else {
+            $("#member" + pillCounter + "_category2").removeAttr("disabled");
+            $("#member" + pillCounter + "_category2").empty();
+
+            var category1Select = document.getElementById("member" + pillCounter + "_category1");
+            var category1Name = category1Select.options[category1Select.selectedIndex].value;
+            for (i = 0; i < oDeskCategories[category1Name].length; i++) {
+                var option = document.createElement("option");
+                $("#member" + pillCounter + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
+            }
         }
 
-        //Loop through arrays to change autocomplete
-        //START HERE NOT DONE
     });
  
     //Add to Flash Teams JSON Object
@@ -81,7 +87,7 @@ function addAuto() {
 function addSkill(memberId) {
     var skillName = $("#addSkillInput_" + memberId).val();
     if (skillName == "" || oSkills.indexOf(skillName) < 0) {
-        alert("Not a valid skill");
+        alert("Not a valid oDesk skill");
         return;
     }
 
