@@ -88,12 +88,10 @@ var drag = d3.behavior.drag()
 
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
-    .origin(Object)
     .on("drag", rightResize);
 
 //Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
-    .origin(Object)
     .on("drag", leftResize);
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
@@ -107,7 +105,6 @@ function leftResize(d) {
     var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
     var newX = Math.max(0, Math.min(rightX - 50, dragX));
-
     taskRect.attr("x", newX);
 
     //Update task rectangle graphics
