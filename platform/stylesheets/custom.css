@@ -1,6 +1,19 @@
-#member-container li {
+#memberPills li {
     float: none!important;
     padding: 5px 0;
+}
+
+.task_rectangle {
+    cursor:pointer;
+}
+
+.overlay {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: none;
+    position: absolute;
+    top: 0;
 }
 
 $(".full-spectrum").spectrum({

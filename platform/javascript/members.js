@@ -33,8 +33,8 @@ function addMember() {
             +'<div class="input-append" > ' 
             +'<select class="category1Input" id="member' + pillCounter + '_category1"></select>'
             +'<br><br><select class="category2Input" id="member' + pillCounter + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
-            +'<br><br><input class="skillInput" id="addSkillInput_' + pillCounter + '" type="text" onclick="addAuto()" placeholder="New Skill" autocomplete="on">'
-            +'<button class="btn" type="button" onclick="addSkill(' + pillCounter + ');">+</button>'
+            +'<br><br><input class="skillInput" id="addSkillInput_' + pillCounter + '" type="text" onclick="addAuto()" placeholder="New oDesk Skill" autocomplete="on">'
+            +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + pillCounter + '" onclick="addSkill(' + pillCounter + ');">+</button>'
             +'</div>'
             +'Skills:'  
             +'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
@@ -67,6 +67,10 @@ function addMember() {
             }
         }
 
+    });
+
+    $(document).ready(function() {
+        pressEnterKeyToSubmit("#addSkillInput_" + pillCounter, "#addSkillButton_" + pillCounter);
     });
  
     //Add to Flash Teams JSON Object
@@ -119,6 +123,10 @@ function saveMemberInfo(popId) {
     var newColor = $("#color_" + popId).spectrum("get");
     updateMemberPillColor(newColor, popId);
     updateMemberPopover(popId);
+
+    //START HERE
+    //SAVE THE CATEGORY INFO TO THE JSON
+
     $("#mPill_" + popId).popover("hide");
 };
 
