@@ -252,6 +252,7 @@ function mousedown() {
     task_g.exit().remove();
 
     addEventPopover(startHr, startMin);
+    overlayOn();
 
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
@@ -466,6 +467,7 @@ function saveEventInfo (popId) {
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
 
     $("#rect_" + popId).popover("hide");
+    overlayOff();
 
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
@@ -676,6 +678,17 @@ function handoffMouseClick() {
 function writeCollaboration() {
     console.log("Trying to write a collaboration");
 
+}
+
+function overlayOn() {
+    console.log("Turning the overlay on");
+    document.getElementById("overlay").style.display = "block";
+}
+
+function overlayOff() {
+    console.log("Turning the overlay off");
+    $(".task_rectangle").popover("hide");
+    document.getElementById("overlay").style.display = "none";
 }
 
 function getEventJSONIndex(idNum) {
