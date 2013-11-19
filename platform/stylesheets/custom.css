@@ -7,13 +7,16 @@
     cursor:pointer;
 }
 
+#timeline-container {
+    position: relative;
+}
+
 .overlay {
     height: 100%;
-    width: 100%;
+    width: 2400px;
     background-color: rgba(0, 0, 0, 0);
     display: none;
     position: absolute;
-    top: 0;
 }
 
 $(".full-spectrum").spectrum({

@@ -656,8 +656,8 @@ function writeHandoff() {
         .attr("y1", m[1])
         .attr("x2", m[0])
         .attr("y2", m[1])
-        .attr("stroke-width", 2)
-        .attr("stroke", "black");
+        .attr("stroke-width", 3)
+        .attr("stroke", "gray");
     
     timeline_svg.on("mousemove", handoffMouseMove);
 }
@@ -677,7 +677,6 @@ function handoffMouseClick() {
 
 function writeCollaboration() {
     console.log("Trying to write a collaboration");
-
 }
 
 function overlayOn() {
