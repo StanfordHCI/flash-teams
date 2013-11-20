@@ -5,3 +5,7 @@ function pressEnterKeyToSubmit(inputId, buttonId) {
 		}
 	});
 }
+
+function saveFlashTeam() {
+	console.log("Saving flash team"); 
+}
