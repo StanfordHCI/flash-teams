@@ -4,7 +4,6 @@
  * 
  */
 
-
 var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
@@ -37,6 +36,8 @@ var RECTANGLE_WIDTH = 100,
     RECTANGLE_HEIGHT = 100;
 
 var event_counter = 0;
+var handoff_counter = 0;
+var collab_counter = 0;
 
 var DRAGBAR_WIDTH = 8;
 
@@ -47,7 +48,6 @@ var drag = d3.behavior.drag()
         var group = this.parentNode;
         var oldX = d.x;
         var groupNum = this.id.split("_")[1];
-
         var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
 
         //Horiztonal draggingx
@@ -74,8 +74,7 @@ var drag = d3.behavior.drag()
         $("#rect_" + groupNum).popover("hide");     
 
         //Vertical Dragging
-        var Y_WIDTH = RECTANGLE_HEIGHT;
-        var dragY = d3.event.y - (d3.event.y%(Y_WIDTH)) + 17;
+        var dragY = d3.event.y - (d3.event.y%(RECTANGLE_HEIGHT)) + 17;
         var newY = Math.min(SVG_HEIGHT - RECTANGLE_HEIGHT, dragY);
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
@@ -648,10 +647,14 @@ function writeEventMembers(idNum) {
 }
 
 function writeHandoff() {
-    console.log("Trying to write a handoff");
+    handoff_counter++;
     var m = d3.mouse(this);
     console.log("x: " + m[0] + " y: " + m[1]);
     line = timeline_svg.append("line")
+        .attr("class", "handOffLine")
+        .attr("id", function() {
+            return "handoff_" + handoff_counter;
+        })
         .attr("x1", m[0])
         .attr("y1", m[1])
         .attr("x2", m[0])
@@ -680,12 +683,10 @@ function writeCollaboration() {
 }
 
 function overlayOn() {
-    console.log("Turning the overlay on");
     document.getElementById("overlay").style.display = "block";
 }
 
 function overlayOff() {
-    console.log("Turning the overlay off");
     $(".task_rectangle").popover("hide");
     document.getElementById("overlay").style.display = "none";
 }
