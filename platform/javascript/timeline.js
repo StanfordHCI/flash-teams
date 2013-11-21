@@ -4,14 +4,6 @@
  * 
  */
 
-var flashTeamsJSON = {
-    "title" : "New Flash Team",
-    "id" : 1,
-    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members", "dri"}
-    "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
-    "interactions" : []  //{"event1", "event2", "type", "description"}
-};
-
 var XTicks = 50,
     YTicks = 5;
 
@@ -230,6 +222,7 @@ timeline_svg.append("rect")
 var task_groups = [],
     task_g = timeline_svg.selectAll(".task_g");
 
+//Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
     event_counter++; //To generate id
     var point = d3.mouse(this);
@@ -357,6 +350,7 @@ function  drawEvents(x, y) {
     task_groups.push(task_g);    
 };
 
+//Redraw a single task rectangle after it is dragged
 function redraw(group, newWidth, gNum) {
     var d3Group = d3.select(group)
     d3Group.selectAll(".task_rectangle")
@@ -390,6 +384,7 @@ function redraw(group, newWidth, gNum) {
     }
 }
 
+//The initialization of the twitter bootstrap popover on an event's task rectangle
 function addEventPopover(startHr, startMin) {
     //Add Popovers
     timeline_svg.selectAll("#rect_" + event_counter).each(
@@ -426,6 +421,8 @@ function addEventPopover(startHr, startMin) {
     });
 };
 
+//Populate the autocomplete function for the event members
+//TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
 function addMemAuto() {
     var memberArray = new Array(flashTeamsJSON["members"].length);
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
@@ -439,6 +436,8 @@ function addMemAuto() {
     })
 }
 
+//Called when the user clicks save on an event popover, grabs new info from user and updates 
+//both the info in the popover and the event rectangle graphics
 function saveEventInfo (popId) {
     //Update title
     var newTitle = $("#eventName_" + popId).val();
@@ -476,6 +475,7 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].notes = eventNotes;
 };
 
+//Delete a task rectangle, all of its relevant components, and remove the event from the JSON
 function deleteRect (rectId) {
     $("#rect_" + rectId).popover("destroy");
     $("#rect_" + rectId).remove();
@@ -494,6 +494,8 @@ function deleteRect (rectId) {
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
 };
 
+//Add one of the team members to an event, includes a bar to represent it on the task rectangle
+//and a pill in the popover that can be deleted, both of the specified color of the member
 function addEventMember(eventId) {
     var memberName = $("#eventMember_" + eventId).val();
 
@@ -536,6 +538,8 @@ function addEventMember(eventId) {
     $("#eventMember_" + eventId).val("");
 }
 
+//Remove a team member from an event
+//LIKELY TO BE DELETED OR RE-STRUCTURED BASED ON NEW CHECKBOX SYSTEM
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the pill and line
     $("#event_" + eventId + "_eventMemPill_" + memberNum).remove();
@@ -573,6 +577,7 @@ function updateTime(idNum) {
     flashTeamsJSON["events"][indexOfJSON].startTime = (startHr*60) + startMin;
 }
 
+//Change the starting location of a task rectangle and its relevant components when the user changes info in the popover
 function updateStartPlace(idNum, startHr, startMin, width) {
     var newX = (startHr*100) + (startMin/15*25) - 4;
     $("#rect_" + idNum).attr("x", newX);
@@ -589,6 +594,7 @@ function updateStartPlace(idNum, startHr, startMin, width) {
     }
 }
 
+//Update the width and total runtime of an event when a user changes the info in the popover
 function updateWidth(idNum, hrs, min) {
     var newWidth = (hrs * 100) + (min/15*25);
     var newX = $("#rect_" + idNum).get(0).x.animVal.value + newWidth;
@@ -606,6 +612,7 @@ function updateWidth(idNum, hrs, min) {
     updateTime(idNum);
 }
 
+//Access the data of a single event's popover and changes the content
 function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
 
@@ -627,6 +634,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
     var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
 }
 
+//Grab the relevant team members attached to an event by accessing the JSON
+//Draws these members as pills in the popover with deletable 'X'
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum); 
     var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
@@ -646,6 +655,7 @@ function writeEventMembers(idNum) {
     return memberString;
 }
 
+//Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
 function writeHandoff() {
     handoff_counter++;
     var m = d3.mouse(this);
@@ -665,6 +675,7 @@ function writeHandoff() {
     timeline_svg.on("mousemove", handoffMouseMove);
 }
 
+//Follow the mouse movements after a handoff is initialized
 function handoffMouseMove() {
     console.log("in da mousemove");
     var m = d3.mouse(this);
@@ -674,23 +685,28 @@ function handoffMouseMove() {
     timeline_svg.on("click", handoffMouseClick);
 }
 
+//Stop following the position of the mouse //IN PROGRESS
 function handoffMouseClick() {
     timeline_svg.on("mousemove", null);
 }
 
+//Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
 function writeCollaboration() {
     console.log("Trying to write a collaboration");
 }
 
+//Turn on the overlay so a user cannot continue to draw events when focus is on a popover
 function overlayOn() {
     document.getElementById("overlay").style.display = "block";
 }
 
+//Remove the overlay so a user can draw events again
 function overlayOff() {
     $(".task_rectangle").popover("hide");
     document.getElementById("overlay").style.display = "none";
 }
 
+//Access a particular "event" in the JSON by its id number and return its index in the JSON array of events
 function getEventJSONIndex(idNum) {
     for (i = 0; i < flashTeamsJSON["events"].length; i++) {
         if (flashTeamsJSON["events"][i].id == idNum) {

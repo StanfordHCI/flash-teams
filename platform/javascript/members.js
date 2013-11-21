@@ -120,12 +120,13 @@ function deleteSkill(memberId, pillId, skillName) {
 
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
+    var indexOfJSON = getMemberJSONIndex(popId);
+    flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
+
     var newColor = $("#color_" + popId).spectrum("get");
     updateMemberPillColor(newColor, popId);
     updateMemberPopover(popId);
-
-    //START HERE
-    //SAVE THE CATEGORY INFO TO THE JSON
 
     $("#mPill_" + popId).popover("hide");
 };
