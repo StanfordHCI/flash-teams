@@ -63,7 +63,7 @@ var drag = d3.behavior.drag()
         var min = $("#minutes_" + groupNum).attr("placeholder");
         var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
         updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
-        $("#rect_" + groupNum).popover("hide");     
+        $("#rect_" + groupNum).popover("hide");
 
         //Vertical Dragging
         var dragY = d3.event.y - (d3.event.y%(RECTANGLE_HEIGHT)) + 17;
@@ -132,6 +132,8 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
+    //var task_g = getTaskGFromGroupNum (d.groupNum);
+    //var taskRect = task_g.select("#rect_" + d.groupNum);
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
@@ -211,9 +213,7 @@ timeline_svg.append("line")
     .style("stroke", "#000")
     .style("stroke-width", "4")
 
-/* Define remaining tasks, and currently running tasks */
-var remaining_tasks = [];
-var live_tasks = [];
+/* --------------- TEAM AWARENESS STUFF START ------------ */
 
 /* Time cursor in red */
 timeline_svg.append("line")
@@ -226,32 +226,40 @@ timeline_svg.append("line")
     .style("stroke-width", "2")
 
 var timeline_interval = 18000; // TODO: should be 30 minutes = 1800000 milliseconds
-var fire_interval = 1800;
+var fire_interval = 180;
 var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
 var increment = parseFloat(50)/parseFloat(numIntervals);
+var curr_x_standard = 0;
 
-// TODO: set up another interval that fires every 30 minutes and sets the cursor onto another
-// transition for another 30 minutes
 var cursor = timeline_svg.select(".cursor");
-cursor.transition()
-    .duration(timeline_interval)
-    .ease("linear")
-    .attr("x1", 50)
-    .attr("x2", 50);
+var moveCursor = function(length_of_time){
+    var new_x = curr_x_standard + 50;
+    curr_x_standard += 50;
+    console.log("curr_x_standard: " + curr_x_standard);
 
-// set an interval to move the cursor by a certain amount every time it is fired
-setInterval(function(){
-    var cursor = timeline_svg.select(".cursor");
+    cursor.transition()
+        .duration(length_of_time)
+        .ease("linear")
+        .attr("x1", curr_x_standard)
+        .attr("x2", curr_x_standard);
+};
+var setCursorMoving = function(){
+    moveCursor(timeline_interval);
+    setInterval(function(){
+        moveCursor(timeline_interval);
+    }, timeline_interval); // every 18 seconds currently
+};
+
+var live_tasks = [];
+var remaining_tasks = [];
+var delayed_tasks = [];
+
+var computeLiveAndRemainingTasks = function(){
     var curr_x = cursor.attr("x1");
     var curr_new_x = parseFloat(curr_x) + increment;
-    
-    //cursor.transition()
-    //.duration(fire_interval)
-    //.attr("x1", curr_new_x)
-    //.attr("x2", curr_new_x);
 
-    remaining_tasks = [];
-    live_tasks = [];
+    var remaining_tasks = [];
+    var live_tasks = [];
     for (var i=0;i<task_groups.length;i++){
         var task = task_groups[i];
         var data = task.data()[0];
@@ -269,9 +277,111 @@ setInterval(function(){
         }
     }
 
-    console.log("remaining_tasks: " + remaining_tasks);
-    console.log("live_tasks: " + live_tasks);
-}, fire_interval);
+    return {"live":live_tasks, "remaining":remaining_tasks};
+};
+
+var getTaskGFromGroupNum = function(groupNum){
+    for(var i=0;i<task_groups.length;i++){
+        var task_g = task_groups[i];
+        if (task_g.data()[0].groupNum == groupNum) return task_g;
+    }
+};
+
+var extendDelayedBoxes = function(){
+    // go through delayed tasks and increase width of red box
+    for (var i=0;i<delayed_tasks.length;i++){
+        var groupNum = delayed_tasks[i];
+        var delayed_rect = timeline_svg.selectAll("#delayed_rect_" + groupNum);
+        //var task_g = getTaskGFromGroupNum (groupNum);
+        //var delayed_rect = task_g.select("#delayed_rect_" + groupNum);
+        
+        // new width is diff b/w current cursor position and starting of delayed rect
+        var cursor_x = parseFloat(cursor.attr("x1"));
+        var curr_width = parseFloat(delayed_rect.attr("width"));
+        var new_width = cursor_x - parseFloat(delayed_rect.attr("x"));
+        //console.log("cursor_x: " + cursor_x);
+        //console.log("starting of red box: " + parseFloat(delayed_rect.attr("x")));
+        delayed_rect.attr("width", new_width);
+        
+        var diff = new_width - curr_width;
+        moveRemainingTasksRight(diff);
+    }
+};
+
+var moveRemainingTasksRight = function(diff){
+    for (var i=0;i<remaining_tasks.length;i++){
+        console.log("groupNum: " + remaining_tasks[i]);
+        var task_g = getTaskGFromGroupNum(remaining_tasks[i]);
+        console.log(task_g);
+        //var group = timeline_svg.selectAll("#rect_" + remaining_tasks[i]);
+        var group = task_g[0][0];
+        var x = parseFloat(task_g.data()[0].x);
+        console.log("shifting a remaining task to the right!");
+        task_g.data()[0].x = x + parseFloat(diff);
+
+        var rectWidth = parseFloat(timeline_svg.selectAll("#rect_" + remaining_tasks[i]).attr("width"));
+        redraw(group, rectWidth, remaining_tasks[i]);
+    }
+};
+
+var trackLiveAndRemainingTasks = function() {
+    setInterval(function(){
+        var tasks = computeLiveAndRemainingTasks();
+        var new_live_tasks = tasks["live"];
+        var new_remaining_tasks = tasks["remaining"];
+
+        extendDelayedBoxes();
+
+        for (var i=0;i<live_tasks.length;i++){
+            var groupNum = live_tasks[i];
+            if (new_live_tasks.indexOf(groupNum) == -1) { // groupNum is no longer live
+                console.log("!!!!!!!!!!!!!!!!!!!!!!! task completed!");
+                var task_g = getTaskGFromGroupNum (groupNum);
+                var completed = task_g.data()[0].completed;
+                if(!completed){
+                    // add red box of width 1
+                    var task_rect_curr_width = task_g.select("#rect_" + groupNum).attr("width");
+                    var red_rectangle = task_g.append("rect")
+                        .attr("class", "delayed_rectangle")
+                        .attr("x", function(d) {return parseFloat(d.x) + parseFloat(task_rect_curr_width)})
+                        .attr("y", function(d) {return d.y})
+                        .attr("id", function(d) {
+                            return "delayed_rect_" + groupNum; })
+                        .attr("groupNum", groupNum)
+                        .attr("height", RECTANGLE_HEIGHT)
+                        .attr("width", 1)
+                        .attr("fill", "red")
+                        .attr("fill-opacity", .6)
+                        .attr("stroke", "#5F5A5A")
+                        .attr('pointer-events', 'all')
+                        .call(drag);
+
+                    // add to delayed_tasks list
+                    delayed_tasks.push(groupNum);
+
+                    // move remaining tasks to the right incrementally
+                    moveRemainingTasksRight(1);
+                } else {
+                    // draw blue box right away, for difference of when completed and how much longer should have taken
+                    // move everything to the left by that much
+                }
+            }
+        }
+
+        // if user said done, it would be marked completed and removed from live tasks and delayed tasks (if it is found in there), and hence the red box will not get added/extended. instead, draw blue box.
+        
+        live_tasks = new_live_tasks;
+        remaining_tasks = new_remaining_tasks;
+
+        //console.log("remaining_tasks: " + tasks["remaining"]);
+        //console.log("live_tasks: " + tasks["live"]);
+    }, fire_interval);
+};
+
+setCursorMoving();
+trackLiveAndRemainingTasks();
+
+/* --------------- TEAM AWARENESS STUFF END ------------ */
 
 timeline_svg.append("rect")
     .attr("class", "background")
@@ -316,7 +426,7 @@ function mousedown() {
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvents(x, y) {
     var task_g = timeline_svg.append("g")
-        .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
+        .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter, completed: false}]);
 
     //Task Rectangle, Holds Event Info
     var task_rectangle = task_g.append("rect")
