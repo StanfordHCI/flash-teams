@@ -292,15 +292,11 @@ var extendDelayedBoxes = function(){
     for (var i=0;i<delayed_tasks.length;i++){
         var groupNum = delayed_tasks[i];
         var delayed_rect = timeline_svg.selectAll("#delayed_rect_" + groupNum);
-        //var task_g = getTaskGFromGroupNum (groupNum);
-        //var delayed_rect = task_g.select("#delayed_rect_" + groupNum);
         
         // new width is diff b/w current cursor position and starting of delayed rect
         var cursor_x = parseFloat(cursor.attr("x1"));
         var curr_width = parseFloat(delayed_rect.attr("width"));
         var new_width = cursor_x - parseFloat(delayed_rect.attr("x"));
-        //console.log("cursor_x: " + cursor_x);
-        //console.log("starting of red box: " + parseFloat(delayed_rect.attr("x")));
         delayed_rect.attr("width", new_width);
         
         var diff = new_width - curr_width;
@@ -308,19 +304,16 @@ var extendDelayedBoxes = function(){
     }
 };
 
-var moveRemainingTasksRight = function(diff){
+var moveRemainingTasksRight = function(amount){
     for (var i=0;i<remaining_tasks.length;i++){
-        console.log("groupNum: " + remaining_tasks[i]);
-        var task_g = getTaskGFromGroupNum(remaining_tasks[i]);
-        console.log(task_g);
-        //var group = timeline_svg.selectAll("#rect_" + remaining_tasks[i]);
-        var group = task_g[0][0];
+        var groupNum = remaining_tasks[i];
+        var task_g = getTaskGFromGroupNum(groupNum);
         var x = parseFloat(task_g.data()[0].x);
-        console.log("shifting a remaining task to the right!");
-        task_g.data()[0].x = x + parseFloat(diff);
+        task_g.data()[0].x = x + parseFloat(amount);
+        var group = task_g[0][0];
 
-        var rectWidth = parseFloat(timeline_svg.selectAll("#rect_" + remaining_tasks[i]).attr("width"));
-        redraw(group, rectWidth, remaining_tasks[i]);
+        var rectWidth = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+        redraw(group, rectWidth, groupNum);
     }
 };
 
@@ -330,15 +323,16 @@ var trackLiveAndRemainingTasks = function() {
         var new_live_tasks = tasks["live"];
         var new_remaining_tasks = tasks["remaining"];
 
+        // extend already delayed boxes
         extendDelayedBoxes();
 
+        // detect any new task is delayed
         for (var i=0;i<live_tasks.length;i++){
             var groupNum = live_tasks[i];
             if (new_live_tasks.indexOf(groupNum) == -1) { // groupNum is no longer live
-                console.log("!!!!!!!!!!!!!!!!!!!!!!! task completed!");
                 var task_g = getTaskGFromGroupNum (groupNum);
                 var completed = task_g.data()[0].completed;
-                if(!completed){
+                if(!completed){ // delayed
                     // add red box of width 1
                     var task_rect_curr_width = task_g.select("#rect_" + groupNum).attr("width");
                     var red_rectangle = task_g.append("rect")
@@ -352,30 +346,47 @@ var trackLiveAndRemainingTasks = function() {
                         .attr("width", 1)
                         .attr("fill", "red")
                         .attr("fill-opacity", .6)
-                        .attr("stroke", "#5F5A5A")
-                        .attr('pointer-events', 'all')
-                        .call(drag);
+                        .attr("stroke", "#5F5A5A");
 
                     // add to delayed_tasks list
                     delayed_tasks.push(groupNum);
 
                     // move remaining tasks to the right incrementally
                     moveRemainingTasksRight(1);
-                } else {
+                } else { // finished early
                     // draw blue box right away, for difference of when completed and how much longer should have taken
                     // move everything to the left by that much
                 }
             }
         }
-
-        // if user said done, it would be marked completed and removed from live tasks and delayed tasks (if it is found in there), and hence the red box will not get added/extended. instead, draw blue box.
-        
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
-
-        //console.log("remaining_tasks: " + tasks["remaining"]);
-        //console.log("live_tasks: " + tasks["live"]);
     }, fire_interval);
+};
+
+var completeTask = function(groupNum){
+    console.log("completing task " + groupNum);
+
+    var task_g = getTaskGFromGroupNum (groupNum);
+
+    // mark as completed
+    task_g.data()[0].completed = true;
+
+    // remove from either live or delayed tasks
+    var idx = live_tasks.indexOf(groupNum);
+    if (idx == -1) {
+        idx = delayed_tasks.indexOf(groupNum);
+        if (idx != -1) {
+            delayed_tasks.splice(idx, 1);
+        } else {
+            console.log("none found");
+        }
+    } else {
+        live_tasks.splice(idx, 1);
+    }
+
+    $("#rect_" + groupNum).popover("hide");
+    overlayOff();
 };
 
 setCursorMoving();
@@ -584,7 +595,8 @@ function addEventPopover(startHr, startMin) {
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
                 +'Notes: <textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
+                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
+                +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button></p>' 
                 +'</form>',
                 container: $("#timeline-container")
             });
@@ -804,6 +816,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
+        +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button></p>'
         +'</form>';
 
     var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
