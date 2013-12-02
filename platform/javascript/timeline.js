@@ -90,6 +90,19 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("height", SVG_HEIGHT)
     .attr("class", "chart");
 
+//Takes a Flash Teams JSON Object and Draws a Flash Team
+function drawFlashTeamFromJSON(ftJSON) {
+    //POPULATE MEMBERS
+
+    //DRAW MEMBER POPOVERS
+
+    //DRAW EVENTS
+
+    //DRAW EVENT POPOVERS
+
+    //DRAW INTERACTIONS
+}
+
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
@@ -269,6 +282,8 @@ function  drawEvents(x, y) {
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
+        .attr("onclick", function(d) {
+            drawMemberCheckboxes(d.id) })
         .call(drag);
 
     //Right Dragbar
@@ -404,8 +419,7 @@ function addEventPopover(startHr, startMin) {
                 +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
-                +'<button class="btn" type="button" id="addEventMember_' + event_counter + '" onclick="addEventMember(' + event_counter +')">+Add</button>'
+                +'<br>Members<br> <div id="event' + event_counter + 'memberList"> </div>'
                 +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
                 +'Notes: <textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
@@ -415,6 +429,15 @@ function addEventPopover(startHr, startMin) {
             });
             $(this).popover("show"); 
         });
+
+    //Add team member checkboxes
+    var memberList = document.getElementById('event' + event_counter + 'memberList');
+    for (i = 1; i <= flashTeamsJSON["members"].length; i++) {
+        var text = document.createElement('div');
+        var memberName = flashTeamsJSON["members"][i-1].role;
+        text.innerHTML = '<input type="checkbox" id="event' + event_counter + 'member' + i + 'checkbox">' + memberName;
+        memberList.appendChild(text);
+    }
 
     $(document).ready(function() {
         pressEnterKeyToSubmit("#eventMember_" + event_counter, "#addEventMember_" + event_counter);
@@ -623,8 +646,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + event_counter + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
-        +'<button class="btn" type="button" onclick="addEventMember(' + event_counter +')">+Add</button>'
+        +'<br>Members<br> <div id="event' + event_counter + 'memberList"> </div>'
         +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '">'+  writeEventMembers(idNum) +' </ul>'
         +'Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
@@ -632,6 +654,10 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'</form>';
 
     var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
+}
+
+function drawMemberCheckboxes(idNum) {
+    console.log("it worked", idNum);
 }
 
 //Grab the relevant team members attached to an event by accessing the JSON

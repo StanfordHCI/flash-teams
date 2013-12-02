@@ -48,6 +48,7 @@ function addMember() {
     });
     $("#mPill_"+pillCounter).popover("show");
 
+    //Adds the drop-down for two-tiered oDesk job posting categories on popover
     for (var key in oDeskCategories) {
         var option = document.createElement("option");
         $("#member" + pillCounter + "_category1").append('<option value="' + key + '">' + key + '</option>');
@@ -69,6 +70,7 @@ function addMember() {
 
     });
 
+    //Appends oDesk Skills input to popover
     $(document).ready(function() {
         pressEnterKeyToSubmit("#addSkillInput_" + pillCounter, "#addSkillButton_" + pillCounter);
     });
@@ -77,6 +79,9 @@ function addMember() {
     var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[], "category1":"", "category2":""};
     flashTeamsJSON.members.push(newMember); 
     addMemberNode(memberName, pillCounter, "#808080");
+
+    //If there are tasks, add the checkbox to them
+    //START HERE
 };
 
 function addAuto() {
