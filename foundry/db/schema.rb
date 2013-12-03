@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20131127015448) do
 
   create_table "flash_teams", force: true do |t|
     t.string   "name"
+    t.text     "json"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

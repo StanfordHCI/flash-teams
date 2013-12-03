@@ -42,8 +42,14 @@ class FlashTeamsController < ApplicationController
     redirect_to flash_teams_path
   end
 
+  def ajax_update
+    @flash_team = FlashTeam.find(params[:id])
+    @flash_team.json = 0
+    @flahs_team.save
+  end
+
   def flash_team_params
-    params.require(:flash_team).permit(:name)
+    params.require(:flash_team).permit(:name, :json)
   end
 
   private :flash_team_params
