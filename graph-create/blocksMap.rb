@@ -1,12 +1,27 @@
 #! /bin/ruby
 
-isLite = false;
+isLite = false
+isHighlevel = false
 
 # Color set -- MUST be at least as large as the number of possible tasks
-colorArray = ["darkgoldenrod2", "cornflowerblue", "gray45", "deeppink", "darkolivegreen", "darksalmon", "darkorchid", "burlywood"];
+colorArray = ["darkgoldenrod2", "cornflowerblue", "gray45", "deeppink", "darkolivegreen", "darksalmon", "darkorchid", "burlywood", "red", "blue", "green", "yellow", "pink"]
 
-if( ARGV[1] != nil && ARGV[1].downcase == "lite" )
-	isLite = true;
+# Process command line arguments
+if( ARGV.length > 0 )
+	ARGV.each{ |param|
+		# Clean up the input
+		param = param.downcase.gsub(/[-_]/,"")
+
+		# If we want the single-node versus ternary form visualization of tasks...
+		if( param == "lite" )
+			isLite = true
+		end
+
+		# If we only want a job-level visualization...
+		if( param == "highlevel" )
+			isHighlevel = true
+		end
+	}
 end
 
 def printElem(elem)
@@ -42,48 +57,53 @@ def printGraph(content)
 end
 
 
-#########################
+######################### ######################### #########################
+#####################################  ######################################
+######################### ######################### #########################
 
 file = File.open(ARGV[0])
 blockArray = Array.new
+taskNameArray = Array.new
 gContent = ""
 gLinks = ""
+taskNameOffset = 8
 
 lineIdx = -1
 file.each{ |line|
 	lineIdx += 1
 	if( lineIdx == 0 )
+		# Read the titles from the first line
+		lineAry = line.split("\t")
+		for i in taskNameOffset...lineAry.length
+			#
+			taskNameArray << lineAry[i] 
+		end
+
+		# Skip the rest of the loop for now, there is nothing else to add
 		next
 	end
 
 	toAdd = Hash.new
 
-	#line = line.gsub(/[^a-zA-Z0-9⋁⋀\- \t]/,"")
-	line = line.gsub(/[^a-zA-Z0-9;,\/\\\- \t]/,"")
-	#line = line.gsub("]","")
+	# Clean up the input
+	line = line.downcase.gsub(/[^a-zA-Z0-9;,\/\\\- \t]/,"")
 	lineAry = line.split("\t")
 
 	# Get the action name
 	toAdd["name"] = lineAry[0].gsub(" ","_")
 	# Get the preconditions
-	#toAdd["input"] = lineAry[2].split(/[ ^ ]/)
-	#toAdd["input"] = lineAry[2].split(/[ v ][ ^ ]/)
-	#toAdd["input"] = lineAry[2].split(/[\s*⋀\s*][\s*⋁\s*]/)
 	toAdd["input"] = lineAry[2].split(/\s*;\s*/)
 	toAdd["input"].each{ |elem|
 		elem.gsub!(" ","_")
 	}
 	# Get the postconditions
-	#toAdd["output"] = lineAry[3].split(/[ ^ ]/)
-	#toAdd["output"] = lineAry[3].split(/[ v ][ ^ ]/)
-	#toAdd["output"] = lineAry[3].split(/[\s*⋀\s*][\s*⋁\s*]/)
 	toAdd["output"] = lineAry[3].split(/\s*;\s*/)
 	toAdd["output"].each{ |elem|
 		elem.gsub!(" ","_")
 	}
 	# Get the action description
 	toAdd["description"] = "#{lineAry[4]}: #{lineAry[5]}"
-
+	# Get the job membership of the task
 	numTasks = lineAry.length > 8 ? lineAry.length - 8 : 0
 	taskAry = Array.new
 	for i in 9..lineAry.length
@@ -92,14 +112,16 @@ file.each{ |line|
 	end
 	toAdd["tasktags"] = taskAry
 
+	# Debug output / sanity check of the parse
 	printElem(toAdd)
 
+	# Add the newly populated element
 	blockArray << toAdd
 }
 
-#puts(blockArray)
-
+# Add the names of all the nodes we're going to use in the graph
 blockArray.each{ |elem|
+	# If we want the ternary form output, add Pre- and Post- condition nodes to each task
         if( !isLite )
 		gContent = "#{gContent}pre#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["input"].join("; ")}\", fillcolor=red]\n"
 		gContent = "#{gContent}post#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["output"].join("; ")}\", fillcolor=grey]\n"
@@ -108,12 +130,13 @@ blockArray.each{ |elem|
 	# Get the color for the node based on the task marked
 	selColor = "black"  # Set a default color
 	for i in 0...elem["tasktags"].length
+		# If this task is part of the current job
 		if( elem["tasktags"][i] == "1" )
 			selColor = colorArray[i]
 			break
 		end
 	end
-	gContent = "#{gContent}#{elem["name"]}	[label=\"<B>[ #{elem["name"]} ]</B>\n#{elem["description"]}\", fillcolor=#{selColor}]\n"
+	gContent = "#{gContent}#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["description"]}\", fillcolor=#{selColor}]\n"
 }
 
 # Add the basic links between sets of task components (only needed if using the ternary representaion)
