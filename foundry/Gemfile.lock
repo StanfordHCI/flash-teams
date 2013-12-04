@@ -27,6 +27,9 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.1)
     atomic (1.1.14)
+    bootstrap-sass-rails (3.0.2.1)
+      railties (>= 3.1.0)
+      sass-rails (>= 3.1.0)
     builder (3.1.4)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
@@ -35,6 +38,8 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.3)
+    d3-rails (3.3.7)
+      railties (>= 3.1)
     erubis (2.7.0)
     execjs (2.0.2)
     hike (1.2.3)
@@ -108,7 +113,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bootstrap-sass-rails
   coffee-rails (~> 4.0.0)
+  d3-rails
   jbuilder (~> 1.2)
   jquery-rails
   rails (= 4.0.1)

@@ -43,3 +43,9 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+
+# Use Twitter Bootstrap
+gem 'bootstrap-sass-rails'
+
+# Use D3
+gem 'd3-rails'
