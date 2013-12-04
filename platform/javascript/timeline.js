@@ -31,6 +31,10 @@ var event_counter = 0;
 var handoff_counter = 0;
 var collab_counter = 0;
 
+var DRAWING_HANDOFF = false;
+var DRAWING_COLLAB = false;
+var INTERACTION_TASK_ONE_IDNUM = 0;
+
 var DRAGBAR_WIDTH = 8;
 
 //Called when task rectangles are dragged
@@ -89,19 +93,6 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", SVG_WIDTH)
     .attr("height", SVG_HEIGHT)
     .attr("class", "chart");
-
-//Takes a Flash Teams JSON Object and Draws a Flash Team
-function drawFlashTeamFromJSON(ftJSON) {
-    //POPULATE MEMBERS
-
-    //DRAW MEMBER POPOVERS
-
-    //DRAW EVENTS
-
-    //DRAW EVENT POPOVERS
-
-    //DRAW INTERACTIONS
-}
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
@@ -237,6 +228,8 @@ var task_groups = [],
 
 //Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
+    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+
     event_counter++; //To generate id
     var point = d3.mouse(this);
     var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
@@ -282,8 +275,8 @@ function  drawEvents(x, y) {
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
-        .attr("onclick", function(d) {
-            drawMemberCheckboxes(d.id) })
+        .on("click", function(d) {
+            drawInteraction(d.groupNum) })
         .call(drag);
 
     //Right Dragbar
@@ -656,8 +649,21 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
     var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
 }
 
-function drawMemberCheckboxes(idNum) {
-    console.log("it worked", idNum);
+function drawInteraction(task2idNum) {
+    var task1idNum = INTERACTION_TASK_ONE_IDNUM;
+
+    //Draw a handoff from task one to task two
+    if (DRAWING_HANDOFF == true) {
+
+
+    //Draw a collaboration link between task one and task two
+    } else if (DRAWING_COLLAB == true) {
+
+
+    //There is no collaboration being drawn
+    } else {
+        return;
+    }
 }
 
 //Grab the relevant team members attached to an event by accessing the JSON
@@ -684,6 +690,7 @@ function writeEventMembers(idNum) {
 //Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
 function writeHandoff() {
     handoff_counter++;
+    DRAWING_HANDOFF = true;
     var m = d3.mouse(this);
     console.log("x: " + m[0] + " y: " + m[1]);
     line = timeline_svg.append("line")
@@ -697,22 +704,23 @@ function writeHandoff() {
         .attr("y2", m[1])
         .attr("stroke-width", 3)
         .attr("stroke", "gray");
-    
+    console.log(line);
     timeline_svg.on("mousemove", handoffMouseMove);
 }
 
 //Follow the mouse movements after a handoff is initialized
 function handoffMouseMove() {
-    console.log("in da mousemove");
+    console.log("in the mouse move");
     var m = d3.mouse(this);
     line.attr("x2", m[0])
         .attr("y2", m[1]);
-
     timeline_svg.on("click", handoffMouseClick);
 }
 
 //Stop following the position of the mouse //IN PROGRESS
 function handoffMouseClick() {
+    //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
+
     timeline_svg.on("mousemove", null);
 }
 
