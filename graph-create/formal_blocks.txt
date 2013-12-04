@@ -1,0 +1,168 @@
+Initial State: 
+Goal State: 
+Actions: 
+
+	// Action #1: Imagine what the app will do and how Draw the navigational skeleton and interaction flow (performed by UI Designer)
+	_Interaction_chart_
+	Preconditions: Napkin_sketch, Description_of_the_app
+	Preconditions: Napkin_sketch, Description_of_the_app
+
+	// Action #2: Create a wireframe mockup of the screen based on its position in the interaction chart especially where it points to (performed by UI Designer)
+	_Mockup_
+	Preconditions: Interaction_chart
+	Preconditions: Interaction_chart
+
+	// Action #3: Link the screens together with hyperlinks according to the interaction chart (performed by UI Designer)
+	_Interactive_wireframe_
+	Preconditions: Screen_mockup, Interaction_chart
+	Preconditions: Screen_mockup, Interaction_chart
+
+	// Action #4: Test the screen and write a Google Doc with the results of the Feedback method (performed by UX Researcher)
+	_Feedback_method_of_the_screens_
+	Preconditions: Screen_mockup
+	Preconditions: Screen_mockup
+
+	// Action #5: Test the wireframe prototype interaction flow and write a Google Doc with the results of the Feedback method (performed by UX Researcher)
+	_Feedback_method_of_the_Interaction_chart_
+	Preconditions: Interactive_wireframe
+	Preconditions: Interactive_wireframe
+
+	// Action #6: Conduct a Feedback method Heuristic evaluationon the Object Interaction chart (performed by UI Designer)
+	_Revise_Object_with_Feedback_method_
+	Preconditions: Object, Feedback_method_Report
+	Preconditions: Object, Feedback_method_Report
+
+	// Action #7: Decide what frameworks will be used based on what the app does and the requirements of the project (performed by Developer)
+	_Decide_on_frameworks_
+	Preconditions: Wireframe_mockup, Description_of_the_app
+	Preconditions: Wireframe_mockup, Description_of_the_app
+
+	// Action #8: Set up the database (performed by Developer)
+	_Set_up_the_database_
+	Preconditions: Wireframe_mockup, Framework_list, Description_of_the_app
+	Preconditions: Wireframe_mockup, Framework_list, Description_of_the_app
+
+	// Action #9: Write documentation about tables attributes  queries in a Google Doc (performed by Developer)
+	_Database_documentation_
+	Preconditions: Database
+	Preconditions: Database
+
+	// Action #10: Create the different pages of the website and have links between them (performed by Developer)
+	_Navigational_skeleton_
+	Preconditions: Wireframe_mockup
+	Preconditions: Wireframe_mockup
+
+	// Action #11: Implement login (performed by Developer)
+	_Login_
+	Preconditions: Navigational_skeleton, Database, Database_documentation
+	Preconditions: Navigational_skeleton, Database, Database_documentation
+
+	// Action #12: Code the page functionalities (performed by Developer)
+	_Functional_pages_
+	Preconditions: Navigational_skeleton, Database, Database_documentation
+	Preconditions: Navigational_skeleton, Database, Database_documentation
+
+	// Action #13: Integrate CSS in the page (performed by Developer)
+	_Styled_pages_
+	Preconditions: Functional_page, Framework_list
+	Preconditions: Functional_page, Framework_list
+
+	// Action #14: Design the app logo and provide source files and png file (performed by Graphic Designer)
+	_Logo_design_
+	Preconditions: Description_of_the_app
+	Preconditions: Description_of_the_app
+
+	// Action #15: Come up with an engaging way of conveying the idea (performed by Writer  Director)
+	_Script_idea_discussion_
+	Preconditions: Requesters_input
+	Preconditions: Requesters_input
+
+	// Action #16: Write the detailed script including the actions the exact dialogues the character descriptions (performed by Writer)
+	_Detailed_script_
+	Preconditions: Outline_of_the_script
+	Preconditions: Outline_of_the_script
+
+	// Action #17: Turn the detailed script into a storyboard (performed by Illustrator  Animator)
+	_Storyboarding_
+	Preconditions: Detailed_script
+	Preconditions: Detailed_script
+
+	// Action #18: Draw the character (performed by Illustrator)
+	_Character_design_
+	Preconditions: Detailed_script, Any_relevant_media
+	Preconditions: Detailed_script, Any_relevant_media
+
+	// Action #19: Cut the parts to prepare it for animation (performed by Illustrator  Animator)
+	_Prepare_character_for_animation_
+	Preconditions: Character_design
+	Preconditions: Character_design
+
+	// Action #20: Draw the background (performed by Illustrator)
+	_Background_design_
+	Preconditions: Detailed_script, Any_relevant_media
+	Preconditions: Detailed_script, Any_relevant_media
+
+	// Action #21: Animate the character in order to create the sequence or the widget (performed by Animator  Developer)
+	_Character_animation_
+	Preconditions: Character_ready_for_animation, Background, Detailed_script
+	Preconditions: Character_ready_for_animation, Background, Detailed_script
+
+	// Action #22: Decide what music would fit for each scene (performed by Music artist  Director)
+	_Music_ambience_and_description_
+	Preconditions: Detailed_script, Storyboard
+	Preconditions: Detailed_script, Storyboard
+
+	// Action #23: Compose the music (performed by Composer)
+	_Music_composition_
+	Preconditions: Detailed_description_of_music
+	Preconditions: Detailed_description_of_music
+
+	// Action #24: Record the instrument (performed by Music player)
+	_Record_music_
+	Preconditions: Music_score
+	Preconditions: Music_score
+
+	// Action #25: Using an audio software put them in the timeline and adjust parameters (performed by Music artist)
+	_Music_mix_
+	Preconditions: Recorded_instrument
+	Preconditions: Recorded_instrument
+
+	// Action #26: Record the voice (performed by Voiceover artist)
+	_Voiceover_
+	Preconditions: Detailed_script
+	Preconditions: Detailed_script
+
+	// Action #27: Create and record the sound effect (performed by Sound effect artist)
+	_Create_sound_effets_
+	Preconditions: Detailed_script
+	Preconditions: Detailed_script
+
+	// Action #28: Using an audio software mix the audio (performed by Music artist)
+	_Audio_mix_
+	Preconditions: Voiceover, Music_mix, Sound_effect, Partial_video_for_timing
+	Preconditions: Voiceover, Music_mix, Sound_effect, Partial_video_for_timing
+
+	// Action #29: Create the final video might include adding text subtitles etc (performed by Director)
+	_Final_editing_
+	Preconditions: Animated_sequencewidget, Audio_mix
+	Preconditions: Animated_sequencewidget, Audio_mix
+
+	// Action #30: make sure that it is feasible to animate (performed by Director)
+	_Review_the_script_
+	Preconditions: Detailed_script
+	Preconditions: Detailed_script
+
+	// Action #31: Generate a quiz question with  right answer and  wrong answers to it (performed by Education expert  Topic expert)
+	_Generate_quiz_questions_
+	Preconditions: Course_theme, Detailed_script
+	Preconditions: Course_theme, Detailed_script
+
+	// Action #32:  (performed by Director  Illustrator)
+	_Determine_graphical_appearance_of_things_
+	Preconditions: Detailed_script
+	Preconditions: Detailed_script
+
+	// Action #33: Tie everything together (performed by Director)
+	_Final_authoring_in_iBook_Author_
+	Preconditions: Voiceover, Music_mix, Sound_effect, Animated_sequencewidget
+	Preconditions: Voiceover, Music_mix, Sound_effect, Animated_sequencewidget

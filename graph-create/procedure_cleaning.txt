@@ -1,0 +1,5 @@
+Steps taken to produce "cleaned_<name>.tsv" files
+
+1) Replace /\ with ", "
+2) Divide tasks with \/
+
