@@ -2,4 +2,5 @@ Steps taken to produce "cleaned_<name>.tsv" files
 
 1) Replace /\ with ", "
 2) Divide tasks with \/
+3) Remove any task names beginning with a number (e.g., "3D Print Object")
 

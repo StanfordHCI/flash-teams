@@ -11,8 +11,8 @@ end
 
 def printElem(elem)
 	$stderr.puts("\nName: #{elem["name"]}")
-	$stderr.puts("Input: #{elem["input"]}")
-	$stderr.puts("Output: #{elem["output"]}")
+	$stderr.puts("Input: #{elem["input"].join("; ")}")
+	$stderr.puts("Output: #{elem["output"].join("; ")}")
 	$stderr.puts("Descr: #{elem["description"]}")
 	$stderr.puts("Tasks: #{elem["tasktags"].join("-")}")
 	$stderr.puts("========\n")
@@ -59,7 +59,7 @@ file.each{ |line|
 	toAdd = Hash.new
 
 	#line = line.gsub(/[^a-zA-Z0-9⋁⋀\- \t]/,"")
-	line = line.gsub(/[^a-zA-Z0-9,\- \t]/,"")
+	line = line.gsub(/[^a-zA-Z0-9;,\/\\\- \t]/,"")
 	#line = line.gsub("]","")
 	lineAry = line.split("\t")
 
@@ -69,7 +69,7 @@ file.each{ |line|
 	#toAdd["input"] = lineAry[2].split(/[ ^ ]/)
 	#toAdd["input"] = lineAry[2].split(/[ v ][ ^ ]/)
 	#toAdd["input"] = lineAry[2].split(/[\s*⋀\s*][\s*⋁\s*]/)
-	toAdd["input"] = lineAry[2].split(/\s*,\s*/)
+	toAdd["input"] = lineAry[2].split(/\s*;\s*/)
 	toAdd["input"].each{ |elem|
 		elem.gsub!(" ","_")
 	}
@@ -77,7 +77,7 @@ file.each{ |line|
 	#toAdd["output"] = lineAry[3].split(/[ ^ ]/)
 	#toAdd["output"] = lineAry[3].split(/[ v ][ ^ ]/)
 	#toAdd["output"] = lineAry[3].split(/[\s*⋀\s*][\s*⋁\s*]/)
-	toAdd["output"] = lineAry[3].split(/\s*,\s*/)
+	toAdd["output"] = lineAry[3].split(/\s*;\s*/)
 	toAdd["output"].each{ |elem|
 		elem.gsub!(" ","_")
 	}
@@ -113,7 +113,7 @@ blockArray.each{ |elem|
 			break
 		end
 	end
-	gContent = "#{gContent}#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["description"]}\", fillcolor=#{selColor}]\n"
+	gContent = "#{gContent}#{elem["name"]}	[label=\"<B>[ #{elem["name"]} ]</B>\n#{elem["description"]}\", fillcolor=#{selColor}]\n"
 }
 
 # Add the basic links between sets of task components (only needed if using the ternary representaion)

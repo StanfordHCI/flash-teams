@@ -1,5 +1,6 @@
 Graph creator (beta):
- - Run with: "ruby blocksMap.rb [./data/filename.tsv] > [vizfile.gv] 2> results.log"
+ - Run with: "ruby blocksMap.rb [./data/filename.tsv] {OPTIONAL:lite} > [vizfile.gv] 2> results.log"
+  -- The 'lite' argument uses single task nodes instead of ternary representations
   -- The .gv file will be readable by GraphViz; the results.log file will have a more readable version of the parsed tasks
  - You can get GraphViz from: http://www.graphviz.org/
  - NOTE: Still uses a 'cleaned' version of the .tsv file output by Google Docs until formatting in the doc can be reconciled
