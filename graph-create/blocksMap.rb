@@ -101,8 +101,8 @@ file.each{ |line|
 
 blockArray.each{ |elem|
         if( !isLite )
-		gContent = "#{gContent}pre#{elem["name"]}	[label=\"#{elem["input"].join("; ")}\", fillcolor=red]\n"
-		gContent = "#{gContent}post#{elem["name"]}	[label=\"#{elem["output"].join("; ")}\", fillcolor=grey]\n"
+		gContent = "#{gContent}pre#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["input"].join("; ")}\", fillcolor=red]\n"
+		gContent = "#{gContent}post#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["output"].join("; ")}\", fillcolor=grey]\n"
 	end
 	
 	# Get the color for the node based on the task marked
@@ -113,7 +113,7 @@ blockArray.each{ |elem|
 			break
 		end
 	end
-	gContent = "#{gContent}#{elem["name"]}	[label=\"#{elem["description"]}\", fillcolor=#{selColor}]\n"
+	gContent = "#{gContent}#{elem["name"]}	[label=\"[ #{elem["name"]} ]\n#{elem["description"]}\", fillcolor=#{selColor}]\n"
 }
 
 # Add the basic links between sets of task components (only needed if using the ternary representaion)
