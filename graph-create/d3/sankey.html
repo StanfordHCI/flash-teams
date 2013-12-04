@@ -72,6 +72,7 @@ function createSankey(ds) {
   ds.each(function(row, rowIndex) {
     sankeyNodes["nodes"].push({
       "name": row["Name"],
+      "project": row["Project"],
       "index": rowCount,
       "input": splitConditions(row["Input"]),
       "output": splitConditions(row["Output"]),
@@ -83,7 +84,9 @@ function createSankey(ds) {
     var output = outerElement["output"];
     $.each(sankeyNodes["nodes"], function(innerIndex, innerElement) {
       var input = innerElement["input"];
-      if (intersect_safe(output, input).length > 0) {
+      var intersectingRequirements = intersect_safe(output.sort(), input.sort());
+
+      if (intersectingRequirements.length > 0) {
         addLink(outerElement, innerElement, sankeyNodes);
       }
     });
@@ -156,7 +159,9 @@ function initSankey(sankeyNodes) {
   node.append("rect")
       .attr("height", function(d) { return d.dy; })
       .attr("width", sankey.nodeWidth())
-      .style("fill", function(d) { return d.color = color(d.name.replace(/ .*/, "")); })
+      .style("fill", function(d) { 
+        return d.color = color(d.project.replace(/ .*/, "")); 
+      })
       .style("stroke", function(d) { return d3.rgb(d.color).darker(2); })
     .append("title")
       .text(function(d) { return d.name + "\n" + format(d.value); });
