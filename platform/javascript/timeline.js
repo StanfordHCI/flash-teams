@@ -651,7 +651,7 @@ function writeEventMembers(idNum) {
         }
         if (!found) {
             memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
-            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  (i-1) + ')}" checked="false">' + memberName + "   "; 
+            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  (i-1) + ')}">' + memberName + "   "; 
         }      
     }
     return memberString;

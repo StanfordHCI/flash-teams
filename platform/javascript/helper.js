@@ -23,9 +23,14 @@ function pressEnterKeyToSubmit(inputId, buttonId) {
 fakeJSON = {
 	"title" : "New Flash Team",
     "id" : 1,
-    "events": [{"startTime":60, "yPosition":100, "members":[], "id":1, "notes":"", "title":"My Event", "dri":""}],        //{"title", "id", "startTime", "duration", "notes", "members", "dri", "yPosition"}
-    "members": [{"id":1, "role":"Illustrator", "category1":"Web Development", "category2":"UI Design", "skills":["shopify"], "color":"BLUE"}],       //{"id", "role", "skills":[], "color", "category1", "category2"}
-    "interactions" : []  //{"event1", "event2", "type", "description"}
+
+    //{"title", "id", "startTime", "duration", "notes", "members", "dri", "yPosition"}
+    "events": [{"startTime":60, "yPosition":100, "members":["Illustrator"], "id":1, "notes":"", "title":"My Event", "dri":""}],
+
+    //{"id", "role", "skills":[], "color", "category1", "category2"}
+    "members": [{"id":1, "role":"Illustrator", "category1":"Web Development", "category2":"UI Design", "skills":["shopify"], "color":"BLUE"}, 
+    	{"id":2, "role":"Author", "category1":"Writing & Translation", "category2":"Creative Writing", "skills":["shopify"], "color":"RED"}],       
+    "interactions" : []  //{"event1", "event2", "type", "description"}       
 }
 
 
