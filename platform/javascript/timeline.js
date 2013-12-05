@@ -249,11 +249,11 @@ function mousedown() {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
 
-    addEventPopover(startHr, startMin);
-    overlayOn();
-
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
+
+    addEventPopover(startHr, startMin);
+    overlayOn();
 };
 
 //Creates graphical elements from array of data (task_rectangles)
@@ -412,8 +412,7 @@ function addEventPopover(startHr, startMin) {
                 +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br>Members<br> <div id="event' + event_counter + 'memberList"> </div>'
-                +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
+                +'<br>Members<br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
                 +'Notes: <textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
@@ -423,34 +422,10 @@ function addEventPopover(startHr, startMin) {
             $(this).popover("show"); 
         });
 
-    //Add team member checkboxes
-    var memberList = document.getElementById('event' + event_counter + 'memberList');
-    for (i = 1; i <= flashTeamsJSON["members"].length; i++) {
-        var text = document.createElement('div');
-        var memberName = flashTeamsJSON["members"][i-1].role;
-        text.innerHTML = '<input type="checkbox" id="event' + event_counter + 'member' + i + 'checkbox">' + memberName;
-        memberList.appendChild(text);
-    }
-
     $(document).ready(function() {
         pressEnterKeyToSubmit("#eventMember_" + event_counter, "#addEventMember_" + event_counter);
     });
 };
-
-//Populate the autocomplete function for the event members
-//TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
-function addMemAuto() {
-    var memberArray = new Array(flashTeamsJSON["members"].length);
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        memberArray[i] = flashTeamsJSON["members"][i].role;
-    }
-
-    $(".eventMemberInput").each(function() {
-        $(this).autocomplete({
-            source: memberArray
-        });
-    })
-}
 
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics
@@ -512,25 +487,19 @@ function deleteRect (rectId) {
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
 //and a pill in the popover that can be deleted, both of the specified color of the member
-function addEventMember(eventId) {
-    var memberName = $("#eventMember_" + eventId).val();
+function addEventMember(eventId, memberIndex) {
+    var memberName = flashTeamsJSON["members"][memberIndex].role;
 
     //Update JSON
-    var indexOfJSON = getEventJSONIndex(eventId);
-    flashTeamsJSON["events"][indexOfJSON].members.push(memberName);
-    var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
-    $("#eventMembers_" + eventId).append('<li class="active" id="event_' + eventId + '_eventMemPill_' + numMembers + '"><a>' + memberName 
-        + '<div class="close" onclick="deleteEventMember(' + eventId + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>');
+    var indexOfEvent = getEventJSONIndex(eventId);
+    flashTeamsJSON["events"][indexOfEvent].members.push(memberName);
+    var numMembers = flashTeamsJSON["events"][indexOfEvent].members.length;
 
     //Grab color of member
     var newColor;
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) {
-            newColor = flashTeamsJSON["members"][i].color;
-        }
+        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
     }
-    var pillLi = document.getElementById("event_" + eventId + "_eventMemPill_" + numMembers);
-    pillLi.childNodes[0].style.backgroundColor = newColor;
 
     //Add new line to represent member
     var group = $("#rect_" + eventId)[0].parentNode;
@@ -639,8 +608,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'<br>Members<br> <div id="event' + event_counter + 'memberList"> </div>'
-        +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '">'+  writeEventMembers(idNum) +' </ul>'
+        +'<br>Members<br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
         +'Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
@@ -666,23 +634,25 @@ function drawInteraction(task2idNum) {
     }
 }
 
-//Grab the relevant team members attached to an event by accessing the JSON
-//Draws these members as pills in the popover with deletable 'X'
 function writeEventMembers(idNum) {
-    var indexOfJSON = getEventJSONIndex(idNum); 
-    var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
-    for (i = 0; i < numMembers; i++) {
-        var memberName = flashTeamsJSON["events"][indexOfJSON].members[i];
+    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var memberName = flashTeamsJSON["members"][i].role;
+        var found = false;
 
-        var newColor; 
-        for (j = 0; j < flashTeamsJSON["members"].length; j++) {
-            if (flashTeamsJSON["members"][j].role == memberName) {
-                newColor = flashTeamsJSON["members"][j].color;
+        for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
+            if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
+                memberString += '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
+                 + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  (i-1) + ')}" checked="true">' + memberName + "   ";
+                 found = true;
+                 break;
             }
         }
-        memberString += '<li class="active" id="event_' + idNum + '_eventMemPill_' + numMembers + '"><a style="background-color:' + newColor + '">' + memberName 
-        + '<div class="close" onclick="deleteEventMember(' + idNum + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>';
+        if (!found) {
+            memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
+            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  (i-1) + ')}" checked="false">' + memberName + "   "; 
+        }      
     }
     return memberString;
 }
