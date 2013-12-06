@@ -412,8 +412,8 @@ function addEventPopover(startHr, startMin) {
                 +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br>Members<br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
-                +'<br>Notes: <textarea rows="3" id="notes_' + event_counter + '"></textarea>'
+                +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
+                +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
@@ -452,6 +452,8 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
+    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
 
@@ -464,6 +466,7 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
     flashTeamsJSON["events"][indexOfJSON].notes = eventNotes;
+    //UPDATE EVENT MEMBERS?
 };
 
 //Delete a task rectangle, all of its relevant components, and remove the event from the JSON
@@ -519,15 +522,12 @@ function addEventMember(eventId, memberIndex) {
             return parseInt($("#rect_" + eventId).attr("width")) - 8;})
         .attr("fill", newColor)
         .attr("fill-opacity", .9);
-    //Clear Input
-    $("#eventMember_" + eventId).val("");
 }
 
 //Remove a team member from an event
 //LIKELY TO BE DELETED OR RE-STRUCTURED BASED ON NEW CHECKBOX SYSTEM
 function deleteEventMember(eventId, memberNum, memberName) {
-    //Delete the pill and line
-    $("#event_" + eventId + "_eventMemPill_" + memberNum).remove();
+    //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
 
     //Update the JSON
@@ -608,13 +608,11 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'<br>Members<br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
-        +'<br>Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
+        +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
+        +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
-
-    var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
 }
 
 function drawInteraction(task2idNum) {
@@ -634,24 +632,27 @@ function drawInteraction(task2idNum) {
     }
 }
 
+//Adds member checkboxes onto the popover of an event, checks if a member is involved in event
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
+    if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
+
         var found = false;
 
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
             if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
-                 + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  (i-1) + ')}" checked="true">' + memberName + "   ";
+                 + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}" checked="true">' + memberName + "   ";
                  found = true;
                  break;
             }
         }
         if (!found) {
             memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
-            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  (i-1) + ')}">' + memberName + "   "; 
+            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}">' + memberName + "   "; 
         }      
     }
     return memberString;
