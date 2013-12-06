@@ -10,16 +10,16 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require_tree ./d3
 //= require jquery
 //= require jquery_ujs
+//= require_tree ./d3
 //= require turbolinks
-//= require_tree ./authoring
+// require_tree ./authoring
 //= require_tree ./sitewide
 // require twitter/bootstrap
 // require d3
 //= require bootstrap/js/bootstrap
 
 
-$(document).ready(timelineReady);
-$(document).on('page:load', timelineReady);
+// $(document).ready(timelineReady);
+// $(document).on('page:load', timelineReady);

@@ -2,4 +2,58 @@
 
 <%= render 'form' %>
 
+       <!--Main Layout-->
+        <div class="container-fluid">       
+            <div class="row-fluid">
+                <!--<h1>Flash Teams</h1>-->
+                <h1>Foundry</h1>
+                    <div class="btn" id="flashTeamSaveBtn" onclick="" style="font-size:25px; height:40px">Save...</div>
+            </div>
+
+            <div class="row-fluid">
+                <div class="span3"> <!--Sidebar content-->
+                    <div id = "title-container" class="well">
+                        <form name="titleForm" id="title_form">
+                            <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
+                        </form>
+                    </div>
+                    <div id="diagram-container" class="well">
+                        <h3>Team Structure</h3>
+                    </div>
+                    <div id="member-container" class="well">
+                        <h3>Team Roles</h3>
+                        <form name='newMemberForm' autocomplete="on">
+                            <div class="input-append">
+                                <input class="span9" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
+                                <button class="btn" type="button" onclick="addMember()" id="addMemberButton">+Add</button>
+                                <input type="submit" style="display:none">
+                            </div>
+                            <input type="text" name="enterAndReloadBugFix" style="display: none;"> 
+                        </form>
+
+                        <ul class = "nav nav-pills customPill" id="memberPills">
+                            <!--Member Pills Appended Here in JS-->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="span9"> <!--Body Content-->
+                    
+                    <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
+                        <h3>Project Workflow</h3>
+                        <div class="overlay" id="overlay" onclick="overlayOff()"> </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%= javascript_include_tag "authoring/helper" %>
+        <%= javascript_include_tag "authoring/timeline" %>
+        <%= javascript_include_tag "authoring/diagram" %>
+        <%= javascript_include_tag "authoring/members" %>
+        <%= javascript_include_tag "authoring/odeskArrays" %>
+        <%= javascript_include_tag "authoring/spectrum" %>
+        <%= javascript_include_tag "authoring/flash_team_update" %>
+
 <%= link_to 'Back', flash_teams_path %>
