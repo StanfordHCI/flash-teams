@@ -31,6 +31,10 @@ var event_counter = 0;
 var handoff_counter = 0;
 var collab_counter = 0;
 
+var DRAWING_HANDOFF = false;
+var DRAWING_COLLAB = false;
+var INTERACTION_TASK_ONE_IDNUM = 0;
+
 var DRAGBAR_WIDTH = 8;
 
 //Called when task rectangles are dragged
@@ -89,19 +93,6 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", SVG_WIDTH)
     .attr("height", SVG_HEIGHT)
     .attr("class", "chart");
-
-//Takes a Flash Teams JSON Object and Draws a Flash Team
-function drawFlashTeamFromJSON(ftJSON) {
-    //POPULATE MEMBERS
-
-    //DRAW MEMBER POPOVERS
-
-    //DRAW EVENTS
-
-    //DRAW EVENT POPOVERS
-
-    //DRAW INTERACTIONS
-}
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
@@ -237,6 +228,8 @@ var task_groups = [],
 
 //Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
+    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+
     event_counter++; //To generate id
     var point = d3.mouse(this);
     var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
@@ -256,11 +249,11 @@ function mousedown() {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
 
-    addEventPopover(startHr, startMin);
-    overlayOn();
-
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
+
+    addEventPopover(startHr, startMin);
+    overlayOn();
 };
 
 //Creates graphical elements from array of data (task_rectangles)
@@ -282,8 +275,8 @@ function  drawEvents(x, y) {
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
-        .attr("onclick", function(d) {
-            drawMemberCheckboxes(d.id) })
+        .on("click", function(d) {
+            drawInteraction(d.groupNum) })
         .call(drag);
 
     //Right Dragbar
@@ -419,9 +412,8 @@ function addEventPopover(startHr, startMin) {
                 +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br>Members<br> <div id="event' + event_counter + 'memberList"> </div>'
-                +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '"> </ul>'
-                +'Notes: <textarea rows="3" id="notes_' + event_counter + '"></textarea>'
+                +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
+                +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
@@ -430,34 +422,10 @@ function addEventPopover(startHr, startMin) {
             $(this).popover("show"); 
         });
 
-    //Add team member checkboxes
-    var memberList = document.getElementById('event' + event_counter + 'memberList');
-    for (i = 1; i <= flashTeamsJSON["members"].length; i++) {
-        var text = document.createElement('div');
-        var memberName = flashTeamsJSON["members"][i-1].role;
-        text.innerHTML = '<input type="checkbox" id="event' + event_counter + 'member' + i + 'checkbox">' + memberName;
-        memberList.appendChild(text);
-    }
-
     $(document).ready(function() {
         pressEnterKeyToSubmit("#eventMember_" + event_counter, "#addEventMember_" + event_counter);
     });
 };
-
-//Populate the autocomplete function for the event members
-//TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
-function addMemAuto() {
-    var memberArray = new Array(flashTeamsJSON["members"].length);
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        memberArray[i] = flashTeamsJSON["members"][i].role;
-    }
-
-    $(".eventMemberInput").each(function() {
-        $(this).autocomplete({
-            source: memberArray
-        });
-    })
-}
 
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics
@@ -484,6 +452,8 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
+    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
 
@@ -496,6 +466,7 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
     flashTeamsJSON["events"][indexOfJSON].notes = eventNotes;
+    //UPDATE EVENT MEMBERS?
 };
 
 //Delete a task rectangle, all of its relevant components, and remove the event from the JSON
@@ -519,25 +490,19 @@ function deleteRect (rectId) {
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
 //and a pill in the popover that can be deleted, both of the specified color of the member
-function addEventMember(eventId) {
-    var memberName = $("#eventMember_" + eventId).val();
+function addEventMember(eventId, memberIndex) {
+    var memberName = flashTeamsJSON["members"][memberIndex].role;
 
     //Update JSON
-    var indexOfJSON = getEventJSONIndex(eventId);
-    flashTeamsJSON["events"][indexOfJSON].members.push(memberName);
-    var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
-    $("#eventMembers_" + eventId).append('<li class="active" id="event_' + eventId + '_eventMemPill_' + numMembers + '"><a>' + memberName 
-        + '<div class="close" onclick="deleteEventMember(' + eventId + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>');
+    var indexOfEvent = getEventJSONIndex(eventId);
+    flashTeamsJSON["events"][indexOfEvent].members.push(memberName);
+    var numMembers = flashTeamsJSON["events"][indexOfEvent].members.length;
 
     //Grab color of member
     var newColor;
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) {
-            newColor = flashTeamsJSON["members"][i].color;
-        }
+        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
     }
-    var pillLi = document.getElementById("event_" + eventId + "_eventMemPill_" + numMembers);
-    pillLi.childNodes[0].style.backgroundColor = newColor;
 
     //Add new line to represent member
     var group = $("#rect_" + eventId)[0].parentNode;
@@ -557,15 +522,12 @@ function addEventMember(eventId) {
             return parseInt($("#rect_" + eventId).attr("width")) - 8;})
         .attr("fill", newColor)
         .attr("fill-opacity", .9);
-    //Clear Input
-    $("#eventMember_" + eventId).val("");
 }
 
 //Remove a team member from an event
 //LIKELY TO BE DELETED OR RE-STRUCTURED BASED ON NEW CHECKBOX SYSTEM
 function deleteEventMember(eventId, memberNum, memberName) {
-    //Delete the pill and line
-    $("#event_" + eventId + "_eventMemPill_" + memberNum).remove();
+    //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
 
     //Update the JSON
@@ -646,37 +608,52 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'<br>Members<br> <div id="event' + event_counter + 'memberList"> </div>'
-        +'<ul class="nav nav-pills" id="eventMembers_' + event_counter + '">'+  writeEventMembers(idNum) +' </ul>'
-        +'Notes: <textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
+        +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
+        +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
-
-    var indexOfJSON = getEventJSONIndex(idNum); //WHY WAS THIS HERE? DELETE? 
 }
 
-function drawMemberCheckboxes(idNum) {
-    console.log("it worked", idNum);
+function drawInteraction(task2idNum) {
+    var task1idNum = INTERACTION_TASK_ONE_IDNUM;
+
+    //Draw a handoff from task one to task two
+    if (DRAWING_HANDOFF == true) {
+
+
+    //Draw a collaboration link between task one and task two
+    } else if (DRAWING_COLLAB == true) {
+
+
+    //There is no collaboration being drawn
+    } else {
+        return;
+    }
 }
 
-//Grab the relevant team members attached to an event by accessing the JSON
-//Draws these members as pills in the popover with deletable 'X'
+//Adds member checkboxes onto the popover of an event, checks if a member is involved in event
 function writeEventMembers(idNum) {
-    var indexOfJSON = getEventJSONIndex(idNum); 
-    var numMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
-    for (i = 0; i < numMembers; i++) {
-        var memberName = flashTeamsJSON["events"][indexOfJSON].members[i];
+    if (flashTeamsJSON["members"].length == 0) return "No Team Members";
+    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var memberName = flashTeamsJSON["members"][i].role;
 
-        var newColor; 
-        for (j = 0; j < flashTeamsJSON["members"].length; j++) {
-            if (flashTeamsJSON["members"][j].role == memberName) {
-                newColor = flashTeamsJSON["members"][j].color;
+        var found = false;
+
+        for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
+            if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
+                memberString += '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
+                 + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}" checked="true">' + memberName + "   ";
+                 found = true;
+                 break;
             }
         }
-        memberString += '<li class="active" id="event_' + idNum + '_eventMemPill_' + numMembers + '"><a style="background-color:' + newColor + '">' + memberName 
-        + '<div class="close" onclick="deleteEventMember(' + idNum + ', ' + numMembers + ', &#39' + memberName + '&#39)">  X</div> </a><li>';
+        if (!found) {
+            memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
+            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}">' + memberName + "   "; 
+        }      
     }
     return memberString;
 }
@@ -684,6 +661,7 @@ function writeEventMembers(idNum) {
 //Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
 function writeHandoff() {
     handoff_counter++;
+    DRAWING_HANDOFF = true;
     var m = d3.mouse(this);
     console.log("x: " + m[0] + " y: " + m[1]);
     line = timeline_svg.append("line")
@@ -697,22 +675,23 @@ function writeHandoff() {
         .attr("y2", m[1])
         .attr("stroke-width", 3)
         .attr("stroke", "gray");
-    
+    console.log(line);
     timeline_svg.on("mousemove", handoffMouseMove);
 }
 
 //Follow the mouse movements after a handoff is initialized
 function handoffMouseMove() {
-    console.log("in da mousemove");
+    console.log("in the mouse move");
     var m = d3.mouse(this);
     line.attr("x2", m[0])
         .attr("y2", m[1]);
-
     timeline_svg.on("click", handoffMouseClick);
 }
 
 //Stop following the position of the mouse //IN PROGRESS
 function handoffMouseClick() {
+    //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
+
     timeline_svg.on("mousemove", null);
 }
 

@@ -1,0 +1,7 @@
+Steps taken to produce "cleaned_<name>.tsv" files
+
+1) Replace /\ with ", "
+2) Divide tasks with \/
+3) Remove any task names beginning with a number (e.g., "3D Print Object")
+4) WARNING: The term "share-and-compare" broke the system until the "-"s were removed. There is no evidence that "-" in general is an invalid charater (it also should not be in theory).
+
