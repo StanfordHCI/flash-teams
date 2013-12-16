@@ -80,7 +80,7 @@ function drawFlashTeamFromJSON(ftJSON) {
     	var startHr = (ftJSON["events"][i].startTime - (ftJSON["events"][i].startTime%60))/60;
     	var startMin = ftJSON["events"][i].startTime%60;
     	addEventPopover(startHr, startMin);
-    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVER
+    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVERT
     	$("#notes_" + pillCounter).val(ftJSON["events"][i].notes);
     	overlayOn();
     }
