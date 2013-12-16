@@ -443,6 +443,28 @@ function saveEventInfo (popId) {
 
     var eventNotes = $("#notes_" + popId).val();
 
+
+    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+    var indexOfJSON = getEventJSONIndex(popId);
+    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+        //START HERE
+        var memberName = flashTeamsJSON["members"][i].role;
+
+        if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
+            if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
+                addEventMember(popId, i);
+            }
+        } else {
+            for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
+                if (flashTeamsJSON["events"][indexOfJSON].members[j] == flashTeamsJSON["members"][i].role) {
+                    var memId = flashTeamsJSON["members"][i].id;
+                    flashTeamsJSON["events"][indexOfJSON].members.splice(j, 1);
+                    $("#event_" + popId + "_eventMemLine_" + memId).remove(); //THIS IS THE PROBLEM, j
+                }
+            }
+        }
+    }
+
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
@@ -452,7 +474,7 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
-    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+    
 
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
@@ -461,7 +483,6 @@ function saveEventInfo (popId) {
     overlayOff();
 
     //Update JSON
-    var indexOfJSON = getEventJSONIndex(popId);
     flashTeamsJSON["events"][indexOfJSON].title = newTitle;
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
@@ -492,7 +513,7 @@ function deleteRect (rectId) {
 //and a pill in the popover that can be deleted, both of the specified color of the member
 function addEventMember(eventId, memberIndex) {
     var memberName = flashTeamsJSON["members"][memberIndex].role;
-
+    console.log("Adding member ", memberName);
     //Update JSON
     var indexOfEvent = getEventJSONIndex(eventId);
     flashTeamsJSON["events"][indexOfEvent].members.push(memberName);
@@ -525,7 +546,6 @@ function addEventMember(eventId, memberIndex) {
 }
 
 //Remove a team member from an event
-//LIKELY TO BE DELETED OR RE-STRUCTURED BASED ON NEW CHECKBOX SYSTEM
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
@@ -644,15 +664,14 @@ function writeEventMembers(idNum) {
 
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
             if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
-                memberString += '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
-                 + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}" checked="true">' + memberName + "   ";
-                 found = true;
-                 break;
+                //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
+                memberString += '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox" checked="true">' + memberName + "   ";
+                found = true;
+                break;
             }
         }
         if (!found) {
-            memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox"' 
-            + ' onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}">' + memberName + "   "; 
+            memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox">' + memberName + "   "; 
         }      
     }
     return memberString;
