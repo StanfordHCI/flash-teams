@@ -89,10 +89,6 @@ function drawFlashTeamFromJSON(ftJSON) {
     //DRAW INTERACTIONS
 }
 
-function drawEventFromJSON() {
-
-}
-
 function saveFlashTeam() {
 	console.log("Saving flash team"); 
 }
