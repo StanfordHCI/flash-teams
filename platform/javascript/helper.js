@@ -1,6 +1,6 @@
 /* helper.js
  * ---------------------------------
- *
+ * 
  */
 
 var flashTeamsJSON = {
@@ -35,7 +35,6 @@ fakeJSON = {
 
 
 //Takes a Flash Teams JSON Object and Draws a Flash Team
-//INCOMPLETE
 function drawFlashTeamFromJSON(ftJSON) {
     //Populate members
     for (i = 0; i < ftJSON["members"].length; i++) {
