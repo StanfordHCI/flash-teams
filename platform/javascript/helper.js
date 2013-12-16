@@ -25,11 +25,11 @@ fakeJSON = {
     "id" : 1,
 
     //{"title", "id", "startTime", "duration", "notes", "members", "dri", "yPosition"}
-    "events": [{"startTime":60, "yPosition":100, "members":["Illustrator"], "id":1, "notes":"", "title":"My Event", "dri":""}],
+    "events": [{"startTime":60, "yPosition":100, "members":["Illustrator"], "id":1, "notes":"hi there", "title":"My Event", "dri":""}],
 
     //{"id", "role", "skills":[], "color", "category1", "category2"}
     "members": [{"id":1, "role":"Illustrator", "category1":"Web Development", "category2":"UI Design", "skills":["shopify"], "color":"BLUE"}, 
-    	{"id":2, "role":"Author", "category1":"Writing & Translation", "category2":"Creative Writing", "skills":["shopify"], "color":"RED"}],       
+    	{"id":2, "role":"Author", "category1":"Writing & Translation", "category2":"Creative Writing", "skills":["ebooks"], "color":"RED"}],       
     "interactions" : []  //{"event1", "event2", "type", "description"}       
 }
 
@@ -37,7 +37,7 @@ fakeJSON = {
 //Takes a Flash Teams JSON Object and Draws a Flash Team
 //INCOMPLETE
 function drawFlashTeamFromJSON(ftJSON) {
-    //POPULATE MEMBERS
+    //Populate members
     for (i = 0; i < ftJSON["members"].length; i++) {
     	$("#addMemberInput").val(ftJSON["members"][i].role); //Need to mimic adding this name manually
     	addMember(); //Pulls role name from member input, also appends to FlashTeamsJSON
@@ -61,8 +61,8 @@ function drawFlashTeamFromJSON(ftJSON) {
     		$("#addSkillInput_" + pillCounter).val(ftJSON["members"][i].skills[k]);
     		addSkill(pillCounter);
     	}
+    	saveMemberInfo(pillCounter);
     }
-    saveMemberInfo(pillCounter);
 
     //DRAW EVENTS
     for (i = 0; i<ftJSON["events"].length; i++) {
@@ -80,6 +80,8 @@ function drawFlashTeamFromJSON(ftJSON) {
     	var startHr = (ftJSON["events"][i].startTime - (ftJSON["events"][i].startTime%60))/60;
     	var startMin = ftJSON["events"][i].startTime%60;
     	addEventPopover(startHr, startMin);
+    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVER
+    	$("#notes_" + pillCounter).val(ftJSON["events"][i].notes);
     	overlayOn();
     }
     

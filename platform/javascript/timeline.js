@@ -180,7 +180,7 @@ timeline_svg.selectAll("line.y")
     .attr("x2", SVG_WIDTH-50)
     .attr("y1", y)
     .attr("y2", y)
-    .style("stroke", "#5F5A5A");
+    .style("stroke", "#d3d1d1");
 
 var numMins = -30;
 
@@ -555,6 +555,8 @@ function deleteEventMember(eventId, memberNum, memberName) {
     for (i = 0; i < flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
         if (flashTeamsJSON["events"][indexOfJSON].members[i] == memberName) {
             flashTeamsJSON["events"][indexOfJSON].members.splice(i, 1);
+            //START HERE IF YOU WANT TO SHIFT UP MEMBER LINES AFTER DELETION
+            break;
         }
     }
 }
