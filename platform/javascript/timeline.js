@@ -231,6 +231,10 @@ var task_groups = [],
 //Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
     //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
+        alert("Please click on another event or the same event to cancel");
+        return;
+    }
 
     event_counter++; //To generate id
     var point = d3.mouse(this);
