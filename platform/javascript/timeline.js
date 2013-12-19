@@ -52,6 +52,7 @@ var drag = d3.behavior.drag()
         if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
         else d.x = newX;
 
+        //Update event popover
         var startHour = Math.floor((d.x/100));
         var startMin = (d.x%100/25*15);
         if(startMin == 57.599999999999994) {
@@ -78,7 +79,8 @@ var drag = d3.behavior.drag()
         redraw(group, rectWidth, groupNum);
 
         //Update JSON
-        //NOT DONE
+        var indexOfJSON = getEventJSONIndex(groupNum);
+        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
     });
 
 //Called when the right dragbar of a task rectangle is dragged
@@ -229,6 +231,10 @@ var task_groups = [],
 //Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
     //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
+        alert("Please click on another event or the same event to cancel");
+        return;
+    }
 
     event_counter++; //To generate id
     var point = d3.mouse(this);
@@ -413,6 +419,7 @@ function addEventPopover(startHr, startMin) {
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
+                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
@@ -631,6 +638,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
         +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
+        +'<br><b>Directly-Responsible Individual for This Event<b><br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
         +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
@@ -642,14 +650,15 @@ function drawInteraction(task2idNum) {
 
     //Draw a handoff from task one to task two
     if (DRAWING_HANDOFF == true) {
-
+        console.log("Drawing a handoff, clicked event ", task2idNum);
 
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
-
+        console.log("Drawing a collaboration, clicked event ", task2idNum)
 
     //There is no collaboration being drawn
     } else {
+        console.log("Not drawing anything");
         return;
     }
 }

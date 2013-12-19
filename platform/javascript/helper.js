@@ -1,6 +1,6 @@
 /* helper.js
  * ---------------------------------
- *
+ * 
  */
 
 var flashTeamsJSON = {
@@ -35,7 +35,6 @@ fakeJSON = {
 
 
 //Takes a Flash Teams JSON Object and Draws a Flash Team
-//INCOMPLETE
 function drawFlashTeamFromJSON(ftJSON) {
     //Populate members
     for (i = 0; i < ftJSON["members"].length; i++) {
@@ -80,17 +79,13 @@ function drawFlashTeamFromJSON(ftJSON) {
     	var startHr = (ftJSON["events"][i].startTime - (ftJSON["events"][i].startTime%60))/60;
     	var startMin = ftJSON["events"][i].startTime%60;
     	addEventPopover(startHr, startMin);
-    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVER
+    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVERT
     	$("#notes_" + pillCounter).val(ftJSON["events"][i].notes);
     	overlayOn();
     }
     
 
     //DRAW INTERACTIONS
-}
-
-function drawEventFromJSON() {
-
 }
 
 function saveFlashTeam() {
