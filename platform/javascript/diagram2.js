@@ -3,7 +3,6 @@
  * 
  * 
  */
-// var member_Counter = 0;
 
 var diagram_width = $("#diagram-container").width(),
     diagram_height = 200,
@@ -115,7 +114,6 @@ function tick() {
 
 function addMemberNode(memberTitle, memberId, memberColor) {
     var newNode = {"name" : memberTitle, "id" : memberId, "color" : memberColor};
-    // member_Counter++;
     workers.nodes.push(newNode);
     start();
 }

@@ -238,7 +238,7 @@ function mousedown() {
 
     event_counter++; //To generate id
     var point = d3.mouse(this);
-    var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
+    var snapX = Math.floor(point[0] - (point[0]%50) - DRAGBAR_WIDTH/2),
         snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
     drawEvents(snapX, snapY);
 
@@ -647,14 +647,23 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
 
 function drawInteraction(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
+    //START HERE
 
+    //The user has cancelled the drawing
+    if (task1idNum == task2idNum) {
+        DRAWING_COLLAB == false;
+        DRAWING_HANDOFF == false;
+        //FINISH CANCELLING HERE
+    
     //Draw a handoff from task one to task two
-    if (DRAWING_HANDOFF == true) {
+    } else if (DRAWING_HANDOFF == true) {
         console.log("Drawing a handoff, clicked event ", task2idNum);
+        //NOT DONE
 
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
         console.log("Drawing a collaboration, clicked event ", task2idNum)
+        //NOT DONE
 
     //There is no collaboration being drawn
     } else {
