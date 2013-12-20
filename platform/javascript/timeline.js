@@ -235,6 +235,12 @@ function mousedown() {
         alert("Please click on another event or the same event to cancel");
         return;
     }
+    
+    //VCom if overlay is on when mousedown() is triggered, turn it off and return
+    if (document.getElementById("overlay").style.display == "block") {
+        overlayOff();
+        return;
+    }
 
     event_counter++; //To generate id
     var point = d3.mouse(this);
@@ -481,6 +487,7 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
+    
 
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
@@ -758,6 +765,97 @@ function getEventJSONIndex(idNum) {
     }
 }
 
+//VCom Time expansion button trial 
+function addTime() {
+    calcAddHours(timelineHours);
+    
+    //Recalculate 'x' based on added hours
+    var x = d3.scale.linear()
+    .domain([0, hours])
+    .range([0, hours]);
+    
+    //Reset svg width
+    timeline_svg.attr("width", SVG_WIDTH);
+    
+    //Remove all exising grid lines
+    timeline_svg.selectAll("line").remove();
+    
+    //Redraw all x-axis grid lines
+    timeline_svg.selectAll("line.x")
+    .data(x.ticks(XTicks)) 
+    .enter().append("line")
+    .attr("class", "x")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", 15)
+    .attr("y2", SVG_HEIGHT-50)
+    .style("stroke", "#000");
+    
+    //Redraw all y-axis grid lines
+    timeline_svg.selectAll("line.y")
+    .data(yLines) 
+    .enter().append("line")
+    .attr("class", "y")
+    .attr("x1", 0)
+    .attr("x2", SVG_WIDTH-50)
+    .attr("y1", y)
+    .attr("y2", y)
+    .style("stroke", "#d3d1d1");
+    
+    //Redraw darker first x and y grid lines
+    timeline_svg.append("line")
+    .attr("x1", 0)
+    .attr("x2", SVG_WIDTH-50)
+    .attr("y1", 15)
+    .attr("y2", 15)
+    .style("stroke", "#000")
+    .style("stroke-width", "4")
+    
+    timeline_svg.append("line")
+    .attr("y1", 15)
+    .attr("y2", SVG_HEIGHT-50)
+    .style("stroke", "#000")
+    .style("stroke-width", "4")
+    
+    //Remove existing X-axis labels -- can't get this to work
+    //timeline_svg.selectAll(".rule").remove();
+    numMins = -30;
 
+    //Redraw X-axis labels
+    timeline_svg.selectAll(".rule")
+    .data(x.ticks(XTicks))
+    .enter().append("text")
+    .attr("x", x)
+    .attr("y", 15)
+    .attr("dy", -3)
+    .attr("text-anchor", "middle")
+    .text(function(d) {
+        numMins+= 30;
+        var hours = Math.floor(numMins/60);
+        var minutes = numMins%60;
+        if (minutes == 0 && hours == 0) return ".     .      .    .    0:00";
+        else if (minutes == 0) return hours + ":00";
+        else return hours + ":" + minutes; 
+    });
+    
+    //Add ability to draw rectangles on extended timeline
+    timeline_svg.append("rect")
+    .attr("class", "background")
+    .attr("width", SVG_WIDTH)
+    .attr("height", SVG_HEIGHT)
+    .attr("fill", "white")
+    .attr("fill-opacity", 0)
+    .on("mousedown", mousedown);
+    
+}
+
+//VCom Calculates how many hours to add when user expands timeline
+function calcAddHours(currentHours) {
+    timelineHours = currentHours + Math.floor(currentHours/3);
+    hours = timelineHours * Y_WIDTH;
+    
+    SVG_WIDTH = timelineHours * 100 + 50;
+    XTicks = timelineHours * 2;
+}
 
 
