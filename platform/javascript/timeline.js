@@ -481,7 +481,6 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
-    
 
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
