@@ -740,12 +740,11 @@ function handoffMouseMove() {
     //timeline_svg.on("click", handoffMouseClick);
 }
 
-//Stop following the position of the mouse //IN PROGRESS
-function handoffMouseClick() {
+//OLD CODE: Stop following the position of the mouse
+/*function handoffMouseClick() {
     //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
-    console.log("handoff mouse click");
     timeline_svg.on("mousemove", null);
-}
+}*/
 
 //Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
 function writeCollaboration() {

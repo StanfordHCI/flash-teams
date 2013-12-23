@@ -75,10 +75,6 @@ var node = diagram_svg.selectAll(".node"),
 
 
 
-
-
-
-
 function start() {
     link = link.data(force.links(), function(d) { return d.source.id + "-" + d.target.id; });
     link.enter()

@@ -57,8 +57,6 @@
         <!--Main Layout-->
         <div class="container-fluid">       
             <div class="row-fluid">
-                <!--<h1>Flash Teams</h1>-->
-                <h1>Foundri</h1>
                 <form name="saveForm" id="save_form">
                     <button class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam()" style="font-size:25px; height:40px">Save...</button>
                 </form>
@@ -73,9 +71,7 @@
                             <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
                         </form>
                     </div>
-                    <div id="diagram-container" class="well">
-                        <h3>Team Structure</h3>
-                    </div>
+                    
                     <div id="member-container" class="well">
                         <h3>Team Roles</h3>
                         <form name='newMemberForm' autocomplete="on">
@@ -90,6 +86,9 @@
                         <ul class = "nav nav-pills customPill" id="memberPills">
                             <!--Member Pills Appended Here in JS-->
                         </ul>
+                    </div>
+                    <div id="diagram-container" class="well">
+                        <h3>Team Structure</h3>
                     </div>
                 </div>
 
