@@ -19,6 +19,14 @@
     position: absolute;
 }
 
+#save_form {
+	float: left;
+}
+
+#addTimeBtn {
+	float: right;
+}
+
 $(".full-spectrum").spectrum({
     color: "#ECC",
     showInput: true,
