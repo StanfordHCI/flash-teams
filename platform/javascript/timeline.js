@@ -356,7 +356,7 @@ function  drawEvents(x, y) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18})
         .attr("y", function(d) {return d.y+23})
-        .on("click", function(d) {writeHandoff(d.groupNum) });
+        .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "images/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -658,8 +658,8 @@ function drawInteraction(task2idNum) {
     timeline_svg.on("mousemove", null);
 
     //The user has cancelled the drawing
-    debugger;
-    if (task1idNum == task2idNum) {
+
+    if (task1idNum == task2idNum) { //NOT WORKING B/C TASK1 NOT IDENTIFIED
         DRAWING_COLLAB == false;
         DRAWING_HANDOFF == false
         console.log("Cancelled the interaction");
@@ -668,13 +668,16 @@ function drawInteraction(task2idNum) {
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
         console.log("Drawing a handoff, clicked event ", task2idNum);
+        $("#handoff_" + handoff_counter).remove();
         //NOT DONE
 
+        DRAWING_HANDOFF = false;
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
         console.log("Drawing a collaboration, clicked event ", task2idNum)
         //NOT DONE
 
+        DRAWING_COLLAB = false;
     //There is no collaboration being drawn
     } else {
         console.log("Not drawing anything");
@@ -708,10 +711,9 @@ function writeEventMembers(idNum) {
 }
 
 //Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
-function writeHandoff(groupNum) {
+function writeHandoff() {
     handoff_counter++;
     DRAWING_HANDOFF = true;
-    INTERACTION_TASK_ONE_IDNUM = groupNum;
     var m = d3.mouse(this);
     console.log("x: " + m[0] + " y: " + m[1]);
     line = timeline_svg.append("line")
