@@ -356,7 +356,7 @@ function  drawEvents(x, y) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18})
         .attr("y", function(d) {return d.y+23})
-        .on("click", writeHandoff);
+        .on("click", function(d) {writeHandoff(d.groupNum) });
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "images/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -654,11 +654,15 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
 function drawInteraction(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     //START HERE
+    console.log("interaction draw called");
+    timeline_svg.on("mousemove", null);
 
     //The user has cancelled the drawing
+    debugger;
     if (task1idNum == task2idNum) {
         DRAWING_COLLAB == false;
-        DRAWING_HANDOFF == false;
+        DRAWING_HANDOFF == false
+        console.log("Cancelled the interaction");
         //FINISH CANCELLING HERE
     
     //Draw a handoff from task one to task two
@@ -704,9 +708,10 @@ function writeEventMembers(idNum) {
 }
 
 //Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
-function writeHandoff() {
+function writeHandoff(groupNum) {
     handoff_counter++;
     DRAWING_HANDOFF = true;
+    INTERACTION_TASK_ONE_IDNUM = groupNum;
     var m = d3.mouse(this);
     console.log("x: " + m[0] + " y: " + m[1]);
     line = timeline_svg.append("line")
@@ -730,13 +735,13 @@ function handoffMouseMove() {
     var m = d3.mouse(this);
     line.attr("x2", m[0])
         .attr("y2", m[1]);
-    timeline_svg.on("click", handoffMouseClick);
+    //timeline_svg.on("click", handoffMouseClick);
 }
 
 //Stop following the position of the mouse //IN PROGRESS
 function handoffMouseClick() {
     //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
-
+    console.log("handoff mouse click");
     timeline_svg.on("mousemove", null);
 }
 
