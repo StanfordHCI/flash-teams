@@ -43,13 +43,9 @@ var force = d3.layout.force()
     .size([diagram_width, diagram_height])
     .on("tick", tick);
 
-console.log("Before Diagram select");
-
 var diagram_svg = d3.select("#diagram-container").append("svg")
     .attr("width", diagram_width)
     .attr("height", diagram_height);
-
-console.log("After Diagram select");
 
 var node = diagram_svg.selectAll(".node"),
     link = diagram_svg.selectAll(".link");
@@ -139,3 +135,4 @@ $(window).resize(function() {
     force.size([diagram_width, diagram_height])
         .start();
 });
+

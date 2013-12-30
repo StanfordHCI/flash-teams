@@ -23,6 +23,6 @@ $('.edit_flash_team').submit(function(e) {
 });
 
 $("#flashTeamSaveBtn").click(function() {   
-  updateJSONFormField();    
+  updateJSONFormField();
   $('.edit_flash_team').submit();
 });
