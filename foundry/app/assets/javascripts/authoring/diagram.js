@@ -3,7 +3,6 @@
  * 
  * 
  */
-// var member_Counter = 0;
 
 var diagram_width = $("#diagram-container").width(),
     diagram_height = 200,
@@ -76,10 +75,6 @@ var node = diagram_svg.selectAll(".node"),
 
 
 
-
-
-
-
 function start() {
     link = link.data(force.links(), function(d) { return d.source.id + "-" + d.target.id; });
     link.enter()
@@ -115,7 +110,6 @@ function tick() {
 
 function addMemberNode(memberTitle, memberId, memberColor) {
     var newNode = {"name" : memberTitle, "id" : memberId, "color" : memberColor};
-    // member_Counter++;
     workers.nodes.push(newNode);
     start();
 }

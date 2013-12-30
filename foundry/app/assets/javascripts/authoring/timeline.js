@@ -52,6 +52,7 @@ var drag = d3.behavior.drag()
         if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
         else d.x = newX;
 
+        //Update event popover
         var startHour = Math.floor((d.x/100));
         var startMin = (d.x%100/25*15);
         if(startMin == 57.599999999999994) {
@@ -78,7 +79,8 @@ var drag = d3.behavior.drag()
         redraw(group, rectWidth, groupNum);
 
         //Update JSON
-        //NOT DONE
+        var indexOfJSON = getEventJSONIndex(groupNum);
+        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
     });
 
 //Called when the right dragbar of a task rectangle is dragged
@@ -229,10 +231,20 @@ var task_groups = [],
 //Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
     //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
+        alert("Please click on another event or the same event to cancel");
+        return;
+    }
+    
+    //VCom if overlay is on when mousedown() is triggered, turn it off and return
+    if (document.getElementById("overlay").style.display == "block") {
+        overlayOff();
+        return;
+    }
 
     event_counter++; //To generate id
     var point = d3.mouse(this);
-    var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
+    var snapX = Math.floor(point[0] - (point[0]%50) - DRAGBAR_WIDTH/2),
         snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
     drawEvents(snapX, snapY);
 
@@ -413,9 +425,10 @@ function addEventPopover(startHr, startMin) {
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
+                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
-                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
+                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +'); saveFlashTeam();">Delete</button>       ' 
+                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + '); saveFlashTeam();">Save</button> </p>' 
                 +'</form>',
                 container: $("#timeline-container")
             });
@@ -631,25 +644,43 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
         +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
+        +'<br><b>Directly-Responsible Individual for This Event<b><br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
         +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
-        +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
+        +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +'); saveFlashTeam();">Delete</button>       ' 
+        +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + '); saveFlashTeam();">Save</button> </p>' 
         +'</form>';
 }
 
 function drawInteraction(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
+    //START HERE
+    console.log("interaction draw called");
+    timeline_svg.on("mousemove", null);
 
+    //The user has cancelled the drawing
+
+    if (task1idNum == task2idNum) { //NOT WORKING B/C TASK1 NOT IDENTIFIED
+        DRAWING_COLLAB == false;
+        DRAWING_HANDOFF == false
+        console.log("Cancelled the interaction");
+        //FINISH CANCELLING HERE
+    
     //Draw a handoff from task one to task two
-    if (DRAWING_HANDOFF == true) {
+    } else if (DRAWING_HANDOFF == true) {
+        console.log("Drawing a handoff, clicked event ", task2idNum);
+        $("#handoff_" + handoff_counter).remove();
+        //NOT DONE
 
-
+        DRAWING_HANDOFF = false;
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
+        console.log("Drawing a collaboration, clicked event ", task2idNum)
+        //NOT DONE
 
-
+        DRAWING_COLLAB = false;
     //There is no collaboration being drawn
     } else {
+        console.log("Not drawing anything");
         return;
     }
 }
@@ -706,15 +737,14 @@ function handoffMouseMove() {
     var m = d3.mouse(this);
     line.attr("x2", m[0])
         .attr("y2", m[1]);
-    timeline_svg.on("click", handoffMouseClick);
+    //timeline_svg.on("click", handoffMouseClick);
 }
 
-//Stop following the position of the mouse //IN PROGRESS
-function handoffMouseClick() {
+//OLD CODE: Stop following the position of the mouse
+/*function handoffMouseClick() {
     //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
-
     timeline_svg.on("mousemove", null);
-}
+}*/
 
 //Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
 function writeCollaboration() {
@@ -741,6 +771,97 @@ function getEventJSONIndex(idNum) {
     }
 }
 
+//VCom Time expansion button trial 
+function addTime() {
+    calcAddHours(timelineHours);
+    
+    //Recalculate 'x' based on added hours
+    var x = d3.scale.linear()
+    .domain([0, hours])
+    .range([0, hours]);
+    
+    //Reset svg width
+    timeline_svg.attr("width", SVG_WIDTH);
+    
+    //Remove all exising grid lines
+    timeline_svg.selectAll("line").remove();
+    
+    //Redraw all x-axis grid lines
+    timeline_svg.selectAll("line.x")
+    .data(x.ticks(XTicks)) 
+    .enter().append("line")
+    .attr("class", "x")
+    .attr("x1", x)
+    .attr("x2", x)
+    .attr("y1", 15)
+    .attr("y2", SVG_HEIGHT-50)
+    .style("stroke", "#000");
+    
+    //Redraw all y-axis grid lines
+    timeline_svg.selectAll("line.y")
+    .data(yLines) 
+    .enter().append("line")
+    .attr("class", "y")
+    .attr("x1", 0)
+    .attr("x2", SVG_WIDTH-50)
+    .attr("y1", y)
+    .attr("y2", y)
+    .style("stroke", "#d3d1d1");
+    
+    //Redraw darker first x and y grid lines
+    timeline_svg.append("line")
+    .attr("x1", 0)
+    .attr("x2", SVG_WIDTH-50)
+    .attr("y1", 15)
+    .attr("y2", 15)
+    .style("stroke", "#000")
+    .style("stroke-width", "4")
+    
+    timeline_svg.append("line")
+    .attr("y1", 15)
+    .attr("y2", SVG_HEIGHT-50)
+    .style("stroke", "#000")
+    .style("stroke-width", "4")
+    
+    //Remove existing X-axis labels -- can't get this to work
+    //timeline_svg.selectAll(".rule").remove();
+    numMins = -30;
 
+    //Redraw X-axis labels
+    timeline_svg.selectAll(".rule")
+    .data(x.ticks(XTicks))
+    .enter().append("text")
+    .attr("x", x)
+    .attr("y", 15)
+    .attr("dy", -3)
+    .attr("text-anchor", "middle")
+    .text(function(d) {
+        numMins+= 30;
+        var hours = Math.floor(numMins/60);
+        var minutes = numMins%60;
+        if (minutes == 0 && hours == 0) return ".     .      .    .    0:00";
+        else if (minutes == 0) return hours + ":00";
+        else return hours + ":" + minutes; 
+    });
+    
+    //Add ability to draw rectangles on extended timeline
+    timeline_svg.append("rect")
+    .attr("class", "background")
+    .attr("width", SVG_WIDTH)
+    .attr("height", SVG_HEIGHT)
+    .attr("fill", "white")
+    .attr("fill-opacity", 0)
+    .on("mousedown", mousedown);
+    
+}
+
+//VCom Calculates how many hours to add when user expands timeline
+function calcAddHours(currentHours) {
+    timelineHours = currentHours + Math.floor(currentHours/3);
+    hours = timelineHours * Y_WIDTH;
+    
+    SVG_WIDTH = timelineHours * 100 + 50;
+    XTicks = timelineHours * 2;
+}
 
 
