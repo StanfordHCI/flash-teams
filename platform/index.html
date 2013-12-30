@@ -57,11 +57,11 @@
         <!--Main Layout-->
         <div class="container-fluid">       
             <div class="row-fluid">
-                <!--<h1>Flash Teams</h1>-->
-                <h1>Foundri</h1>
                 <form name="saveForm" id="save_form">
                     <button class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam()" style="font-size:25px; height:40px">Save...</button>
                 </form>
+				
+				<button class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px; height:40px">Add Time</button>
             </div>
 
             <div class="row-fluid">
@@ -71,9 +71,7 @@
                             <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
                         </form>
                     </div>
-                    <div id="diagram-container" class="well">
-                        <h3>Team Structure</h3>
-                    </div>
+                    
                     <div id="member-container" class="well">
                         <h3>Team Roles</h3>
                         <form name='newMemberForm' autocomplete="on">
@@ -89,6 +87,9 @@
                             <!--Member Pills Appended Here in JS-->
                         </ul>
                     </div>
+                    <div id="diagram-container" class="well">
+                        <h3>Team Structure</h3>
+                    </div>
                 </div>
 
                 <div class="span9"> <!--Body Content-->
@@ -96,7 +97,6 @@
                     <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                         <h3>Project Workflow</h3>
                         <div class="overlay" id="overlay" onclick="overlayOff()"> </div>
-
                     </div>
                 </div>
             </div>
