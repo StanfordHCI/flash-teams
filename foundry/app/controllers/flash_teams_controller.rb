@@ -45,7 +45,18 @@ class FlashTeamsController < ApplicationController
   def ajax_update
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.json = 0
-    @flahs_team.save
+    @flash_team.save
+  end
+
+  def get_status
+    @flash_team = FlashTeam.find(params[:id])
+    return @flash_team.status
+  end
+
+  def post_status status
+    @flash_team = FlashTeam.find(params[:id])
+    @flash_team.status = status
+    @flash_team.save
   end
 
   def flash_team_params
