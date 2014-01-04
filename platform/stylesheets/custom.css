@@ -27,6 +27,21 @@
 	float: right;
 }
 
+#member-container {
+	height: 200px;
+}
+
+#search-events-container {
+	height: 385px;
+}
+
+.event-block {
+	border: 1px solid;
+	margin: 5px;
+	padding: 5px;
+}
+
+
 $(".full-spectrum").spectrum({
     color: "#ECC",
     showInput: true,
