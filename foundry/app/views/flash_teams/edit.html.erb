@@ -8,6 +8,10 @@
                 <!--<h1>Flash Teams</h1>-->
                 <h1>Foundry</h1>
                     <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save...</div>
+
+                    <%= debug @events_json %>
+
+                    <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
             </div>
 
             <div class="row-fluid">
