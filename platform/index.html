@@ -66,13 +66,17 @@
 
             <div class="row-fluid">
                 <div class="span3"> <!--Sidebar content-->
+				
+					<!--Create flash team name, add back later?
                     <div id = "title-container" class="well">
                         <form name="titleForm" id="title_form">
                             <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
                         </form>
                     </div>
+					-->
                     
-                    <div id="member-container" class="well">
+					<!--Add team roles-->
+                    <div id="member-container" class="well" style="overflow-y:scroll;"> <!--VCom added style y scroll-->
                         <h3>Team Roles</h3>
                         <form name='newMemberForm' autocomplete="on">
                             <div class="input-append">
@@ -87,16 +91,30 @@
                             <!--Member Pills Appended Here in JS-->
                         </ul>
                     </div>
+					
+					<!--Team structure diagram, add back later?
                     <div id="diagram-container" class="well">
                         <h3>Team Structure</h3>
                     </div>
+					-->
+					
+					<!--Events library search-->
+					<div id="search-events-container" class="well" style="overflow-y:scroll;">
+						<h3>Search Events</h3>
+						<div class="input-append">
+							<input class="span9" id="searchEventsInput" type="text" placeholder="Search..." autocomplete="on">
+							<button class="btn" type="button" onclick="searchEvents()" id="searchEventsBtn">Go</button>
+						</div>
+						
+						<div id="search-results"></div>
+					</div>
                 </div>
 
                 <div class="span9"> <!--Body Content-->
-                    
                     <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                         <h3>Project Workflow</h3>
-                        <div class="overlay" id="overlay" onclick="overlayOff()"> </div>
+						<!--VCom added drop and drag listeners to overlay-->
+                        <div class="overlay" id="overlay" onclick="overlayOff()" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
                     </div>
                 </div>
             </div>
@@ -104,6 +122,8 @@
 
         <script type="text/javascript" src="javascript/helper.js"></script>
         <script type="text/javascript" src="javascript/timeline.js"></script>
+		<!--VCom added eventslibrary.js-->
+		<script type="text/javascript" src="javascript/eventslibrary.js"></script>
         <script type="text/javascript" src="javascript/diagram2.js"></script>
         <script type="text/javascript" src="javascript/members.js"></script>
         <script type="text/javascript" src="javascript/odeskArrays.js"></script>
