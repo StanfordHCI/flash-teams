@@ -59,6 +59,13 @@ Foundry::Application.routes.draw do
  
   root 'welcome#index'
 
+  resources :flash_teams do
+    member do 
+      get :get_status
+      put :update_status
+    end
+  end
+
   # get '/flash_teams/:id' => 'flash_teams#show'
   # get '/flash_teams' => 'flash_teams#index'
 end
