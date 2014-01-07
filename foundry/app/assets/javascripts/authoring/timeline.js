@@ -368,7 +368,7 @@ function  drawEvents(x, y, numHours, title) {
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
-        .attr("xlink:href", "images/rightArrow.png")
+        .attr("xlink:href", "/images/rightArrow.png")
         .attr("class", "handoff_btn")
         .attr("id", function(d) {return "handoff_btn_" + event_counter;})
         .attr("width", 16)
@@ -377,7 +377,7 @@ function  drawEvents(x, y, numHours, title) {
         .attr("y", function(d) {return d.y+23})
         .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
-        .attr("xlink:href", "images/doubleArrow.png")
+        .attr("xlink:href", "/images/doubleArrow.png")
         .attr("class", "collab_btn")
         .attr("id", function(d) {return "collab_btn_" + event_counter;})
         .attr("width", 16)

@@ -32,7 +32,7 @@ fakeJSON = {
     "members": [{"id":1, "role":"Illustrator", "category1":"Web Development", "category2":"UI Design", "skills":["shopify"], "color":"BLUE"}, 
     	{"id":2, "role":"Author", "category1":"Writing & Translation", "category2":"Creative Writing", "skills":["ebooks"], "color":"RED"}],       
     "interactions" : []  //{"event1", "event2", "type", "description"}       
-}
+};
 
 
 //Takes a Flash Teams JSON Object and Draws a Flash Team
