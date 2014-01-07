@@ -46,7 +46,7 @@ var EventJSONArray= [
 }
 ]
 
-//Called when user searches for events
+//Called when user searches for events. Currently, it is a dummy search function
 function searchEvents() {
 	for (var i = 0; i < EventJSONArray.length; i++) {
 		var str = "<div class=\"event-block\" id=\"searchEventBlock_"+i+"\" draggable=\"true\" ondragstart=\"dragEvent(event)\">";
@@ -77,10 +77,20 @@ function drop(ev) {
 	var data = ev.dataTransfer.getData("Text");
 	var timelineX = document.getElementById("timeline-container").offsetLeft; //w
 	var timelineY = document.getElementById("timeline-container").offsetTop; //w
+	var overlayX = document.getElementById("overlay").offsetLeft; //w
+	var overlayY = document.getElementById("overlay").offsetTop; //w
+	
+	var svgX = timelineX + overlayX;
+	var svgY = timelineY + overlayY;
+	
 	var timelineScrollX = document.getElementById("timeline-container").scrollLeft;
 	var timelineScrollY = document.getElementById("timeline-container").scrollTop;
-	var scrollpageX = ev.pageX-$(window).scrollLeft()-timelineX+timelineScrollX;
-	var scrollpageY = ev.pageY-$(window).scrollTop()+timelineScrollY;
+
+	var absoluteX = ev.pageX+timelineScrollX;
+	var absoluteY = ev.pageY+timelineScrollY;
+	
+	var svgpointX = absoluteX - svgX;
+	var svgpointY = absoluteY - svgY;
 	
 	document.getElementById("overlay").style.display = "none";   //turn overlay off
 	
@@ -89,7 +99,7 @@ function drop(ev) {
 	var eventJSONId = eventBlockDivIdStrArray[1];
 
 	//draw the dropped event on timeline
-	createDragEvent(scrollpageX, scrollpageY, eventJSONId);
+	createDragEvent(svgpointX, svgpointY, eventJSONId);
 }
 	
 
@@ -108,15 +118,19 @@ function createDragEvent(mouseX, mouseY, EventJSONID) {
 	var durationHrs=Math.floor(duration);
 	
 	
-	var current_svg = document.querySelector('svg');
-	var windowPoint = current_svg.createSVGPoint();
-	windowPoint.x = mouseX;
-	windowPoint.y = mouseY;
-	var tmatrix = current_svg.getScreenCTM();
+	//var current_svg = document.querySelector('svg');
+	//var windowPoint = current_svg.createSVGPoint();
+	//var tmatrix = current_svg.getScreenCTM();
 
-	var svgPoint = windowPoint.matrixTransform(tmatrix.inverse());
+//var svgPoint1 = windowPoint.matrixTransform(tmatrix);
+//alert("svgx1: "+svgPoint1.x+" ,y1: "+svgPoint1.y);
 
-	var snapPoint = calcSnap(svgPoint.x, svgPoint.y);
+	//windowPoint.x = mouseX;
+	//windowPoint.y = mouseY;
+	//var svgPoint = windowPoint.matrixTransform(tmatrix.inverse());
+	//alert("svgx: "+svgPoint.x+" ,y: "+svgPoint.y);
+
+	var snapPoint = calcSnap(mouseX, mouseY);
     drawEvents(snapPoint[0], snapPoint[1], durationHrs, eventTitle);
 	fillPopover(snapPoint[0], durationHrs, eventTitle);
 };
