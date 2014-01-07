@@ -8,6 +8,7 @@
                 <!--<h1>Flash Teams</h1>-->
                 <h1>Foundry</h1>
                     <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save...</div>
+					<div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
             </div>
 
             <div class="row-fluid">
@@ -17,6 +18,7 @@
                             <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
                         </form>
                     </div> -->
+
                     <div id="diagram-container" class="well">
                         <h3>Team Structure</h3>
                     </div>
@@ -35,13 +37,24 @@
                             <!--Member Pills Appended Here in JS-->
                         </ul>
                     </div>
+					
+					<div id="search-events-container" class="well" style="overflow-y:scroll;">
+						<h3>Search Events</h3>
+						<div class="input-append">
+							<input class="span9" id="searchEventsInput" type="text" placeholder="Search...">
+							<button class="btn" type="button" onclick="searchEvents()" id="searchEventsBtn">Go</button>
+						</div>
+						
+						<div id="search-results"></div>
+					</div>
+					
                 </div>
 
                 <div class="span9"> <!--Body Content-->
                     
                     <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                         <h3>Project Workflow</h3>
-                        <div class="overlay" id="overlay" onclick="overlayOff()"> </div>
+                        <div class="overlay" id="overlay" onclick="overlayOff()" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
 
                     </div>
                 </div>
@@ -53,6 +66,7 @@
         <%= javascript_include_tag "bootstrap/js/bootstrap.min.js" %>
         <%= javascript_include_tag "authoring/helper" %>
         <%= javascript_include_tag "authoring/timeline" %>
+		<%= javascript_include_tag "authoring/eventslibrary" %>
         <%= javascript_include_tag "authoring/diagram" %>
         <%= javascript_include_tag "authoring/members" %>
         <%= javascript_include_tag "authoring/odeskArrays" %>
