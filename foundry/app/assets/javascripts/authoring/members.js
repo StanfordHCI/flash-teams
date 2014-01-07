@@ -15,7 +15,7 @@ function addMember() {
     }
     //Appends a list item pill to the memberPills ul
     $("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName 
-        + '<div class="close" onclick="deleteMember(' + pillCounter + ')">  X</div>' + '</a></li>');
+        + '<div class="close" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">  X</div>' + '</a></li>');
 
     //Clear Input
     $("#addMemberInput").val(this.placeholder);
@@ -40,8 +40,8 @@ function addMember() {
             +'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
             +'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
             +'<script type="text/javascript"> initializeColorPicker(); </script>'
-            +'<p><button type="button" onclick="deleteMember(' + pillCounter + ');">Delete</button>     '
-            +'<button type="button" onclick="saveMemberInfo(' + pillCounter + ');">Save</button>'
+            +'<p><button type="button" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">Delete</button>     '
+            +'<button type="button" onclick="saveMemberInfo(' + pillCounter + '); saveFlashTeam();">Save</button>'
         +'</p></form>' 
         +'</div>',
         container: $("#member-container")
@@ -76,7 +76,7 @@ function addMember() {
     });
  
     //Add to Flash Teams JSON Object
-    var newMember = {"role":memberName, "id": pillCounter, "color":"GRAY", "skills":[], "category1":"", "category2":""};
+    var newMember = {"role":memberName, "id": pillCounter, "color":"rgb(0, 168, 0)", "skills":[], "category1":"", "category2":""};
     flashTeamsJSON.members.push(newMember); 
     addMemberNode(memberName, pillCounter, "#808080");
 
@@ -176,7 +176,7 @@ function initializeColorPicker() {
     $(".full-spectrum").spectrum({
         showPaletteOnly: true,
         showPalette: true,
-        color: "GRAY",
+        color: "rgb(0, 168, 0)",
         palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
@@ -184,9 +184,9 @@ function initializeColorPicker() {
         "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"], 
         ["rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(182, 215, 168)", 
         "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)"], 
-        ["rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(147, 196, 125)", 
+        ["rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(100, 196, 100)", 
         "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)"],
-        ["rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(106, 168, 79)",
+        ["rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(0, 168, 0)",
         "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)"],
         ["rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)",  "rgb(39, 78, 19)", 
         "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]

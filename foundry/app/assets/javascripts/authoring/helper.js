@@ -1,12 +1,13 @@
 /* helper.js
  * ---------------------------------
- *
+ * 
  */
 
+//MAKE SURE THE JSON IS UPDATED IN ITS CURRENT VERSION EVERYWHERE
 var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
-    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members", "dri", "yPosition"}
+    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", inputs”:[], “outputs”:[]}
     "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
     "interactions" : []  //{"event1", "event2", "type", "description"}
 };
@@ -35,7 +36,6 @@ fakeJSON = {
 
 
 //Takes a Flash Teams JSON Object and Draws a Flash Team
-//INCOMPLETE
 function drawFlashTeamFromJSON(ftJSON) {
     //Populate members
     for (i = 0; i < ftJSON["members"].length; i++) {
@@ -80,7 +80,7 @@ function drawFlashTeamFromJSON(ftJSON) {
     	var startHr = (ftJSON["events"][i].startTime - (ftJSON["events"][i].startTime%60))/60;
     	var startMin = ftJSON["events"][i].startTime%60;
     	addEventPopover(startHr, startMin);
-    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVER
+    	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVERT
     	$("#notes_" + pillCounter).val(ftJSON["events"][i].notes);
     	overlayOn();
     }
@@ -89,11 +89,9 @@ function drawFlashTeamFromJSON(ftJSON) {
     //DRAW INTERACTIONS
 }
 
-function drawEventFromJSON() {
-
-}
-
 function saveFlashTeam() {
-	console.log("Saving flash team"); 
+	console.log("Saving flash team");
+    $('#flash_team_json').val(JSON.stringify(flashTeamsJSON));
+    $('.edit_flash_team').submit();
 }
 

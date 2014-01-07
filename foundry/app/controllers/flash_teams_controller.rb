@@ -1,4 +1,8 @@
+require 'json'
+
 class FlashTeamsController < ApplicationController
+  helper_method :get_tasks
+
 	def new
     @flash_team = FlashTeam.new
   end
@@ -23,6 +27,17 @@ class FlashTeamsController < ApplicationController
 
   def edit
     @flash_team = FlashTeam.find(params[:id])
+
+    flash_teams = FlashTeam.all
+    @events_array = []
+    flash_teams.each do |flash_team|
+      flash_team_json = JSON.parse(flash_team.json)
+      flash_team_events = flash_team_json["events"]
+      flash_team_events.each do |flash_team_event|
+        @events_array << flash_team_event
+      end
+    end
+    @events_json = @events_array.to_json
   end
 
   def update
@@ -45,7 +60,18 @@ class FlashTeamsController < ApplicationController
   def ajax_update
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.json = 0
-    @flahs_team.save
+    @flash_team.save
+  end
+
+  def get_status
+    @flash_team = FlashTeam.find(params[:id])
+    return @flash_team.status
+  end
+
+  def post_status status
+    @flash_team = FlashTeam.find(params[:id])
+    @flash_team.status = status
+    @flash_team.save
   end
 
   def flash_team_params

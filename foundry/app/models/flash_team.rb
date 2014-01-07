@@ -4,3 +4,7 @@ class FlashTeam < ActiveRecord::Base
   has_many :tasks
   has_many :members
 end
+
+def get_all_flash_teams
+  return FlashTeam.all
+end

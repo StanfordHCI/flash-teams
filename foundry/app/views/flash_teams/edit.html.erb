@@ -2,21 +2,23 @@
 
 <%= render 'form' %>
 
+<%= tag :meta, :name=> 'events_json', :content=> @events_json %>
+
        <!--Main Layout-->
         <div class="container-fluid">       
             <div class="row-fluid">
                 <!--<h1>Flash Teams</h1>-->
                 <h1>Foundry</h1>
-                    <div class="btn" id="flashTeamSaveBtn" onclick="" style="font-size:25px; height:40px">Save...</div>
+                    <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save...</div>
             </div>
 
             <div class="row-fluid">
                 <div class="span3"> <!--Sidebar content-->
-                    <div id = "title-container" class="well">
+<!--                     <div id = "title-container" class="well">
                         <form name="titleForm" id="title_form">
                             <input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
                         </form>
-                    </div>
+                    </div> -->
                     <div id="diagram-container" class="well">
                         <h3>Team Structure</h3>
                     </div>
@@ -48,6 +50,9 @@
             </div>
         </div>
 
+        <%= javascript_include_tag "http://code.jquery.com/jquery-2.0.3.min.js" %>
+        <%= javascript_include_tag "http://code.jquery.com/ui/1.10.3/jquery-ui.min.js" %>
+        <%= javascript_include_tag "bootstrap/js/bootstrap.min.js" %>
         <%= javascript_include_tag "authoring/helper" %>
         <%= javascript_include_tag "authoring/timeline" %>
         <%= javascript_include_tag "authoring/diagram" %>
