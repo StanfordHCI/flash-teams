@@ -228,48 +228,67 @@ timeline_svg.append("rect")
 var task_groups = [],
     task_g = timeline_svg.selectAll(".task_g");
 
-//Draws event and adds it to the JSON when the timeline is clicked and overlay is off
-function mousedown() {
-    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
-    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
-        alert("Please click on another event or the same event to cancel");
-        return;
-    }
-    
-    //VCom if overlay is on when mousedown() is triggered, turn it off and return
-    if (document.getElementById("overlay").style.display == "block") {
-        overlayOff();
-        return;
-    }
+//VCom Calculates where to snap event block to when created
+function calcSnap(mouseX, mouseY) {
+    var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
+        snapY = Math.floor(mouseY/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
+	return [snapX, snapY];
+}	
 
-    event_counter++; //To generate id
-    var point = d3.mouse(this);
-    var snapX = Math.floor(point[0] - (point[0]%50) - DRAGBAR_WIDTH/2),
-        snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
-    drawEvents(snapX, snapY);
+//VCom Populates event block popover with correct info
+function fillPopover(newmouseX, numHours, title) {
 
+	if (numHours == null) {
+		numHours = 1;
+	}
+	if (title == null) {
+		title = "New Event";
+	}
+	
     //Find the start time
-    var startHr = (snapX-(snapX%100))/100;
-    var startMin = (snapX%100)/25*15;
+    var startHr = (newmouseX-(newmouseX%100))/100;
+    var startMin = (newmouseX%100)/25*15;
     if(startMin == 57.599999999999994) {
         startHr++;
         startMin = 0;
     } else startMin += 2.4
     var startTimeinMinutes = (startHr*60) + startMin;
-
     //D3, Exit to Remove Deleted Data
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
-
+	//add new event to flashTeams database
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
-
-    addEventPopover(startHr, startMin);
+    addEventPopover(startHr, startMin, numHours, title);
     overlayOn();
+}
+
+//Draws event and adds it to the JSON when the timeline is clicked and overlay is off
+function mousedown() {
+	
+    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
+        alert("Please click on another event or the same event to cancel");
+        return;
+    }
+
+    event_counter++; //To generate id
+    var point = d3.mouse(this);
+	var snapPoint = calcSnap(point[0], point[1]);
+    drawEvents(snapPoint[0], snapPoint[1]);
+	fillPopover(snapPoint[0]);
 };
 
 //Creates graphical elements from array of data (task_rectangles)
-function  drawEvents(x, y) {
+function  drawEvents(x, y, numHours, title) {
+	
+	if (numHours == null) {
+		numHours = 1;
+	}
+	if (title == null) {
+		title = "New Event";
+	}
+
     var task_g = timeline_svg.append("g")
         .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
 
@@ -282,7 +301,7 @@ function  drawEvents(x, y) {
             return "rect_" + event_counter; })
         .attr("groupNum", event_counter)
         .attr("height", RECTANGLE_HEIGHT)
-        .attr("width", RECTANGLE_WIDTH)
+        .attr("width", RECTANGLE_WIDTH*numHours)
         .attr("fill", "#C9C9C9")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
@@ -295,7 +314,7 @@ function  drawEvents(x, y) {
     var rt_rect = task_g.append("rect")
         .attr("class", "rt_rect")
         .attr("x", function(d) { 
-            return d.x + RECTANGLE_WIDTH; })
+            return d.x + RECTANGLE_WIDTH*numHours; })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rt_rect_" + event_counter; })
@@ -325,7 +344,7 @@ function  drawEvents(x, y) {
     //Add title text
     var title_text = task_g.append("text")
         .text(function (d) {
-            return "New Event";
+            return title;
         })
         .attr("class", "title_text")
         .attr("id", function(d) { return "title_text_" + event_counter; })
@@ -338,7 +357,7 @@ function  drawEvents(x, y) {
     //Add duration text
     var time_text = task_g.append("text")
         .text(function (d) {
-            return "1hrs 0min";
+            return numHours+"hrs 0min";
         })
         .attr("class", "time_text")
         .attr("id", function(d) {return "time_text_" + event_counter;})
@@ -354,7 +373,7 @@ function  drawEvents(x, y) {
         .attr("id", function(d) {return "handoff_btn_" + event_counter;})
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-18})
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
@@ -363,7 +382,7 @@ function  drawEvents(x, y) {
         .attr("id", function(d) {return "collab_btn_" + event_counter;})
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH-38; })
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", writeCollaboration);
 
@@ -405,7 +424,7 @@ function redraw(group, newWidth, gNum) {
 }
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
-function addEventPopover(startHr, startMin) {
+function addEventPopover(startHr, startMin, numHours, title) {
     //Add Popovers
     timeline_svg.selectAll("#rect_" + event_counter).each(
         function(d) {
@@ -416,19 +435,19 @@ function addEventPopover(startHr, startMin) {
                 style: "width: 650",
                 id: '"popover' + event_counter + '"',
                 trigger: "click",
-                title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event" >',
+                title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="'+title+'" >',
                 content: '<form name="eventForm_' + event_counter + '">'
                 +'<b>Event Start:          </b><br>' 
                 +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">  hrs'
                 +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px">  min<br>'
                 +'<b>Total Runtime: </b><br>' 
-                +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="1" min="0" style="width:35px"/>          ' 
+                +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="'+numHours+'" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
                 +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
-                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +'); saveFlashTeam();">Delete</button>       ' 
-                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + '); saveFlashTeam();">Save</button> </p>' 
+                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+                +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
                 +'</form>',
                 container: $("#timeline-container")
             });
@@ -491,7 +510,6 @@ function saveEventInfo (popId) {
 
     //Update Popover
     updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
-
     $("#rect_" + popId).popover("hide");
     overlayOff();
 
@@ -646,8 +664,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
         +'<br><b>Directly-Responsible Individual for This Event<b><br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
         +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
-        +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +'); saveFlashTeam();">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + '); saveFlashTeam();">Save</button> </p>' 
+        +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+        +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
         +'</form>';
 }
 
@@ -780,7 +798,8 @@ function addTime() {
     .domain([0, hours])
     .range([0, hours]);
     
-    //Reset svg width
+    //Reset overlay and svg width
+	document.getElementById("overlay").style.width = SVG_WIDTH + 50 + "px";
     timeline_svg.attr("width", SVG_WIDTH);
     
     //Remove all exising grid lines
