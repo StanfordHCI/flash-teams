@@ -10,7 +10,7 @@ var EventJSONArray= [
 "title":"Low-fi prototype v1",
 "id":1,
 "startTime":null, 
-"duration":2.5, 
+"duration":2.5*60, 
 "notes":"Use balsamiq to construct mockups",
 "members":["UX Researcher", "Developer"], 
 "dri":"UI Designer", 
@@ -23,7 +23,7 @@ var EventJSONArray= [
 "title":"Low-fi prototype v2",
 "id":2,
 "startTime":null, 
-"duration":4, 
+"duration":4*60, 
 "notes":"Use Axure to construct prototype",
 "members":["UX Researcher", "Developer"], 
 "dri":"UI Designer", 
@@ -36,7 +36,7 @@ var EventJSONArray= [
 "title":"Heuristic Evaluation",
 "id":3,
 "startTime":null, 
-"duration":2, 
+"duration":2*60, 
 "notes":"Refer to Nielsen's heuristics",
 "members":["UI Designer", "Developer"], 
 "dri":"UX Researcher", 
@@ -44,15 +44,53 @@ var EventJSONArray= [
 "inputs":["low-fidelity prototype v1"], 
 "outputs":["final HE report"]
 }
+];
+
+var MembersJSONArray= [
+{
+"id":1,
+"role":"UI Designer",
+"skills":["skill1", "skill2"],
+"color":null,
+"category1":null,
+"category2":null
+},
+
+{
+"id":2,
+"role":"UX Researcher",
+"skills":["skill3", "skill4"],
+"color":null,
+"category1":null,
+"category2":null
+},
+
+{
+"id":3,
+"role":"UX Researcher",
+"skills":["skill2", "skill3"],
+"color":null,
+"category1":null,
+"category2":null
+},
+
+{
+"id":4,
+"role":"UX Researcher",
+"skills":["skill1", "skill3"],
+"color":null,
+"category1":null,
+"category2":null
+}
 ]
 
-//Called when user searches for events. Currently, it is a dummy search function
+//Called when user searches for events
 function searchEvents() {
 	for (var i = 0; i < EventJSONArray.length; i++) {
-		var str = "<div class=\"event-block\" id=\"searchEventBlock_"+i+"\" draggable=\"true\" ondragstart=\"dragEvent(event)\">";
+		var str = "<div class=\"event-block\" id=\"searchEventBlock_"+i+"\" draggable=\"true\" ondragstart=\"dragEvent(event)\" style=\"cursor:move\">";
 		str += "<div class=\"row-fluid\">";
 		str += "<div class=\"span9\"><b>"+EventJSONArray[i]["title"]+"</b></div>";		//event Title
-		str += "<div class=\"span2\">"+EventJSONArray[i]["duration"]+"</div></div>";			//event duration
+		str += "<div class=\"span3\">"+EventJSONArray[i]["duration"]/60+" hrs</div></div>";			//event duration
 		str += "<b>DRI: </b>"+EventJSONArray[i]["dri"]+"<br />";		//event DRI
 		str += "<b>Input: </b>"+EventJSONArray[i]["inputs"]+"<br />";		//event inputs
 		str += "<b>Output: </b>"+EventJSONArray[i]["outputs"]+"</div>";		//event outputs
@@ -69,12 +107,15 @@ function allowDrop(ev) {
 function dragEvent(ev) {
 	ev.dataTransfer.setData("Text",ev.target.id);
 	document.getElementById("overlay").style.display = "block"; 
-	
+	timeline_svg.style("box-shadow", "0px 0px 3px 5px #888888");
 }
 
 function drop(ev) {
 	ev.preventDefault();
 	var data = ev.dataTransfer.getData("Text");
+	
+	timeline_svg.style("box-shadow", "none");
+	
 	var timelineX = document.getElementById("timeline-container").offsetLeft; //w
 	var timelineY = document.getElementById("timeline-container").offsetTop; //w
 	var overlayX = document.getElementById("overlay").offsetLeft; //w
@@ -102,7 +143,6 @@ function drop(ev) {
 	createDragEvent(svgpointX, svgpointY, eventJSONId);
 }
 	
-
 function createDragEvent(mouseX, mouseY, EventJSONID) {
     //WRITE IF CASE, IF INTERACTION DRAWING, STOP
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
@@ -113,24 +153,31 @@ function createDragEvent(mouseX, mouseY, EventJSONID) {
     event_counter++; //To generate id
 	
 	var eventTitle=EventJSONArray[EventJSONID]["title"];
-	
 	var duration=EventJSONArray[EventJSONID]["duration"];
-	var durationHrs=Math.floor(duration);
 	
-	
-	//var current_svg = document.querySelector('svg');
-	//var windowPoint = current_svg.createSVGPoint();
-	//var tmatrix = current_svg.getScreenCTM();
-
-//var svgPoint1 = windowPoint.matrixTransform(tmatrix);
-//alert("svgx1: "+svgPoint1.x+" ,y1: "+svgPoint1.y);
-
-	//windowPoint.x = mouseX;
-	//windowPoint.y = mouseY;
-	//var svgPoint = windowPoint.matrixTransform(tmatrix.inverse());
-	//alert("svgx: "+svgPoint.x+" ,y: "+svgPoint.y);
-
 	var snapPoint = calcSnap(mouseX, mouseY);
-    drawEvents(snapPoint[0], snapPoint[1], durationHrs, eventTitle);
-	fillPopover(snapPoint[0], durationHrs, eventTitle);
+    drawEvents(snapPoint[0], snapPoint[1], eventTitle, duration);
+	fillPopover(snapPoint[0], eventTitle, duration);
 };
+
+function compMember(member1, member2) {
+	if (compMemberCats(member1, member2) || compMemberSkills(member1, member2)) {
+		
+	}
+}
+
+function compMemberCats (member1, member2) {
+	if (member1["category2"] == member2["category2"]) {
+		return true;
+	} else { return false; }
+}
+
+function compMemberSkills (member1, member2) {
+	for (var i = 0; i < member1["skills"].length; i++) {
+		for (var j=0; j < member2["skills"].length; j++) {
+			if (member1["skills"][i] == member2["skills"][j]) {
+				return true;
+			} else { return false; }
+		}
+	}
+}
