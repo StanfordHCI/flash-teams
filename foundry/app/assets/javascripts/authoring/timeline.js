@@ -236,13 +236,12 @@ function calcSnap(mouseX, mouseY) {
 }	
 
 //VCom Populates event block popover with correct info
-function fillPopover(newmouseX, numHours, title) {
-
-	if (numHours == null) {
-		numHours = 1;
-	}
+function fillPopover(newmouseX, title, totalMinutes) {
 	if (title == null) {
 		title = "New Event";
+	}
+	if (totalMinutes == null) {
+		totalMinutes = 60;
 	}
 	
     //Find the start time
@@ -257,38 +256,48 @@ function fillPopover(newmouseX, numHours, title) {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
 	//add new event to flashTeams database
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
-    addEventPopover(startHr, startMin, numHours, title);
+    addEventPopover(startHr, startMin, title, totalMinutes);
     overlayOn();
 }
 
 //Draws event and adds it to the JSON when the timeline is clicked and overlay is off
 function mousedown() {
-	
     //WRITE IF CASE, IF INTERACTION DRAWING, STOP
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
         return;
     }
-
     event_counter++; //To generate id
     var point = d3.mouse(this);
+	
 	var snapPoint = calcSnap(point[0], point[1]);
     drawEvents(snapPoint[0], snapPoint[1]);
 	fillPopover(snapPoint[0]);
 };
 
+function addEvent() {
+	event_counter++;
+	var point = [0,0];
+	var snapPoint = calcSnap(point[0], point[1]);
+    drawEvents(snapPoint[0], snapPoint[1]);
+	fillPopover(snapPoint[0]);
+}
+
 //Creates graphical elements from array of data (task_rectangles)
-function  drawEvents(x, y, numHours, title) {
-	
-	if (numHours == null) {
-		numHours = 1;
-	}
+function  drawEvents(x, y, title, totalMinutes) {
 	if (title == null) {
 		title = "New Event";
 	}
+	if (totalMinutes == null) {
+		totalMinutes = 60;
+	}
 
+	var numHoursInt = Math.floor(totalMinutes/60);
+	var numHoursDec = totalMinutes/60;
+	var minutesLeft = totalMinutes%60;
+	
     var task_g = timeline_svg.append("g")
         .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
 
@@ -301,7 +310,7 @@ function  drawEvents(x, y, numHours, title) {
             return "rect_" + event_counter; })
         .attr("groupNum", event_counter)
         .attr("height", RECTANGLE_HEIGHT)
-        .attr("width", RECTANGLE_WIDTH*numHours)
+        .attr("width", RECTANGLE_WIDTH*numHoursDec)
         .attr("fill", "#C9C9C9")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
@@ -314,7 +323,7 @@ function  drawEvents(x, y, numHours, title) {
     var rt_rect = task_g.append("rect")
         .attr("class", "rt_rect")
         .attr("x", function(d) { 
-            return d.x + RECTANGLE_WIDTH*numHours; })
+            return d.x + RECTANGLE_WIDTH*numHoursDec; })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rt_rect_" + event_counter; })
@@ -340,7 +349,7 @@ function  drawEvents(x, y, numHours, title) {
         .attr("fill-opacity", .6)
         .attr('pointer-events', 'all')
         .call(drag_left);
-
+		
     //Add title text
     var title_text = task_g.append("text")
         .text(function (d) {
@@ -353,11 +362,11 @@ function  drawEvents(x, y, numHours, title) {
         .attr("y", function(d) {return d.y + 14})
         .attr("font-weight", "bold")
         .attr("font-size", "12px");
-
+		
     //Add duration text
     var time_text = task_g.append("text")
         .text(function (d) {
-            return numHours+"hrs 0min";
+            return numHoursInt+"hrs "+minutesLeft+"min";
         })
         .attr("class", "time_text")
         .attr("id", function(d) {return "time_text_" + event_counter;})
@@ -373,7 +382,7 @@ function  drawEvents(x, y, numHours, title) {
         .attr("id", function(d) {return "handoff_btn_" + event_counter;})
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-18})
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
@@ -382,7 +391,7 @@ function  drawEvents(x, y, numHours, title) {
         .attr("id", function(d) {return "collab_btn_" + event_counter;})
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-38; })
+        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", writeCollaboration);
 
@@ -424,7 +433,10 @@ function redraw(group, newWidth, gNum) {
 }
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
-function addEventPopover(startHr, startMin, numHours, title) {
+function addEventPopover(startHr, startMin, title, totalMinutes) {
+	var numHours = Math.floor(totalMinutes/60);
+	var minutesLeft = totalMinutes%60;
+	
     //Add Popovers
     timeline_svg.selectAll("#rect_" + event_counter).each(
         function(d) {
@@ -441,8 +453,8 @@ function addEventPopover(startHr, startMin, numHours, title) {
                 +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">  hrs'
                 +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px">  min<br>'
                 +'<b>Total Runtime: </b><br>' 
-                +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="'+numHours+'" min="0" style="width:35px"/>          ' 
-                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
+                +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="'+numHours+'" min="2" style="width:35px"/>          ' 
+                +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="'+minutesLeft+'" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
                 +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
