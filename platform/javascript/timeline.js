@@ -217,6 +217,68 @@ timeline_svg.append("line")
     .style("stroke", "#000")
     .style("stroke-width", "4")
 
+/* Define remaining tasks, and currently running tasks */
+var remaining_tasks = [];
+var live_tasks = [];
+
+/* Time cursor in red */
+timeline_svg.append("line")
+    .attr("y1", 15)
+    .attr("y2", SVG_HEIGHT-50)
+    .attr("x1", 0)
+    .attr("x2", 0)
+    .attr("class", "cursor")
+    .style("stroke", "red")
+    .style("stroke-width", "2")
+
+var timeline_interval = 18000; // TODO: should be 30 minutes = 1800000 milliseconds
+var fire_interval = 1800;
+var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
+var increment = parseFloat(50)/parseFloat(numIntervals);
+
+// TODO: set up another interval that fires every 30 minutes and sets the cursor onto another
+// transition for another 30 minutes
+var cursor = timeline_svg.select(".cursor");
+cursor.transition()
+    .duration(timeline_interval)
+    .ease("linear")
+    .attr("x1", 50)
+    .attr("x2", 50);
+
+// set an interval to move the cursor by a certain amount every time it is fired
+setInterval(function(){
+    var cursor = timeline_svg.select(".cursor");
+    var curr_x = cursor.attr("x1");
+    var curr_new_x = parseFloat(curr_x) + increment;
+    
+    //cursor.transition()
+    //.duration(fire_interval)
+    //.attr("x1", curr_new_x)
+    //.attr("x2", curr_new_x);
+
+    remaining_tasks = [];
+    live_tasks = [];
+    for (var i=0;i<task_groups.length;i++){
+        var task = task_groups[i];
+        var data = task.data()[0];
+        var groupNum = data.groupNum;
+
+        var task_rect = task.select("#rect_" + groupNum);
+        var start_x = task_rect.attr("x");
+        var width = task_rect.attr("width");
+        var end_x = parseFloat(start_x) + parseFloat(width);
+
+        if(curr_new_x >= start_x && curr_new_x <= end_x){
+            live_tasks.push(groupNum);
+        } else if(curr_new_x < start_x){
+            remaining_tasks.push(groupNum);
+        }
+    }
+
+    console.log("remaining_tasks: " + remaining_tasks);
+    console.log("live_tasks: " + live_tasks);
+}, fire_interval);
+
 timeline_svg.append("rect")
     .attr("class", "background")
     .attr("width", SVG_WIDTH)
@@ -225,6 +287,7 @@ timeline_svg.append("rect")
     .attr("fill-opacity", 0)
     .on("mousedown", mousedown);
 
+// task_groups contains all the rectangles
 var task_groups = [],
     task_g = timeline_svg.selectAll(".task_g");
 
@@ -371,6 +434,8 @@ function  drawEvents(x, y, numHours) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", writeCollaboration);
+
+    console.log(task_g);
 
     task_groups.push(task_g);    
 };

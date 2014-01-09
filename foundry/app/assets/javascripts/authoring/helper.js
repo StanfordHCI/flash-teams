@@ -85,7 +85,6 @@ function drawFlashTeamFromJSON(ftJSON) {
     	overlayOn();
     }
     
-
     //DRAW INTERACTIONS
 }
 
