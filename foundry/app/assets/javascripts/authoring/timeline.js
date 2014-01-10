@@ -1,7 +1,7 @@
 /* Timeline.js
  * ---------------------------------------------
- * Code that manages the workflow timeline in Foundry. 
- * 
+ * Code that manages the workflow timeline in Foundry. And also the team awareness
+ * feature.
  */
 
 var XTicks = 50,
