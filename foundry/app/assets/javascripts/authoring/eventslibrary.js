@@ -156,8 +156,8 @@ function createDragEvent(mouseX, mouseY, EventJSONID) {
 	var duration=EventJSONArray[EventJSONID]["duration"];
 	
 	var snapPoint = calcSnap(mouseX, mouseY);
-    drawEvents(snapPoint[0], snapPoint[1], eventTitle, duration);
-	fillPopover(snapPoint[0], eventTitle, duration);
+    var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+	fillPopover(snapPoint[0], groupNum, eventTitle, duration);
 };
 
 function compMember(member1, member2) {

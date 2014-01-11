@@ -26,11 +26,13 @@ class FlashTeamsController < ApplicationController
   end
 
   def edit
+    logger.debug " ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ID: #{params[:id]}"
     @flash_team = FlashTeam.find(params[:id])
 
     flash_teams = FlashTeam.all
     @events_array = []
     flash_teams.each do |flash_team|
+      next if flash_team.json.blank?
       flash_team_json = JSON.parse(flash_team.json)
       flash_team_events = flash_team_json["events"]
       flash_team_events.each do |flash_team_event|
