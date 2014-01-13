@@ -1391,13 +1391,17 @@ function drawInteraction(task2idNum) {
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
-        DRAWING_COLLAB == false;
-        DRAWING_HANDOFF == false
+        DRAWING_COLLAB = false;
+        DRAWING_HANDOFF = false;
         $("#handoff_" + handoff_counter).remove();
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
-        console.log("Drawing a handoff, clicked event ", task2idNum);
+        //START HERE
         $("#handoff_" + handoff_counter).remove();
+        var handoffData = {"event1":task1idNum, "event2":task2idNum, "type":"handoff", "description":""};
+        flashTeamsJSON.interactions.push(handoffData);
+        redrawInteractionLine(task1idNum, task2idNum, "handoff");
+        //UPDATE POSITION OF LINE/CREATE NEW LINE
         //NOT DONE
 
         DRAWING_HANDOFF = false;
@@ -1412,6 +1416,11 @@ function drawInteraction(task2idNum) {
         console.log("Not drawing anything");
         return;
     }
+}
+
+//Redraw the position of the interaction line
+function redrawInteractionLine(task1Id, task2Id, type) {
+
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
