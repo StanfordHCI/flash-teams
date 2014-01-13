@@ -31,6 +31,7 @@ class FlashTeamsController < ApplicationController
     flash_teams = FlashTeam.all
     @events_array = []
     flash_teams.each do |flash_team|
+      next if flash_team.json.blank?
       flash_team_json = JSON.parse(flash_team.json)
       flash_team_events = flash_team_json["events"]
       flash_team_events.each do |flash_team_event|
@@ -65,13 +66,20 @@ class FlashTeamsController < ApplicationController
 
   def get_status
     @flash_team = FlashTeam.find(params[:id])
-    return @flash_team.status
+    respond_to do |format|
+      format.json {render json: @flash_team.status, status: :ok}
+    end
   end
 
-  def post_status status
+  def update_status
+    status = params[:localStatusJSON]
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.status = status
     @flash_team.save
+
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
   end
 
   def flash_team_params

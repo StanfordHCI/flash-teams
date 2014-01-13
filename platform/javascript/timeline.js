@@ -68,7 +68,7 @@ var drag = d3.behavior.drag()
         var min = $("#minutes_" + groupNum).attr("placeholder");
         var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
         updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
-        $("#rect_" + groupNum).popover("hide");     
+        $("#rect_" + groupNum).popover("hide");
 
         //Vertical Dragging
         var dragY = d3.event.y - (d3.event.y%(RECTANGLE_HEIGHT)) + 17;
@@ -138,6 +138,8 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
+    //var task_g = getTaskGFromGroupNum (d.groupNum);
+    //var taskRect = task_g.select("#rect_" + d.groupNum);
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
@@ -217,9 +219,12 @@ timeline_svg.append("line")
     .style("stroke", "#000")
     .style("stroke-width", "4")
 
-/* Define remaining tasks, and currently running tasks */
-var remaining_tasks = [];
-var live_tasks = [];
+/* --------------- TEAM AWARENESS STUFF START ------------ */
+
+// unique link to identify/access the page
+// can't shift tasks to the left before the cursor! - try to reproduce the problem
+// plan out data infrastructure
+// convert interactive mockups to smaller size and send out/upload to google docs
 
 /* Time cursor in red */
 timeline_svg.append("line")
@@ -231,33 +236,401 @@ timeline_svg.append("line")
     .style("stroke", "red")
     .style("stroke-width", "2")
 
-var timeline_interval = 18000; // TODO: should be 30 minutes = 1800000 milliseconds
-var fire_interval = 1800;
+var poll_interval = 20000; // 20 seconds
+var timeline_interval = 10000; // TODO: should be 30 minutes = 1800000 milliseconds
+var fire_interval = 180; // change back to 180
 var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
 var increment = parseFloat(50)/parseFloat(numIntervals);
-
-// TODO: set up another interval that fires every 30 minutes and sets the cursor onto another
-// transition for another 30 minutes
+var curr_x_standard = 0;
 var cursor = timeline_svg.select(".cursor");
-cursor.transition()
-    .duration(timeline_interval)
-    .ease("linear")
-    .attr("x1", 50)
-    .attr("x2", 50);
+var live_tasks = [];
+var remaining_tasks = [];
+var delayed_tasks = [];
+var drawn_blue_tasks = [];
+var completed_red_tasks = [];
+var task_groups = [];
 
-// set an interval to move the cursor by a certain amount every time it is fired
-setInterval(function(){
-    var cursor = timeline_svg.select(".cursor");
+var getXCoordForTime = function(t){
+    console.log("time t: " + t);
+    var numInt = parseInt(t / timeline_interval);
+    var remainder = t % timeline_interval;
+    console.log("numInt: " + numInt + " | remainder: " + remainder);
+
+    var xCoordForRemainder = (remainder / timeline_interval) * 50;
+    var xCoordForMainIntervals = 50*numInt;
+    console.log("xCoordForRemainder: " + xCoordForRemainder + " | xCoordForMainIntervals: " + xCoordForMainIntervals);
+
+    var finalX = parseFloat(xCoordForRemainder) + parseFloat(xCoordForMainIntervals);
+    console.log("finalX: " + finalX);
+    return {"finalX": finalX, "numInt": numInt};
+};
+
+$("#flashTeamStartBtn").click(function(){
+    $("#flashTeamStartBtn").attr("disabled", "disabled");
+    localStorage["flash_team_in_progress"] = JSON.stringify(true);
+
+    recordStartTime();
+    storeAllData();
+    setCursorMoving();
+    trackLiveAndRemainingTasks();
+    poll();
+});
+
+$("#flashTeamEndBtn").click(function(){
+    localStorage["flash_team_in_progress"] = JSON.stringify(false);
+    window.location.href = "/";
+});
+
+$(document).ready(function(){
+    var in_progress = JSON.parse(localStorage["flash_team_in_progress"]);
+    if(in_progress){
+        $("#flashTeamStartBtn").attr("disabled", "disabled");
+        loadData();
+        poll();
+    }
+});
+
+var flashTeamEnded = function(){
+    var in_progress = JSON.parse(localStorage["flash_team_in_progress"]);
+    return !in_progress;
+};
+
+var flashTeamUpdated = function(){
+    var updated_drawn_blue_tasks = JSON.parse(localStorage["drawn_blue_tasks"]);
+    var updated_completed_red_tasks = JSON.parse(localStorage["completed_red_tasks"]);
+
+    if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return true;
+    if (updated_completed_red_tasks.length != completed_red_tasks.length) return true;
+
+    if(updated_drawn_blue_tasks.sort().join(',') !== drawn_blue_tasks.sort().join(',')){
+        return true;
+    }
+
+    if(updated_completed_red_tasks.sort().join(',') !== completed_red_tasks.sort().join(',')){
+        return true;
+    }
+    return false;
+};
+
+// TODO: why lag behind initially?
+
+/*
+var flashTeamUpdated = function(){
+    var updated_drawn_blue_tasks = JSON.parse(localStorage["drawn_blue_tasks"]);
+    var updated_completed_red_tasks = JSON.parse(localStorage["completed_red_tasks"]);
+
+    if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return false;
+    if (updated_completed_red_tasks.length != completed_red_tasks.length) return false;
+
+    var clone_drawn_blue_tasks = drawn_blue_tasks.slice(0);
+    for (var i=0;i<updated_drawn_blue_tasks;i++){
+        var groupNum = updated_drawn_blue_tasks[i];
+        var idx = clone_drawn_blue_tasks.indexOf(groupNum);
+        if(idx == -1) return false;
+        clone_drawn_blue_tasks.splice(idx, 1);
+    }
+
+    if(clone_drawn_blue_tasks.length > 0){
+        return false;
+    }
+
+    var clone_completed_red_tasks = completed_red_tasks.slice(0);
+    for (var i=0;i<updated_completed_red_tasks;i++){
+        var groupNum = updated_completed_red_tasks[i];
+        var idx = clone_completed_red_tasks.indexOf(groupNum);
+        if(idx == -1) return false;
+        clone_completed_red_tasks.splice(idx, 1);
+    }
+
+    if(clone_completed_red_tasks.length > 0){
+        return false;
+    }
+
+    return true;
+};
+*/
+
+var poll = function(){
+    setInterval(function(){
+        if(flashTeamEnded() || flashTeamUpdated()) {
+            location.reload();
+        }
+    }, poll_interval); // every 20 seconds currently
+};
+
+var recordStartTime = function(){
+    var startTime = 'startTime' in flashTeamsJSON;
+    console.log("startTime: " + startTime);
+    if (!startTime) {
+        flashTeamsJSON["startTime"] = (new Date).getTime();
+        console.log(flashTeamsJSON["startTime"]);
+    }
+};
+
+var loadData = function(){
+    if (localStorage["task_groups"] !== undefined && localStorage["task_groups"] !== null) {
+        task_groups = JSON.parse(localStorage["task_groups"]);
+        var j = task_groups.length - 1;
+        while(j >= 0){
+            var g = task_groups[j];
+            task_groups.splice(j, 1);
+            j--;
+            drawEvents(g[0].x, g[0].y, g);
+            addEventToJSON(g[0].x, g[0].y, g[0].groupNum, false);
+        }
+
+        live_tasks = JSON.parse(localStorage["live_tasks"]);
+        remaining_tasks = JSON.parse(localStorage["remaining_tasks"]);
+        delayed_tasks = JSON.parse(localStorage["delayed_tasks"]);
+        drawn_blue_tasks = JSON.parse(localStorage["drawn_blue_tasks"]);
+        completed_red_tasks = JSON.parse(localStorage["completed_red_tasks"]);
+        flashTeamsJSON = JSON.parse(localStorage["flash_teams_json"]);
+    
+        var cursor_details = positionCursor(flashTeamsJSON);
+        drawBlueBoxes();
+        drawRedBoxes();
+        drawDelayedTasks();
+        trackLiveAndRemainingTasks();
+        startCursor(cursor_details);
+    }
+};
+
+var drawBlueBox = function(task_g){
+    var data = task_g.data()[0];
+    console.log(data);
+    var task_start = parseFloat(data.x);
+    console.log(task_start);
+    var completed_x = 'completed_x' in data;
+    console.log(completed_x);
+    if (!completed_x){
+        return null;
+    }
+
+    completed_x = parseFloat(data.completed_x);
+    console.log(completed_x);
+    var groupNum = data.groupNum;
+    console.log(groupNum);
+    var task_rect_curr_width = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+    console.log(task_rect_curr_width);
+    var task_end = task_start + task_rect_curr_width;
+    console.log(task_end);
+    var blue_width = task_end - completed_x;
+    console.log(blue_width);
+    
+    var blue_rectangle = task_g.append("rect")
+        .attr("class", "early_rectangle")
+        .attr("x", function(d) {return completed_x})
+        .attr("y", function(d) {return d.y})
+        .attr("id", function(d) {
+            return "early_rect_" + groupNum; })
+        .attr("groupNum", groupNum)
+        .attr("height", RECTANGLE_HEIGHT)
+        .attr("width", blue_width)
+        .attr("fill", "blue")
+        .attr("fill-opacity", .6)
+        .attr("stroke", "#5F5A5A");
+
+    return blue_width;
+};
+
+var drawRedBox = function(task_g, use_cursor){
+    console.log("drawRedBox!");
+    var data = task_g.data()[0];
+    var groupNum = data.groupNum;
+    var task_start = parseFloat(data.x);
+    var task_rect_curr_width = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+    var task_end = task_start + task_rect_curr_width;
+    var completed_x = 'completed_x' in data;
+    var red_width;
+    if(!use_cursor){
+        if (!completed_x){
+            red_width = 1;
+        } else {
+            completed_x = parseFloat(data.completed_x);
+            red_width = completed_x - task_end;
+        }
+    } else {
+        console.log("USING CURSOR!");
+        var cursor_x = parseFloat(cursor.attr("x1"));
+        console.log("cursor_x: " + cursor_x);
+        console.log("task_end: " + task_end);
+        red_width = cursor_x - task_end;
+        console.log("red_width: " + red_width);
+    }
+
+    // add red box of width 1
+    var red_rectangle = task_g.append("rect")
+        .attr("class", "delayed_rectangle")
+        .attr("x", function(d) {return parseFloat(d.x) + task_rect_curr_width})
+        .attr("y", function(d) {return d.y})
+        .attr("id", function(d) {
+            return "delayed_rect_" + groupNum; })
+        .attr("groupNum", groupNum)
+        .attr("height", RECTANGLE_HEIGHT)
+        .attr("width", red_width)
+        .attr("fill", "red")
+        .attr("fill-opacity", .6)
+        .attr("stroke", "#5F5A5A");
+
+    return red_width;
+};
+
+var drawBlueBoxes = function(){
+    for (var i=0;i<drawn_blue_tasks.length;i++){
+        var task_g = getTaskGFromGroupNum(drawn_blue_tasks[i]);
+        drawBlueBox(task_g);
+    }
+};
+
+var drawRedBoxes = function(){
+    for (var i=0;i<completed_red_tasks.length;i++){
+        var task_g = getTaskGFromGroupNum(completed_red_tasks[i]);
+        drawRedBox(task_g, false);
+    }
+};
+
+var drawDelayedTasks = function(){
+    var cursor_x = parseFloat(cursor.attr("x1"));
+    var before_tasks = computeTasksBeforeCurrent(cursor_x);
+    var tasks_after = null;
+    var allRanges = [];
+
+    for (var i=0;i<before_tasks.length;i++){
+        var groupNum = before_tasks[i];
+        var task_g = getTaskGFromGroupNum(groupNum);
+        var completed = task_g.data()[0].completed;
+        if (completed) continue;
+
+        console.log("task " + groupNum + " is now delayed, so drawing red box");
+        var red_width = drawRedBox(task_g, true);
+        if(live_tasks.indexOf(groupNum) != -1) {
+            live_tasks.splice(i, 1);
+        }
+        delayed_tasks.push(groupNum);
+
+        var data = task_g.data()[0];
+        var groupNum = data.groupNum;
+        var task_start = parseFloat(data.x);
+        var task_rect_curr_width = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+        var task_end = task_start + task_rect_curr_width;
+        var red_end = task_end + red_width;
+        tasks_after = computeTasksAfterCurrent(task_end); // TODO: right-most task or left-most task?
+
+        allRanges.push([task_end, red_end]);
+        //moveTasksRight(tasks_after_curr, red_width);
+    }
+
+    if (tasks_after != null){
+        var actual_offset = computeTotalOffset(allRanges);
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ACTUAL OFFSET: " + actual_offset);
+        moveTasksRight(tasks_after, actual_offset);
+    }
+};
+
+var sortComparator = function(a, b){
+    if(a[0] < b[0]) return -1;
+    if(a[0] > b[0]) return 1;
+    return 0;
+};
+
+// "overlapping" algorithm
+var computeTotalOffset = function(allRanges){
+    var changes = [];
+    for(var i=0;i<allRanges.length;i++){
+        var range = allRanges[i];
+        changes.push([range[0], 1]);
+        changes.push([range[1], -1]);
+    }
+
+    var sorted_changes = changes.sort(sortComparator);
+
+    var curr = 0;
+    var height = 0;
+    var new_ranges = [];
+    for(var j=0;j<sorted_changes.length;j++){
+        var r = sorted_changes[j];
+        new_ranges.push([curr, r[0], height]);
+        curr = r[0];
+        height = height + r[1];
+    }
+
+    var totalOffset = 0;
+    for(var k=0;k<new_ranges.length;k++){
+        var curr_range = new_ranges[k];
+        if(curr_range[2] == 0) continue;
+        totalOffset = totalOffset + (curr_range[1] - curr_range[0]);
+    }
+
+    return totalOffset;
+};
+
+var positionCursor = function(team){
+    var currTime = (new Date).getTime();
+    var startTime = team["startTime"];
+    var diff = currTime - startTime;
+
+    console.log(startTime);
+    console.log(currTime);
+    console.log("diff in seconds: " + diff/1000);
+
+    var cursor_details = getXCoordForTime(diff);
+    var x = cursor_details["finalX"];
+    cursor.attr("x1", x);
+    cursor.attr("x2", x);
+    curr_x_standard = x;
+
+    return cursor_details;
+};
+
+var startCursor = function(cursor_details){
+    var x = cursor_details["finalX"];
+    var numIntervals = cursor_details["numInt"] + 1;
+    var target_x = 50*numIntervals;
+    var dist = target_x - x;
+    var t = (dist/50)*timeline_interval;
+    syncCursor(t, target_x);
+};
+
+var syncCursor = function(length_of_time, target_x){
+    curr_x_standard = target_x;
+    console.log("time: " + length_of_time + " | target_x: " + target_x);
+    cursor.transition()
+        .duration(length_of_time)
+        .ease("linear")
+        .attr("x1", curr_x_standard)
+        .attr("x2", curr_x_standard)
+        .each("end", function(){
+            console.log("completed sync");
+            console.log("sync cursor done. moving cursor normally now..");
+            setCursorMoving();
+        });
+};
+
+var moveCursor = function(length_of_time){
+    curr_x_standard += 50;
+    console.log("curr_x_standard: " + curr_x_standard);
+
+    cursor.transition()
+        .duration(length_of_time)
+        .ease("linear")
+        .attr("x1", curr_x_standard)
+        .attr("x2", curr_x_standard);
+};
+
+var cursor_interval_id;
+var setCursorMoving = function(){
+    moveCursor(timeline_interval);
+    cursor_interval_id = setInterval(function(){
+        moveCursor(timeline_interval);
+    }, timeline_interval); // every 18 seconds currently
+};
+
+var computeLiveAndRemainingTasks = function(){
     var curr_x = cursor.attr("x1");
     var curr_new_x = parseFloat(curr_x) + increment;
-    
-    //cursor.transition()
-    //.duration(fire_interval)
-    //.attr("x1", curr_new_x)
-    //.attr("x2", curr_new_x);
 
-    remaining_tasks = [];
-    live_tasks = [];
+    var remaining_tasks = [];
+    var live_tasks = [];
     for (var i=0;i<task_groups.length;i++){
         var task = task_groups[i];
         var data = task.data()[0];
@@ -275,9 +648,216 @@ setInterval(function(){
         }
     }
 
-    console.log("remaining_tasks: " + remaining_tasks);
-    console.log("live_tasks: " + live_tasks);
-}, fire_interval);
+    return {"live":live_tasks, "remaining":remaining_tasks};
+};
+
+var computeTasksAfterCurrent = function(curr_x){
+    tasks_after_curr = [];
+    
+    // go through all tasks
+    for (var i=0;i<task_groups.length;i++){
+        var task = task_groups[i];
+        var data = task.data()[0];
+        var groupNum = data.groupNum;
+
+        // get start x coordinate of task
+        var task_rect = task.select("#rect_" + groupNum);
+        var start_x = task_rect.attr("x");
+        
+        // if the task's x coordinate is after the current x, it is "after," so add it
+        if(curr_x < start_x){
+            tasks_after_curr.push(groupNum);
+        }
+    }
+
+    return tasks_after_curr;
+};
+
+var computeTasksBeforeCurrent = function(curr_x){
+    tasks_before_curr = [];
+    
+    // go through all tasks
+    for (var i=0;i<task_groups.length;i++){
+        var task = task_groups[i];
+        var data = task.data()[0];
+        var groupNum = data.groupNum;
+
+        // get start x coordinate of task
+        var task_rect = task.select("#rect_" + groupNum);
+        var start_x = task_rect.attr("x");
+        var width = task_rect.attr("width");
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        
+        // if the task's end x coordinate is before the current x, it is "before," so add it
+        if(end_x < curr_x){
+            tasks_before_curr.push(groupNum);
+        }
+    }
+
+    return tasks_before_curr;
+};
+
+var getTaskGFromGroupNum = function(groupNum){
+    for(var i=0;i<task_groups.length;i++){
+        var task_g = task_groups[i];
+        if (task_g.data()[0].groupNum == groupNum) return task_g;
+    }
+    return null;
+};
+
+var extendDelayedBoxes = function(){
+    // go through delayed tasks and increase width of red box
+    var cursor_x = parseFloat(cursor.attr("x1"));
+    var diff = 0;
+    for (var i=0;i<delayed_tasks.length;i++){
+        var groupNum = delayed_tasks[i];
+        var delayed_rect = timeline_svg.selectAll("#delayed_rect_" + groupNum);
+        
+        // new width is diff b/w current cursor position and starting of delayed rect
+        var curr_width = parseFloat(delayed_rect.attr("width"));
+        var new_width = cursor_x - parseFloat(delayed_rect.attr("x"));
+        delayed_rect.attr("width", new_width);
+        
+        diff = new_width - curr_width;
+    }
+    moveRemainingTasksRight(diff);
+};
+
+var moveTasksRight = function(tasks, amount){
+    for (var i=0;i<tasks.length;i++){
+        var groupNum = tasks[i];
+        var task_g = getTaskGFromGroupNum(groupNum);
+        var x = parseFloat(task_g.data()[0].x);
+        task_g.data()[0].x = x + parseFloat(amount);
+        var group = task_g[0][0];
+
+        var rectWidth = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+        redraw(group, rectWidth, groupNum);
+    }
+};
+
+var moveTasksLeft = function(tasks, amount){
+    for (var i=0;i<tasks.length;i++){
+        var groupNum = tasks[i];
+        var task_g = getTaskGFromGroupNum(groupNum);
+        var x = parseFloat(task_g.data()[0].x);
+        task_g.data()[0].x = x - parseFloat(amount);
+        var group = task_g[0][0];
+
+        var rectWidth = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+        redraw(group, rectWidth, groupNum);
+    }
+};
+
+var moveRemainingTasksRight = function(amount){
+    moveTasksRight(remaining_tasks, amount);
+};
+
+var moveRemainingTasksLeft = function(amount){
+    moveTasksLeft(remaining_tasks, amount);
+}
+
+/*
+TODO:
+update popover when automatically shift the tasks left or right
+shorten width when finish early (?)
+offset of half of drag bar width when drawing red and blue boxes
+*/
+var trackLiveAndRemainingTasks = function() {
+    setInterval(function(){
+        var tasks = computeLiveAndRemainingTasks();
+        var new_live_tasks = tasks["live"];
+        var new_remaining_tasks = tasks["remaining"];
+
+        // extend already delayed boxes
+        extendDelayedBoxes();
+
+        // detect any live task is delayed or completed early
+        for (var i=0;i<live_tasks.length;i++){
+            var groupNum = live_tasks[i];
+            var task_g = getTaskGFromGroupNum (groupNum);
+            var completed = task_g.data()[0].completed;
+            var task_rect_curr_width = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
+
+            // delayed
+            if (new_live_tasks.indexOf(groupNum) == -1 && !completed) { // groupNum is no longer live
+                drawRedBox(task_g, false);
+
+                // add to delayed_tasks list
+                delayed_tasks.push(groupNum);
+            }
+        }
+        live_tasks = new_live_tasks;
+        remaining_tasks = new_remaining_tasks;
+    }, fire_interval);
+};
+
+var getAllData = function(){
+    var data = [];
+    for(var i=0;i<task_groups.length;i++){
+        var task_g = task_groups[i];
+        data.push(task_g.data());
+        console.log("stored data: ");
+        console.log(task_g.data());
+    }
+    return data;
+};
+
+var getAllTasks = function(){
+    var all_tasks = [];
+    for(var i=0;i<task_groups.length;i++){
+        var task = task_groups[i];
+        var data = task.data()[0];
+        var groupNum = data.groupNum;
+        all_tasks.push(groupNum);
+    }
+    return all_tasks;
+};
+
+var storeAllData = function(){
+    localStorage["task_groups"] = JSON.stringify(getAllData(task_groups));    
+    localStorage["live_tasks"] = JSON.stringify(live_tasks);
+    localStorage["remaining_tasks"] = JSON.stringify(remaining_tasks);
+    localStorage["delayed_tasks"] = JSON.stringify(delayed_tasks);
+    localStorage["drawn_blue_tasks"] = JSON.stringify(drawn_blue_tasks);
+    localStorage["completed_red_tasks"] = JSON.stringify(completed_red_tasks);
+    localStorage["flash_teams_json"] = JSON.stringify(flashTeamsJSON);
+};
+
+var completeTask = function(groupNum){
+    var task_g = getTaskGFromGroupNum (groupNum);
+
+    // mark as completed
+    task_g.data()[0].completed = true;
+
+    var cursor_x = cursor.attr("x1");
+    task_g.data()[0].completed_x = cursor_x;
+
+    // remove from either live or delayed tasks
+    var idx = delayed_tasks.indexOf(groupNum);
+    if (idx != -1) { // delayed task
+        delayed_tasks.splice(idx, 1);
+        completed_red_tasks.push(groupNum);
+    } else {
+        idx = live_tasks.indexOf(groupNum);
+        if (idx != -1){ // live task
+            var blue_width = drawBlueBox(task_g);
+            console.log(blue_width);
+            if (blue_width !== null){
+                drawn_blue_tasks.push(groupNum);
+                moveRemainingTasksLeft(blue_width);
+            }
+            live_tasks.splice(idx, 1);
+        }
+    }
+
+    $("#rect_" + groupNum).popover("hide");
+    overlayOff();
+
+    storeAllData();
+};
+
+/* --------------- TEAM AWARENESS STUFF END ------------ */
 
 timeline_svg.append("rect")
     .attr("class", "background")
@@ -288,9 +868,9 @@ timeline_svg.append("rect")
     .on("mousedown", mousedown);
 
 // task_groups contains all the rectangles
-var task_groups = [],
-    task_g = timeline_svg.selectAll(".task_g");
+var task_g = timeline_svg.selectAll(".task_g");
 
+<<<<<<< HEAD
 //VCom Calculates where to snap event block to when created
 function calcSnap(mouseX, mouseY) {
     var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
@@ -303,17 +883,48 @@ function fillPopover(newmouseX, numHours) {
     //Find the start time
     var startHr = (newmouseX-(newmouseX%100))/100;
     var startMin = (newmouseX%100)/25*15;
+=======
+//Draws event and adds it to the JSON when the timeline is clicked and overlay is off
+function mousedown() {
+    event_counter++; //To generate id
+    var point = d3.mouse(this);
+    var snapX = Math.floor(point[0] - (point[0]%(XTicks)) - DRAGBAR_WIDTH/2),
+        snapY = Math.floor(point[1]/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
+    drawEvents(snapX, snapY, null);
+
+    //D3, Exit to Remove Deleted Data
+    task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
+    task_g.exit().remove();
+
+    addEventToJSON(snapX, snapY, event_counter, true);
+};
+
+function addEventToJSON(x, y, groupNum, showPopover)
+{
+    //Find the start time
+    var startHr = (x-(x%100))/100;
+    var startMin = (x%100)/25*15;
+>>>>>>> jay-timeline-extend
     if(startMin == 57.599999999999994) {
         startHr++;
         startMin = 0;
     } else startMin += 2.4
     var startTimeinMinutes = (startHr*60) + startMin;
+<<<<<<< HEAD
     //D3, Exit to Remove Deleted Data
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
 	//add new event to flashTeams database
+=======
+
+    addEventPopover(startHr, startMin, groupNum, showPopover);
+    overlayOn();
+
+>>>>>>> jay-timeline-extend
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":60, "members":[], "dri":"", "notes":""};
+
     flashTeamsJSON.events.push(newEvent);
+<<<<<<< HEAD
     addEventPopover(startHr, startMin, numHours);
     overlayOn();
 }
@@ -340,6 +951,22 @@ function mousedown(numHours) {
 function  drawEvents(x, y, numHours) {
     var task_g = timeline_svg.append("g")
         .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter}]);
+=======
+}
+
+//Creates graphical element from array of data (task_rectangles)
+function  drawEvents(x, y, d) {
+    var task_g;
+    var groupNum;
+    if (d === null) {
+        task_g = timeline_svg.append("g")
+        .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter, completed: false}]);
+        groupNum = event_counter;
+    } else {
+        task_g = timeline_svg.append("g").data(d);
+        groupNum = d[0].groupNum;
+   }
+>>>>>>> jay-timeline-extend
 
     //Task Rectangle, Holds Event Info
     var task_rectangle = task_g.append("rect")
@@ -347,8 +974,8 @@ function  drawEvents(x, y, numHours) {
         .attr("x", function(d) {return d.x})
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "rect_" + event_counter; })
-        .attr("groupNum", event_counter)
+            return "rect_" + groupNum; })
+        .attr("groupNum", groupNum)
         .attr("height", RECTANGLE_HEIGHT)
         .attr("width", RECTANGLE_WIDTH*numHours)
         .attr("fill", "#C9C9C9")
@@ -366,8 +993,8 @@ function  drawEvents(x, y, numHours) {
             return d.x + RECTANGLE_WIDTH*numHours; })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "rt_rect_" + event_counter; })
-        .attr("groupNum", event_counter)
+            return "rt_rect_" + groupNum; })
+        .attr("groupNum", groupNum)
         .attr("height", RECTANGLE_HEIGHT)
         .attr("width", DRAGBAR_WIDTH)
         .attr("fill", "#00")
@@ -381,8 +1008,8 @@ function  drawEvents(x, y, numHours) {
         .attr("x", function(d) { return d.x})
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
-            return "lt_rect_" + event_counter; })
-        .attr("groupNum", event_counter)
+            return "lt_rect_" + groupNum; })
+        .attr("groupNum", groupNum)
         .attr("height", RECTANGLE_HEIGHT)
         .attr("width", DRAGBAR_WIDTH)
         .attr("fill", "#00")
@@ -396,8 +1023,8 @@ function  drawEvents(x, y, numHours) {
             return "New Event";
         })
         .attr("class", "title_text")
-        .attr("id", function(d) { return "title_text_" + event_counter; })
-        .attr("groupNum", event_counter)
+        .attr("id", function(d) { return "title_text_" + groupNum; })
+        .attr("groupNum", groupNum)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 14})
         .attr("font-weight", "bold")
@@ -409,8 +1036,8 @@ function  drawEvents(x, y, numHours) {
             return numHours+"hrs 0min";
         })
         .attr("class", "time_text")
-        .attr("id", function(d) {return "time_text_" + event_counter;})
-        .attr("groupNum", event_counter)
+        .attr("id", function(d) {return "time_text_" + groupNum;})
+        .attr("groupNum", groupNum)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px");
@@ -419,7 +1046,7 @@ function  drawEvents(x, y, numHours) {
     var handoff_btn = task_g.append("image")
         .attr("xlink:href", "images/rightArrow.png")
         .attr("class", "handoff_btn")
-        .attr("id", function(d) {return "handoff_btn_" + event_counter;})
+        .attr("id", function(d) {return "handoff_btn_" + groupNum;})
         .attr("width", 16)
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-18})
@@ -428,16 +1055,14 @@ function  drawEvents(x, y, numHours) {
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "images/doubleArrow.png")
         .attr("class", "collab_btn")
-        .attr("id", function(d) {return "collab_btn_" + event_counter;})
+        .attr("id", function(d) {return "collab_btn_" + groupNum;})
         .attr("width", 16)
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHours-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", writeCollaboration);
 
-    console.log(task_g);
-
-    task_groups.push(task_g);    
+    task_groups.push(task_g);
 };
 
 //Redraw a single task rectangle after it is dragged
@@ -475,23 +1100,28 @@ function redraw(group, newWidth, gNum) {
 }
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
+<<<<<<< HEAD
 function addEventPopover(startHr, startMin, numHours) {
+=======
+function addEventPopover(startHr, startMin, groupNum, showPopover) {
+>>>>>>> jay-timeline-extend
     //Add Popovers
-    timeline_svg.selectAll("#rect_" + event_counter).each(
+    timeline_svg.selectAll("#rect_" + groupNum).each(
         function(d) {
             $(this).popover({
                 placement: "right",
                 html: "true",
                 class: "event",
                 style: "width: 650",
-                id: '"popover' + event_counter + '"',
+                id: '"popover' + groupNum + '"',
                 trigger: "click",
-                title: '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="New Event" >',
-                content: '<form name="eventForm_' + event_counter + '">'
+                title: '<input type ="text" name="eventName" id="eventName_' + groupNum + '" placeholder="New Event" >',
+                content: '<form name="eventForm_' + groupNum + '">'
                 +'<b>Event Start:          </b><br>' 
-                +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">  hrs'
-                +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px">  min<br>'
+                +'<input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr + '" min="0" style="width:35px">  hrs'
+                +'<input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px">  min<br>'
                 +'<b>Total Runtime: </b><br>' 
+<<<<<<< HEAD
                 +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="'+numHours+'" min="0" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
@@ -499,14 +1129,29 @@ function addEventPopover(startHr, startMin, numHours) {
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
+=======
+                +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="1" min="0" style="width:35px"/>          ' 
+                +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="00" style="width:35px" min="0" step="15" max="45"/><br>'
+                +'<br>Members<br><input class="eventMemberInput" id="eventMember_' + groupNum + '" style="width:140px" type="text" name="members" onclick="addMemAuto()">'
+                +'<button class="btn" type="button" id="addEventMember_' + groupNum + '" onclick="addEventMember(' + event_counter +')">+Add</button>'
+                +'<ul class="nav nav-pills" id="eventMembers_' + groupNum + '"> </ul>'
+                +'Notes: <textarea rows="3" id="notes_' + groupNum + '"></textarea>'
+                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
+                +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>'
+                +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button></p>' 
+>>>>>>> jay-timeline-extend
                 +'</form>',
                 container: $("#timeline-container")
             });
-            $(this).popover("show"); 
+            if(showPopover){
+                $(this).popover("show");
+            } else {
+                $(this).popover("hide");
+            }
         });
 
     $(document).ready(function() {
-        pressEnterKeyToSubmit("#eventMember_" + event_counter, "#addEventMember_" + event_counter);
+        pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
     });
 };
 
@@ -717,6 +1362,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>' 
+        +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button></p>'
         +'</form>';
 }
 
