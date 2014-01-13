@@ -1055,9 +1055,10 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
-        .attr("xlink:href", "/images/rightArrow.png")
+        .attr("xlink:href", "app/assets/images/rightArrow.png")
         .attr("class", "handoff_btn")
         .attr("id", function(d) {return "handoff_btn_" + groupNum;})
+        .attr("groupNum", groupNum)
         .attr("width", 16)
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
@@ -1067,6 +1068,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("xlink:href", "/images/doubleArrow.png")
         .attr("class", "collab_btn")
         .attr("id", function(d) {return "collab_btn_" + groupNum;})
+        .attr("groupNum", groupNum)
         .attr("width", 16)
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
@@ -1384,17 +1386,14 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
 function drawInteraction(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     //START HERE
-    console.log("interaction draw called");
+    console.log("Interaction draw called on ", INTERACTION_TASK_ONE_IDNUM);
     timeline_svg.on("mousemove", null);
 
     //The user has cancelled the drawing
-
-    if (task1idNum == task2idNum) { //NOT WORKING B/C TASK1 NOT IDENTIFIED
+    if (task1idNum == task2idNum) { 
         DRAWING_COLLAB == false;
         DRAWING_HANDOFF == false
-        console.log("Cancelled the interaction");
-        //FINISH CANCELLING HERE
-    
+        $("#handoff_" + handoff_counter).remove();
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
         console.log("Drawing a handoff, clicked event ", task2idNum);
@@ -1442,6 +1441,7 @@ function writeEventMembers(idNum) {
 
 //Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
 function writeHandoff() {
+    INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
     handoff_counter++;
     DRAWING_HANDOFF = true;
     var m = d3.mouse(this);
@@ -1457,7 +1457,6 @@ function writeHandoff() {
         .attr("y2", m[1])
         .attr("stroke-width", 3)
         .attr("stroke", "gray");
-    console.log(line);
     timeline_svg.on("mousemove", handoffMouseMove);
 }
 
@@ -1479,6 +1478,7 @@ function handoffMouseMove() {
 //Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
 function writeCollaboration() {
     console.log("Trying to write a collaboration");
+    INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
 }
 
 //Turn on the overlay so a user cannot continue to draw events when focus is on a popover
@@ -1594,3 +1594,5 @@ function calcAddHours(currentHours) {
     SVG_WIDTH = timelineHours * 100 + 50;
     XTicks = timelineHours * 2;
 }
+
+
