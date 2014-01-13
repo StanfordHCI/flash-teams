@@ -26,7 +26,6 @@ class FlashTeamsController < ApplicationController
   end
 
   def edit
-    logger.debug " ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ID: #{params[:id]}"
     @flash_team = FlashTeam.find(params[:id])
 
     flash_teams = FlashTeam.all
@@ -67,13 +66,20 @@ class FlashTeamsController < ApplicationController
 
   def get_status
     @flash_team = FlashTeam.find(params[:id])
-    return @flash_team.status
+    respond_to do |format|
+      format.json {render json: @flash_team.status, status: :ok}
+    end
   end
 
-  def post_status status
+  def update_status
+    status = params[:localStatusJSON]
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.status = status
     @flash_team.save
+
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
   end
 
   def flash_team_params

@@ -234,7 +234,7 @@ timeline_svg.append("line")
     .style("stroke", "red")
     .style("stroke-width", "2")
 
-var poll_interval = 20000; // 20 seconds
+var poll_interval = 5000; // 20 seconds
 var timeline_interval = 10000; // TODO: should be 30 minutes = 1800000 milliseconds
 var fire_interval = 180; // change back to 180
 var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
@@ -247,6 +247,7 @@ var delayed_tasks = [];
 var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
+var loadedStatus;
 
 var getXCoordForTime = function(t){
     console.log("time t: " + t);
@@ -265,39 +266,49 @@ var getXCoordForTime = function(t){
 
 $("#flashTeamStartBtn").click(function(){
     $("#flashTeamStartBtn").attr("disabled", "disabled");
-    localStorage["flash_team_in_progress"] = JSON.stringify(true);
-
+    
     recordStartTime();
-    storeAllData();
+    updateStatus(true);
     setCursorMoving();
     trackLiveAndRemainingTasks();
     poll();
 });
 
 $("#flashTeamEndBtn").click(function(){
-    localStorage["flash_team_in_progress"] = JSON.stringify(false);
-    window.location.href = "/";
+    updateStatus(false);
 });
 
 $(document).ready(function(){
-    if(localStorage["flash_team_in_progress"] == undefined) return;
+    var flash_team_id = $("#flash_team_id").val();
+    var url = '/flash_teams/' + flash_team_id + '/get_status';
+    $.ajax({
+        url: url,
+        type: 'get'
+    }).done(function(data){
+        if(data == null) return; // status not set yet
 
-    var in_progress = JSON.parse(localStorage["flash_team_in_progress"]);
-    if(in_progress){
-        $("#flashTeamStartBtn").attr("disabled", "disabled");
-        loadData();
-        poll();
-    }
+        loadedStatus = data;
+        var in_progress = loadedStatus.flash_team_in_progress;
+        if(in_progress){
+            $("#flashTeamStartBtn").attr("disabled", "disabled");
+            loadData();
+            poll();
+        }
+    });
 });
 
 var flashTeamEnded = function(){
-    var in_progress = JSON.parse(localStorage["flash_team_in_progress"]);
-    return !in_progress;
+    return !loadedStatus.flash_team_in_progress;
 };
 
 var flashTeamUpdated = function(){
-    var updated_drawn_blue_tasks = JSON.parse(localStorage["drawn_blue_tasks"]);
-    var updated_completed_red_tasks = JSON.parse(localStorage["completed_red_tasks"]);
+    var updated_drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
+    var updated_completed_red_tasks = loadedStatus.completed_red_tasks;
+
+    console.log("updated drawn blue: " + updated_drawn_blue_tasks);
+    console.log("updated completed red: " + updated_completed_red_tasks);
+    console.log("drawn blue: " + drawn_blue_tasks);
+    console.log("completed red: " + completed_red_tasks);
 
     if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return true;
     if (updated_completed_red_tasks.length != completed_red_tasks.length) return true;
@@ -312,79 +323,73 @@ var flashTeamUpdated = function(){
     return false;
 };
 
-// TODO: why lag behind initially?
-
-/*
-var flashTeamUpdated = function(){
-    var updated_drawn_blue_tasks = JSON.parse(localStorage["drawn_blue_tasks"]);
-    var updated_completed_red_tasks = JSON.parse(localStorage["completed_red_tasks"]);
-
-    if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return false;
-    if (updated_completed_red_tasks.length != completed_red_tasks.length) return false;
-
-    var clone_drawn_blue_tasks = drawn_blue_tasks.slice(0);
-    for (var i=0;i<updated_drawn_blue_tasks;i++){
-        var groupNum = updated_drawn_blue_tasks[i];
-        var idx = clone_drawn_blue_tasks.indexOf(groupNum);
-        if(idx == -1) return false;
-        clone_drawn_blue_tasks.splice(idx, 1);
-    }
-
-    if(clone_drawn_blue_tasks.length > 0){
-        return false;
-    }
-
-    var clone_completed_red_tasks = completed_red_tasks.slice(0);
-    for (var i=0;i<updated_completed_red_tasks;i++){
-        var groupNum = updated_completed_red_tasks[i];
-        var idx = clone_completed_red_tasks.indexOf(groupNum);
-        if(idx == -1) return false;
-        clone_completed_red_tasks.splice(idx, 1);
-    }
-
-    if(clone_completed_red_tasks.length > 0){
-        return false;
-    }
-
-    return true;
-};
-*/
-
 var poll = function(){
     setInterval(function(){
-        if(flashTeamEnded() || flashTeamUpdated()) {
-            location.reload();
-        }
-    }, poll_interval); // every 20 seconds currently
+        var flash_team_id = $("#flash_team_id").val();
+        var url = '/flash_teams/' + flash_team_id + '/get_status';
+        $.ajax({
+            url: url,
+            type: 'get'
+        }).done(function(data){
+            if(data == null) return;
+            loadedStatus = data;
+            console.log(loadedStatus);
+
+            if(flashTeamEnded() || flashTeamUpdated()) {
+                location.reload();
+            } else {
+                console.log("Flash team not updated and not ended");
+            }
+        });
+    }, poll_interval); // every 5 seconds currently
 };
 
 var recordStartTime = function(){
+    /*
     var startTime = 'startTime' in flashTeamsJSON;
     console.log("startTime: " + startTime);
     if (!startTime) {
         flashTeamsJSON["startTime"] = (new Date).getTime();
         console.log(flashTeamsJSON["startTime"]);
     }
+    */
+
+    flashTeamsJSON["startTime"] = (new Date).getTime();
+};
+
+var loadStatus = function(id){
+    var loadedStatusJSON;
+    var url = '/flash_teams/' + id.toString() + '/get_status';
+    $.ajax({
+        url: url,
+        type: 'get'
+    }).done(function(data){
+        loadedStatusJSON = data;
+        console.log("loadedStatusJSON: " + loadedStatusJSON);
+    });
+ 
+    return JSON.parse(loadedStatusJSON);
 };
 
 var loadData = function(){
-    if (localStorage["task_groups"] !== undefined && localStorage["task_groups"] !== null) {
-        task_groups = JSON.parse(localStorage["task_groups"]);
+    if (loadedStatus.task_groups !== undefined && loadedStatus.task_groups !== null) {
+        task_groups = loadedStatus.task_groups;
         var j = task_groups.length - 1;
         while(j >= 0){
             var g = task_groups[j];
             task_groups.splice(j, 1);
             j--;
             drawEvents(g[0].x, g[0].y, g, null, null); // need to change null and null to title and totalMinutes
-            addEventToJSON(g[0].x, g[0].y, g[0].groupNum, false);
+            fillPopover(g[0].x, g[0].groupNum, false, null, null);
+            //addEventToJSON(g[0].x, g[0].y, g[0].groupNum, false);
         }
 
-        live_tasks = JSON.parse(localStorage["live_tasks"]);
-        remaining_tasks = JSON.parse(localStorage["remaining_tasks"]);
-        delayed_tasks = JSON.parse(localStorage["delayed_tasks"]);
-        drawn_blue_tasks = JSON.parse(localStorage["drawn_blue_tasks"]);
-        completed_red_tasks = JSON.parse(localStorage["completed_red_tasks"]);
-        flashTeamsJSON = JSON.parse(localStorage["flash_teams_json"]);
+        live_tasks = loadedStatus.live_tasks;
+        remaining_tasks = loadedStatus.remaining_tasks;
+        delayed_tasks = loadedStatus.delayed_tasks;
+        drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
+        completed_red_tasks = loadedStatus.completed_red_tasks;
+        flashTeamsJSON = loadedStatus.flash_teams_json;
     
         var cursor_details = positionCursor(flashTeamsJSON);
         drawBlueBoxes();
@@ -814,14 +819,38 @@ var getAllTasks = function(){
     return all_tasks;
 };
 
-var storeAllData = function(){
-    localStorage["task_groups"] = JSON.stringify(getAllData(task_groups));    
-    localStorage["live_tasks"] = JSON.stringify(live_tasks);
-    localStorage["remaining_tasks"] = JSON.stringify(remaining_tasks);
-    localStorage["delayed_tasks"] = JSON.stringify(delayed_tasks);
-    localStorage["drawn_blue_tasks"] = JSON.stringify(drawn_blue_tasks);
-    localStorage["completed_red_tasks"] = JSON.stringify(completed_red_tasks);
-    localStorage["flash_teams_json"] = JSON.stringify(flashTeamsJSON);
+var constructStatusObj = function(){
+    var localStatus = {};
+    localStatus.task_groups = getAllData(task_groups);
+    localStatus.live_tasks = live_tasks;
+    localStatus.remaining_tasks = remaining_tasks;
+    localStatus.delayed_tasks = delayed_tasks;
+    localStatus.drawn_blue_tasks = drawn_blue_tasks;
+    localStatus.completed_red_tasks = completed_red_tasks;
+    localStatus.flash_teams_json = flashTeamsJSON;
+
+    return localStatus;
+};
+
+var updateStatus = function(flash_team_in_progress){
+    var localStatus = constructStatusObj();
+    localStatus.flash_team_in_progress = flash_team_in_progress;
+    var localStatusJSON = JSON.stringify(localStatus);
+    console.log("updating string: " + localStatusJSON);
+
+    var flash_team_id = $("#flash_team_id").val();
+    var authenticity_token = $("#authenticity_token").val();
+    var url = '/flash_teams/' + flash_team_id + '/update_status';
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
+    }).done(function(data){
+        console.log("UPDATED FLASH TEAM STATUS");
+        if(!flash_team_in_progress){
+            window.location.reload();
+        }
+    });
 };
 
 var completeTask = function(groupNum){
@@ -854,7 +883,7 @@ var completeTask = function(groupNum){
     $("#rect_" + groupNum).popover("hide");
     overlayOff();
 
-    storeAllData();
+    updateStatus(true);
 };
 
 /* --------------- TEAM AWARENESS STUFF END ------------ */
@@ -877,7 +906,7 @@ function calcSnap(mouseX, mouseY) {
 }	
 
 //VCom Populates event block popover with correct info
-function fillPopover(newmouseX, groupNum, title, totalMinutes) {
+function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
 	if (title == null) {
 		title = "New Event";
 	}
@@ -899,7 +928,7 @@ function fillPopover(newmouseX, groupNum, title, totalMinutes) {
 	//add new event to flashTeams database
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
-    addEventPopover(startHr, startMin, title, totalMinutes, groupNum, true);
+    addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
     overlayOn();
 }
 
@@ -915,7 +944,7 @@ function mousedown() {
 	
 	var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-	fillPopover(snapPoint[0], groupNum, null, null);
+	fillPopover(snapPoint[0], groupNum, true, null, null);
 };
 
 function addEvent() {
@@ -923,7 +952,7 @@ function addEvent() {
 	var point = [0,0];
 	var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-	fillPopover(snapPoint[0], groupNum, null, null);
+	fillPopover(snapPoint[0], groupNum, true, null, null);
 }
 
 //Creates graphical elements from array of data (task_rectangles)

@@ -62,7 +62,7 @@ Foundry::Application.routes.draw do
   resources :flash_teams do
     member do 
       get :get_status
-      put :update_status
+      post :update_status
     end
   end
 
