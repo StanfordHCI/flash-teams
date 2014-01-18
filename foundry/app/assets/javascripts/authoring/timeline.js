@@ -271,6 +271,7 @@ $("#flashTeamStartBtn").click(function(){
     updateStatus(true);
     setCursorMoving();
     trackLiveAndRemainingTasks();
+    boldEvents(1);
     poll();
 });
 
@@ -397,6 +398,7 @@ var loadData = function(){
         drawDelayedTasks();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
+        boldEvents(1);
     }
 };
 
@@ -1287,6 +1289,40 @@ function addEventMember(eventId, memberIndex) {
             return parseInt($("#rect_" + eventId).attr("width")) - 8;})
         .attr("fill", newColor)
         .attr("fill-opacity", .9);
+}
+
+//Bold and emphasize the tasks of the current user
+function boldEvents(currentUser){
+    console.log("it's bold!")
+    var memberName = flashTeamsJSON["members"][currentUser].role;
+    var newColor;
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
+    }
+    for (i = 0; i<flashTeamsJSON["events"].length; i++){
+        eventId = flashTeamsJSON["events"][i].id
+        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
+            var group = $("#rect_" + eventId)[0].parentNode;
+            var thisGroup = d3.select(group);
+            thisGroup.append("rect")
+                .attr("class", "member_box")
+                .attr("id", function(d) {
+                    return "event_" + eventId + "on" + currentUser;
+                })
+                .attr("x", function(d) {
+                    return parseInt($("#rect_" + eventId).attr("x"))+8;})
+                .attr("y", function(d) {
+                    return parseInt($("#rect_" + eventId).attr("y"));})
+                .attr("groupNum", eventId)
+                .attr("height", RECTANGLE_HEIGHT)
+                .attr("width", function(d) {
+                    return parseInt($("#rect_" + eventId).attr("width"))-8;})
+                .attr("fill", newColor)
+                // .attr("stroke", newColor)
+                // .attr("stroke-width", 5)
+            .attr("fill-opacity", .4);
+        }
+    }
 }
 
 //Remove a team member from an event
