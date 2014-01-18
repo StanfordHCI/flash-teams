@@ -18,7 +18,7 @@ var y = d3.scale.ordinal().rangeRoundBands([ 0, height - margin.top - margin.bot
 var timeDomain = 10; //ARBITRARY LENGTH FOR INITIAL TIMELINE, CHOOSE BETTER TIME
 var initAxis = function() {
     x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
-    y = d3.scale.ordinal()rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1); //SET DOMAIN
+    y = d3.scale.ordinal().rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1); //SET DOMAIN
     xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
         .tickSize(8).tickPadding(8);
     yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
