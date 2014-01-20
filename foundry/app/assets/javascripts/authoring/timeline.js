@@ -1077,6 +1077,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     task_groups.push(task_g);
 
+
     return groupNum;
 };
 
