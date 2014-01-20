@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.1'
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+# gem 'sqlite3'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -52,3 +52,13 @@ gem 'bootstrap-sass-rails'
 
 # Use D3
 gem 'd3-rails'
+
+# Heroku logging
+gem 'rails_12factor', group: :production
+
+# Heroku db: postgres
+gem 'pg'
+
+gem 'unicorn'
+
+ruby '2.0.0'
