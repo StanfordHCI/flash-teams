@@ -1668,9 +1668,7 @@ var first_move_status=1;
 
 
 var project_status_svg = d3.select("#project-status-container").append("svg")
-    .attr("width", SVG_WIDTH)
-    .attr("height", SVG_HEIGHT)
-
+    
 
 project_status_svg.append("rect")
     .attr("width", status_width)
@@ -1688,6 +1686,12 @@ var project_status=project_status_svg.append("rect")
     .attr("fill","green")
     .attr("class","project_status")
 
+project_status_svg.append("button")
+
+var newButton = document.createElement("button");
+newButton.innerHTML = "A button";
+var buttonParent = document.getElementById("buttonParent");
+buttonParent.appendChild(newButton);             
 
 var moveProjectStatus = function(status_bar_timeline_interval){
     if(first_move_status){

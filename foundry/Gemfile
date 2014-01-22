@@ -1,11 +1,8 @@
 ﻿source 'https://rubygems.org'
 
-<<<<<<< HEAD
 #ruby '2.0.0'
 ruby '1.9.3'
 
-=======
->>>>>>> 099bd52fdfe71d47bc8e33a286cd504836ff5fad
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.1'
 
@@ -67,4 +64,4 @@ gem 'pg'
 
 gem 'unicorn'
 
-ruby '2.0.0'
+gem 'thin'

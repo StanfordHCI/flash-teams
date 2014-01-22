@@ -79,7 +79,7 @@ function drawFlashTeamFromJSON(ftJSON) {
     	//Add to JSON
     	ftJSON["events"][j].id = event_counter;
     	flashTeamsJSON.events.push(ftJSON["events"][j]);
-
+        
     	//DRAW EVENT POPOVERS
     	var startHr = (ftJSON["events"][j].startTime - (ftJSON["events"][j].startTime%60))/60;
     	var startMin = ftJSON["events"][j].startTime%60;
