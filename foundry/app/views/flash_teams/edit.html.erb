@@ -2,8 +2,6 @@
 
 <input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
 
-<%= render 'form' %>
-
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
 
         <input type="hidden" id="flash_team_id" value="<%= @flash_team.id %>"/>
@@ -81,17 +79,6 @@
             </div>
         </div>
 
-        <%= javascript_include_tag "http://code.jquery.com/jquery-2.0.3.min.js" %>
-        <%= javascript_include_tag "http://code.jquery.com/ui/1.10.3/jquery-ui.min.js" %>
-        <%= javascript_include_tag "bootstrap/js/bootstrap.min.js" %>
-        <%= javascript_include_tag "authoring/helper" %>
-        <%= javascript_include_tag "authoring/timeline" %>
-		<%= javascript_include_tag "authoring/eventslibrary" %>
-        <%= javascript_include_tag "authoring/diagram" %>
-        <%= javascript_include_tag "authoring/members" %>
-        <%= javascript_include_tag "authoring/odeskArrays" %>
-        <%= javascript_include_tag "authoring/spectrum" %>
-        <%= javascript_include_tag "authoring/flash_team_update" %>
-        <%= javascript_include_tag "authoring/load" %>
+        <%= javascript_include_tag "application" %>
 
 <%= link_to 'Back', flash_teams_path %>
