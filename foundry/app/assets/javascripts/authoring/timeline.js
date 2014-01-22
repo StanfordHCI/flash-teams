@@ -37,6 +37,8 @@ var INTERACTION_TASK_ONE_IDNUM = 0;
 
 var DRAGBAR_WIDTH = 8;
 
+var current = 1;
+
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
     .origin(Object)
@@ -248,6 +250,7 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
+var currentUserTasks;
 
 var getXCoordForTime = function(t){
     console.log("time t: " + t);
@@ -1289,6 +1292,16 @@ function addEventMember(eventId, memberIndex) {
             return parseInt($("#rect_" + eventId).attr("width")) - 8;})
         .attr("fill", newColor)
         .attr("fill-opacity", .9);
+
+    //Change color of rect
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].role == memberName){
+            if (i == current){
+                $("#rect_" + eventId).attr("fill", newColor)
+                    .attr("fill-opacity", .4);   
+            }
+        } 
+    }
 }
 
 //Bold and emphasize the tasks of the current user
@@ -1302,25 +1315,8 @@ function boldEvents(currentUser){
     for (i = 0; i<flashTeamsJSON["events"].length; i++){
         eventId = flashTeamsJSON["events"][i].id
         if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-            var group = $("#rect_" + eventId)[0].parentNode;
-            var thisGroup = d3.select(group);
-            thisGroup.append("rect")
-                .attr("class", "member_box")
-                .attr("id", function(d) {
-                    return "event_" + eventId + "on" + currentUser;
-                })
-                .attr("x", function(d) {
-                    return parseInt($("#rect_" + eventId).attr("x"))+8;})
-                .attr("y", function(d) {
-                    return parseInt($("#rect_" + eventId).attr("y"));})
-                .attr("groupNum", eventId)
-                .attr("height", RECTANGLE_HEIGHT)
-                .attr("width", function(d) {
-                    return parseInt($("#rect_" + eventId).attr("width"))-8;})
-                .attr("fill", newColor)
-                // .attr("stroke", newColor)
-                // .attr("stroke-width", 5)
-            .attr("fill-opacity", .4);
+            $("#rect_" + eventId).attr("fill", newColor)
+                .attr("fill-opacity", .4);
         }
     }
 }
@@ -1329,6 +1325,9 @@ function boldEvents(currentUser){
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
+    if (memberNum == current){
+        $("#rect_" + eventId).attr("fill", "#C9C9C9")
+    }
 
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
