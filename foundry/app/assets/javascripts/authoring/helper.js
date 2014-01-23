@@ -7,7 +7,7 @@
 var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
-    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", inputs”:[], “outputs”:[]}
+    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", "eventInputs”:[], “eventOutputs”:[]}
     "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
     "interactions" : []  //{"event1", "event2", "type", "description"}
 };
@@ -67,8 +67,8 @@ function drawFlashTeamFromJSON(ftJSON) {
     	saveMemberInfo(pillCounter);
     }
 
+    //DRAW EVENTS   
     var events_len = ftJSON["events"].length;
-    //DRAW EVENTS
     for (var j = 0; j < events_len; j++) {
     	event_counter++;
 
