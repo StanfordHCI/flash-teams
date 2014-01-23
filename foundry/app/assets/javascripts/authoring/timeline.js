@@ -1419,9 +1419,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
 }
 
 function drawInteraction(task2idNum) {
+    $(".task_rectangle").popover("hide");
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
-    //START HERE
-    console.log("Interaction draw called on", INTERACTION_TASK_ONE_IDNUM);
     timeline_svg.on("mousemove", null);
 
     //The user has cancelled the drawing
@@ -1431,7 +1430,6 @@ function drawInteraction(task2idNum) {
         $(".followingLine").remove();
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
-        //START HERE
         interaction_counter++;
         $(".followingLine").remove();
         var handoffData = {"event1":task1idNum, "event2":task2idNum, "type":"handoff", "description":""};
@@ -1445,6 +1443,9 @@ function drawInteraction(task2idNum) {
     } else if (DRAWING_COLLAB == true) {
         interaction_counter++;
         console.log("Drawing a collaboration, clicked event ", task2idNum)
+        var collabData = {"event1":task1idNum, "event2":task2idNum, "type":"collaboration", "descriptioin":""};
+        flashTeamsJSON.interactions.push(collabData);
+        drawInteractionLine(task1idNum, task2idNum, "collaboration");
         //NOT DONE
 
         DRAWING_COLLAB = false;
@@ -1457,10 +1458,43 @@ function drawInteraction(task2idNum) {
 
 //Redraw the position of the interaction line
 function drawInteractionLine(task1Id, task2Id, type) {
-    line = timeline_svg.append("line")
+    //Find end of task 1
+    var task1Rect = $("#rect_" + task1Id)[0];
+    var x1 = task1Rect.x.animVal.value + task1Rect.width.animVal.value;
+    var y1 = task1Rect.y.animVal.value + 50;
+    //Find beginning of task 2
+    var task2Rect = $("#rect_" + task2Id)[0];
+    var x2 = task2Rect.x.animVal.value;
+    var y2 = task2Rect.y.animVal.value + 50;
+
+    var path = timeline_svg.selectAll("path")
+       .data(flashTeamsJSON["interactions"]);
+
+    path.enter().insert("svg:path")
+       .attr("class", "link")
+       .style("stroke", "#ccc");
+
+       //FINISH CUSTOMIZING FOR COLLAB
+       //NEED TO MAKE CURVES NOT FILLED
+    path = timeline_svg.append("path")
         .attr("class", "interactionLine")
         .attr("id", function () {
             return "interaction_" + interaction_counter;
+        })
+        .attr("x1", x1)
+        .attr("y1", y1)
+        .attr("x2", x2)
+        .attr("y2", y2)
+        .attr("d", function(d) {
+             var dx = x1 - x2,
+                dy = y1 - y2,
+                dr = Math.sqrt(dx * dx + dy * dy);
+            //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+            return "M" + x1 + "," + y1 + "A" + dr + "," + dr + " 0 0,1 " + x2 + "," + y2; 
+        })
+        .attr("fill", function() {
+            if (type == "handoff") return "gray"
+            else return "black"
         });
 }
 
