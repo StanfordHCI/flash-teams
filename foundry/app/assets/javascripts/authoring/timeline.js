@@ -77,7 +77,11 @@ var drag = d3.behavior.drag()
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
 
+        //Redraw event block + event members
         redraw(group, rectWidth, groupNum);
+
+        //Redraw interactions
+        redrawInteractions(groupNum);
 
         //Update JSON
         var indexOfJSON = getEventJSONIndex(groupNum);
@@ -1081,7 +1085,6 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     task_groups.push(task_g);
 
-
     return groupNum;
 };
 
@@ -1116,6 +1119,22 @@ function redraw(group, newWidth, gNum) {
         $("#event_" + gNum + "_eventMemLine_" + i)
             .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); })
             .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))});
+    }
+}
+
+//Loops through interactions in JSON, if event is in, need to redraw the interaction
+function redrawInteractions(idNum) {
+    for (i = 1; i < flashTeamsJSON["interactions"].length; i++) {
+        var interaction = flashTeamsJSON["interactions"][i];
+        if (interaction.event1 == idNum) {
+            //REDRAW THE X1, Y1 OF THE INTERACTION
+            //START HERE
+
+        } else if (interaction.event2 == idNum) {
+            //REDRAW THE X2, Y2 OF THE INTERACTION
+
+
+        }
     }
 }
 
@@ -1422,32 +1441,25 @@ function drawInteraction(task2idNum) {
     $(".task_rectangle").popover("hide");
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     timeline_svg.on("mousemove", null);
+    $(".followingLine").remove();
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
         DRAWING_COLLAB = false;
         DRAWING_HANDOFF = false;
-        $(".followingLine").remove();
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
         interaction_counter++;
-        $(".followingLine").remove();
         var handoffData = {"event1":task1idNum, "event2":task2idNum, "type":"handoff", "description":""};
         flashTeamsJSON.interactions.push(handoffData);
         drawInteractionLine(task1idNum, task2idNum, "handoff");
-        //UPDATE POSITION OF LINE/CREATE NEW LINE
-        //NOT DONE
-
         DRAWING_HANDOFF = false;
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
         interaction_counter++;
-        console.log("Drawing a collaboration, clicked event ", task2idNum)
         var collabData = {"event1":task1idNum, "event2":task2idNum, "type":"collaboration", "descriptioin":""};
         flashTeamsJSON.interactions.push(collabData);
         drawInteractionLine(task1idNum, task2idNum, "collaboration");
-        //NOT DONE
-
         DRAWING_COLLAB = false;
     //There is no collaboration being drawn
     } else {
@@ -1503,7 +1515,7 @@ function writeHandoff() {
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
     DRAWING_HANDOFF = true;
     var m = d3.mouse(this);
-    console.log("x: " + m[0] + " y: " + m[1]);
+    //console.log("x: " + m[0] + " y: " + m[1]);
     line = timeline_svg.append("line")
         .attr("class", "followingLine")
         .attr("x1", m[0])
@@ -1512,21 +1524,30 @@ function writeHandoff() {
         .attr("y2", m[1])
         .attr("stroke-width", 3)
         .attr("stroke", "gray");
-    timeline_svg.on("mousemove", handoffMouseMove);
-}
-
-//Follow the mouse movements after a handoff is initialized
-function handoffMouseMove() {
-    console.log("in the mouse move");
-    var m = d3.mouse(this);
-    line.attr("x2", m[0])
-        .attr("y2", m[1]);
+    timeline_svg.on("mousemove", interMouseMove);
 }
 
 //Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
 function writeCollaboration() {
-    console.log("Trying to write a collaboration");
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
+    DRAWING_COLLAB = true;
+    var m = d3.mouse(this);
+    line = timeline_svg.append("line")
+        .attr("class", "followingLine")
+        .attr("x1", m[0])
+        .attr("y1", m[1])
+        .attr("x2", m[0])
+        .attr("y2", m[1])
+        .attr("stroke-width", 3)
+        .attr("stroke", "black");
+    timeline_svg.on("mousemove", interMouseMove);
+}
+
+//Follow the mouse movements after a handoff is initialized
+function interMouseMove() {
+    var m = d3.mouse(this);
+    line.attr("x2", m[0])
+        .attr("y2", m[1]);
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
