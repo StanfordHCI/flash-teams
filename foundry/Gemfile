@@ -63,7 +63,6 @@ gem 'rails_12factor', group: :production
 gem 'pg'
 
 platforms :ruby do
-	gem 'unicorn'
+        gem 'unicorn'
 end
 
-gem 'thin'
