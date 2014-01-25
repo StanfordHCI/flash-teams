@@ -25,16 +25,38 @@
 								<input type = "text" id="flashTeamTitle" placeholder="New Flash Team" style="font-size:25px; height:40px">
 							</form>
 						</div> 
--->	
+-->	                
                     <div id="project-status-container" class="well">
-                        <h3>Project Status</h3>
-                        <button class="btn" type="button" onclick="searchEvents()" id="projectDetailsButton">Project Details</button>
-                         <svg width="2450" height="570">
-                                <rect width="200" height="40" x="0" y="0" fill="white" style="stroke: #000000;"></rect>
-                                <rect width="10" height="40" x="0" y="0" fill="green" class="project_status"></rect>
-                            </svg>
-                    </div> 
+                        <h4> Your Task Starts In 1:20 </h4>
+                        
+                        <div>Project Status:</div>
+                        <div id="status-bar-container" >
+                        </div>
+                        
+                        <!--<button class="btn" type="button" onclick="searchEvents()" id="projectDetailsButton">Project Details</button> -->
+
+                     
+                        <style type="text/css"> 
+                        #panel,#flip
+                        {
+                            padding:5px;
+                            text-align:center;
+                           
+                            border:solid 1px #c3c3c3;
+                            }
+                            #panel
+                            {
+                                background-color:#ffffff;"
+                                padding:50px;
+                                display:none;
+                            }
+                        </style>
+                        <div id="flip"> Project Details </div>
+                        <div id="panel"  ><small> <p class="text-left"><strong>Project Name: </strong> Animation of Terry<br>
+                        <strong>Discription:</strong> Develop an animation in celebration of the retirement of HCI researcher Terry Winograd. The video should depict a scene from his early life where Terry builds a computer in his garage. </small> </p> </div>
                 
+                    </div> 
+                    
                     
                     <div id="member-container" class="well">
                         <h3>Team Roles</h3>
