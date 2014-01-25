@@ -7,7 +7,7 @@
 var flashTeamsJSON = {
     "title" : "New Flash Team",
     "id" : 1,
-    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", "eventInputs”:[], “eventOutputs”:[]}
+    "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", inputs”:[], “outputs”:[]}
     "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
     "interactions" : []  //{"event1", "event2", "type", "description"}
 };
@@ -67,8 +67,8 @@ function drawFlashTeamFromJSON(ftJSON) {
     	saveMemberInfo(pillCounter);
     }
 
-    //DRAW EVENTS   
     var events_len = ftJSON["events"].length;
+    //DRAW EVENTS
     for (var j = 0; j < events_len; j++) {
     	event_counter++;
 
@@ -79,7 +79,7 @@ function drawFlashTeamFromJSON(ftJSON) {
     	//Add to JSON
     	ftJSON["events"][j].id = event_counter;
     	flashTeamsJSON.events.push(ftJSON["events"][j]);
-        
+
     	//DRAW EVENT POPOVERS
     	var startHr = (ftJSON["events"][j].startTime - (ftJSON["events"][j].startTime%60))/60;
     	var startMin = ftJSON["events"][j].startTime%60;

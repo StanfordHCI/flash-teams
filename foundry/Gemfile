@@ -61,8 +61,3 @@ gem 'rails_12factor', group: :production
 
 # Heroku db: postgres
 gem 'pg'
-
-platforms :ruby do
-        gem 'unicorn'
-end
-
