@@ -646,8 +646,6 @@ var setCursorMoving = function(){
     }, timeline_interval); // every 18 seconds currently
 };
 
-
-
 var computeLiveAndRemainingTasks = function(){
     var curr_x = cursor.attr("x1");
     var curr_new_x = parseFloat(curr_x) + increment;
@@ -1334,43 +1332,12 @@ function boldEvents(currentUser){
     }
 }
 
-var currentUserEvents = [];
-
-function isCurrent(element) {
-    var memberName = flashTeamsJSON["members"][current].role;
-    return element.members.indexOf(memberName) != -1;
-}
-
-//Bold and emphasize the tasks of the current user
-  function boldEvents(currentUser){
-      console.log("it's bold!")
-      var memberName = flashTeamsJSON["members"][currentUser].role;
-      var newColor;
-      for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-          if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-      }
-      for (i = 0; i<flashTeamsJSON["events"].length; i++){
-          eventId = flashTeamsJSON["events"][i].id
-          if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-             $("#rect_" + eventId).attr("fill", newColor)
-                 .attr("fill-opacity", .4);
-          }
-      }
-      currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-      console.log(currentUserEvents);
-      currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-      firstEvent = currentUserEvents[0].id
-      $("#rect_" + firstEvent).attr("fill-opacity", .9)
-  }
-
-
-
 //Remove a team member from an event
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
     if (memberNum == current){
-         $("#rect_" + eventId).attr("fill", "#C9C9C9")
+        $("#rect_" + eventId).attr("fill", "#C9C9C9")
     }
 
     //Update the JSON
@@ -1700,11 +1667,8 @@ var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
 
 
-//var project_status_svg = d3.select("#project-status-container").append("svg")
+var project_status_svg = d3.select("#project-status-container").append("svg")
     
-var project_status_svg = d3.select("#status-bar-container").append("svg")
-    .attr("width", SVG_WIDTH)
-    .attr("height", 60);
 
 project_status_svg.append("rect")
     .attr("width", status_width)
@@ -1784,44 +1748,3 @@ var setProjectStatusMoving = function(){
 };
 
 /* --------------- PROJECT STATUS BAR END ------------ */
-
-statusText = project_status_svg.append("text").text("1:20")
-    .attr("x", status_x)
-    .attr("y", status_y+50)
-    .attr("font-size", "sans-serif")
-    .attr("font-size", "20px")
-    .attr("fill", "red");
-
-
-// var changeTime = function(length_of_time){
-//     statusText.transition()
-//         .duration(length_of_time)
-//         .ease("linear")
-// }
-
-// var moveCursor = function(length_of_time){
-//     curr_x_standard += 50;
-//     console.log("curr_x_standard: " + curr_x_standard);
-
-//     cursor.transition()
-//         .duration(length_of_time)
-//         .ease("linear")
-//         .attr("x1", curr_x_standard)
-//         .attr("x2", curr_x_standard);
-// };
-
-// var cursor_interval_id;
-// var setCursorMoving = function(){
-//     moveCursor(timeline_interval);
-//     cursor_interval_id = setInterval(function(){
-//         moveCursor(timeline_interval);
-//     }, timeline_interval); // every 18 seconds currently
-// };
-
-
- // numMins+= 30;
- //        var hours = Math.floor(numMins/60);
- //        var minutes = numMins%60;
- //        if (minutes == 0 && hours == 0) return ".     .      .    .    0:00";
- //        else if (minutes == 0) return hours + ":00";
- //        else return hours + ":" + minutes; 
