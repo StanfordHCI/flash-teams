@@ -37,6 +37,8 @@ var INTERACTION_TASK_ONE_IDNUM = 0;
 
 var DRAGBAR_WIDTH = 8;
 
+var current = 1;
+
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
     .origin(Object)
@@ -248,6 +250,7 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
+var currentUserTasks;
 
 var getXCoordForTime = function(t){
     console.log("time t: " + t);
@@ -271,6 +274,7 @@ $("#flashTeamStartBtn").click(function(){
     updateStatus(true);
     setCursorMoving();
     trackLiveAndRemainingTasks();
+    boldEvents(1);
     poll();
 
 
@@ -408,6 +412,7 @@ var loadData = function(){
         drawDelayedTasks();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
+        boldEvents(1);
     }
 };
 
@@ -1298,12 +1303,42 @@ function addEventMember(eventId, memberIndex) {
             return parseInt($("#rect_" + eventId).attr("width")) - 8;})
         .attr("fill", newColor)
         .attr("fill-opacity", .9);
+
+    //Change color of rect
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].role == memberName){
+            if (i == current){
+                $("#rect_" + eventId).attr("fill", newColor)
+                    .attr("fill-opacity", .4);   
+            }
+        } 
+    }
+}
+
+//Bold and emphasize the tasks of the current user
+function boldEvents(currentUser){
+    console.log("it's bold!")
+    var memberName = flashTeamsJSON["members"][currentUser].role;
+    var newColor;
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
+    }
+    for (i = 0; i<flashTeamsJSON["events"].length; i++){
+        eventId = flashTeamsJSON["events"][i].id
+        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
+            $("#rect_" + eventId).attr("fill", newColor)
+                .attr("fill-opacity", .4);
+        }
+    }
 }
 
 //Remove a team member from an event
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
+    if (memberNum == current){
+        $("#rect_" + eventId).attr("fill", "#C9C9C9")
+    }
 
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
@@ -1619,8 +1654,8 @@ function calcAddHours(currentHours) {
 
 
 /* --------------- PROJECT STATUS BAR START ------------ */
-var status_width=267;
-var status_height=32;
+var status_width=200;
+var status_height=40;
 var status_x=0;
 var status_y=0;
 var curr_status_width=0;
@@ -1632,10 +1667,8 @@ var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
 
 
-var project_status_svg = d3.select("#status-bar-container").append("svg")
-    .attr("width", SVG_WIDTH)
-    .attr("height", 50)
-
+var project_status_svg = d3.select("#project-status-container").append("svg")
+    
 
 project_status_svg.append("rect")
     .attr("width", status_width)
@@ -1653,11 +1686,12 @@ var project_status=project_status_svg.append("rect")
     .attr("fill","green")
     .attr("class","project_status")
 
-$(document).ready(function(){
-  $("#flip").click(function(){
-    $("#panel").slideToggle();
-  });
-});
+project_status_svg.append("button")
+
+var newButton = document.createElement("button");
+newButton.innerHTML = "A button";
+var buttonParent = document.getElementById("buttonParent");
+buttonParent.appendChild(newButton);             
 
 var moveProjectStatus = function(status_bar_timeline_interval){
     if(first_move_status){
