@@ -55,7 +55,7 @@ Foundry::Application.routes.draw do
   #     resources :products
   #   end
 
-  # resources :flash_teams
+  resources :flash_teams
  
   root 'welcome#index'
 
@@ -63,10 +63,9 @@ Foundry::Application.routes.draw do
     member do 
       get :get_status
       post :update_status
-      get :send_email
     end
   end
-  
+
   # get '/flash_teams/:id' => 'flash_teams#show'
   # get '/flash_teams' => 'flash_teams#index'
 end

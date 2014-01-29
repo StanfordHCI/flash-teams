@@ -82,10 +82,6 @@ class FlashTeamsController < ApplicationController
     end
   end
 
-  def send_email
-    UserMailer.send_email('jaypatelh@gmail.com').deliver
-  end
-
   def flash_team_params
     params.require(:flash_team).permit(:name, :json)
   end
