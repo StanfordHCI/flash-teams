@@ -1604,7 +1604,6 @@ function interMouseMove() {
     var m = d3.mouse(this);
     line.attr("x2", m[0])
         .attr("y2", m[1]);
->>>>>>> Stashed changes
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
