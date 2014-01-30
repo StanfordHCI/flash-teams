@@ -1886,3 +1886,31 @@ var setProjectStatusMoving = function(){
 };
 
 /* --------------- PROJECT STATUS BAR END ------------ */
+
+
+
+/*-----------Pusher chat box ----------------*/
+
+$(function() {     
+
+    var pusher = new Pusher('5fa76b11a664d088aa65');
+    var chatWidget = new PusherChatWidget(pusher, {
+    chatEndPoint: '/assets/pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
+    });
+   
+});
+
+
+//
+/*$(function() {     
+  var pusher = new Pusher('5fa76b11a664d088aa65');
+  var chatWidget = new PusherChatWidget(pusher, {
+    chatEndPoint: 'pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
+  });
+});
+*/
+
+
+
+/*-----------pusher chat box --------------*/
+

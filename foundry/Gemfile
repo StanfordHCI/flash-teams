@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+﻿source 'https://rubygems.org'
 
 #ruby '2.0.0'
 ruby '1.9.3'
@@ -67,3 +67,4 @@ platforms :ruby do
         gem 'unicorn'
 end
 
+gem 'pusher'
