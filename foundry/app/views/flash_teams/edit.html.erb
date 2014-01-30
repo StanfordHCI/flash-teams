@@ -3,9 +3,6 @@
 
 <input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
 
-<ul id="chat">
-    <%= render @message %>
-</ul>
 <%= render 'form' %>
 
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
