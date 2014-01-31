@@ -38,6 +38,8 @@ var INTERACTION_TASK_ONE_IDNUM = 0;
 var DRAGBAR_WIDTH = 8;
 
 var current = 1;
+var currentUserEvents = [];
+var upcomingEvent; 
 
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
@@ -250,7 +252,6 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
-var currentUserTasks;
 
 var getXCoordForTime = function(t){
     console.log("time t: " + t);
@@ -275,6 +276,7 @@ $("#flashTeamStartBtn").click(function(){
     setCursorMoving();
     trackLiveAndRemainingTasks();
     boldEvents(1);
+    trackUpcomingEvent();
     poll();
 
 
@@ -412,7 +414,7 @@ var loadData = function(){
         drawDelayedTasks();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
-        boldEvents(1);
+        trackUpcomingEvent();
     }
 };
 
@@ -646,6 +648,8 @@ var setCursorMoving = function(){
     }, timeline_interval); // every 18 seconds currently
 };
 
+
+
 var computeLiveAndRemainingTasks = function(){
     var curr_x = cursor.attr("x1");
     var curr_new_x = parseFloat(curr_x) + increment;
@@ -813,6 +817,39 @@ var trackLiveAndRemainingTasks = function() {
     }, fire_interval);
 };
 
+var trackUpcomingEvent = function(){
+    setInterval(function(){
+        task_g = getTaskGFromGroupNum(upcomingEvent)
+        if (task_g.data()[0].completed){
+            toDelete = upcomingEvent;
+            currentUserEvents.splice(0,1);
+            upcomingEvent = currentUserEvents[0].id;
+            $("#rect_" + toDelete).attr("fill-opacity", .4);
+            $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
+            task_g = getTaskGFromGroupNum(upcomingEvent)
+        }
+        console.log("time", currentUserEvents[0].startTime);
+        var cursor_x = cursor.attr("x1");
+        var cursorHr = (cursor_x-(cursor_x%100))/100;
+        var cursorMin = (cursor_x%100)/25*15;
+        if(cursorMin == 57.599999999999994) {
+            cursorHr++;
+            cursorMin = 0;
+        } else cursorMin += 2.4
+        var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
+        var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
+        var hours = parseInt(displayTimeinMinutes/60);
+        var minutes = displayTimeinMinutes%60;
+        var overallTime = hours + ":" + minutes;
+        if (displayTimeinMinutes < 0){
+            overallTime = "NOW";
+        }
+        console.log("cursor time", cursorTimeinMinutes);
+        console.log("distance", overallTime);
+    }, fire_interval);
+}
+
+
 var getAllData = function(){
     var data = [];
     for(var i=0;i<task_groups.length;i++){
@@ -918,18 +955,18 @@ var task_g = timeline_svg.selectAll(".task_g");
 function calcSnap(mouseX, mouseY) {
     var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
         snapY = Math.floor(mouseY/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
-	return [snapX, snapY];
-}	
+    return [snapX, snapY];
+}   
 
 //VCom Populates event block popover with correct info
 function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
-	if (title == null) {
-		title = "New Event";
-	}
-	if (totalMinutes == null) {
-		totalMinutes = 60;
-	}
-	
+    if (title == null) {
+        title = "New Event";
+    }
+    if (totalMinutes == null) {
+        totalMinutes = 60;
+    }
+    
     //Find the start time
     var startHr = (newmouseX-(newmouseX%100))/100;
     var startMin = (newmouseX%100)/25*15;
@@ -937,11 +974,11 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
         startHr++;
         startMin = 0;
     } else startMin += 2.4
-    var startTimeinMinutes = (startHr*60) + startMin;
+    var startTimeinMinutes = parseInt((startHr*60)) + parseInt(startMin); 
     //D3, Exit to Remove Deleted Data
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
-	//add new event to flashTeams database
+    //add new event to flashTeams database
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
@@ -957,33 +994,33 @@ function mousedown() {
     }
     event_counter++; //To generate id
     var point = d3.mouse(this);
-	
-	var snapPoint = calcSnap(point[0], point[1]);
+    
+    var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-	fillPopover(snapPoint[0], groupNum, true, null, null);
+    fillPopover(snapPoint[0], groupNum, true, null, null);
 };
 
 function addEvent() {
-	event_counter++;
-	var point = [0,0];
-	var snapPoint = calcSnap(point[0], point[1]);
+    event_counter++;
+    var point = [0,0];
+    var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-	fillPopover(snapPoint[0], groupNum, true, null, null);
+    fillPopover(snapPoint[0], groupNum, true, null, null);
 }
 
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvents(x, y, d, title, totalMinutes) {
-	if (title == null) {
-		title = "New Event";
-	}
-	if (totalMinutes == null) {
-		totalMinutes = 60;
-	}
+    if (title == null) {
+        title = "New Event";
+    }
+    if (totalMinutes == null) {
+        totalMinutes = 60;
+    }
 
-	var numHoursInt = Math.floor(totalMinutes/60);
-	var numHoursDec = totalMinutes/60;
-	var minutesLeft = totalMinutes%60;
-	
+    var numHoursInt = Math.floor(totalMinutes/60);
+    var numHoursDec = totalMinutes/60;
+    var minutesLeft = totalMinutes%60;
+    
     var task_g;
     var groupNum;
     if (d === null) {
@@ -1132,9 +1169,9 @@ function redraw(group, newWidth, gNum) {
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
 function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover) {
-	var numHours = Math.floor(totalMinutes/60);
-	var minutesLeft = totalMinutes%60;
-	
+    var numHours = Math.floor(totalMinutes/60);
+    var minutesLeft = totalMinutes%60;
+    
     //Add Popovers
     timeline_svg.selectAll("#rect_" + groupNum).each(
         function(d) {
@@ -1306,39 +1343,52 @@ function addEventMember(eventId, memberIndex) {
 
     //Change color of rect
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName){
-            if (i == current){
-                $("#rect_" + eventId).attr("fill", newColor)
-                    .attr("fill-opacity", .4);   
-            }
-        } 
-    }
+         if (flashTeamsJSON["members"][i].role == memberName){
+             if (i == current){
+                 $("#rect_" + eventId).attr("fill", newColor)
+                     .attr("fill-opacity", .4);   
+             }
+         } 
+     }
+}
+
+
+function isCurrent(element) {
+    var memberName = flashTeamsJSON["members"][current].role;
+    return element.members.indexOf(memberName) != -1;
 }
 
 //Bold and emphasize the tasks of the current user
-function boldEvents(currentUser){
-    console.log("it's bold!")
-    var memberName = flashTeamsJSON["members"][currentUser].role;
-    var newColor;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-    }
-    for (i = 0; i<flashTeamsJSON["events"].length; i++){
-        eventId = flashTeamsJSON["events"][i].id
-        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-            $("#rect_" + eventId).attr("fill", newColor)
-                .attr("fill-opacity", .4);
-        }
-    }
-}
+  function boldEvents(currentUser){
+      console.log("it's bold!")
+      var memberName = flashTeamsJSON["members"][currentUser].role;
+      var newColor;
+      for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+          if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
+      }
+      for (i = 0; i<flashTeamsJSON["events"].length; i++){
+          eventId = flashTeamsJSON["events"][i].id
+          if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
+             $("#rect_" + eventId).attr("fill", newColor)
+                 .attr("fill-opacity", .4);
+          }
+      }
+      currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
+      console.log(currentUserEvents);
+      currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
+      upcomingEvent = currentUserEvents[0].id;
+      $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
+  }
+
+
 
 //Remove a team member from an event
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
     if (memberNum == current){
-        $("#rect_" + eventId).attr("fill", "#C9C9C9")
-    }
+         $("#rect_" + eventId).attr("fill", "#C9C9C9")
+     }
 
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
@@ -1371,7 +1421,7 @@ function updateTime(idNum) {
     //Update JSON
     var indexOfJSON = getEventJSONIndex(idNum);
     flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
-    flashTeamsJSON["events"][indexOfJSON].startTime = (startHr*60) + startMin;
+    flashTeamsJSON["events"][indexOfJSON].startTime = parseInt((startHr*60)) + parseInt(startMin);
 }
 
 //Change the starting location of a task rectangle and its relevant components when the user changes info in the popover
@@ -1566,7 +1616,7 @@ function addTime() {
     .range([0, hours]);
     
     //Reset overlay and svg width
-	document.getElementById("overlay").style.width = SVG_WIDTH + 50 + "px";
+    document.getElementById("overlay").style.width = SVG_WIDTH + 50 + "px";
     timeline_svg.attr("width", SVG_WIDTH);
     
     //Remove all exising grid lines
@@ -1654,8 +1704,8 @@ function calcAddHours(currentHours) {
 
 
 /* --------------- PROJECT STATUS BAR START ------------ */
-var status_width=200;
-var status_height=40;
+var status_width=267;
+var status_height=32;
 var status_x=0;
 var status_y=0;
 var curr_status_width=0;
@@ -1667,8 +1717,10 @@ var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
 
 
-var project_status_svg = d3.select("#project-status-container").append("svg")
-    
+var project_status_svg = d3.select("#status-bar-container").append("svg")
+    .attr("width", SVG_WIDTH)
+    .attr("height", 60)
+
 
 project_status_svg.append("rect")
     .attr("width", status_width)
@@ -1686,12 +1738,11 @@ var project_status=project_status_svg.append("rect")
     .attr("fill","green")
     .attr("class","project_status")
 
-project_status_svg.append("button")
-
-var newButton = document.createElement("button");
-newButton.innerHTML = "A button";
-var buttonParent = document.getElementById("buttonParent");
-buttonParent.appendChild(newButton);             
+$(document).ready(function(){
+  $("#flip").click(function(){
+    $("#panel").slideToggle();
+  });
+});
 
 var moveProjectStatus = function(status_bar_timeline_interval){
     if(first_move_status){
@@ -1748,3 +1799,45 @@ var setProjectStatusMoving = function(){
 };
 
 /* --------------- PROJECT STATUS BAR END ------------ */
+
+
+statusText = project_status_svg.append("text").text("1:20")
+    .attr("x", status_x)
+    .attr("y", status_y+200)
+    .attr("font-size", "sans-serif")
+    .attr("font-size", "20px")
+    .attr("fill", "red")
+
+
+// var changeTime = function(length_of_time){
+//     statusText.transition()
+//         .duration(length_of_time)
+//         .ease("linear")
+// }
+
+// var moveCursor = function(length_of_time){
+//     curr_x_standard += 50;
+//     console.log("curr_x_standard: " + curr_x_standard);
+
+//     cursor.transition()
+//         .duration(length_of_time)
+//         .ease("linear")
+//         .attr("x1", curr_x_standard)
+//         .attr("x2", curr_x_standard);
+// };
+
+// var cursor_interval_id;
+// var setCursorMoving = function(){
+//     moveCursor(timeline_interval);
+//     cursor_interval_id = setInterval(function(){
+//         moveCursor(timeline_interval);
+//     }, timeline_interval); // every 18 seconds currently
+// };
+
+
+ // numMins+= 30;
+ //        var hours = Math.floor(numMins/60);
+ //        var minutes = numMins%60;
+ //        if (minutes == 0 && hours == 0) return ".     .      .    .    0:00";
+ //        else if (minutes == 0) return hours + ":00";
+ //        else return hours + ":" + minutes; 
