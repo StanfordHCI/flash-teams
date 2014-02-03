@@ -55,7 +55,7 @@ Foundry::Application.routes.draw do
   #     resources :products
   #   end
 
-  # resources :flash_teams
+  resources :flash_teams
  
   root 'welcome#index'
 

@@ -38,6 +38,8 @@ var INTERACTION_TASK_ONE_IDNUM = 0;
 var DRAGBAR_WIDTH = 8;
 
 var current = 1;
+var currentUserEvents = [];
+var upcomingEvent; 
 
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
@@ -219,6 +221,16 @@ timeline_svg.append("line")
     .style("stroke", "#000")
     .style("stroke-width", "4")
 
+
+//For Interactions
+//START HERE
+timeline_svg.append("defs").append("marker")
+    .attr("id", "arrowhead")
+    .attr("markerWidth", 5)
+    .attr("markerHeight", 4)
+    .append("path")
+        .attr("d", "M 0,0 V 4 L6,2 Z");
+
 /* --------------- TEAM AWARENESS STUFF START ------------ */
 
 // unique link to identify/access the page
@@ -250,7 +262,6 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
-var currentUserTasks;
 
 var getXCoordForTime = function(t){
     console.log("time t: " + t);
@@ -275,7 +286,18 @@ $("#flashTeamStartBtn").click(function(){
     setCursorMoving();
     trackLiveAndRemainingTasks();
     boldEvents(1);
+    trackUpcomingEvent();
     poll();
+
+
+
+    /******* projec status bar start*****/
+
+    //moveProjectStatus(timeline_interval);
+    setProjectStatusMoving();
+
+    /******* projec status bar end*****/
+    
 });
 
 $("#flashTeamEndBtn").click(function(){
@@ -395,6 +417,7 @@ var loadData = function(){
             j--;
             drawEvents(g[0].x, g[0].y, g, null, null); // need to change null and null to title and totalMinutes
             fillPopover(g[0].x, g[0].groupNum, false, null, null);
+
             //addEventToJSON(g[0].x, g[0].y, g[0].groupNum, false);
         }
 
@@ -411,7 +434,7 @@ var loadData = function(){
         drawDelayedTasks();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
-        boldEvents(1);
+        trackUpcomingEvent();
     }
 };
 
@@ -645,6 +668,8 @@ var setCursorMoving = function(){
     }, timeline_interval); // every 18 seconds currently
 };
 
+
+
 var computeLiveAndRemainingTasks = function(){
     var curr_x = cursor.attr("x1");
     var curr_new_x = parseFloat(curr_x) + increment;
@@ -812,6 +837,39 @@ var trackLiveAndRemainingTasks = function() {
     }, fire_interval);
 };
 
+var trackUpcomingEvent = function(){
+    setInterval(function(){
+        task_g = getTaskGFromGroupNum(upcomingEvent)
+        if (task_g.data()[0].completed){
+            toDelete = upcomingEvent;
+            currentUserEvents.splice(0,1);
+            upcomingEvent = currentUserEvents[0].id;
+            $("#rect_" + toDelete).attr("fill-opacity", .4);
+            $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
+            task_g = getTaskGFromGroupNum(upcomingEvent)
+        }
+        console.log("time", currentUserEvents[0].startTime);
+        var cursor_x = cursor.attr("x1");
+        var cursorHr = (cursor_x-(cursor_x%100))/100;
+        var cursorMin = (cursor_x%100)/25*15;
+        if(cursorMin == 57.599999999999994) {
+            cursorHr++;
+            cursorMin = 0;
+        } else cursorMin += 2.4
+        var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
+        var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
+        var hours = parseInt(displayTimeinMinutes/60);
+        var minutes = displayTimeinMinutes%60;
+        var overallTime = hours + ":" + minutes;
+        if (displayTimeinMinutes < 0){
+            overallTime = "NOW";
+        }
+        console.log("cursor time", cursorTimeinMinutes);
+        console.log("distance", overallTime);
+    }, fire_interval);
+}
+
+
 var getAllData = function(){
     var data = [];
     for(var i=0;i<task_groups.length;i++){
@@ -917,18 +975,18 @@ var task_g = timeline_svg.selectAll(".task_g");
 function calcSnap(mouseX, mouseY) {
     var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
         snapY = Math.floor(mouseY/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
-	return [snapX, snapY];
-}	
+    return [snapX, snapY];
+}   
 
 //VCom Populates event block popover with correct info
 function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
-	if (title == null) {
-		title = "New Event";
-	}
-	if (totalMinutes == null) {
-		totalMinutes = 60;
-	}
-	
+    if (title == null) {
+        title = "New Event";
+    }
+    if (totalMinutes == null) {
+        totalMinutes = 60;
+    }
+    
     //Find the start time
     var startHr = (newmouseX-(newmouseX%100))/100;
     var startMin = (newmouseX%100)/25*15;
@@ -936,11 +994,11 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
         startHr++;
         startMin = 0;
     } else startMin += 2.4
-    var startTimeinMinutes = (startHr*60) + startMin;
+    var startTimeinMinutes = parseInt((startHr*60)) + parseInt(startMin); 
     //D3, Exit to Remove Deleted Data
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
-	//add new event to flashTeams database
+    //add new event to flashTeams database
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
@@ -956,33 +1014,33 @@ function mousedown() {
     }
     event_counter++; //To generate id
     var point = d3.mouse(this);
-	
-	var snapPoint = calcSnap(point[0], point[1]);
+    
+    var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-	fillPopover(snapPoint[0], groupNum, true, null, null);
+    fillPopover(snapPoint[0], groupNum, true, null, null);
 };
 
 function addEvent() {
-	event_counter++;
-	var point = [0,0];
-	var snapPoint = calcSnap(point[0], point[1]);
+    event_counter++;
+    var point = [0,0];
+    var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-	fillPopover(snapPoint[0], groupNum, true, null, null);
+    fillPopover(snapPoint[0], groupNum, true, null, null);
 }
 
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvents(x, y, d, title, totalMinutes) {
-	if (title == null) {
-		title = "New Event";
-	}
-	if (totalMinutes == null) {
-		totalMinutes = 60;
-	}
+    if (title == null) {
+        title = "New Event";
+    }
+    if (totalMinutes == null) {
+        totalMinutes = 60;
+    }
 
-	var numHoursInt = Math.floor(totalMinutes/60);
-	var numHoursDec = totalMinutes/60;
-	var minutesLeft = totalMinutes%60;
-	
+    var numHoursInt = Math.floor(totalMinutes/60);
+    var numHoursDec = totalMinutes/60;
+    var minutesLeft = totalMinutes%60;
+    
     var task_g;
     var groupNum;
     if (d === null) {
@@ -1070,7 +1128,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
-        .attr("xlink:href", "app/assets/images/rightArrow.png")
+        .attr("xlink:href", "/assets/rightArrow.png")
         .attr("class", "handoff_btn")
         .attr("id", function(d) {return "handoff_btn_" + groupNum;})
         .attr("groupNum", groupNum)
@@ -1080,7 +1138,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("y", function(d) {return d.y+23})
         .on("click", writeHandoff);
     var collab_btn = task_g.append("image")
-        .attr("xlink:href", "/images/doubleArrow.png")
+        .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
         .attr("id", function(d) {return "collab_btn_" + groupNum;})
         .attr("groupNum", groupNum)
@@ -1129,11 +1187,50 @@ function redraw(group, newWidth, gNum) {
     }
 }
 
+
+//Loops through interactions in JSON, if event is in, need to redraw the interaction
+function redrawInteractions(idNum) {
+    console.log("Trying to redraw interaction on id:", idNum);
+    for (i = 1; i <= flashTeamsJSON["interactions"].length; i++) {
+        var interaction = flashTeamsJSON["interactions"][i-1];
+        if (interaction.event1 == idNum) {
+            //REDRAW THE X1, Y1 OF THE INTERACTION
+            //START HERE
+            var taskRect1 = $("#rect_" + idNum)[0]
+            var x1 = taskRect1.x.animVal.value + taskRect1.width.animVal.value;
+            var y1 = taskRect1.y.animVal.value + 50;
+            $("#interaction_" + i)
+                .attr("y1", y1)
+                .attr("x1", x1);
+
+
+        } else if (interaction.event2 == idNum) {
+            //REDRAW THE X2, Y2 OF THE INTERACTION
+            var taskRect2 = $("#rect_" + i)[0];
+            var x2 = taskRect2.x.animVal.value;
+            var y2 = taskRect2.y.animVal.value + 50;
+            $("#interaction_" + i)
+                .attr("y2", y2)
+                .attr("x2", x2);
+
+        }
+    }
+
+    /*.attr("d", function(d) {
+         var dx = x1 - x2,
+            dy = y1 - y2,
+            dr = Math.sqrt(dx * dx + dy * dy);
+        //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+        return "M" + x1 + "," + y1 + "A" + dr + "," + dr + " 0 0,1 " + x2 + "," + y2; 
+        })*/
+}
+
+
 //The initialization of the twitter bootstrap popover on an event's task rectangle
 function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover) {
-	var numHours = Math.floor(totalMinutes/60);
-	var minutesLeft = totalMinutes%60;
-	
+    var numHours = Math.floor(totalMinutes/60);
+    var minutesLeft = totalMinutes%60;
+    
     //Add Popovers
     timeline_svg.selectAll("#rect_" + groupNum).each(
         function(d) {
@@ -1305,39 +1402,52 @@ function addEventMember(eventId, memberIndex) {
 
     //Change color of rect
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName){
-            if (i == current){
-                $("#rect_" + eventId).attr("fill", newColor)
-                    .attr("fill-opacity", .4);   
-            }
-        } 
-    }
+         if (flashTeamsJSON["members"][i].role == memberName){
+             if (i == current){
+                 $("#rect_" + eventId).attr("fill", newColor)
+                     .attr("fill-opacity", .4);   
+             }
+         } 
+     }
+}
+
+
+function isCurrent(element) {
+    var memberName = flashTeamsJSON["members"][current].role;
+    return element.members.indexOf(memberName) != -1;
 }
 
 //Bold and emphasize the tasks of the current user
-function boldEvents(currentUser){
-    console.log("it's bold!")
-    var memberName = flashTeamsJSON["members"][currentUser].role;
-    var newColor;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-    }
-    for (i = 0; i<flashTeamsJSON["events"].length; i++){
-        eventId = flashTeamsJSON["events"][i].id
-        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-            $("#rect_" + eventId).attr("fill", newColor)
-                .attr("fill-opacity", .4);
-        }
-    }
-}
+  function boldEvents(currentUser){
+      console.log("it's bold!")
+      var memberName = flashTeamsJSON["members"][currentUser].role;
+      var newColor;
+      for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+          if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
+      }
+      for (i = 0; i<flashTeamsJSON["events"].length; i++){
+          eventId = flashTeamsJSON["events"][i].id
+          if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
+             $("#rect_" + eventId).attr("fill", newColor)
+                 .attr("fill-opacity", .4);
+          }
+      }
+      currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
+      console.log(currentUserEvents);
+      currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
+      upcomingEvent = currentUserEvents[0].id;
+      $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
+  }
+
+
 
 //Remove a team member from an event
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
     if (memberNum == current){
-        $("#rect_" + eventId).attr("fill", "#C9C9C9")
-    }
+         $("#rect_" + eventId).attr("fill", "#C9C9C9")
+     }
 
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
@@ -1370,7 +1480,7 @@ function updateTime(idNum) {
     //Update JSON
     var indexOfJSON = getEventJSONIndex(idNum);
     flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
-    flashTeamsJSON["events"][indexOfJSON].startTime = (startHr*60) + startMin;
+    flashTeamsJSON["events"][indexOfJSON].startTime = parseInt((startHr*60)) + parseInt(startMin);
 }
 
 //Change the starting location of a task rectangle and its relevant components when the user changes info in the popover
@@ -1464,8 +1574,96 @@ function drawInteraction(task2idNum) {
 }
 
 //Redraw the position of the interaction line
-function redrawInteractionLine(task1Id, task2Id, type) {
+function drawInteractionLine(task1Id, task2Id, type) {
+    //Find end of task 1
+    var task1Rect = $("#rect_" + task1Id)[0];
+    var x1 = task1Rect.x.animVal.value + 3;
+    var y1 = task1Rect.y.animVal.value + 50;
+    //Find beginning of task 2
+    var task2Rect = $("#rect_" + task2Id)[0];
+    var x2 = task2Rect.x.animVal.value + 3;
+    var y2 = task2Rect.y.animVal.value + 50;
 
+    var path = timeline_svg.selectAll("path")
+       .data(flashTeamsJSON["interactions"]);
+
+    path.enter().insert("svg:path")
+       .attr("class", "link")
+       .style("stroke", "#ccc");
+
+       //FINISH CUSTOMIZING FOR COLLAB
+       //NEED TO MAKE CURVES NOT FILLED
+    path = timeline_svg.append("path")
+        .attr("class", "interactionLine")
+        .attr("id", function () {
+            return "interaction_" + interaction_counter;
+        })
+        .attr("x1", function(){
+            if (type == "handoff") return (x1 + task1Rect.width.animVal.value)
+            else return x1
+        })
+        .attr("y1", y1)
+        .attr("x2", x2)
+        .attr("y2", y2)
+        .style("stroke-dasharray", function() {
+            if (type == "handoff") return ("0, 0")
+            else return ("4, 4")
+        })
+        .attr("d", function(d) {
+             var dx = x1 - x2,
+                dy = y1 - y2,
+                dr = Math.sqrt(dx * dx + dy * dy);
+            //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+            return "M" + x1 + "," + y1 + "A" + dr + "," + dr + " 0 0,1 " + x2 + "," + y2; 
+        })
+        .attr("stroke", function() {
+            if (type == "handoff") return "gray"
+            else return "black"
+        })
+        .attr("stroke-width", 5)
+        .attr("fill", "none")
+        .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
+}
+
+//Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
+function writeHandoff() {
+    INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
+    DRAWING_HANDOFF = true;
+    var m = d3.mouse(this);
+    //console.log("x: " + m[0] + " y: " + m[1]);
+    line = timeline_svg.append("line")
+        .attr("class", "followingLine")
+        .attr("x1", m[0])
+        .attr("y1", m[1])
+        .attr("x2", m[0])
+        .attr("y2", m[1])
+        .attr("stroke-width", 3)
+        .attr("stroke", "gray");
+    timeline_svg.on("mousemove", interMouseMove);
+}
+
+//Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
+function writeCollaboration() {
+    INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
+    DRAWING_COLLAB = true;
+    var m = d3.mouse(this);
+    line = timeline_svg.append("line")
+        .attr("class", "followingLine")
+        .attr("x1", m[0])
+        .attr("y1", m[1])
+        .attr("x2", m[0])
+        .attr("y2", m[1])
+        .attr("stroke-width", 3)
+        .attr("stroke", "black")
+        .attr("stroke-dasharray", (4,4));
+    timeline_svg.on("mousemove", interMouseMove);
+}
+
+//Follow the mouse movements after a handoff is initialized
+function interMouseMove() {
+    var m = d3.mouse(this);
+    line.attr("x2", m[0])
+        .attr("y2", m[1]);
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
@@ -1565,7 +1763,7 @@ function addTime() {
     .range([0, hours]);
     
     //Reset overlay and svg width
-	document.getElementById("overlay").style.width = SVG_WIDTH + 50 + "px";
+    document.getElementById("overlay").style.width = SVG_WIDTH + 50 + "px";
     timeline_svg.attr("width", SVG_WIDTH);
     
     //Remove all exising grid lines
@@ -1650,3 +1848,134 @@ function calcAddHours(currentHours) {
 }
 
 
+
+
+/* --------------- PROJECT STATUS BAR START ------------ */
+var status_width=267;
+var status_height=32;
+var status_x=0;
+var status_y=0;
+var curr_status_width=0;
+var project_duration=1440000;
+var status_bar_timeline_interval=1000;  //TODO back to 10 secs //start moving each second for the width of project_status_interval_width.
+var num_intervals;                      //=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
+var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(num_intervals);
+var thirty_min=10000; //TODO back to 1800000
+var first_move_status=1;
+
+
+var project_status_svg = d3.select("#status-bar-container").append("svg")
+    .attr("width", SVG_WIDTH)
+    .attr("height", 60)
+
+
+project_status_svg.append("rect")
+    .attr("width", status_width)
+    .attr("height", status_height)
+    .attr("x",status_x)
+    .attr("y",status_y)
+    .style("stroke","black" )
+    .attr("fill","white")
+
+var project_status=project_status_svg.append("rect")
+    .attr("width", curr_status_width)
+    .attr("height", status_height)
+    .attr("x",status_x)
+    .attr("y",status_y)
+    .attr("fill","green")
+    .attr("class","project_status")
+
+$(document).ready(function(){
+  $("#flip").click(function(){
+    $("#panel").slideToggle();
+  });
+});
+
+var moveProjectStatus = function(status_bar_timeline_interval){
+    if(first_move_status){
+        first_move_status=0;
+    var last_group_num=-1;
+    var last_end_x=0;
+      
+    for (var i=0;i<task_groups.length;i++){
+        var task = task_groups[i];
+        var data = task.data()[0];
+        var groupNum = data.groupNum;
+       
+        var task_rect = task.select("#rect_" + groupNum);
+        var start_x = data.x+4;  //CHECK with Jay
+        var width = task_rect.attr("width");
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        
+        /*console.log("start_x",start_x);
+        console.log("width",width);
+        console.log("here2");
+        console.log("end_time",groupNum +" "+ parseFloat(end_x)/100);
+        */
+        if(last_end_x<end_x){
+            last_end_x=end_x;
+        }
+        
+    }
+   // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
+    console.log("last_end",last_end_x);
+    project_duration=parseInt(last_end_x/50)*thirty_min;
+    console.log("project duration: ",project_duration);
+
+    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
+    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
+
+}
+    
+    if(curr_status_width<status_width && delayed_tasks.length==0){
+        curr_status_width += project_status_interval_width;
+    }
+    project_status.transition()
+        .duration(status_bar_timeline_interval)
+        .ease("linear")
+        .attr("width", curr_status_width)
+        
+};
+
+var status_interval_id;
+var setProjectStatusMoving = function(){
+    moveProjectStatus(status_bar_timeline_interval);
+    status_interval_id = setInterval(function(){
+        moveProjectStatus(status_bar_timeline_interval);
+    }, status_bar_timeline_interval); // every 10 seconds currently
+};
+
+/* --------------- PROJECT STATUS BAR END ------------ */
+
+statusText = project_status_svg.append("text").text("1:20")
+    .attr("x", status_x)
+    .attr("y", status_y+200)
+    .attr("font-size", "sans-serif")
+    .attr("font-size", "20px")
+    .attr("fill", "red")
+
+
+/*-----------Pusher chat box ----------------*/
+
+$(function() {     
+
+    var pusher = new Pusher('5fa76b11a664d088aa65');
+    var chatWidget = new PusherChatWidget(pusher, {
+    chatEndPoint: '/assets/pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
+    });
+   
+});
+
+
+//
+/*$(function() {     
+  var pusher = new Pusher('5fa76b11a664d088aa65');
+  var chatWidget = new PusherChatWidget(pusher, {
+    chatEndPoint: 'pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
+  });
+});
+*/
+
+
+
+/*-----------pusher chat box --------------*/

@@ -52,6 +52,9 @@ var node = diagram_svg.selectAll(".node"),
 
 
 
+
+
+
 // force.nodes(workers.nodes)
 //     .links(workers.links)
 //     .start();

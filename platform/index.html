@@ -24,6 +24,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
+
+
+         <!--chat box-->
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+        <script src="http://js.pusher.com/2.2.0-rc1/pusher.min.js"></script>      
+        <script src="pusher-realtime-chat-widget/src/js/PusherChatWidget.js"></script>
+        <link href="pusher-realtime-chat-widget/src/pusher-chat.css" rel="stylesheet" type="text/css" />
+       
+        <script>
+            $(function() {     
+                var pusher = new Pusher('5fa76b11a664d088aa65');
+                var chatWidget = new PusherChatWidget(pusher, {
+                chatEndPoint: 'pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
+                 });
+            });
+            </script>
+       <!-- chat end -->
+
         <style>
             .node {
               stroke: #fff;
