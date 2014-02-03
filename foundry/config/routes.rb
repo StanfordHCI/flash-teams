@@ -63,10 +63,12 @@ Foundry::Application.routes.draw do
     member do 
       get :get_status
       post :update_status
-      get :send_email
+      get :invite
+      post :login
+      post :confirm_email
     end
   end
-  
+
   # get '/flash_teams/:id' => 'flash_teams#show'
   # get '/flash_teams' => 'flash_teams#index'
 end

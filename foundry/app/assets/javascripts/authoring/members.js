@@ -6,6 +6,13 @@
 var pillCounter = 0;
 var colorToChange = "#ff0000";
 
+function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4());
+};
+
 function addMember() {
     pillCounter++;
     var memberName = $("#addMemberInput").val();
@@ -15,7 +22,7 @@ function addMember() {
     }
     //Appends a list item pill to the memberPills ul
     $("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName 
-        + '<div class="close" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">  X</div>' + '</a></li>');
+        + '<div class="close" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">  X</div></a></li>');
 
     //Clear Input
     $("#addMemberInput").val(this.placeholder);
@@ -39,9 +46,11 @@ function addMember() {
             +'Skills:'  
             +'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
             +'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
-            +'<script type="text/javascript"> initializeColorPicker(); </script>'
+            +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
             +'<p><button type="button" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">Delete</button>     '
-            +'<button type="button" onclick="saveMemberInfo(' + pillCounter + '); saveFlashTeam();">Save</button>'
+            +'<button type="button" onclick="saveMemberInfo(' + pillCounter + '); saveFlashTeam();">Save</button>     '
+            +'<button type="button" onclick="inviteMember(' + pillCounter + ');">Invite</button><br><br>'
+            + 'Invitation link: <a id="invitation_link_' + pillCounter + '" href="" target="_blank"></a>'
         +'</p></form>' 
         +'</div>',
         container: $("#member-container")
@@ -151,6 +160,16 @@ function deleteMember(pillId) {
 
     //REMOVE THE MEMBER FROM EVENTS
 
+};
+
+function inviteMember(pillId) {
+    var flash_team_id = $("#flash_team_id").val();
+    var url = '/flash_teams/' + flash_team_id + '/invite';
+    $.get(url, function(data){
+        alert("Please send the member the following unique link to access this flash team: \n" + data);
+        $("#invitation_link_" + pillId).html(data);
+        $("#invitation_link_" + pillId).attr('href', data);
+    });
 };
 
 //Takes the new color, turns into hex and changes background color of a pill list item

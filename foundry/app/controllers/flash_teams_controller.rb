@@ -1,4 +1,5 @@
 require 'json'
+require 'SecureRandom'
 
 class FlashTeamsController < ApplicationController
   helper_method :get_tasks
@@ -82,8 +83,37 @@ class FlashTeamsController < ApplicationController
     end
   end
 
-  def send_email
-    UserMailer.send_email('jaypatelh@gmail.com').deliver
+  def invite
+    uuid = SecureRandom.uuid
+
+    # generate unique id and add to url below
+    url = url_for :action => 'edit', :id => params[:id], :uniq => uuid, :escape => false
+    
+    #UserMailer.send_email(email, url).deliver
+
+    respond_to do |format|
+      format.json {render json: url.to_json, status: :ok}
+    end
+  end
+
+  def login
+    uniq = params[:uniq]
+    session[:uniq] = uniq
+
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
+  end
+
+  def confirm_email
+    email = params[:email]
+    uniq = params[:uniq]
+    url = url_for :action => 'edit', :id => params[:id], :uniq => uniq, :email => email, :escape => false
+    UserMailer.send_confirmation_email(email, url).deliver
+
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
   end
 
   def flash_team_params
