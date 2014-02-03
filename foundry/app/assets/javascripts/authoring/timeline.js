@@ -1626,6 +1626,7 @@ function drawInteractionLine(task1Id, task2Id, type) {
 }
 
 //Called when a user clicks the gray handoff arrow, initializes creating a handoff b/t two events
+/*
 function writeHandoff() {
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
     DRAWING_HANDOFF = true;
@@ -1641,6 +1642,7 @@ function writeHandoff() {
         .attr("stroke", "gray");
     timeline_svg.on("mousemove", interMouseMove);
 }
+*/
 
 //Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
 function writeCollaboration() {
