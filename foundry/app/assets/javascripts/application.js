@@ -14,12 +14,5 @@
 //= require jquery_ujs
 //= require_tree ./d3
 //= require turbolinks
-// require_tree ./authoring
-// require_tree ./sitewide
-// require twitter/bootstrap
-// require d3
-// require bootstrap/js/bootstrap
-
-
-// $(document).ready(timelineReady);
-// $(document).on('page:load', timelineReady);
+//= require_tree ./bootstrap
+//= require_tree ./authoring
