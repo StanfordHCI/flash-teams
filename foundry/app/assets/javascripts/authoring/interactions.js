@@ -1,3 +1,9 @@
+/* interaction.js
+ * ---------------------------------------------
+ * Code that manages the interactions (collaborations and handoffs)
+ * Drawing from scratch, drag response on (popovers.js)
+ */
+
 //Loops through interactions in JSON, if event is in, need to redraw the interaction
 function redrawInteractions(idNum) {
     console.log("Trying to redraw interaction on id:", idNum);
