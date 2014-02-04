@@ -46,8 +46,10 @@ function redrawInteractions(idNum) {
         })*/
 };
 
+//Called when a user clicks a task rectangle (aka event)
+//Determines if the user is trying to draw an interaction and if so, what type
 function drawInteraction(task2idNum) {
-    $(".task_rectangle").popover("hide");
+    
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     timeline_svg.on("mousemove", null);
     $(".followingLine").remove();
@@ -63,6 +65,7 @@ function drawInteraction(task2idNum) {
         flashTeamsJSON.interactions.push(handoffData);
         drawInteractionLine(task1idNum, task2idNum, "handoff");
         DRAWING_HANDOFF = false;
+        $(".task_rectangle").popover("hide");
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
         interaction_counter++;
@@ -70,6 +73,7 @@ function drawInteraction(task2idNum) {
         flashTeamsJSON.interactions.push(collabData);
         drawInteractionLine(task1idNum, task2idNum, "collaboration");
         DRAWING_COLLAB = false;
+        $(".task_rectangle").popover("hide");
     //There is no collaboration being drawn
     } else {
         console.log("Not drawing anything");
@@ -129,7 +133,8 @@ function drawInteractionLine(task1Id, task2Id, type) {
         .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
 }
 
-//Called when a user clicks the black collaboration arrow, initializes creating a collaboration b/t two events
+//Called when a user clicks the black collaboration arrow, 
+//initializes creating a collaboration b/t two events
 function writeCollaboration() {
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
     DRAWING_COLLAB = true;
