@@ -151,6 +151,7 @@ function writeHandoff() {
     timeline_svg.on("mousemove", interMouseMove);
 };
 
+
 //Called when we find DRAWING_COLLABORATION 
 //initializes creating a collaboration b/t two events
 function writeCollaboration() {
