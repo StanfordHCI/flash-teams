@@ -29,5 +29,4 @@
 //= require ./authoring/spectrum_use
 //= require ./authoring/diagram
 //= require ./authoring/eventslibrary
-//= require ./authoring/experimental
 //= require ./authoring/flash_team_update

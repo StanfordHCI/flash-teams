@@ -729,28 +729,28 @@ var completeTask = function(groupNum){
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
     return element.members.indexOf(memberName) != -1;
-}
+};
 
 //Bold and emphasize the tasks of the current user
-  function boldEvents(currentUser){
-      console.log("it's bold!")
-      var memberName = flashTeamsJSON["members"][currentUser].role;
-      var newColor;
-      for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-          if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-      }
-      for (i = 0; i<flashTeamsJSON["events"].length; i++){
-          eventId = flashTeamsJSON["events"][i].id
-          if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-             $("#rect_" + eventId).attr("fill", newColor)
-                 .attr("fill-opacity", .4);
-          }
-      }
-      currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-      console.log(currentUserEvents);
-      currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-      upcomingEvent = currentUserEvents[0].id;
-      $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
-  }
+function boldEvents(currentUser){
+    console.log("it's bold!")
+    var memberName = flashTeamsJSON["members"][currentUser].role;
+    var newColor;
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
+    }
+    for (i = 0; i<flashTeamsJSON["events"].length; i++){
+        eventId = flashTeamsJSON["events"][i].id
+        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
+            $("#rect_" + eventId).attr("fill", newColor)
+                .attr("fill-opacity", .4);
+        }
+    }
+    currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
+    console.log(currentUserEvents);
+    currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
+    upcomingEvent = currentUserEvents[0].id;
+    $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
+};
 
 /* --------------- TEAM AWARENESS STUFF END ------------ */
