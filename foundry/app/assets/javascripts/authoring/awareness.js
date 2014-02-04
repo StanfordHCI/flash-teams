@@ -726,6 +726,11 @@ var completeTask = function(groupNum){
     updateStatus(true);
 };
 
+function isCurrent(element) {
+    var memberName = flashTeamsJSON["members"][current].role;
+    return element.members.indexOf(memberName) != -1;
+}
+
 //Bold and emphasize the tasks of the current user
   function boldEvents(currentUser){
       console.log("it's bold!")

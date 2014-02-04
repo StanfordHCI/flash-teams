@@ -221,7 +221,7 @@ function getMemberJSONIndex(idNum) {
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (flashTeamsJSON["members"][i].id == idNum) return i; 
     }
-}
+};
 
 function searchById (arr, id) {
     for (i = 0; i < arr.length; i++) {
@@ -229,11 +229,23 @@ function searchById (arr, id) {
             return i;
         }
     }
-}
+};
 
 $(document).ready(function() {
     pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
 });
 
+//Populate the autocomplete function for the event members
+//TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
+function addMemAuto() {
+    var memberArray = new Array(flashTeamsJSON["members"].length);
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        memberArray[i] = flashTeamsJSON["members"][i].role;
+    }
 
-
+    $(".eventMemberInput").each(function() {
+        $(this).autocomplete({
+            source: memberArray
+        });
+    })
+};

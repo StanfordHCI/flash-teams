@@ -24,6 +24,10 @@ $(function() {
 /*-----------pusher chat box --------------*/
 
 /* --------------- PROJECT STATUS BAR START ------------ */
+var project_status_svg = d3.select("#status-bar-container").append("svg")
+    .attr("width", SVG_WIDTH)
+    .attr("height", 60);
+    
 statusText = project_status_svg.append("text").text("1:20")
     .attr("x", status_x)
     .attr("y", status_y+200)
@@ -42,12 +46,6 @@ var num_intervals;                      //=(parseFloat(project_duration)/parseFl
 var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(num_intervals);
 var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
-
-
-var project_status_svg = d3.select("#status-bar-container").append("svg")
-    .attr("width", SVG_WIDTH)
-    .attr("height", 60)
-
 
 project_status_svg.append("rect")
     .attr("width", status_width)
