@@ -1,3 +1,10 @@
+/* popovers.js
+ * ---------------------------------------------
+ * Code that manages the popovers
+ * Drawing them on first event create/drop, update events on timeline
+ * when new information added including: duration, event members, etc.
+ */
+
 //VCom Populates event block popover with correct info
 function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     if (title == null) {

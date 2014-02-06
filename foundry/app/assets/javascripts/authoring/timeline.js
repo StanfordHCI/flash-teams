@@ -27,12 +27,6 @@ var RECTANGLE_WIDTH = 100,
     RECTANGLE_HEIGHT = 100;
 
 var event_counter = 0;
-var handoff_counter = 0;
-var collab_counter = 0;
-
-var DRAWING_HANDOFF = false;
-var DRAWING_COLLAB = false;
-var INTERACTION_TASK_ONE_IDNUM = 0;
 
 var DRAGBAR_WIDTH = 8;
 
