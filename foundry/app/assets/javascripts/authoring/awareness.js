@@ -640,6 +640,16 @@ var trackLiveAndRemainingTasks = function() {
     }, fire_interval);
 };
 
+function isDelayed(element) {
+    for (var i=0; i<delayed_tasks.length;i++){
+        if (delayed_tasks[i] == element){
+            return true;
+        }
+    }
+    return false;
+};
+
+
 var trackUpcomingEvent = function(){
     setInterval(function(){
         task_g = getTaskGFromGroupNum(upcomingEvent)
@@ -665,8 +675,14 @@ var trackUpcomingEvent = function(){
         var minutes = displayTimeinMinutes%60;
         var overallTime = hours + ":" + minutes;
         if (displayTimeinMinutes < 0){
-            overallTime = "NOW";
-            $(statusText.attr("fill", "red"));
+            if(!isDelayed(upcomingEvent)){
+                overallTime = "NOW";
+                $(statusText.attr("fill", "blue"));
+            }
+            else{
+                overallTime = "DELAYED";
+                $(statusText.attr("fill", "red"));
+            }
         }else $(statusText.attr("fill", "black"))
         console.log("cursor time", cursorTimeinMinutes);
         console.log("distance", overallTime);
