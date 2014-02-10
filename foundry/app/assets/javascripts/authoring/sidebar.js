@@ -1,28 +1,81 @@
-/*-----------Pusher chat box ----------------*/
+/***chat****/
 
-$(function() {     
+var myDataRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/'+ flash_team_id)    
+                        
+var currentdate = new Date(); 
+      var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes();
 
-    var pusher = new Pusher('5fa76b11a664d088aa65');
-    var chatWidget = new PusherChatWidget(pusher, {
-    chatEndPoint: '/assets/pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
+var name='flash';
+$('#messageInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+        //name = $('#nameInput').val();
+        var text = $('#messageInput').val();
+        myDataRef.push({name: name, text: text});
+        $('#messageInput').val('');
+       }
     });
-   
+myDataRef.on('child_added', function(snapshot) {
+    var message = snapshot.val();
+    displayChatMessage(message.name, message.text);
+    });
+      
+var lastMessage=0;
+      var lastWriter;
+      function displayChatMessage(name, text) {
+        
+        if(lastWriter!=name){
+            lastMessage=(lastMessage+1)%2;
+            var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+':'));
+            div1.css('padding-left','5%');
+            div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+            div1.appendTo($('#messageList'));
+            
+        }else{
+            var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text);
+            div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+            div1.css('padding-left','5%');
+            div1.appendTo($('#messageList'));
+        }
+        lastWriter=name;
+        $('#messageList')[0].scrollTop = $('#messageList')[0].scrollHeight;
+      };
+
+
+//*** online users
+// since I can connect from multiple devices or browser tabs, we store each connection instance separately
+// any time that connectionsRef's value is null (i.e. has no children) I am offline
+var myConnectionsRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
+// stores the timestamp of my last disconnect (the last time I was seen online)
+var lastOnlineRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
+var connectedRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/.info/connected');
+
+connectedRef.on('value', function(snap) {
+    if (snap.val() === true) {
+        // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
+       
+        // add this device to my connections list
+        // this value could contain info about the device or a timestamp too
+        var con = myConnectionsRef.push(true);
+
+        // when I disconnect, remove this device
+        con.onDisconnect().remove();
+
+        // when I disconnect, update the last time I was seen online
+        lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);       
+
+    }
 });
 
-
-//
-/*$(function() {     
-  var pusher = new Pusher('5fa76b11a664d088aa65');
-  var chatWidget = new PusherChatWidget(pusher, {
-    chatEndPoint: 'pusher-realtime-chat-widget/src/ruby-sinatra/chat.rb'
-  });
-});
-*/
+/***chat end****/
 
 
+//*************status bar begin *******//
 
-/*-----------pusher chat box --------------*/
-
+//var status_width=302; --> negar's
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
     .attr("width", SVG_WIDTH)
@@ -35,7 +88,7 @@ var statusText = project_status_svg.append("text").text("You currently have no t
     .attr("font-size", "20px")
     .attr("fill", "black");
 
-var status_width=250;
+var status_width=250; // --> tulsee's
 var status_height=32;
 var status_x=0;
 var status_y=25;
@@ -46,6 +99,12 @@ var num_intervals;                      //=(parseFloat(project_duration)/parseFl
 var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(num_intervals);
 var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
+
+
+var project_status_svg = d3.select("#status-bar-container").append("svg")
+    .attr("width", SVG_WIDTH)
+    .attr("height", 50)
+
 
 project_status_svg.append("rect")
     .attr("width", status_width)
@@ -117,6 +176,7 @@ var moveProjectStatus = function(status_bar_timeline_interval){
 
 var status_interval_id;
 var setProjectStatusMoving = function(){
+    
     moveProjectStatus(status_bar_timeline_interval);
     status_interval_id = setInterval(function(){
         moveProjectStatus(status_bar_timeline_interval);
