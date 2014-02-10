@@ -1,4 +1,5 @@
 // leftResize: resize the rectangle by dragging the left handle
+
 function leftResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;

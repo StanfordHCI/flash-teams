@@ -545,8 +545,27 @@ var moveTasksRight = function(tasks, amount){
 
         var rectWidth = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
         redraw(group, rectWidth, groupNum);
+        for (i = 0; i<flashTeamsJSON["events"].length; i++){
+            var eventt = flashTeamsJSON["events"][i]
+            eventId = flashTeamsJSON["events"][i].id
+            if (eventId == groupNum){
+                var newX = x + parseFloat(amount);
+                var newHr = (newX-(newX%100))/100;
+                var newMin = (newX%100)/25*15;
+                if(newMin == 57.599999999999994) {
+                    newHr++;
+                    newMin = 0;
+                } else newMin += 2.4;
+                var newTime = parseInt((newHr*60)) + parseInt(newMin);
+                console.log("new time", newTime);
+                flashTeamsJSON["events"][i].startTime = newTime;
+                console.log("time reset!", flashTeamsJSON["events"][i].startTime);
+            } 
+        }
     }
 };
+
+//Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
 
 var moveTasksLeft = function(tasks, amount){
     for (var i=0;i<tasks.length;i++){
@@ -558,6 +577,23 @@ var moveTasksLeft = function(tasks, amount){
 
         var rectWidth = parseFloat(task_g.select("#rect_" + groupNum).attr("width"));
         redraw(group, rectWidth, groupNum);
+        for (i = 0; i<flashTeamsJSON["events"].length; i++){
+            var eventt = flashTeamsJSON["events"][i]
+            eventId = flashTeamsJSON["events"][i].id
+            if (eventId == groupNum){
+                var newX = x - parseFloat(amount);
+                var newHr = (newX-(newX%100))/100;
+                var newMin = (newX%100)/25*15;
+                if(newMin == 57.599999999999994) {
+                    newHr++;
+                    newMin = 0;
+                } else newMin += 2.4;
+                var newTime = parseInt((newHr*60)) + parseInt(newMin);
+                console.log("new time", newTime);
+                flashTeamsJSON["events"][i].startTime = newTime;
+                console.log("time reset!", flashTeamsJSON["events"][i].startTime);
+            } 
+        }
     }
 };
 
@@ -630,9 +666,11 @@ var trackUpcomingEvent = function(){
         var overallTime = hours + ":" + minutes;
         if (displayTimeinMinutes < 0){
             overallTime = "NOW";
-        }
+            $(statusText.attr("fill", "red"));
+        }else $(statusText.attr("fill", "black"))
         console.log("cursor time", cursorTimeinMinutes);
         console.log("distance", overallTime);
+        $(statusText.text(overallTime));
     }, fire_interval);
 }
 
