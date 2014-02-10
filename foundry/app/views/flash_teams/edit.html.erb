@@ -1,4 +1,3 @@
-
 <h1>Flash Teams/edit</h1>
 
 <input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
@@ -32,23 +31,12 @@
 
                         <h3>Project Status</h3>
                         
-<!--
-			<button class="btn" type="button" onclick="searchEvents()" id="projectDetailsButton">Project Details</button>
-                         <svg width="2450" height="570">
-                                <rect width="200" height="40" x="0" y="0" fill="white" style="stroke: #000000;"></rect>
-                                <rect width="10" height="40" x="0" y="0" fill="green" class="project_status"></rect>
-                            </svg>
-                 
-        -->        
-                        <h4> Your Task Starts In 1:20 </h4>
+                        <!--<h4> Your Task Starts In 1:20 </h4> -->
                         
                         <div>Project Status:</div>
                         <div id="status-bar-container" >
                         </div>
-                        
-                        <!--<button class="btn" type="button" onclick="searchEvents()" id="projectDetailsButton">Project Details</button> -->
-                     
-                     
+                        <!--
                         <style type="text/css"> 
                         #panel,#flip
                         {
@@ -66,22 +54,57 @@
                         </style>
                         <div id="flip"> Project Details </div>
                         <div id="panel"  ><small> <p class="text-left"><strong>Project Name: </strong> Animation of Terry<br>
-                        <strong>Discription:</strong> Develop an animation in celebration of the retirement of HCI researcher Terry Winograd. The video should depict a scene from his early life where Terry builds a computer in his garage. </small> </p> </div>
+                        <strong>Discription:</strong> Develop an animation in celebration of the retirement of HCI researcher Terry Winograd. The video should depict a scene from his early life where Terry builds a computer in his garage. </small> </p> </div> -->
                 
                     </div> 
-                      <!--chat box-->
-                    <div id="chat-box-container" class="well">
-                    
-                       <!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>  
-                        <script src="http://js.pusher.com/2.1/pusher.min.js"></script>      
-                        <script src="/assets/pusher-realtime-chat-widget/src/js/PusherChatWidget.js"></script>
-                     <link href="/assets/pusher-realtime-chat-widget/src/pusher-chat.css" rel="stylesheet" type="text/css" />
-         
-                    -->
-
+                   <!--chat--> 
+                   
+                     <style type="text/css">
+                            .messages {
+                            height: 150px;
+                            overflow-y: scroll;
+                            max-height: 150px;
+                        }
+                        #m0 {
+                            background-color: #ffffff;
+                        }
+                        #m1 {
+                            background-color: #f5f5f5;
+                        }
+                        #message-date {
+                            font-size: 8px;
+                            color: rgba(0,0,0,0.5);
+                            padding-left:40%;
+                        }
+                        </style>                   
                        
+                        <div id="chat-box-container" class="well" >
+                        <script src='https://cdn.firebase.com/v0/firebase.js'></script>
+                        <script> var flash_team_id=<%= @flash_team.id %> </script>
+                        
+                        <div id="messageList" style="overflow: auto;
+                            overflow-x: hidden;
+                            height: 250px;
+                            position: relative;
+                            overflow-y: auto;
+                            word-wrap:break-word;
+                            background: #ffffff;
+                            resize:none;
+                            border:solid 1px #c3c3c3;" > 
+                        </div>
+                        <div><h3></h3></div>
+                        <!-- <input type='text' id='nameInput' placeholder='Name' style="width:94%; "> -->
+                        <div><textarea type='text' id='messageInput' placeholder='Type your message here...' style="overflow: auto; 
+                          overflow-y: auto;
+                          word-wrap:break-word;
+                          width: 96.5%;
+                          resize:none;
+                          padding:5px;
+                          border:solid 1px #c3c3c3;"></textarea></div>
                     </div>
-       <!-- chat end -->
+                   <!-- chat end -->
+
+
                     
                     <div id="member-container" class="well">
                         <h3>Team Roles</h3>
@@ -100,17 +123,13 @@
                     </div>
 					
 					<div id="search-events-container" class="well" style="overflow-y:scroll;">
-					
-					<!--<div class="btn btn-primary btn-large" id="promptbtn" style="margin:5px;">Prompt</div>
-					
-					<div id="dialog" title="Dialog Title">PROMPT</div>-->
-					
+					   <!--<div class="btn btn-primary btn-large" id="promptbtn" style="margin:5px;">Prompt</div>
+					   <div id="dialog" title="Dialog Title">PROMPT</div>-->
 						<div class="btn btn-primary btn-large" style="margin:5px;" onclick="addEvent()">Add Event</div>  
 						<div class="input-append">
 							<input class="span9" id="searchEventsInput" type="text" placeholder="Search...">
 							<button class="btn" type="button" onclick="searchEvents()" id="searchEventsBtn">Go</button>
 						</div>
-						
 						<div id="search-results"></div>
 					</div>
 					

@@ -50,7 +50,12 @@ $("#flashTeamStartBtn").click(function(){
     
     recordStartTime();
     updateStatus(true);
+    
     setCursorMoving();
+   
+    setProjectStatusMoving();
+   
+
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -61,7 +66,8 @@ $("#flashTeamStartBtn").click(function(){
     /******* projec status bar start*****/
 
     //moveProjectStatus(timeline_interval);
-    setProjectStatusMoving();
+
+    
 
     /******* projec status bar end*****/
     
@@ -754,3 +760,7 @@ function boldEvents(currentUser){
 };
 
 /* --------------- TEAM AWARENESS STUFF END ------------ */
+
+
+
+
