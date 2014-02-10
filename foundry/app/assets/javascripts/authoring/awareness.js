@@ -649,7 +649,7 @@ function isDelayed(element) {
     return false;
 };
 
-
+//Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
     setInterval(function(){
         task_g = getTaskGFromGroupNum(upcomingEvent)
