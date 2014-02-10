@@ -26,19 +26,19 @@ $(function() {
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
     .attr("width", SVG_WIDTH)
-    .attr("height", 60);
+    .attr("height", 100);
     
-statusText = project_status_svg.append("text").text("1:20")
-    .attr("x", status_x)
-    .attr("y", status_y+200)
+var statusText = project_status_svg.append("text").text("You currently have no tasks")
+    .attr("x", 0)
+    .attr("y", 15)
     .attr("font-size", "sans-serif")
     .attr("font-size", "20px")
-    .attr("fill", "red");
+    .attr("fill", "black");
 
-var status_width=267;
+var status_width=250;
 var status_height=32;
 var status_x=0;
-var status_y=0;
+var status_y=25;
 var curr_status_width=0;
 var project_duration=1440000;
 var status_bar_timeline_interval=1000;  //TODO back to 10 secs //start moving each second for the width of project_status_interval_width.
