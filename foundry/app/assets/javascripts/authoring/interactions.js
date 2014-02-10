@@ -49,7 +49,6 @@ function redrawInteractions(idNum) {
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
 function drawInteraction(task2idNum) {
-    console.log("hi");
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     timeline_svg.on("mousemove", null);
     $(".followingLine").remove();
@@ -86,6 +85,8 @@ function drawInteractionLine(task1Id, task2Id, type) {
     //Find end of task 1
     var task1Rect = $("#rect_" + task1Id)[0];
     var x1 = task1Rect.x.animVal.value + 3;
+    if (type == "handoff") x1 += task1Rect.width.animVal.value;
+
     var y1 = task1Rect.y.animVal.value + 50;
     //Find beginning of task 2
     var task2Rect = $("#rect_" + task2Id)[0];
@@ -100,16 +101,12 @@ function drawInteractionLine(task1Id, task2Id, type) {
        .style("stroke", "#ccc");
 
        //FINISH CUSTOMIZING FOR COLLAB
-       //NEED TO MAKE CURVES NOT FILLED
     path = timeline_svg.append("path")
         .attr("class", "interactionLine")
         .attr("id", function () {
             return "interaction_" + interaction_counter;
         })
-        .attr("x1", function(){
-            if (type == "handoff") return (x1 + task1Rect.width.animVal.value)
-            else return x1
-        })
+        .attr("x1", x1)
         .attr("y1", y1)
         .attr("x2", x2)
         .attr("y2", y2)
