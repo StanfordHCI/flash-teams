@@ -119,13 +119,13 @@ function drawInteractionLine(task1Id, task2Id, type) {
                 dy = y1 - y2,
                 dr = Math.sqrt(dx * dx + dy * dy);
             //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
-            return "M" + x1 + "," + y1 + "A" + dr + "," + dr + " 0 0,1 " + x2 + "," + y2; 
+            return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr + " 0 0,0 " + x2 + "," + y2; 
         })
         .attr("stroke", function() {
             if (type == "handoff") return "gray"
             else return "black"
         })
-        .attr("stroke-width", 5)
+        .attr("stroke-width", 10)
         .attr("fill", "none")
         .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
 }
