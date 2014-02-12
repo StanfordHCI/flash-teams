@@ -146,16 +146,6 @@ timeline_svg.append("line")
     .style("stroke", "#000")
     .style("stroke-width", "4")
 
-//For Interactions
-//START HERE
-timeline_svg.append("defs").append("marker")
-    .attr("id", "arrowhead")
-    .attr("markerWidth", 5)
-    .attr("markerHeight", 4)
-    .attr("stroke", "gray")
-    .append("path")
-        .attr("d", "M 0,0 V 4 L6,2 Z");
-
 var task_g = timeline_svg.selectAll(".task_g");
 
 //OLD CODE: Stop following the position of the mouse
