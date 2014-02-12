@@ -9,6 +9,16 @@ var INTERACTION_TASK_ONE_IDNUM = 0;
 
 var interaction_counter = 0;
 
+//For Interactions
+//START HERE
+timeline_svg.append("defs").append("marker")
+    .attr("id", "arrowhead")
+    .attr("markerWidth", 5)
+    .attr("markerHeight", 4)
+    .attr("stroke", "gray")
+    .append("path")
+        .attr("d", "M 0,0 V 4 L6,2 Z");
+
 //Loops through interactions in JSON, if event is in, need to redraw the interaction
 function redrawInteractions(idNum) {
     console.log("Trying to redraw interaction on id:", idNum);
@@ -125,7 +135,7 @@ function drawInteractionLine(task1Id, task2Id, type) {
             if (type == "handoff") return "gray"
             else return "black"
         })
-        .attr("stroke-width", 10)
+        .attr("stroke-width", 7)
         .attr("fill", "none")
         .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
 }
