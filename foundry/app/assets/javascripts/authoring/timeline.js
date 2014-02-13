@@ -23,13 +23,6 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-var RECTANGLE_WIDTH = 100,
-    RECTANGLE_HEIGHT = 100;
-
-var event_counter = 0;
-
-var DRAGBAR_WIDTH = 8;
-
 var current = 1;
 var currentUserEvents = [];
 var upcomingEvent; 

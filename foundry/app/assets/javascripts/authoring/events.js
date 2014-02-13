@@ -1,5 +1,16 @@
-// leftResize: resize the rectangle by dragging the left handle
+/* events.js
+ * ---------------------------------------------
+ * 
+ */
 
+ var RECTANGLE_WIDTH = 100,
+    RECTANGLE_HEIGHT = 100;
+
+var event_counter = 0;
+
+var DRAGBAR_WIDTH = 8;
+
+// leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
