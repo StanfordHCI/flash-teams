@@ -10,7 +10,6 @@ var INTERACTION_TASK_ONE_IDNUM = 0;
 var interaction_counter = 0;
 
 //For Interactions
-//START HERE
 timeline_svg.append("defs").append("marker")
     .attr("id", "arrowhead")
     .attr("markerWidth", 5)
