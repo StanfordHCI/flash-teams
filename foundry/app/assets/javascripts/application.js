@@ -30,3 +30,4 @@
 //= require ./authoring/diagram
 //= require ./authoring/eventslibrary
 //= require ./authoring/flash_team_update
+// require ./authoring/gdrive

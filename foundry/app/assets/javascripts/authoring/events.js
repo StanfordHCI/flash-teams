@@ -203,6 +203,20 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px");
 
+    //Add gdrive link
+    var gdrive_link = task_g.append("text")
+        .text("Handoffs")
+        .attr("style", "cursor:pointer; text-decoration:underline")
+        .attr("id", function(d) {return "handoffs_" + groupNum;})
+        .attr("groupNum", groupNum)
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 38})
+        .attr("font-size", "12px");
+
+    $("#handoffs_" + groupNum).on('click', function(){
+        window.open("https://drive.google.com/folderview?id=0B6HS2jq186KxbmkteU1JdGFyMzA&usp=sharing");
+    });
+
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
         .attr("xlink:href", "/assets/rightArrow.png")
@@ -214,6 +228,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", writeHandoff);
+
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
