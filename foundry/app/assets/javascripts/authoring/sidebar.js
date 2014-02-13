@@ -88,7 +88,7 @@ var statusText = project_status_svg.append("text").text("You currently have no t
     .attr("font-size", "20px")
     .attr("fill", "black");
 
-var status_width=250; // --> tulsee's
+var status_width=100; 
 var status_height=32;
 var status_x=0;
 var status_y=25;
@@ -101,7 +101,7 @@ var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
 
 
-var project_status_svg = d3.select("#status-bar-container").append("svg")
+/*var project_status_svg = d3.select("#status-bar-container").append("svg")
     .attr("width", SVG_WIDTH)
     .attr("height", 50)
 
@@ -127,7 +127,7 @@ $(document).ready(function(){
     $("#panel").slideToggle();
   });
 });
-
+*/
 var moveProjectStatus = function(status_bar_timeline_interval){
     if(first_move_status){
         first_move_status=0;
@@ -164,13 +164,29 @@ var moveProjectStatus = function(status_bar_timeline_interval){
 
 }
     
-    if(curr_status_width<status_width && delayed_tasks.length==0){
-        curr_status_width += project_status_interval_width;
-    }
-    project_status.transition()
-        .duration(status_bar_timeline_interval)
-        .ease("linear")
-        .attr("width", curr_status_width)
+   
+        var me = $('.progress .bar');
+        var perc = 100;
+
+        var current_perc = 0;
+
+        var progress = setInterval(function() {
+            if (curr_status_width>=perc) {
+                clearInterval(progress);
+            } else {
+                //current_perc +=1;
+                if(curr_status_width<status_width && delayed_tasks.length==0){
+                    curr_status_width += project_status_interval_width;
+                }
+
+                me.css('width', (curr_status_width)+'%');
+                //me.text(curr_status_width+'%');
+            }
+           // var int_width=Math.round(curr_status_width);      
+
+        },status_bar_timeline_interval);
+
+ 
         
 };
 
@@ -178,9 +194,10 @@ var status_interval_id;
 var setProjectStatusMoving = function(){
     
     moveProjectStatus(status_bar_timeline_interval);
-    status_interval_id = setInterval(function(){
+/*    status_interval_id = setInterval(function(){
         moveProjectStatus(status_bar_timeline_interval);
-    }, status_bar_timeline_interval); // every 10 seconds currently
-};
+    }, status_bar_timeline_interval); // every 10 seconds currently*/
 
+};
+/* --------------- PROJECT STATUS BAR END ------------ */
 /* --------------- PROJECT STATUS BAR END ------------ */
