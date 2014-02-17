@@ -23,62 +23,9 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-var RECTANGLE_WIDTH = 100,
-    RECTANGLE_HEIGHT = 100;
-
-var event_counter = 0;
-
-var DRAGBAR_WIDTH = 8;
-
 var current = 1;
 var currentUserEvents = [];
 var upcomingEvent; 
-
-//Called when task rectangles are dragged
-var drag = d3.behavior.drag()
-    .origin(Object)
-    .on("drag", function (d) {
-        var group = this.parentNode;
-        var oldX = d.x;
-        var groupNum = this.id.split("_")[1];
-        var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
-
-        //Horiztonal draggingx
-        var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
-        var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
-        if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
-        else d.x = newX;
-
-        //Update event popover
-        var startHour = Math.floor((d.x/100));
-        var startMin = (d.x%100/25*15);
-        if(startMin == 57.599999999999994) {
-            startHour++;
-            startMin = 0;
-        } else {
-            startMin += 2.41
-            startMin = Math.floor(startMin);
-        }
-        $("#rect_" + groupNum).popover("show");
-        var title = $("#eventName_" + groupNum).attr("placeholder");
-        var hours = $("#hours_" + groupNum).attr("placeholder");
-        var min = $("#minutes_" + groupNum).attr("placeholder");
-        var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
-        updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
-        $("#rect_" + groupNum).popover("hide");
-
-        //Vertical Dragging
-        var dragY = d3.event.y - (d3.event.y%(RECTANGLE_HEIGHT)) + 17;
-        var newY = Math.min(SVG_HEIGHT - RECTANGLE_HEIGHT, dragY);
-        if (d3.event.dy + d.y < 20) d.y = 17;
-        else d.y = newY;
-
-        redraw(group, rectWidth, groupNum);
-
-        //Update JSON
-        var indexOfJSON = getEventJSONIndex(groupNum);
-        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
-    });
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", SVG_WIDTH)
@@ -145,15 +92,6 @@ timeline_svg.append("line")
     .attr("y2", SVG_HEIGHT-50)
     .style("stroke", "#000")
     .style("stroke-width", "4")
-
-//For Interactions
-//START HERE
-timeline_svg.append("defs").append("marker")
-    .attr("id", "arrowhead")
-    .attr("markerWidth", 5)
-    .attr("markerHeight", 4)
-    .append("path")
-        .attr("d", "M 0,0 V 4 L6,2 Z");
 
 var task_g = timeline_svg.selectAll(".task_g");
 
