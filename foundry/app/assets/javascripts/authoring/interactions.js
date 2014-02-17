@@ -189,13 +189,44 @@ function drawCollaboration(task1Id, task2Id) {
 
     collabLine = timeline_svg.append("rect")
         .attr("class", "collaborationRect")
+        .attr("id", function () {
+            return "interaction_" + interaction_counter;
+        })
         .attr("x", secondTaskX)
         .attr("y", firstTaskY)
         .attr("height", taskDistance)
         .attr("width", 50) //START HERE, FIND REAL OVERLAP
-        .attr("fill", "blue")
-        .attr("fill-opacity", .5);
+        .attr("fill", "gray")
+        .attr("fill-opacity", .7);
 
+    drawCollabPopover();
+}
+
+function drawCollabPopover() {
+    $("#interaction_" + interaction_counter).popover({
+        class: "collabPopover", 
+        id: '"collabPopover_' + interaction_counter + '"',
+        html: "true",
+        trigger: "click",
+        title: "Collaboration",
+        content: 'Notes: '
+        +'<textarea rows="2.5" id="collabNotes_' + interaction_counter + '"></textarea>'
+        + '<button type="button" id="saveCollab' + interaction_counter + '"'
+            +' onclick="saveCollab(' + interaction_counter +');">Save</button>          '
+        + '<button type="button" id="deleteCollab' + interaction_counter + '"'
+            +' onclick="deleteCollab(' + interaction_counter +');">Delete</button>',
+
+        container: $("#timeline-container")
+
+    });
+}
+
+function saveCollab(intId) {
+    console.log("trying to save a collab, interaction number", intId);
+}
+
+function deleteCollab(intId) {
+    console.log("trying to delete a collab, interaction number", intId);
 }
 
 //Follow the mouse movements after a handoff is initialized
