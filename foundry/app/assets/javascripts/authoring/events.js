@@ -4,7 +4,9 @@
  */
 
  var RECTANGLE_WIDTH = 100,
-    RECTANGLE_HEIGHT = 100;
+    RECTANGLE_HEIGHT = 90;
+
+var ROW_HEIGHT = 100;
 
 var event_counter = 0;
 
@@ -70,6 +72,52 @@ function rightResize(d) {
     }
 }
 
+//Called when task rectangles are dragged
+var drag = d3.behavior.drag()
+    .origin(Object)
+    .on("drag", function (d) {
+        var group = this.parentNode;
+        var oldX = d.x;
+        var groupNum = this.id.split("_")[1];
+        var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
+
+        //Horiztonal draggingx
+        var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
+        var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
+        if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
+        else d.x = newX;
+
+        //Update event popover
+        var startHour = Math.floor((d.x/100));
+        var startMin = (d.x%100/25*15);
+        if(startMin == 57.599999999999994) {
+            startHour++;
+            startMin = 0;
+        } else {
+            startMin += 2.41
+            startMin = Math.floor(startMin);
+        }
+        $("#rect_" + groupNum).popover("show");
+        var title = $("#eventName_" + groupNum).attr("placeholder");
+        var hours = $("#hours_" + groupNum).attr("placeholder");
+        var min = $("#minutes_" + groupNum).attr("placeholder");
+        var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
+        updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
+        $("#rect_" + groupNum).popover("hide");
+
+        //Vertical Dragging
+        var dragY = d3.event.y - (d3.event.y%(ROW_HEIGHT)) + 17 + 5;
+        var newY = Math.min(SVG_HEIGHT - ROW_HEIGHT, dragY);
+        if (d3.event.dy + d.y < 20) d.y = 17;
+        else d.y = newY;
+
+        redraw(group, rectWidth, groupNum);
+
+        //Update JSON
+        var indexOfJSON = getEventJSONIndex(groupNum);
+        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
+    });
+
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
     .on("drag", rightResize);
@@ -81,7 +129,7 @@ var drag_left = d3.behavior.drag()
 //VCom Calculates where to snap event block to when created
 function calcSnap(mouseX, mouseY) {
     var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
-        snapY = Math.floor(mouseY/RECTANGLE_HEIGHT) * RECTANGLE_HEIGHT;
+        snapY = Math.floor(mouseY/ROW_HEIGHT) * ROW_HEIGHT + 5;
     return [snapX, snapY];
 }
 
@@ -224,7 +272,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
         .attr("y", function(d) {return d.y+23})
-        .on("click", writeHandoff);
+        .on("click", startWriteHandoff);
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -234,7 +282,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("height", 16)
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
         .attr("y", function(d) {return d.y+23})
-        .on("click", writeCollaboration);
+        .on("click", startWriteCollaboration);
 
     task_groups.push(task_g);
 
