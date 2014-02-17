@@ -221,12 +221,25 @@ function drawCollabPopover() {
     });
 }
 
+//Saves the new notes text in the collab
 function saveCollab(intId) {
     console.log("trying to save a collab, interaction number", intId);
+    //Update JSON
+
+    //Update Popover's Content
+
+    //Hide Popover
 }
 
+//Deletes the collaboration from the timeline and the JSON
 function deleteCollab(intId) {
     console.log("trying to delete a collab, interaction number", intId);
+
+    //Destroy Popover
+
+    //Delete from JSON
+
+    //Delete Rectangle
 }
 
 //Follow the mouse movements after a handoff is initialized
