@@ -66,6 +66,7 @@ Foundry::Application.routes.draw do
       get :invite
       post :login
       post :confirm_email
+      post :early_completion_email
     end
   end
 
