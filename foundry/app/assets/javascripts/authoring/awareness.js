@@ -790,9 +790,13 @@ var completeTask = function(groupNum){
         if (idx != -1){ // live task
             var blue_width = drawBlueBox(task_g);
 
-            /*send email to all members*/
-            sendEarlyCompletionEmail(parseInt((parseFloat(blue_width+4)/50.0)*30));
+            /*TODO : only in master
+            / * send early completion email */
+            var early_minutes=parseInt((parseFloat(blue_width+4)/50.0)*30);
+            early_completion_helper(remaining_tasks,early_minutes);
             
+            /* end */
+             
             console.log(blue_width);
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);

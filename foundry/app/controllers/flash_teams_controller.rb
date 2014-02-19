@@ -117,12 +117,10 @@ class FlashTeamsController < ApplicationController
   end
 
   def early_completion_email
-    emails = params[:emails]
+    email = params[:email]
     minutes = params[:minutes];
-    # IMPORTANT
-    emails.each do |email|
-      UserMailer.send_early_completion_email(email,minutes).deliver
-    end
+   
+    UserMailer.send_early_completion_email(email,minutes).deliver
     #NOTE: Rename ‘send_confirmation_email’ above to your method name. It may/may not have arguments, depends on how you defined your method. The ‘deliver’ at the end is what actually sends the email.
     respond_to do |format|
       format.json {render json: nil, status: :ok}
