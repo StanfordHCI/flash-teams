@@ -44,12 +44,12 @@ function delayed_notification_helper(new_remaining_tasks){
      var emails=[];
      for (var i=0;i<new_remaining_tasks.length;i++){
         var groupNum = new_remaining_tasks[i];
-        alert(i+" "+groupNum);
+        //alert(i+" "+groupNum);
     	for (var j = 0; j<flashTeamsJSON["events"].length; j++){
        
         eventId = flashTeamsJSON["events"][j].id;
 	        if (eventId == groupNum){
-	        	alert("id == groupNum");
+	        	//alert("id == groupNum");
 	            var event_tmp = flashTeamsJSON["events"][j];
 	            //alert(event_tmp["members"]);
 	            //TODO actual emails instead of roles
@@ -58,7 +58,7 @@ function delayed_notification_helper(new_remaining_tasks){
 	             	
 	                if(emails.indexOf(tmp_email)==-1){
 	                emails.push(tmp_email);
-	                alert("sent email to"+tmp_email);
+	                //alert("sent email to "+tmp_email);
 	                sendTaskDelayedEmail(tmp_email);
 	             	}
 	            }

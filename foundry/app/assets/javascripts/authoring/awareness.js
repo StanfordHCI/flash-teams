@@ -464,7 +464,6 @@ var computeLiveAndRemainingTasks = function(){
             remaining_tasks.push(groupNum);
         }
     }
-    alert("remaining: "+remaining_tasks);
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
 
