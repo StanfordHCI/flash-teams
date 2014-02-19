@@ -55,7 +55,6 @@ $("#flashTeamStartBtn").click(function(){
    
     setProjectStatusMoving();
    
-
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -771,6 +770,10 @@ var completeTask = function(groupNum){
         idx = live_tasks.indexOf(groupNum);
         if (idx != -1){ // live task
             var blue_width = drawBlueBox(task_g);
+
+            /*send email to all members*/
+            sendEarlyCompletionEmail(parseInt((parseFloat(blue_width+4)/50.0)*30));
+            
             console.log(blue_width);
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);
