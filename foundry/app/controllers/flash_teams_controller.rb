@@ -129,6 +129,40 @@ class FlashTeamsController < ApplicationController
     end
   end
 
+  def before_task_starts_email
+    email = params[:email]
+    minutes = params[:minutes];
+    # IMPORTANT
+    UserMailer.send_before_task_starts_email(email,minutes).deliver
+    
+    #NOTE: Rename ‘send_confirmation_email’ above to your method name. It may/may not have arguments, depends on how you defined your method. The ‘deliver’ at the end is what actually sends the email.
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
+  end
+
+
+  def task_delayed_email
+    email = params[:email]
+    
+    UserMailer.send_task_delayed_email(email).deliver
+    
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
+  end
+  
+  def delayed_task_finished_email
+    email = params[:email]
+    minutes = minutes[:minutes]
+    
+    UserMailer.send_delayed_task_finished_email(email,minutes).deliver
+    
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
+  end
+  
 
   def flash_team_params
     params.require(:flash_team).permit(:name, :json)
