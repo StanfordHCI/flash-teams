@@ -3,7 +3,7 @@ class UserMailer < ActionMailer::Base
  
   def send_early_completion_email(email,minutes)
   	  @minutes=minutes
-  	  mail(:to => email, :subject => 'Flash Teams: A Task has been completed '+minutes+' minutes early')
+  	  mail(:to => email, :subject => 'Flash Teams: Your next upcoming task starts'+ minutes +'minutes early')
   	   
   end
   
@@ -19,7 +19,7 @@ class UserMailer < ActionMailer::Base
   
   def send_delayed_task_finished_email(email,minutes)
   	  @minutes=minutes
-  	  mail(:to => email, :subject => 'Flash Teams: The delayed task is finished.')
+  	  mail(:to => email, :subject => 'Flash Teams: The delayed task is finished')
   end
 
 

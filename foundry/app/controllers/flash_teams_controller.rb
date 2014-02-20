@@ -152,8 +152,8 @@ class FlashTeamsController < ApplicationController
   
   def delayed_task_finished_email
     email = params[:email]
-    minutes = minutes[:minutes]
-    
+    minutes = params[:minutes]
+      
     UserMailer.send_delayed_task_finished_email(email,minutes).deliver
     
     respond_to do |format|

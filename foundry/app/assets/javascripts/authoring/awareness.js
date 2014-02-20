@@ -54,7 +54,7 @@ $("#flashTeamStartBtn").click(function(){
     setCursorMoving();
    
     setProjectStatusMoving();
-   
+  
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -635,7 +635,7 @@ var trackLiveAndRemainingTasks = function() {
             if (new_live_tasks.indexOf(groupNum) == -1 && !completed) { // groupNum is no longer live
                 drawRedBox(task_g, false);
 
-                //added by Negar
+                //send email when a task is delayed
                 //TODO: call if in master
                 delayed_notification_helper(new_remaining_tasks);
                 //end   
@@ -781,20 +781,20 @@ var completeTask = function(groupNum){
         completed_red_tasks.push(groupNum);
 
         /*send delayed task is finished email*/
-        var minutes=0;
-        //sendDelayedTaskFinishedEmail(minutes,email);
-        /* end */
+        
+        if(remaining_tasks.length!=0){
+           
+            DelayedTaskFinished_helper(remaining_tasks);
+        } /* end */
 
     } else {
         idx = live_tasks.indexOf(groupNum);
         if (idx != -1){ // live task
             var blue_width = drawBlueBox(task_g);
 
-            /*TODO : only in master
-            / * send early completion email */
+            /* send early completion email */
             var early_minutes=parseInt((parseFloat(blue_width+4)/50.0)*30);
             early_completion_helper(remaining_tasks,early_minutes);
-            
             /* end */
              
             console.log(blue_width);
