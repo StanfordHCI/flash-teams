@@ -226,7 +226,6 @@ function drawCollabPopover() {
 function saveCollab(intId) {
     //Update Popover's Content
     var notes = $("#collabNotes_" + intId).val()
-    
     $("#interaction_" + intId).data('popover').options.content =   'Description of Collaborative Work: '
         +'<textarea rows="2.5" id="collabNotes_' + intId + '">' + notes + '</textarea>'
         + '<button type="button" id="saveCollab' + intId + '"'
@@ -244,13 +243,15 @@ function saveCollab(intId) {
 
 //Deletes the collaboration from the timeline and the JSON
 function deleteCollab(intId) {
-    console.log("trying to delete a collab, interaction number", intId);
-
     //Destroy Popover
+    $("#interaction_" + intId).popover("destroy");
 
     //Delete from JSON
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
 
     //Delete Rectangle
+    $("#interaction_" + intId).remove();
 }
 
 //Follow the mouse movements after a handoff is initialized
