@@ -64,7 +64,8 @@ function drawInteraction(task2idNum) {
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
         interaction_counter++;
-        var handoffData = {"event1":task1idNum, "event2":task2idNum, "type":"handoff", "description":""};
+        var handoffData = {"event1":task1idNum, "event2":task2idNum, 
+            "type":"handoff", "description":"", "id":interaction_counter};
         flashTeamsJSON.interactions.push(handoffData);
         drawHandoff(task1idNum, task2idNum);
         DRAWING_HANDOFF = false;
@@ -72,7 +73,8 @@ function drawInteraction(task2idNum) {
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
         interaction_counter++;
-        var collabData = {"event1":task1idNum, "event2":task2idNum, "type":"collaboration", "description":""};
+        var collabData = {"event1":task1idNum, "event2":task2idNum, 
+            "type":"collaboration", "description":"", "id":interaction_counter};
         flashTeamsJSON.interactions.push(collabData);
         drawCollaboration(task1idNum, task2idNum);
         DRAWING_COLLAB = false;
@@ -137,7 +139,8 @@ function drawHandoff(task1Id, task2Id) {
                 dy = y1 - y2,
                 dr = Math.sqrt(dx * dx + dy * dy);
             //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
-            return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr + " 0 0,0 " + x2 + "," + y2; 
+            return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
+                + " 0 0,0 " + x2 + "," + y2; 
         })
         .attr("stroke", "gray")
         .attr("stroke-width", 7)
@@ -221,13 +224,18 @@ function drawCollabPopover() {
 
 //Saves the new notes text in the collab
 function saveCollab(intId) {
-    console.log("trying to save a collab, interaction number", intId);
     //Update Popover's Content
     var notes = $("#collabNotes_" + intId).val()
+    
+    $("#interaction_" + intId).data('popover').options.content =   'Description of Collaborative Work: '
+        +'<textarea rows="2.5" id="collabNotes_' + intId + '">' + notes + '</textarea>'
+        + '<button type="button" id="saveCollab' + intId + '"'
+        +' onclick="saveCollab(' + intId +');">Save</button>          '
+        + '<button type="button" id="deleteCollab' + intId + '"'
+        +' onclick="deleteCollab(' + intId +');">Delete</button>';
 
     //Update JSON
     var indexOfJSON = getIntJSONIndex(intId);
-    debugger;
     flashTeamsJSON["interactions"][indexOfJSON].description = notes;
 
     //Hide Popover
