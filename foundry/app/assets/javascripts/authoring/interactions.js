@@ -72,13 +72,17 @@ function drawInteraction(task2idNum) {
         $(".task_rectangle").popover("hide");
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
-        interaction_counter++;
-        var collabData = {"event1":task1idNum, "event2":task2idNum, 
-            "type":"collaboration", "description":"", "id":interaction_counter};
-        flashTeamsJSON.interactions.push(collabData);
-        drawCollaboration(task1idNum, task2idNum);
-        DRAWING_COLLAB = false;
-        $(".task_rectangle").popover("hide");
+        if (eventsOverlap(task1idNum, task2idNum) > 0) {
+            interaction_counter++;
+            var collabData = {"event1":task1idNum, "event2":task2idNum, 
+                "type":"collaboration", "description":"", "id":interaction_counter};
+            flashTeamsJSON.interactions.push(collabData);
+            drawCollaboration(task1idNum, task2idNum);
+            DRAWING_COLLAB = false;
+            $(".task_rectangle").popover("hide");
+        } else {
+
+        }
     //There is no collaboration being drawn
     } else {
         console.log("Not drawing anything");
@@ -146,11 +150,58 @@ function drawHandoff(task1Id, task2Id) {
         .attr("stroke-width", 7)
         .attr("fill", "none")
         .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
+
+    $("#interaction_" + interaction_counter).popover({
+        class: "handoffPopover", 
+        id: '"handoffPopover_' + interaction_counter + '"',
+        html: "true",
+        trigger: "click",
+        title: "Handoff",
+        content: 'Description of Handoff Materials: '
+        +'<textarea rows="2.5" id="interactionNotes_' + interaction_counter + '"></textarea>'
+        + '<button type="button" id="saveHandoff' + interaction_counter + '"'
+            +' onclick="saveHandoff(' + interaction_counter +');">Save</button>          '
+        + '<button type="button" id="deleteHandoff' + interaction_counter + '"'
+            +' onclick="deleteHandoff(' + interaction_counter +');">Delete</button>',
+        container: $("#timeline-container")
+    })
+}
+
+//Save handoff notes and update popover
+function saveHandoff(intId) {
+    //Update Popover Content
+    var notes = $("#interactionNotes_" + intId).val()
+    $("#interaction_" + intId).data('popover').options.content = 'Description of Handoff Materials: '
+        +'<textarea rows="2" id="interactionNotes_' + intId + '">' + notes + '</textarea>'
+        + '<button type="button" id="saveHandoff' + intId + '"'
+        +' onclick="saveHandoff(' + intId +');">Save</button>          '
+        + '<button type="button" id="deleteHandoff' + intId + '"'
+        +' onclick="deleteHandoff(' + intId +');">Delete</button>';
+
+    //Update JSON
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"][indexOfJSON].description = notes;
+
+    //Hide Popover
+    $("#interaction_" + intId).popover("hide");
+}
+
+//Delete handoff arrow, popover, and JSON item
+function deleteHandoff(intId) {
+    //Destroy Popover
+    $("#interaction_" + intId).popover("destroy");
+
+    //Delete from JSON
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+
+    //Delete Rectangle
+    $("#interaction_" + intId).remove();
 }
 
 
-//Called when we find DRAWING_COLLABORATION 
-//initializes creating a collaboration b/t two events
+//Called when we click the collaboration button initializes creating 
+//a collaboration b/t two events
 function startWriteCollaboration() {
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
     DRAWING_COLLAB = true;
@@ -167,6 +218,8 @@ function startWriteCollaboration() {
     timeline_svg.on("mousemove", interMouseMove);
 };
 
+//Draw collaboration between two events, calculates which event 
+//comes first and what the overlap is
 function drawCollaboration(task1Id, task2Id) {
     var task1Rect = $("#rect_" + task1Id)[0];
     var x1 = task1Rect.x.animVal.value + 3;
@@ -205,6 +258,7 @@ function drawCollaboration(task1Id, task2Id) {
     drawCollabPopover();
 }
 
+//Add a popover to the collaboration rect so the user can add notes and delete
 function drawCollabPopover() {
     $("#interaction_" + interaction_counter).popover({
         class: "collabPopover", 
@@ -254,6 +308,11 @@ function deleteCollab(intId) {
     $("#interaction_" + intId).remove();
 }
 
+//Calculate the overlap of two events
+function eventsOverlap(task1idNum, task2idNum) {
+
+}
+
 //Follow the mouse movements after a handoff is initialized
 function interMouseMove() {
     var m = d3.mouse(this);
@@ -261,6 +320,7 @@ function interMouseMove() {
         .attr("y2", m[1]-3);
 }
 
+//Retrieve index of the JSON object using its id
 function getIntJSONIndex(idNum) {
     for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
         if (flashTeamsJSON["interactions"][i].id == idNum) {
