@@ -72,7 +72,7 @@ function drawInteraction(task2idNum) {
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
         interaction_counter++;
-        var collabData = {"event1":task1idNum, "event2":task2idNum, "type":"collaboration", "descriptioin":""};
+        var collabData = {"event1":task1idNum, "event2":task2idNum, "type":"collaboration", "description":""};
         flashTeamsJSON.interactions.push(collabData);
         drawCollaboration(task1idNum, task2idNum);
         DRAWING_COLLAB = false;
@@ -209,26 +209,29 @@ function drawCollabPopover() {
         html: "true",
         trigger: "click",
         title: "Collaboration",
-        content: 'Notes: '
+        content: 'Description of Collaborative Work: '
         +'<textarea rows="2.5" id="collabNotes_' + interaction_counter + '"></textarea>'
         + '<button type="button" id="saveCollab' + interaction_counter + '"'
             +' onclick="saveCollab(' + interaction_counter +');">Save</button>          '
         + '<button type="button" id="deleteCollab' + interaction_counter + '"'
             +' onclick="deleteCollab(' + interaction_counter +');">Delete</button>',
-
         container: $("#timeline-container")
-
     });
 }
 
 //Saves the new notes text in the collab
 function saveCollab(intId) {
     console.log("trying to save a collab, interaction number", intId);
-    //Update JSON
-
     //Update Popover's Content
+    var notes = $("#collabNotes_" + intId).val()
+
+    //Update JSON
+    var indexOfJSON = getIntJSONIndex(intId);
+    debugger;
+    flashTeamsJSON["interactions"][indexOfJSON].description = notes;
 
     //Hide Popover
+    $("#interaction_" + intId).popover("hide");
 }
 
 //Deletes the collaboration from the timeline and the JSON
@@ -247,4 +250,12 @@ function interMouseMove() {
     var m = d3.mouse(this);
     line.attr("x2", m[0]-3)
         .attr("y2", m[1]-3);
+}
+
+function getIntJSONIndex(idNum) {
+    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        if (flashTeamsJSON["interactions"][i].id == idNum) {
+            return i;
+        }
+    }
 }
