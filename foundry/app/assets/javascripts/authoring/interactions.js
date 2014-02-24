@@ -36,7 +36,6 @@ function redrawInteractions(idNum) {
                 .attr("y1", y1)
                 .attr("x1", x1);
 
-
         } else if (interaction.event2 == idNum) {
             //REDRAW THE X2, Y2 OF THE INTERACTION
             var taskRect2 = $("#rect_" + i)[0];
@@ -45,7 +44,6 @@ function redrawInteractions(idNum) {
             $("#interaction_" + i)
                 .attr("y2", y2)
                 .attr("x2", x2);
-
         }
     }
 };
@@ -83,7 +81,6 @@ function drawInteraction(task2idNum) {
         return;
     }
 }
-
 
 
 //Called when we find DRAWING_HANDOFF
@@ -185,7 +182,7 @@ function drawCollaboration(task1Id, task2Id) {
     } else {
         firstTaskY = y2 + 90;
         taskDistance = y1 - firstTaskY;
-    } 
+    }
 
     collabLine = timeline_svg.append("rect")
         .attr("class", "collaborationRect")
