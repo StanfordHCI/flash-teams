@@ -74,6 +74,7 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 $("#flashTeamEndBtn").click(function(){
+    flashTeamsJSON["members"] = [];
     updateStatus(false);
 });
 
