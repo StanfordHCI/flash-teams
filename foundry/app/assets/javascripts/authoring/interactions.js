@@ -72,7 +72,7 @@ function drawInteraction(task2idNum) {
         $(".task_rectangle").popover("hide");
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
-        if (eventsOverlap(task1idNum, task2idNum) > 0) {
+        //if (eventsOverlap(task1idNum, task2idNum) > 0) {
             interaction_counter++;
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
@@ -80,9 +80,9 @@ function drawInteraction(task2idNum) {
             drawCollaboration(task1idNum, task2idNum);
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
-        } else {
+        //} else {
 
-        }
+        //}
     //There is no collaboration being drawn
     } else {
         console.log("Not drawing anything");
