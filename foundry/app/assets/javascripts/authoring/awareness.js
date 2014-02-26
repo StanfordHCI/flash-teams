@@ -31,17 +31,17 @@ var task_groups = [];
 var loadedStatus;
 
 var getXCoordForTime = function(t){
-    console.log("time t: " + t);
+   // console.log("time t: " + t);
     var numInt = parseInt(t / timeline_interval);
     var remainder = t % timeline_interval;
-    console.log("numInt: " + numInt + " | remainder: " + remainder);
+   // console.log("numInt: " + numInt + " | remainder: " + remainder);
 
     var xCoordForRemainder = (remainder / timeline_interval) * 50;
     var xCoordForMainIntervals = 50*numInt;
-    console.log("xCoordForRemainder: " + xCoordForRemainder + " | xCoordForMainIntervals: " + xCoordForMainIntervals);
+   // console.log("xCoordForRemainder: " + xCoordForRemainder + " | xCoordForMainIntervals: " + xCoordForMainIntervals);
 
     var finalX = parseFloat(xCoordForRemainder) + parseFloat(xCoordForMainIntervals);
-    console.log("finalX: " + finalX);
+   // console.log("finalX: " + finalX);
     return {"finalX": finalX, "numInt": numInt};
 };
 
@@ -54,8 +54,7 @@ $("#flashTeamStartBtn").click(function(){
     setCursorMoving();
    
     setProjectStatusMoving();
-   
-
+  
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -115,10 +114,10 @@ var flashTeamUpdated = function(){
     var updated_drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
     var updated_completed_red_tasks = loadedStatus.completed_red_tasks;
 
-    console.log("updated drawn blue: " + updated_drawn_blue_tasks);
-    console.log("updated completed red: " + updated_completed_red_tasks);
-    console.log("drawn blue: " + drawn_blue_tasks);
-    console.log("completed red: " + completed_red_tasks);
+   // console.log("updated drawn blue: " + updated_drawn_blue_tasks);
+   // console.log("updated completed red: " + updated_completed_red_tasks);
+   // console.log("drawn blue: " + drawn_blue_tasks);
+   // console.log("completed red: " + completed_red_tasks);
 
     if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return true;
     if (updated_completed_red_tasks.length != completed_red_tasks.length) return true;
@@ -268,12 +267,12 @@ var drawRedBox = function(task_g, use_cursor){
             red_width = completed_x - task_end;
         }
     } else {
-        console.log("USING CURSOR!");
+     //   console.log("USING CURSOR!");
         var cursor_x = parseFloat(cursor.attr("x1"));
-        console.log("cursor_x: " + cursor_x);
-        console.log("task_end: " + task_end);
+     //   console.log("cursor_x: " + cursor_x);
+      //  console.log("task_end: " + task_end);
         red_width = cursor_x - task_end;
-        console.log("red_width: " + red_width);
+      //  console.log("red_width: " + red_width);
     }
 
     // add red box of width 1
@@ -411,7 +410,7 @@ var startCursor = function(cursor_details){
 
 var syncCursor = function(length_of_time, target_x){
     curr_x_standard = target_x;
-    console.log("time: " + length_of_time + " | target_x: " + target_x);
+   // console.log("time: " + length_of_time + " | target_x: " + target_x);
     cursor.transition()
         .duration(length_of_time)
         .ease("linear")
@@ -467,7 +466,6 @@ var computeLiveAndRemainingTasks = function(){
             remaining_tasks.push(groupNum);
         }
     }
-
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
 
@@ -565,9 +563,9 @@ var moveTasksRight = function(tasks, amount){
                     newMin = 0;
                 } else newMin += 2.4;
                 var newTime = parseInt((newHr*60)) + parseInt(newMin);
-                console.log("new time", newTime);
+               // console.log("new time", newTime);
                 flashTeamsJSON["events"][i].startTime = newTime;
-                console.log("time reset!", flashTeamsJSON["events"][i].startTime);
+               // console.log("time reset!", flashTeamsJSON["events"][i].startTime);
             } 
         }
     }
@@ -599,7 +597,7 @@ var moveTasksLeft = function(tasks, amount){
                 var newTime = parseInt((newHr*60)) + parseInt(newMin);
                 console.log("new time", newTime);
                 flashTeamsJSON["events"][i].startTime = newTime;
-                console.log("time reset!", flashTeamsJSON["events"][i].startTime);
+              //  console.log("time reset!", flashTeamsJSON["events"][i].startTime);
             } 
         }
     }
@@ -639,6 +637,11 @@ var trackLiveAndRemainingTasks = function() {
             if (new_live_tasks.indexOf(groupNum) == -1 && !completed) { // groupNum is no longer live
                 drawRedBox(task_g, false);
 
+                //send email when a task is delayed
+                //TODO: call if in master
+                delayed_notification_helper(new_remaining_tasks);
+                //end   
+
                 // add to delayed_tasks list
                 delayed_tasks.push(groupNum);
             }
@@ -669,7 +672,7 @@ var trackUpcomingEvent = function(){
             $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
             task_g = getTaskGFromGroupNum(upcomingEvent)
         }
-        console.log("time", currentUserEvents[0].startTime);
+       // console.log("time", currentUserEvents[0].startTime);
         var cursor_x = cursor.attr("x1");
         var cursorHr = (cursor_x-(cursor_x%100))/100;
         var cursorMin = (cursor_x%100)/25*15;
@@ -682,6 +685,15 @@ var trackUpcomingEvent = function(){
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
         var overallTime = hours + ":" + minutes;
+        
+        /*send notification email before task starts*/
+        var email="rahmati.nr@gmail.com";
+        if(minutes==30 && hours==0){
+          //  sendBeforeTaskStartsEmail(minutes,email);
+        }
+        /*end*/
+
+
         if (displayTimeinMinutes < 0){
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
@@ -692,8 +704,8 @@ var trackUpcomingEvent = function(){
                 $(statusText.attr("fill", "red"));
             }
         }else $(statusText.attr("fill", "black"))
-        console.log("cursor time", cursorTimeinMinutes);
-        console.log("distance", overallTime);
+      //  console.log("cursor time", cursorTimeinMinutes);
+       // console.log("distance", overallTime);
         $(statusText.text(overallTime));
     }, fire_interval);
 }
@@ -773,10 +785,24 @@ var completeTask = function(groupNum){
     if (idx != -1) { // delayed task
         delayed_tasks.splice(idx, 1);
         completed_red_tasks.push(groupNum);
+
+        /*send delayed task is finished email*/
+        
+        if(remaining_tasks.length!=0){
+           
+            DelayedTaskFinished_helper(remaining_tasks);
+        } /* end */
+
     } else {
         idx = live_tasks.indexOf(groupNum);
         if (idx != -1){ // live task
             var blue_width = drawBlueBox(task_g);
+
+            /* send early completion email */
+            var early_minutes=parseInt((parseFloat(blue_width+4)/50.0)*30);
+            early_completion_helper(remaining_tasks,early_minutes);
+            /* end */
+             
             console.log(blue_width);
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);
@@ -820,7 +846,6 @@ function boldEvents(currentUser){
 };
 
 /* --------------- TEAM AWARENESS STUFF END ------------ */
-
 
 
 

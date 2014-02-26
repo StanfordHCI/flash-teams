@@ -66,8 +66,13 @@ Foundry::Application.routes.draw do
       get :invite
       post :login
       post :confirm_email
+      post :early_completion_email
+      post :before_task_starts_email
+      post :delayed_task_finished_email
+      post :task_delayed_email
     end
   end
+
 
   # get '/flash_teams/:id' => 'flash_teams#show'
   # get '/flash_teams' => 'flash_teams#index'
