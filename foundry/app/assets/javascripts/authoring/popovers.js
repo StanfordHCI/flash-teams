@@ -161,6 +161,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
+    console.log("These are the members!")
+    console.log(flashTeamsJSON["members"])
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
