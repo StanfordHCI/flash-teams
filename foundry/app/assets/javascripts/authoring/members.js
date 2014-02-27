@@ -85,7 +85,7 @@ function addMember() {
     });
  
     //Add to Flash Teams JSON Object
-    var newMember = {"role":memberName, "id": pillCounter, "color":"rgb(0, 168, 0)", "skills":[], "category1":"", "category2":""};
+    var newMember = {"role":memberName, "id": pillCounter, "color":"#08c", "skills":[], "category1":"", "category2":""};
     flashTeamsJSON.members.push(newMember); 
     addMemberNode(memberName, pillCounter, "#808080");
 
@@ -195,7 +195,7 @@ function initializeColorPicker() {
     $(".full-spectrum").spectrum({
         showPaletteOnly: true,
         showPalette: true,
-        color: "rgb(0, 168, 0)",
+        color: "#08c",
         palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
