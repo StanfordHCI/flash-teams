@@ -70,18 +70,27 @@ function drawInteraction(task2idNum) {
         $(".task_rectangle").popover("hide");
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
-        //if (eventsOverlap(task1idNum, task2idNum) > 0) {
+        //If task2 starts first
+        if(firstEvent(task1idNum, task2idNum) == task2idNum)  {
+            var t2Id = task2idNum;
+            task2idNum = task1idNum;
+            task1idNum = t2Id;
+        }
+        var overlap = eventsOverlap(task1idNum, task2idNum);
+        if (overlap > 0) {
             interaction_counter++;
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(collabData);
-            drawCollaboration(task1idNum, task2idNum);
+            drawCollaboration(task1idNum, task2idNum, overlap);
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
-        //} else {
-
-        //}
-    //There is no collaboration being drawn
+        } else {
+            //START HERE, ADD ERROR MESSAGE, NO OVERLAP
+            DRAWING_COLLAB = false;
+            DRAWING_HANDOFF = false;
+        }
+    //There is no interation being drawn
     } else {
         console.log("Not drawing anything");
         return;
@@ -217,18 +226,13 @@ function startWriteCollaboration() {
 
 //Draw collaboration between two events, calculates which event 
 //comes first and what the overlap is
-function drawCollaboration(task1Id, task2Id) {
+function drawCollaboration(task1Id, task2Id, overlap) {
     var task1Rect = $("#rect_" + task1Id)[0];
-    var x1 = task1Rect.x.animVal.value + 3;
     var y1 = task1Rect.y.animVal.value;
 
     var task2Rect = $("#rect_" + task2Id)[0];
     var x2 = task2Rect.x.animVal.value + 3;
     var y2 = task2Rect.y.animVal.value;
-
-    var secondTaskX = 0;
-    if (x1 < x2) secondTaskX = x2;
-    else secondTaskX = x1;
 
     var firstTaskY = 0;
     var taskDistance = 0;
@@ -240,15 +244,16 @@ function drawCollaboration(task1Id, task2Id) {
         taskDistance = y1 - firstTaskY;
     }
 
+
     collabLine = timeline_svg.append("rect")
         .attr("class", "collaborationRect")
         .attr("id", function () {
             return "interaction_" + interaction_counter;
         })
-        .attr("x", secondTaskX)
+        .attr("x", x2)
         .attr("y", firstTaskY)
         .attr("height", taskDistance)
-        .attr("width", 50) //START HERE, FIND REAL OVERLAP
+        .attr("width", overlap) //START HERE, FIND REAL OVERLAP
         .attr("fill", "gray")
         .attr("fill-opacity", .7);
 
@@ -305,9 +310,40 @@ function deleteCollab(intId) {
     $("#interaction_" + intId).remove();
 }
 
+//Returns the event that begins first
+function firstEvent(task1idNum, task2idNum) {
+    var task1Rect = $("#rect_" + task1idNum)[0];
+    var x1 = task1Rect.x.animVal.value + 3;
+    var task2Rect = $("#rect_" + task2idNum)[0];
+    var x2 = task2Rect.x.animVal.value + 3;
+
+    if (x1 <= x2) return task1idNum;
+    else return task2idNum;
+}
+
 //Calculate the overlap of two events
 function eventsOverlap(task1idNum, task2idNum) {
+    var task1Rect = $("#rect_" + task1idNum)[0];
+    var task2Rect = $("#rect_" + task2idNum)[0];
+    var task1Start = task1Rect.x.animVal.value;
+    var task1Width = task1Rect.width.animVal.value;
+    var task1End = task1Start + task1Width
+    var task2Start = task2Rect.x.animVal.value;
+    var task2Width = task2Rect.width.animVal.value;
+    var task2End = task2Start + task2Width;
 
+    //Task2 starts after the end of Task1
+    if (task1End <= task2Start) {
+        return 0;
+    } else {
+        var overlapStart = task2Start;
+        var overlapEnd = 0;
+        //Task 1 Ends first or they end simultaneously
+        if (task1End <= task2End) overlapEnd = task1End;
+        //Task 2 Ends first
+        else overlapEnd = task2End;
+        return overlapEnd-overlapStart;
+    }
 }
 
 //Follow the mouse movements after a handoff is initialized
