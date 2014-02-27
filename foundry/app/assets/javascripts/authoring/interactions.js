@@ -76,7 +76,11 @@ function drawInteraction(task2idNum) {
             task2idNum = task1idNum;
             task1idNum = t2Id;
         }
-        var overlap = eventsOverlap(task1idNum, task2idNum);
+        var task1X = $("#rect_" + task1idNum)[0].x.animVal.value;
+        var task1Width = $("#rect_" + task1idNum)[0].width.animVal.value;
+        var task2X = $("#rect_" + task2idNum)[0].x.animVal.value;
+        var task2Width = $("#rect_" + task2idNum)[0].width.animVal.value;
+        var overlap = eventsOverlap(task1X, task1Width, task2X, task2Width);
         if (overlap > 0) {
             interaction_counter++;
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
@@ -86,13 +90,12 @@ function drawInteraction(task2idNum) {
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
         } else {
-            //START HERE, ADD ERROR MESSAGE, NO OVERLAP
+            alert("These events do not overlap, so they cannot collaborate.");
             DRAWING_COLLAB = false;
             DRAWING_HANDOFF = false;
         }
     //There is no interation being drawn
     } else {
-        console.log("Not drawing anything");
         return;
     }
 }
@@ -322,14 +325,11 @@ function firstEvent(task1idNum, task2idNum) {
 }
 
 //Calculate the overlap of two events
-function eventsOverlap(task1idNum, task2idNum) {
-    var task1Rect = $("#rect_" + task1idNum)[0];
-    var task2Rect = $("#rect_" + task2idNum)[0];
-    var task1Start = task1Rect.x.animVal.value;
-    var task1Width = task1Rect.width.animVal.value;
+function eventsOverlap(task1X, task1Width, task2X, task2Width) {
+
+
     var task1End = task1Start + task1Width
-    var task2Start = task2Rect.x.animVal.value;
-    var task2Width = task2Rect.width.animVal.value;
+
     var task2End = task2Start + task2Width;
 
     //Task2 starts after the end of Task1
@@ -361,3 +361,35 @@ function getIntJSONIndex(idNum) {
         }
     }
 }
+
+//For an event that is being dragged, 
+//checks if the event is falling out of range
+function collabOutOfRange(interactionId, movingEventId, newX, newWidth) {
+    //Find out if is event1 or event2
+    var indexOfJSON = getIntJSONIndex([interactionId);
+    var eventNum = 1;
+    var otherEvent = flashTeamsJSON["interactions"][indexOfJSON].event2;
+    if (flashTeamsJSON["interactions"][indexOfJSON].event2 == movingEventId) {
+        eventNum = 2;
+        otherEvent = flashTeamsJSON["interations"][indexOfJSON].event1;
+    }        
+
+    //Wil the new overlap be zero?
+    var overlap = 0;
+    if (eventNum == 1) {
+        var task2X = $("#rect_" + otherEvent)[0].x.animVal.value;
+        var task2Width = $("#rect_" + otherEvent)[0].width.animVal.value;
+        overlap = eventsOverlap(newX, newWidth, task2X, task2Width);
+    } else if (eventNum == 2) {
+        var task1X = $("#rect_" + otherEvent)[0].x.animVal.value;
+        var task1Width = $("#rect_" + otherEvent)[0].width.animVal.value;
+        overlap = eventsOverlap(task1X, task1Width, newX, newWidth);
+    }
+
+    if (overlap == 0) return true;
+    else return false;
+
+}
+
+
+
