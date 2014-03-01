@@ -21,33 +21,6 @@ timeline_svg.append("defs").append("marker")
     .append("path")
         .attr("d", "M 0,0 V 4 L6,2 Z");
 
-//Loops through interactions in JSON, if event is in, need to redraw the interaction
-function redrawInteractions(idNum) {
-    console.log("Trying to redraw interaction on id:", idNum);
-    for (i = 1; i <= flashTeamsJSON["interactions"].length; i++) {
-        var interaction = flashTeamsJSON["interactions"][i-1];
-        if (interaction.event1 == idNum) {
-            //REDRAW THE X1, Y1 OF THE INTERACTION
-            //START HERE
-            var taskRect1 = $("#rect_" + idNum)[0]
-            var x1 = taskRect1.x.animVal.value + taskRect1.width.animVal.value;
-            var y1 = taskRect1.y.animVal.value + 50;
-            $("#interaction_" + i)
-                .attr("y1", y1)
-                .attr("x1", x1);
-
-        } else if (interaction.event2 == idNum) {
-            //REDRAW THE X2, Y2 OF THE INTERACTION
-            var taskRect2 = $("#rect_" + i)[0];
-            var x2 = taskRect2.x.animVal.value;
-            var y2 = taskRect2.y.animVal.value + 50;
-            $("#interaction_" + i)
-                .attr("y2", y2)
-                .attr("x2", x2);
-        }
-    }
-};
-
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
 function drawInteraction(task2idNum) {
@@ -246,8 +219,6 @@ function drawCollaboration(task1Id, task2Id, overlap) {
         firstTaskY = y2 + 90;
         taskDistance = y1 - firstTaskY;
     }
-
-
     collabLine = timeline_svg.append("rect")
         .attr("class", "collaborationRect")
         .attr("id", function () {
@@ -326,10 +297,7 @@ function firstEvent(task1idNum, task2idNum) {
 
 //Calculate the overlap of two events
 function eventsOverlap(task1X, task1Width, task2X, task2Width) {
-
-
-    var task1End = task1Start + task1Width
-
+    var task1End = task1Start + task1Width;
     var task2End = task2Start + task2Width;
 
     //Task2 starts after the end of Task1
@@ -388,7 +356,6 @@ function collabOutOfRange(interactionId, movingEventId, newX, newWidth) {
 
     if (overlap == 0) return true;
     else return false;
-
 }
 
 
