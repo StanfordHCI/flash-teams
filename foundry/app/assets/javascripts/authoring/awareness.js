@@ -751,8 +751,6 @@ var updateStatus = function(flash_team_in_progress){
         console.log("UPDATED FLASH TEAM STATUS");
         console.log("WHATTUP");
         if(!flash_team_in_progress){
-            localStatus.flash_teams_json.members = [];
-            loadedStatus.flash_teams_json.member = [];
             window.location.reload();
             console.log(flashTeamsJSON["members"])
         }
