@@ -27,4 +27,12 @@ class UserMailer < ActionMailer::Base
   	@url = url
     mail(:to => email_address, :subject => 'Flash Teams: Please confirm your email address')
   end
+
+  def send_dri_on_delay_email(email,event_name, dri_role)
+      @event_name=event_name
+      @dri_role=dri_role
+      @minutes="10"
+      mail(:to => email, :subject => 'Flash Teams: '+ event_name +' run by ' + dri_role +' is running late')
+       
+  end
 end

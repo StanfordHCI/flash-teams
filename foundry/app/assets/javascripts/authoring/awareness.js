@@ -642,6 +642,9 @@ var trackLiveAndRemainingTasks = function() {
 
                 // add to delayed_tasks list
                 delayed_tasks.push(groupNum);
+
+                //updateStatus is required to send the notification email when a task is delayed
+                updateStatus(1);
             }
         }
         live_tasks = new_live_tasks;
