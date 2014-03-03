@@ -35,6 +35,15 @@ function leftResize(d) {
         $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX - 4));        
     }
 
+    //Check for interactions, delete
+    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        var interaction = flashTeamsJSON["interactions"][i];
+        if (interaction.event1 == d.groupNum || interaction.event2 == d.groupNum) {
+            deleteInteraction(interaction.id);
+            //ADD WARNING THAT THEY DELETED B/C THEY MOVED
+        }
+    }
+
     //Update popover
     $("#rect_" + d.groupNum).popover("show");
     var hrs = Math.floor(((rightX-newX)/100));
@@ -59,12 +68,23 @@ function rightResize(d) {
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
     var newX = Math.max(leftX + 50, Math.min(dragX, SVG_WIDTH));
 
+    //Update position of latter half of event items
     $(this).attr("x", newX);
     $("#handoff_btn_" + d.groupNum).attr("x", newX-18);
     $("#collab_btn_" + d.groupNum).attr("x", newX - 38);
     taskRect.attr("width", newX - leftX);
     updateTime(d.groupNum);
 
+    //Check for interactions, delete
+    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        var interaction = flashTeamsJSON["interactions"][i];
+        if (interaction.event1 == d.groupNum || interaction.event2 == d.groupNum) {
+            deleteInteraction(interaction.id);
+            //ADD WARNING THAT THEY DELETED B/C THEY MOVED
+        }
+    }
+
+    //Update JSON
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
     for (i = 1; i <= numEventMembers; i++) {
