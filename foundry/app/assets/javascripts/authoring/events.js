@@ -84,8 +84,8 @@ var drag = d3.behavior.drag()
         //Horiztonal draggingx
         var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
         var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
-        if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
-        else d.x = newX;
+        if (d3.event.dx + d.x < 0) newX = 0 - (DRAGBAR_WIDTH/2);
+        d.x = newX;
 
         //Update event popover
         var startHour = Math.floor((d.x/100));
@@ -111,11 +111,73 @@ var drag = d3.behavior.drag()
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
 
-        redraw(group, rectWidth, groupNum);
+        //START HERE
+        //Check for interactions, store
+        var interactionsArr = [];
+        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            var interaction = flashTeamsJSON["interactions"][i];
+            if (interaction.event1 == groupNum) interactionsArr.push(interaction)
+            else if (interaction.event2 == groupNum) interactionsArr.push(interaction)
+        }
+        
+        //There are no interactions
+        if (interactionsArr.length == 0) {
+            //Redraw event
+            redraw(group, rectWidth, groupNum);
+        //If they are NOT out of range, need to redraw the interaction 
+        } else {
+            //Loop over the relevant interactions and redraw
+            for (i = 0; i < interactionsArr.length; i++) {
+                //Check if drag has made the events out of range of each other
+                var outOfRange = collabOutOfRange(interactionsArr[i].id, groupNum, newX, rectWidth);
 
-        //Update JSON
-        var indexOfJSON = getEventJSONIndex(groupNum);
-        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
+                //Redraw Collaborations
+                if (interactionsArr[i].type = "collaboration") {
+                    var interaction = interactionsArr[i];
+                    var task1Rect = $("#rect_" + interaction.event1)[0];
+                    var y1 = task1Rect.y.animVal.value;
+
+                    var task2Rect = $("#rect_" + interaction.event2)[0];
+                    var y2 = task2Rect.y.animVal.value;
+
+                    var movingTaskId = 0;
+
+                    //Task 1 moving
+                    if (groupNum == interaction.event1) {
+                        //Find the new overlap
+
+
+                        //wait what if it turns into event 2
+
+
+                    //Task 2 moving
+                    } else if (groupNum == interaction.event2) {
+                        //Find the new overlap
+
+
+                        //wait what if it turns into event 1
+
+
+                    }
+
+                    //REDRAW EVENT
+                    //redraw(group, rectWidth, groupNum);
+
+
+                    $("#interaction_" + movingTaskId)
+                        .attr("x", )
+                        .attr("width", );
+                } else {
+                    //NOT DONE, REDRAW HANDOFFS
+                }
+            }
+
+            //Update JSON
+            var indexOfJSON = getEventJSONIndex(groupNum);
+            flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
+        } 
+
+        
     });
 
 //Called when the right dragbar of a task rectangle is dragged

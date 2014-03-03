@@ -334,7 +334,7 @@ function getIntJSONIndex(idNum) {
 //checks if the event is falling out of range
 function collabOutOfRange(interactionId, movingEventId, newX, newWidth) {
     //Find out if is event1 or event2
-    var indexOfJSON = getIntJSONIndex([interactionId);
+    var indexOfJSON = getIntJSONIndex(interactionId);
     var eventNum = 1;
     var otherEvent = flashTeamsJSON["interactions"][indexOfJSON].event2;
     if (flashTeamsJSON["interactions"][indexOfJSON].event2 == movingEventId) {
