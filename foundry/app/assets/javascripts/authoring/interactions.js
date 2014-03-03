@@ -143,8 +143,8 @@ function drawHandoff(task1Id, task2Id) {
         +'<textarea rows="2.5" id="interactionNotes_' + interaction_counter + '"></textarea>'
         + '<button type="button" id="saveHandoff' + interaction_counter + '"'
             +' onclick="saveHandoff(' + interaction_counter +');">Save</button>          '
-        + '<button type="button" id="deleteHandoff' + interaction_counter + '"'
-            +' onclick="deleteHandoff(' + interaction_counter +');">Delete</button>',
+        + '<button type="button" id="deleteInteraction_' + interaction_counter + '"'
+            +' onclick="deleteInteraction(' + interaction_counter +');">Delete</button>',
         container: $("#timeline-container")
     })
 }
@@ -157,8 +157,8 @@ function saveHandoff(intId) {
         +'<textarea rows="2" id="interactionNotes_' + intId + '">' + notes + '</textarea>'
         + '<button type="button" id="saveHandoff' + intId + '"'
         +' onclick="saveHandoff(' + intId +');">Save</button>          '
-        + '<button type="button" id="deleteHandoff' + intId + '"'
-        +' onclick="deleteHandoff(' + intId +');">Delete</button>';
+        + '<button type="button" id="deleteInteraction_' + intId + '"'
+        +' onclick="deleteInteraction(' + intId +');">Delete</button>';
 
     //Update JSON
     var indexOfJSON = getIntJSONIndex(intId);
@@ -166,19 +166,6 @@ function saveHandoff(intId) {
 
     //Hide Popover
     $("#interaction_" + intId).popover("hide");
-}
-
-//Delete handoff arrow, popover, and JSON item
-function deleteHandoff(intId) {
-    //Destroy Popover
-    $("#interaction_" + intId).popover("destroy");
-
-    //Delete from JSON
-    var indexOfJSON = getIntJSONIndex(intId);
-    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
-
-    //Delete Rectangle
-    $("#interaction_" + intId).remove();
 }
 
 
@@ -246,8 +233,8 @@ function drawCollabPopover() {
         +'<textarea rows="2.5" id="collabNotes_' + interaction_counter + '"></textarea>'
         + '<button type="button" id="saveCollab' + interaction_counter + '"'
             +' onclick="saveCollab(' + interaction_counter +');">Save</button>          '
-        + '<button type="button" id="deleteCollab' + interaction_counter + '"'
-            +' onclick="deleteCollab(' + interaction_counter +');">Delete</button>',
+        + '<button type="button" id="deleteInteraction_' + interaction_counter + '"'
+            +' onclick="deleteInteraction(' + interaction_counter +');">Delete</button>',
         container: $("#timeline-container")
     });
 }
@@ -260,8 +247,8 @@ function saveCollab(intId) {
         +'<textarea rows="2.5" id="collabNotes_' + intId + '">' + notes + '</textarea>'
         + '<button type="button" id="saveCollab' + intId + '"'
         +' onclick="saveCollab(' + intId +');">Save</button>          '
-        + '<button type="button" id="deleteCollab' + intId + '"'
-        +' onclick="deleteCollab(' + intId +');">Delete</button>';
+        + '<button type="button" id="deleteInteraction_' + intId + '"'
+        +' onclick="deleteInteraction(' + intId +');">Delete</button>';
 
     //Update JSON
     var indexOfJSON = getIntJSONIndex(intId);
@@ -271,8 +258,8 @@ function saveCollab(intId) {
     $("#interaction_" + intId).popover("hide");
 }
 
-//Deletes the collaboration from the timeline and the JSON
-function deleteCollab(intId) {
+//Deletes the interaction from the timeline and the JSON
+function deleteInteraction(intId) {
     //Destroy Popover
     $("#interaction_" + intId).popover("destroy");
 
@@ -297,14 +284,14 @@ function firstEvent(task1idNum, task2idNum) {
 
 //Calculate the overlap of two events
 function eventsOverlap(task1X, task1Width, task2X, task2Width) {
-    var task1End = task1Start + task1Width;
-    var task2End = task2Start + task2Width;
+    var task1End = task1X + task1Width;
+    var task2End = task2X + task2Width;
 
     //Task2 starts after the end of Task1
-    if (task1End <= task2Start) {
+    if (task1End <= task2X) {
         return 0;
     } else {
-        var overlapStart = task2Start;
+        var overlapStart = task2X;
         var overlapEnd = 0;
         //Task 1 Ends first or they end simultaneously
         if (task1End <= task2End) overlapEnd = task1End;
@@ -328,34 +315,6 @@ function getIntJSONIndex(idNum) {
             return i;
         }
     }
-}
-
-//For an event that is being dragged, 
-//checks if the event is falling out of range
-function collabOutOfRange(interactionId, movingEventId, newX, newWidth) {
-    //Find out if is event1 or event2
-    var indexOfJSON = getIntJSONIndex(interactionId);
-    var eventNum = 1;
-    var otherEvent = flashTeamsJSON["interactions"][indexOfJSON].event2;
-    if (flashTeamsJSON["interactions"][indexOfJSON].event2 == movingEventId) {
-        eventNum = 2;
-        otherEvent = flashTeamsJSON["interations"][indexOfJSON].event1;
-    }        
-
-    //Wil the new overlap be zero?
-    var overlap = 0;
-    if (eventNum == 1) {
-        var task2X = $("#rect_" + otherEvent)[0].x.animVal.value;
-        var task2Width = $("#rect_" + otherEvent)[0].width.animVal.value;
-        overlap = eventsOverlap(newX, newWidth, task2X, task2Width);
-    } else if (eventNum == 2) {
-        var task1X = $("#rect_" + otherEvent)[0].x.animVal.value;
-        var task1Width = $("#rect_" + otherEvent)[0].width.animVal.value;
-        overlap = eventsOverlap(task1X, task1Width, newX, newWidth);
-    }
-
-    if (overlap == 0) return true;
-    else return false;
 }
 
 

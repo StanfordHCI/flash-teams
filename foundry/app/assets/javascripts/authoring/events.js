@@ -112,71 +112,21 @@ var drag = d3.behavior.drag()
         else d.y = newY;
 
         //START HERE
-        //Check for interactions, store
-        var interactionsArr = [];
+        //Check for interactions, delete
         for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var interaction = flashTeamsJSON["interactions"][i];
-            if (interaction.event1 == groupNum) interactionsArr.push(interaction)
-            else if (interaction.event2 == groupNum) interactionsArr.push(interaction)
-        }
-        
-        //There are no interactions
-        if (interactionsArr.length == 0) {
-            //Redraw event
-            redraw(group, rectWidth, groupNum);
-        //If they are NOT out of range, need to redraw the interaction 
-        } else {
-            //Loop over the relevant interactions and redraw
-            for (i = 0; i < interactionsArr.length; i++) {
-                //Check if drag has made the events out of range of each other
-                var outOfRange = collabOutOfRange(interactionsArr[i].id, groupNum, newX, rectWidth);
-
-                //Redraw Collaborations
-                if (interactionsArr[i].type = "collaboration") {
-                    var interaction = interactionsArr[i];
-                    var task1Rect = $("#rect_" + interaction.event1)[0];
-                    var y1 = task1Rect.y.animVal.value;
-
-                    var task2Rect = $("#rect_" + interaction.event2)[0];
-                    var y2 = task2Rect.y.animVal.value;
-
-                    var movingTaskId = 0;
-
-                    //Task 1 moving
-                    if (groupNum == interaction.event1) {
-                        //Find the new overlap
-
-
-                        //wait what if it turns into event 2
-
-
-                    //Task 2 moving
-                    } else if (groupNum == interaction.event2) {
-                        //Find the new overlap
-
-
-                        //wait what if it turns into event 1
-
-
-                    }
-
-                    //REDRAW EVENT
-                    //redraw(group, rectWidth, groupNum);
-
-
-                    $("#interaction_" + movingTaskId)
-                        .attr("x", )
-                        .attr("width", );
-                } else {
-                    //NOT DONE, REDRAW HANDOFFS
-                }
+            if (interaction.event1 == groupNum || interaction.event2 == groupNum) {
+                console.log("trying to delete interaction", "id:", interaction.id, "index:", i);
+                
             }
 
-            //Update JSON
-            var indexOfJSON = getEventJSONIndex(groupNum);
-            flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
-        } 
-
+        }
+        
+        //Redraw event
+        redraw(group, rectWidth, groupNum);
+        //Update JSON
+        var indexOfJSON = getEventJSONIndex(groupNum);
+        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
         
     });
 
