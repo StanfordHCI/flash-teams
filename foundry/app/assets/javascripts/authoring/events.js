@@ -111,15 +111,13 @@ var drag = d3.behavior.drag()
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
 
-        //START HERE
         //Check for interactions, delete
         for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var interaction = flashTeamsJSON["interactions"][i];
             if (interaction.event1 == groupNum || interaction.event2 == groupNum) {
-                console.log("trying to delete interaction", "id:", interaction.id, "index:", i);
-                
+                deleteInteraction(interaction.id);
+                //ADD WARNING THAT THEY DELETED B/C THEY MOVED
             }
-
         }
         
         //Redraw event
@@ -285,6 +283,18 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteHandoff);
+    $("#handoff_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
+    $("#handoff_btn_" + groupNum).popover("show");
+    $("#handoff_btn_" + groupNum).popover("hide");
+        
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -295,6 +305,18 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteCollaboration);
+    $("#collab_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
+    $("#collab_btn_" + groupNum).popover("show");
+    $("#collab_btn_" + groupNum).popover("hide");
+
 
     task_groups.push(task_g);
 

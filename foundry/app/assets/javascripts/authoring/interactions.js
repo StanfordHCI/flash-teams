@@ -30,10 +30,13 @@ function drawInteraction(task2idNum) {
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
+        if (DRAWING_COLLAB == true) $("#collab_btn_" + task1idNum).popover("hide");
+        else $("#handoff_btn_" + task1idNum).popover("hide");
         DRAWING_COLLAB = false;
         DRAWING_HANDOFF = false;
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
+        $("#handoff_btn_" + task1idNum).popover("hide");
         interaction_counter++;
         var handoffData = {"event1":task1idNum, "event2":task2idNum, 
             "type":"handoff", "description":"", "id":interaction_counter};
@@ -43,6 +46,7 @@ function drawInteraction(task2idNum) {
         $(".task_rectangle").popover("hide");
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
+        $("#collab_btn_" + task1idNum).popover("hide");
         //If task2 starts first
         if(firstEvent(task1idNum, task2idNum) == task2idNum)  {
             var t2Id = task2idNum;
