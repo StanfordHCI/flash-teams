@@ -29,6 +29,8 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
+var delayed_tasks_time = [];
+var dri_responded = [];
 
 var getXCoordForTime = function(t){
    // console.log("time t: " + t);
@@ -644,6 +646,7 @@ var trackLiveAndRemainingTasks = function() {
                 delayed_tasks.push(groupNum);
 
                 //updateStatus is required to send the notification email when a task is delayed
+                delayed_tasks_time[groupNum]=(new Date).getTime();
                 updateStatus(1);
             }
         }
@@ -743,6 +746,10 @@ var constructStatusObj = function(){
     localStatus.drawn_blue_tasks = drawn_blue_tasks;
     localStatus.completed_red_tasks = completed_red_tasks;
     localStatus.flash_teams_json = flashTeamsJSON;
+
+    //delayed_task_time is required for sending notification emails on delay
+    localStatus.delayed_tasks_time = delayed_tasks_time;
+    localStatus.dri_responded = dri_responded;
 
     return localStatus;
 };

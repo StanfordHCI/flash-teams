@@ -161,6 +161,37 @@ class FlashTeamsController < ApplicationController
     end
   end
   
+  #renders the delay form that the DRI has to fill out
+  def delay
+    @id_team = params[:id_team]
+
+    @action_link="/flash_teams/"+params[:id_team]+"/"+params[:event_id]+"/get_delay"
+  end  
+
+
+  def get_delay
+    @delay_estimation = params[:q]
+    event_id=params[:event_id]
+
+    
+
+    flash_team = FlashTeam.find(params[:id_team])
+
+    
+      flash_team_status = JSON.parse(flash_team.status)
+      flash_team_json=flash_team_status["flash_teams_json"]
+      flash_team_members=flash_team_json["members"]
+      flash_team_events=flash_team_json["events"]
+    
+      #TODO dri is now the first member. 
+      dri_role=flash_team_events[event_id.to_f]["members"][0]
+      event_name= flash_team_events[event_id.to_f]["title"]
+
+      #TODO use email address instead of member role
+      flash_team_members.each do |member|
+        UserMailer.send_task_delayed_email(member["role"],@delay_estimation,event_name,dri_role).deliver
+      end
+  end
 
   def flash_team_params
     params.require(:flash_team).permit(:name, :json)

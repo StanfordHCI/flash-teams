@@ -70,10 +70,11 @@ Foundry::Application.routes.draw do
       post :before_task_starts_email
       post :delayed_task_finished_email
       post :task_delayed_email
-    end
+     end
   end
 
-
+  get '/flash_teams/:id_team/:event_id/delay' => 'flash_teams#delay'
+  get '/flash_teams/:id_team/:event_id/get_delay' => 'flash_teams#get_delay'
   # get '/flash_teams/:id' => 'flash_teams#show'
   # get '/flash_teams' => 'flash_teams#index'
 end
