@@ -2,14 +2,12 @@
 
 <input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
 
-<%= render 'form' %>
-
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
 
         <input type="hidden" id="flash_team_id" value="<%= @flash_team.id %>"/>
         <input type="hidden" id="uniq" value=""/>
        <!--Main Layout-->
-        <div class="container-fluid">       
+        <div class="container-fluid" style="min-width: 1300px">       
             <div class="row-fluid">
                 <!--<h1>Flash Teams</h1>-->
                 <h1>Foundry</h1>
@@ -124,7 +122,7 @@
 
 
                     
-                    <div id="member-container" class="well">
+                    <div id="member-container" class="well" style="overflow-y:scroll;">
                         <h3>Team Roles</h3>
                         <form name='newMemberForm' autocomplete="on">
                             <div class="input-append">

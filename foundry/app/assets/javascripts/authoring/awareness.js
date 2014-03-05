@@ -74,6 +74,7 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 $("#flashTeamEndBtn").click(function(){
+    flashTeamsJSON["members"] = [];
     updateStatus(false);
 });
 
@@ -145,6 +146,7 @@ var poll = function(){
             console.log(loadedStatus);
 
             if(flashTeamEnded() || flashTeamUpdated()) {
+                flashTeamsJSON["members"] = [];
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -757,8 +759,12 @@ var updateStatus = function(flash_team_in_progress){
         data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
     }).done(function(data){
         console.log("UPDATED FLASH TEAM STATUS");
+        console.log("WHATTUP");
         if(!flash_team_in_progress){
+            localStatus.flash_teams_json.members = [];
+            loadedStatus.flash_teams_json.member = [];
             window.location.reload();
+            console.log(flashTeamsJSON["members"])
         }
     });
 };
