@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131127015448) do
+ActiveRecord::Schema.define(version: 20140303062744) do
 
   create_table "categories", force: true do |t|
     t.string   "name"
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 20131127015448) do
     t.string   "name"
     t.text     "json"
     t.text     "status"
+    t.text     "notification_email_status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -43,6 +44,12 @@ ActiveRecord::Schema.define(version: 20131127015448) do
   create_table "members", force: true do |t|
     t.string   "name"
     t.string   "color"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sent_delay_emails", force: true do |t|
+    t.string   "content"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

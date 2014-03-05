@@ -87,6 +87,7 @@ class FlashTeamsController < ApplicationController
     uuid = SecureRandom.uuid
 
     # generate unique id and add to url below
+           
     url = url_for :action => 'edit', :id => params[:id], :uniq => uuid, :escape => false
     
     #UserMailer.send_email(email, url).deliver
@@ -172,12 +173,19 @@ class FlashTeamsController < ApplicationController
   def get_delay
     @delay_estimation = params[:q]
     event_id=params[:event_id]
-
+    event_id=event_id.to_f-1
     
-
     flash_team = FlashTeam.find(params[:id_team])
 
-    
+      if flash_team.notification_email_status != nil
+        notification_email_status = JSON.parse(flash_team.notification_email_status)
+      else
+        notification_email_status = []
+      end
+      notification_email_status[event_id.to_f] = true;
+      flash_team.notification_email_status = JSON.dump(notification_email_status)
+      flash_team.save
+
       flash_team_status = JSON.parse(flash_team.status)
       flash_team_json=flash_team_status["flash_teams_json"]
       flash_team_members=flash_team_json["members"]
