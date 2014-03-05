@@ -26,10 +26,63 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
     //add new event to flashTeams database
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
     overlayOn();
+};
+
+function updateAllPopoversToReadOnly() {
+    for(var i=0;i<flashTeamsJSON.events.length;i++) {
+        var ev = flashTeamsJSON.events[i];
+        updatePopoverToReadOnly(ev, false);
+    }
+    console.log("UPDATED ALL POPOVERS TO BE READONLY");
+};
+
+function updatePopoverToReadOnly(ev, enableComplete) {
+    var groupNum = ev.id;
+    var hrs = Math.floor(ev.duration/60);
+    var mins = ev.duration % 60;
+
+    $("#rect_" + groupNum).data('popover').options.title = ev.title;
+
+    var content = '<b>Event Start:</b><br>'
+        + ev.startHr + ':'
+        + ev.startMin + '<br>'
+        +'<b>Total Runtime: </b><br>' 
+        + hrs + ' hrs ' + mins + ' mins<br>';
+
+    content += '<b>Members:</b><br>';
+    for (var j=0;j<ev.members.length;j++){
+        content += ev.members[j];
+        content += '<br>';
+    }
+
+    if (ev.dri != ""){
+        content += '<b>Directly-Responsible Individual:</b><br>';
+        content += ev.dri;
+        content += '<br>';
+    }
+
+    if (ev.content != ""){
+        content += '<b>Notes:</b><br>';
+        content += ev.notes;
+        content += '<br>';
+    }
+
+    if (enableComplete) {
+        content += '<br><form><button type="button" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+    } else {
+        content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+    }
+
+    $("#rect_" + groupNum).data('popover').options.content = content;
+};
+
+function hidePopover(popId){
+    $("#rect_" + popId).popover("hide");
+    overlayOff();
 };
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
