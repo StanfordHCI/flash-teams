@@ -35,6 +35,15 @@ function leftResize(d) {
         $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX - 4));        
     }
 
+    //Check for interactions, delete
+    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        var interaction = flashTeamsJSON["interactions"][i];
+        if (interaction.event1 == d.groupNum || interaction.event2 == d.groupNum) {
+            deleteInteraction(interaction.id);
+            //ADD WARNING THAT THEY DELETED B/C THEY MOVED
+        }
+    }
+
     //Update popover
     $("#rect_" + d.groupNum).popover("show");
     var hrs = Math.floor(((rightX-newX)/100));
@@ -59,12 +68,23 @@ function rightResize(d) {
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
     var newX = Math.max(leftX + 50, Math.min(dragX, SVG_WIDTH));
 
+    //Update position of latter half of event items
     $(this).attr("x", newX);
     $("#handoff_btn_" + d.groupNum).attr("x", newX-18);
     $("#collab_btn_" + d.groupNum).attr("x", newX - 38);
     taskRect.attr("width", newX - leftX);
     updateTime(d.groupNum);
 
+    //Check for interactions, delete
+    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        var interaction = flashTeamsJSON["interactions"][i];
+        if (interaction.event1 == d.groupNum || interaction.event2 == d.groupNum) {
+            deleteInteraction(interaction.id);
+            //ADD WARNING THAT THEY DELETED B/C THEY MOVED
+        }
+    }
+
+    //Update JSON
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
     for (i = 1; i <= numEventMembers; i++) {
@@ -84,8 +104,8 @@ var drag = d3.behavior.drag()
         //Horiztonal draggingx
         var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
         var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
-        if (d3.event.dx + d.x < 0) d.x = 0 - (DRAGBAR_WIDTH/2);
-        else d.x = newX;
+        if (d3.event.dx + d.x < 0) newX = 0 - (DRAGBAR_WIDTH/2);
+        d.x = newX;
 
         //Update event popover
         var startHour = Math.floor((d.x/100));
@@ -111,11 +131,21 @@ var drag = d3.behavior.drag()
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
 
+        //Check for interactions, delete
+        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            var interaction = flashTeamsJSON["interactions"][i];
+            if (interaction.event1 == groupNum || interaction.event2 == groupNum) {
+                deleteInteraction(interaction.id);
+                //ADD WARNING THAT THEY DELETED B/C THEY MOVED
+            }
+        }
+        
+        //Redraw event
         redraw(group, rectWidth, groupNum);
-
         //Update JSON
         var indexOfJSON = getEventJSONIndex(groupNum);
         flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
+        
     });
 
 //Called when the right dragbar of a task rectangle is dragged
@@ -273,6 +303,18 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteHandoff);
+    $("#handoff_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
+    $("#handoff_btn_" + groupNum).popover("show");
+    $("#handoff_btn_" + groupNum).popover("hide");
+        
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -283,6 +325,18 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteCollaboration);
+    $("#collab_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
+    $("#collab_btn_" + groupNum).popover("show");
+    $("#collab_btn_" + groupNum).popover("hide");
+
 
     task_groups.push(task_g);
 
