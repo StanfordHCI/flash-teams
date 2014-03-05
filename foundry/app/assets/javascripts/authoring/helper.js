@@ -95,7 +95,18 @@ function drawFlashTeamFromJSON(ftJSON) {
 
 function saveFlashTeam() {
 	console.log("Saving flash team");
-    $('#flash_team_json').val(JSON.stringify(flashTeamsJSON));
-    $('.edit_flash_team').submit();
-}
+    
+    var flash_team_id = $("#flash_team_id").val();
+    var authenticity_token = $("#authenticity_token").val();
+    var url = '/flash_teams/' + flash_team_id + '/update_json';
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: {"flashTeamsJSON": flashTeamsJSON, "authenticity_token": authenticity_token}
+    }).done(function(data){
+        console.log("UPDATED FLASH TEAM JSON");
+    });
 
+    //$('#flash_team_json').val(JSON.stringify(flashTeamsJSON));
+    //$('.edit_flash_team').submit();
+}
