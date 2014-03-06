@@ -4,8 +4,9 @@ require 'socket'
 namespace :notification do
   desc "Send notification emails when a task is delayed."
   task email_delayed_task: :environment do
-    include ActionDispatch::Routing::UrlFor
-  #include ActionController::UrlFor  #requires a request object
+   
+   include ActionDispatch::Routing::UrlFor
+   #include ActionController::UrlFor  #requires a request object
    include Rails.application.routes.url_helpers
 
     puts "checking if a task is delayed..."
@@ -22,6 +23,7 @@ namespace :notification do
            	
       flash_team_json=flash_team_status["flash_teams_json"]
       flash_team_members=flash_team_json["members"]
+      print members
       delayed_tasks_time=flash_team_status["delayed_tasks_time"]
       #dri_responded=flash_team_status["dri_responded"]
       if flash_team.notification_email_status != nil
@@ -69,7 +71,7 @@ namespace :notification do
               default_url_options[:host] = 'localhost:3000'
               url = url_for :controller => 'flash_teams',:action => 'delay',:id =>team_id.to_s, :event_id => event_id.to_s
               #url="http://localhost:3000/flash_teams/"+team_id.to_s+"/"+(event_id-1).to_s+"/delay"
-              UserMailer.send_dri_on_delay_email(email,event_name, dri_role,url,team_id,event_id).deliver
+              #UserMailer.send_dri_on_delay_email(email,event_name, dri_role,url,team_id,event_id).deliver
               break
             end
           end
@@ -84,7 +86,7 @@ namespace :notification do
             flash_team_events.each do |event|
             eventId = event["id"];
             if eventId == groupNum
-              print "here2"  
+              
                delayed_event=event
                /TODO considered the first member is the dri for now. Change this when dri feature is added/
                 if delayed_event["members"].length == 0
@@ -102,9 +104,9 @@ namespace :notification do
                 /TODO get dri's email instead of dri's role!/
                 email=dri
                 
-                print "here2.5"
+            
 
-                UserMailer.send_delayed_dri_not_responded(email,event_name,dri_role).deliver;   
+               # UserMailer.send_delayed_dri_not_responded(email,event_name,dri_role).deliver;   
                 break
               end
             end

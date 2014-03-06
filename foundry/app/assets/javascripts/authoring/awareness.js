@@ -52,11 +52,11 @@ $("#flashTeamStartBtn").click(function(){
     
     recordStartTime();
     updateStatus(true);
+    updateAllPopoversToReadOnly();
     
     setCursorMoving();
    
     setProjectStatusMoving();
-  
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -75,6 +75,7 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 $("#flashTeamEndBtn").click(function(){
+    flashTeamsJSON["members"] = [];
     updateStatus(false);
 });
 
@@ -146,6 +147,7 @@ var poll = function(){
             console.log(loadedStatus);
 
             if(flashTeamEnded() || flashTeamUpdated()) {
+                flashTeamsJSON["members"] = [];
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -699,6 +701,16 @@ var trackUpcomingEvent = function(){
 
 
         if (displayTimeinMinutes < 0){
+            // make the complete button clickable for live/delayed task
+            for (var i = 0; i<flashTeamsJSON["events"].length; i++){
+                var eventt = flashTeamsJSON["events"][i];
+                eventId = flashTeamsJSON["events"][i].id
+                if (eventId == upcomingEvent){
+                    updatePopoverToReadOnly(eventt, true);
+                    break;
+                }
+            }
+
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
                 $(statusText.attr("fill", "blue"));
@@ -769,8 +781,12 @@ var updateStatus = function(flash_team_in_progress){
         data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
     }).done(function(data){
         console.log("UPDATED FLASH TEAM STATUS");
+        console.log("WHATTUP");
         if(!flash_team_in_progress){
+            localStatus.flash_teams_json.members = [];
+            loadedStatus.flash_teams_json.member = [];
             window.location.reload();
+            console.log(flashTeamsJSON["members"])
         }
     });
 };

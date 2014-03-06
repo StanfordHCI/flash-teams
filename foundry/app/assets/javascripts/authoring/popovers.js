@@ -26,10 +26,63 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
     //add new event to flashTeams database
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
     overlayOn();
+};
+
+function updateAllPopoversToReadOnly() {
+    for(var i=0;i<flashTeamsJSON.events.length;i++) {
+        var ev = flashTeamsJSON.events[i];
+        updatePopoverToReadOnly(ev, false);
+    }
+    console.log("UPDATED ALL POPOVERS TO BE READONLY");
+};
+
+function updatePopoverToReadOnly(ev, enableComplete) {
+    var groupNum = ev.id;
+    var hrs = Math.floor(ev.duration/60);
+    var mins = ev.duration % 60;
+
+    $("#rect_" + groupNum).data('popover').options.title = ev.title;
+
+    var content = '<b>Event Start:</b><br>'
+        + ev.startHr + ':'
+        + ev.startMin + '<br>'
+        +'<b>Total Runtime: </b><br>' 
+        + hrs + ' hrs ' + mins + ' mins<br>';
+
+    content += '<b>Members:</b><br>';
+    for (var j=0;j<ev.members.length;j++){
+        content += ev.members[j];
+        content += '<br>';
+    }
+
+    if (ev.dri != ""){
+        content += '<b>Directly-Responsible Individual:</b><br>';
+        content += ev.dri;
+        content += '<br>';
+    }
+
+    if (ev.content != ""){
+        content += '<b>Notes:</b><br>';
+        content += ev.notes;
+        content += '<br>';
+    }
+
+    if (enableComplete) {
+        content += '<br><form><button type="button" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+    } else {
+        content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+    }
+
+    $("#rect_" + groupNum).data('popover').options.content = content;
+};
+
+function hidePopover(popId){
+    $("#rect_" + popId).popover("hide");
+    overlayOff();
 };
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
@@ -56,7 +109,7 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                 +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'+numHours+'" min="2" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft+'" style="width:35px" min="0" step="15" max="45"/><br>'
                 +'<br><b>Members</b><br> <div id="event' + groupNum + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
-                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
+                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + groupNum + '"></select>'
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
@@ -149,7 +202,7 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
         +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
-        +'<br><b>Directly-Responsible Individual for This Event<b><br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
+        +'<br><b>Directly-Responsible Individual for This Event<b><br><select class="driInput" id="driEvent_' + event_counter + '"></select>'
         +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
@@ -161,6 +214,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
+    console.log("These are the members!")
+    console.log(flashTeamsJSON["members"])
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
