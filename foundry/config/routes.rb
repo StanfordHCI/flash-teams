@@ -66,6 +66,10 @@ Foundry::Application.routes.draw do
       get :invite
       post :login
       post :confirm_email
+      post :send_confirmation_email
+      post :check_email_confirmed
+      post :update_json
+      get :get_json
     end
   end
 

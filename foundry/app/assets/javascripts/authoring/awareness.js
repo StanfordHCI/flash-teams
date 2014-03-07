@@ -50,11 +50,11 @@ $("#flashTeamStartBtn").click(function(){
     
     recordStartTime();
     updateStatus(true);
+    updateAllPopoversToReadOnly();
     
     setCursorMoving();
    
     setProjectStatusMoving();
-   
 
     trackLiveAndRemainingTasks();
     boldEvents(1);
@@ -683,6 +683,16 @@ var trackUpcomingEvent = function(){
         var minutes = displayTimeinMinutes%60;
         var overallTime = hours + ":" + minutes;
         if (displayTimeinMinutes < 0){
+            // make the complete button clickable for live/delayed task
+            for (var i = 0; i<flashTeamsJSON["events"].length; i++){
+                var eventt = flashTeamsJSON["events"][i];
+                eventId = flashTeamsJSON["events"][i].id
+                if (eventId == upcomingEvent){
+                    updatePopoverToReadOnly(eventt, true);
+                    break;
+                }
+            }
+
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
                 $(statusText.attr("fill", "blue"));
