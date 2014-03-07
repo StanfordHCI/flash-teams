@@ -15,11 +15,12 @@ class UserMailer < ActionMailer::Base
   def send_task_delayed_email(email,delay_estimation,event_name,dri_role)
     @event_name = event_name
     @dri_role = dri_role
+    @delay_estimation = delay_estimation
   	mail(:to => email, :subject => 'Flash Teams: The team is running '+delay_estimation+' behind schedule')
   end
   
   def send_delayed_dri_not_responded(email,event_name,dri_role)
-    print "here3"
+    
     @event_name = event_name
     @dri_role = dri_role
     mail(:to => email, :subject => 'Flash Teams: '+ event_name +'is not finished on time')

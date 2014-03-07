@@ -182,10 +182,22 @@ class FlashTeamsController < ApplicationController
   end
 
   def early_completion_email
-    email = params[:email]
+    role = params[:email]
     minutes = params[:minutes];
-   
-    UserMailer.send_early_completion_email(email,minutes).deliver
+    
+    @flash_team = FlashTeam.find(params[:id])
+    flash_team_status = JSON.parse(flash_team.status)
+    flash_team_json=flash_team_status["flash_teams_json"]
+    flash_team_members=flash_team_json["members"]
+    tmp_member= flash_team_members.detect{|m| m["role"] == role}
+    member_id= tmp_member["id"]
+    #Member.find(member_id).email
+    if Member.where(:id => member_id).blank?
+      print "member "+tmp_member["role"]+" was not saved in Members"
+    else
+      UserMailer.send_early_completion_email(email,minutes).deliver
+    end
+    
     #NOTE: Rename ‘send_confirmation_email’ above to your method name. It may/may not have arguments, depends on how you defined your method. The ‘deliver’ at the end is what actually sends the email.
     respond_to do |format|
       format.json {render json: nil, status: :ok}
@@ -205,22 +217,20 @@ class FlashTeamsController < ApplicationController
   end
 
 
-  def task_delayed_email
-    email = params[:email]
-    
-    UserMailer.send_task_delayed_email(email).deliver
-    
-    respond_to do |format|
-      format.json {render json: nil, status: :ok}
-    end
-  end
-  
+ 
   def delayed_task_finished_email
-    email = params[:email]
+    role = params[:email]
     minutes = params[:minutes]
-      
-    UserMailer.send_delayed_task_finished_email(email,minutes).deliver
-    
+    tmp_member= flash_team_members.detect{|m| m["role"] == role}
+    member_id= tmp_member["id"]
+    #Member.find(member_id).email
+    if Member.where(:id => member_id).blank?
+      print "member "+tmp_member["role"]+" was not saved in Members"
+    else  
+      member_email = Member.find(member_id).email
+      UserMailer.send_delayed_task_finished_email(member_email,minutes).deliver
+    end       
+
     respond_to do |format|
       format.json {render json: nil, status: :ok}
     end
@@ -228,25 +238,34 @@ class FlashTeamsController < ApplicationController
   
   #renders the delay form that the DRI has to fill out
   def delay
-    @id_team = params[:id_team]
+    @id_team = params[:id]
 
-    @action_link="/flash_teams/"+params[:id_team]+"/"+params[:event_id]+"/get_delay"
+    @action_link="/flash_teams/"+params[:id]+"/"+params[:event_id]+"/get_delay"
   end  
 
 
   def get_delay
-    @delay_estimation = params[:q]
     event_id=params[:event_id]
     event_id=event_id.to_f-1
-    
+
+    #dri_estimation = params[:q] 
     flash_team = FlashTeam.find(params[:id_team])
+    #flash_team_status = JSON.parse(flash_team.status)
+    #delayed_tasks_time=flash_team_status["delayed_tasks_time"]
+    #delay_start_time = delayed_tasks_time[event_id]
+    #delay_start_time = delay_start_time / 60
+
+    #@delay_estimation = dri_estimation + delay_start_time
+    @delay_estimation = params[:q]
+    
+    
 
       if flash_team.notification_email_status != nil
         notification_email_status = JSON.parse(flash_team.notification_email_status)
       else
         notification_email_status = []
       end
-      notification_email_status[event_id.to_f] = true;
+      notification_email_status[event_id.to_f+1] = true;
       flash_team.notification_email_status = JSON.dump(notification_email_status)
       flash_team.save
 
@@ -259,9 +278,19 @@ class FlashTeamsController < ApplicationController
       dri_role=flash_team_events[event_id.to_f]["members"][0]
       event_name= flash_team_events[event_id.to_f]["title"]
 
-      #TODO use email address instead of member role
+     
+       
+    
       flash_team_members.each do |member|
-        UserMailer.send_task_delayed_email(member["role"],@delay_estimation,event_name,dri_role).deliver
+         tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
+          member_id= tmp_member["id"]
+          #Member.find(member_id).email
+          if Member.where(:id => member_id).blank?
+            print "member "+tmp_member["role"]+" was not saved in Members"
+          else  
+            member_email = Member.find(member_id).email
+            UserMailer.send_task_delayed_email(member_email,@delay_estimation,event_name,dri_role).deliver
+          end
       end
   end
 

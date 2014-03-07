@@ -4,12 +4,9 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
-    <h1><%= @event_name %> by <%= @dri_role %> is running late</h1>
+    <h1><%= @event_name %> is running late</h1>
     <p>   
-    	Dear <%= @dri_role %>,<br><br>
-		Flash Teams must inform you that <%= @event_name %> is running late. 
-		<%= link_to 'Please fill out this form', @url %>
-		to give other team members an estimate of how long it takes to finish the delayed task. If we do not hear back from you in <%= @minutes %> minutes, we will notify other team members anyway.
+     Flash Teams must inform you that <%= @event_name %> is running late. <%= link_to 'Please fill out this form', @url %> to give other team members an estimate of how long it takes to finish the delayed task. If we do not hear back from you in <%= @minutes %> minutes, we will notify other team members anyway.
     </p>
     
   </body>
