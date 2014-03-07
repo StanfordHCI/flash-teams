@@ -64,12 +64,22 @@ Foundry::Application.routes.draw do
       get :get_status
       post :update_status
       get :invite
+      get :invited
       post :login
       post :confirm_email
       post :send_confirmation_email
-      post :check_email_confirmed
       post :update_json
       get :get_json
+    end
+  end
+
+  resources :members do
+    member do
+      get :invite
+      get :invited
+      get :confirm_email
+      get :created
+      post :create
     end
   end
 
