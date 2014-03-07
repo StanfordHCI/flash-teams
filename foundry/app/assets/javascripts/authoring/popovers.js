@@ -169,23 +169,14 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, dr
 // Adds/updates the DRI dropdown on the event popover
 function writeDRIMembers(idNum, driId){
 	var indexOfJSON = getEventJSONIndex(idNum);
-    var DRIString = '';
+    var DRIString = '<option value="0">-- Choose DRI --</option>';
+    
     var eventDRI = driId;
     
     // at some point change this to only members for that event (not all members in the flash team)
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
-    		if(i==0){
-    			if (eventDRI == 0){
-	    			DRIString += '<option value="0" selected="selected">-- Choose DRI --</option>';
-    			}
-    			else{
-	    			DRIString += '<option value="0">-- Choose DRI --</option>';
-    			}
-		    	
-	    	}
-	    	else{
-		    	var memberName = flashTeamsJSON["members"][i].role;
+    			var memberName = flashTeamsJSON["members"][i].role;
 				var memberId = flashTeamsJSON["members"][i].id;
 				
 				if (eventDRI == memberId){
@@ -194,7 +185,7 @@ function writeDRIMembers(idNum, driId){
 				else{
 					DRIString += '<option value="'+memberId+'">' + memberName + '</option>';
 				}	
-	    	}             
+	    	           
     }
      
     return DRIString;
