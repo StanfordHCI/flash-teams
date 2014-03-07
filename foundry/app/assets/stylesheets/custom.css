@@ -7,6 +7,10 @@
     cursor:pointer;
 }
 
+.handoffLine, .collaborationRect {
+    cursor: pointer;
+}
+
 #timeline-container {
     position: relative;
 }

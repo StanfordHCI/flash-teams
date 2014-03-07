@@ -6,7 +6,6 @@
 var DRAWING_HANDOFF = false;
 var DRAWING_COLLAB = false;
 var INTERACTION_TASK_ONE_IDNUM = 0;
-
 var interaction_counter = 0;
 
 //For Interactions
@@ -27,6 +26,24 @@ function drawInteraction(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     timeline_svg.on("mousemove", null);
     $(".followingLine").remove();
+
+    if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
+    if (DRAWING_COLLAB == true) $("#collab_btn_" + task1idNum).popover("hide");
+
+    //Check if interaction already exists
+    if (DRAWING_COLLAB == true || DRAWING_HANDOFF == true) {
+        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            var inter = flashTeamsJSON["interactions"][i];
+            if ((inter.event1 == task1idNum && inter.event2 == task2idNum) 
+                || (inter.event1 == task2idNum && inter.event2 == task1idNum)) {
+                alert("Sorry, this interaction already exists.");
+                DRAWING_COLLAB = false;
+                DRAWING_HANDOFF = false;
+                return;
+            }
+        }
+    }
+
     //Swap if task2 starts first
     if(firstEvent(task1idNum, task2idNum) == task2idNum)  {
         var t2Id = task2idNum;
@@ -36,13 +53,10 @@ function drawInteraction(task2idNum) {
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
-        if (DRAWING_COLLAB == true) $("#collab_btn_" + task1idNum).popover("hide");
-        else $("#handoff_btn_" + task1idNum).popover("hide");
         DRAWING_COLLAB = false;
         DRAWING_HANDOFF = false;
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
-        $("#handoff_btn_" + task1idNum).popover("hide");
         interaction_counter++;
         var task1X = $("#rect_" + task1idNum)[0].x.animVal.value;
         var task1Width = $("#rect_" + task1idNum)[0].width.animVal.value;
@@ -59,10 +73,8 @@ function drawInteraction(task2idNum) {
             DRAWING_COLLAB = false;
             DRAWING_HANDOFF = false;
         }
-        
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
-        $("#collab_btn_" + task1idNum).popover("hide");
         var task1X = $("#rect_" + task1idNum)[0].x.animVal.value;
         var task1Width = $("#rect_" + task1idNum)[0].width.animVal.value;
         var task2X = $("#rect_" + task2idNum)[0].x.animVal.value;
@@ -125,7 +137,7 @@ function drawHandoff(task1Id, task2Id) {
        .style("stroke", "#ccc");
 
     path = timeline_svg.append("path")
-        .attr("class", "interactionLine")
+        .attr("class", "handoffLine")
         .attr("id", function () {
             return "interaction_" + interaction_counter;
         })
@@ -133,7 +145,6 @@ function drawHandoff(task1Id, task2Id) {
         .attr("y1", y1)
         .attr("x2", x2)
         .attr("y2", y2)
-        .style("stroke-dasharray", ("0,0"))
         .attr("d", function(d) {
              var dx = x1 - x2,
                 dy = y1 - y2,
