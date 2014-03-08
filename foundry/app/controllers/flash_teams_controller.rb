@@ -27,6 +27,15 @@ class FlashTeamsController < ApplicationController
   end
 
   def edit
+    #customize user views
+    if params.has_key?("u")
+     @in_expert_view = true
+    else
+     @in_expert_view = false
+    end
+
+    #end
+
     @flash_team = FlashTeam.find(params[:id])
 
     flash_teams = FlashTeam.all
