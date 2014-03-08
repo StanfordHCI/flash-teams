@@ -35,7 +35,7 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
 function updateAllPopoversToReadOnly() {
     for(var i=0;i<flashTeamsJSON.events.length;i++) {
         var ev = flashTeamsJSON.events[i];
-        updatePopoverToReadOnly(ev, false);
+        updatePopoverToReadOnly(ev, true);
     }
     console.log("UPDATED ALL POPOVERS TO BE READONLY");
 };
