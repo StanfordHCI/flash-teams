@@ -1,5 +1,5 @@
 require 'json'
-require 'securesandom'
+require 'securerandom'
 
 class FlashTeamsController < ApplicationController
   helper_method :get_tasks
