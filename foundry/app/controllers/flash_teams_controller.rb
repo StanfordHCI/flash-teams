@@ -33,7 +33,13 @@ class FlashTeamsController < ApplicationController
     else
      @in_expert_view = false
     end
+    @in_author_view = false
+    if params.has_key?("author")
 
+      if params[:author] == "1"
+        @in_author_view = true        
+      end
+    end
     #end
 
     @flash_team = FlashTeam.find(params[:id])

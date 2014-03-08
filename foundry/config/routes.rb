@@ -75,4 +75,5 @@ Foundry::Application.routes.draw do
 
   # get '/flash_teams/:id' => 'flash_teams#show'
   # get '/flash_teams' => 'flash_teams#index'
+  get '/flash_teams/:id/edit/:author' => 'flash_teams#edit'
 end
