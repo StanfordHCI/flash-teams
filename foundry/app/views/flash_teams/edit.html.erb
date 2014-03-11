@@ -7,22 +7,15 @@
         <input type="hidden" id="uniq" value=""/>
        <!--Main Layout-->
         <div class="container-fluid" style="min-width: 1300px">       
-            <div class="jumbotron">
-        <div class=" well">
-          <h1>Hello, world!</h1>
-          <p>...</p>
-          <p><a class="btn btn-primary btn-lg" role="button">Edit</a></p>
-        </div>
-        </div>
-            
+                    
             <% if @in_author_view %>
                 <div class="row-fluid">
-                <!--<div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>-->
+                <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>
            
                 <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
                 <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
                 <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
-                <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div> 
+               <!-- <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div> -->
             </div>
                       
             
@@ -100,7 +93,7 @@
                     </div>
                    <!-- chat end -->
     
-                    <div id="diagram-container" class="well" style = "visibility:hidden">
+                    <div id="diagram-container" class="well" style="visibility:hidden" >
                         <h3>Team Structure</h3>
                     </div>
                     
@@ -118,15 +111,11 @@
            
         </div>
         <%= link_to 'Back', flash_teams_path %>
-        <% else %>
+        <% end %>
            
             
             <% if  @in_expert_view %>
            
-            <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px; visibility:hidden">Save</div>
-            <% else %>
-             <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>
-             <% end %>
             <div class="row-fluid">
                 <div class="span3"> <!--Sidebar content-->
 <!--                     <div id = "title-container" class="well">
@@ -191,46 +180,7 @@
                    <!-- chat end -->
 
 
-                    <% if  @in_expert_view %>
-                    <div id="member-container" class="well" style="overflow-y:scroll; visibility: hidden;">
-                    <%else%>
-                    <div id="member-container" class="well" style="overflow-y:scroll;">
-                    <%end%>
-                       <h3>Team Roles</h3>
-                        <form name='newMemberForm' autocomplete="on">
-                            <div class="input-append">
-                                <input class="span9" id="addMemberInput" type="text" placeholder="New Member" autocomplete="on">
-                                <button class="btn" type="button" onclick="addMember()" id="addMemberButton">+Add</button>
-                                <input type="submit" style="display:none">
-                            </div>
-                            <input type="text" name="enterAndReloadBugFix" style="display: none;"> 
-                        </form>
-
-                        <ul class = "nav nav-pills customPill" id="memberPills">
-                            <!--Member Pills Appended Here in JS-->
-                        </ul>
-                    </div>
-					
-                     <% if  @in_expert_view %>
-                        <div id="search-events-container" class="well" style="overflow-y:scroll; visibility:hidden">
-                     <% else%>
-					   <div id="search-events-container" class="well" style="overflow-y:scroll;">
-					 <% end %>
-                       <!--<div class="btn btn-primary btn-large" id="promptbtn" style="margin:5px;">Prompt</div>
-					   <div id="dialog" title="Dialog Title">PROMPT</div>-->
-						<div class="btn btn-primary btn-large" style="margin:5px;" onclick="addEvent()">Add Event</div>  
-						<div class="input-append">
-							<input class="span9" id="searchEventsInput" type="text" placeholder="Search...">
-							<button class="btn" type="button" onclick="searchEvents()" id="searchEventsBtn">Go</button>
-						</div>
-						<div id="search-results"></div>
-					</div>
-					
-
-                    <div id="diagram-container" class="well" style = "visibility:hidden">
-                        <h3>Team Structure</h3>
-                    </div>
-					
+                   
                 </div>
 
                 <div class="span9"> <!--Body Content-->
@@ -242,25 +192,8 @@
                     </div>
                 </div>
             </div>
-            <div class="row-fluid">
-                <!--<div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>-->
-                <% if  @in_expert_view %>
-                <div class="btn" id="flashTeamStartBtn" style="font-size:25px; visibility:hidden">Start</div>
-                <div class="btn" id="flashTeamEndBtn" style="font-size:25px; visibility:hidden">End</div>
-                <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px; visibility:hidden">Add Time</div>
-                <% else %>
-                <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
-                <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
-                <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
-                <% end %>
-            </div>
+           
         </div>
-
-
-        <% if  @in_expert_view %>       
-
-        <% else %>
-        <%= link_to 'Back', flash_teams_path %>
         <% end %>
-        <% end %>
+
         <%= javascript_include_tag "application" %>

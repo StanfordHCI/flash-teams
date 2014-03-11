@@ -30,16 +30,14 @@ class FlashTeamsController < ApplicationController
     #customize user views
     if params.has_key?("u")
      @in_expert_view = true
+     @in_author_view = false
+    
     else
      @in_expert_view = false
+     @in_author_view = true
+    
     end
-    @in_author_view = false
-    if params.has_key?("author")
-
-      if params[:author] == "1"
-        @in_author_view = true        
-      end
-    end
+    
     #end
 
     @flash_team = FlashTeam.find(params[:id])
