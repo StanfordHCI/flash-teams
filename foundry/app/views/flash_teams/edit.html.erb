@@ -1,5 +1,3 @@
-<h1>Flash Teams/edit</h1>
-
 <input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
 
 <% if params[:notice] %>
@@ -12,14 +10,8 @@
         <input type="hidden" id="uniq" value=""/>
        <!--Main Layout-->
         <div class="container-fluid" style="min-width: 1300px">       
-            <div class="row-fluid">
-                <!--<h1>Flash Teams</h1>-->
-                <h1>Foundry</h1>
-                    <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>
-                    <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
-                    <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
-					<div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
-            </div>
+            <br><input type = "text" id="flashTeamTitle" placeholder="New Flash Team   " style="font-size:20px; height:26px; width:450px;" />
+            <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>
 
             <div class="row-fluid">
                 <div class="span3"> <!--Sidebar content-->
@@ -162,11 +154,17 @@
                 <div class="span9"> <!--Body Content-->
                     
                     <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
-                        <h3>Project Workflow</h3>
+                        <h3>Timeline</h3>
                         <div class="overlay" id="overlay" onclick="overlayOff()" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
 
                     </div>
                 </div>
+            </div>
+            <div class="row-fluid">
+                <!--<div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>-->
+                <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
+                <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
+                <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
             </div>
         </div>
 

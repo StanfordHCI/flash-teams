@@ -1,5 +1,5 @@
 require 'json'
-require 'SecureRandom'
+require 'securerandom'
 
 class FlashTeamsController < ApplicationController
   helper_method :get_tasks
@@ -79,7 +79,7 @@ class FlashTeamsController < ApplicationController
     @flash_team.save
 
     respond_to do |format|
-      format.json {render json: "saved", status: :ok}
+      format.json {render json: "saved".to_json, status: :ok}
     end
   end
 
@@ -90,7 +90,7 @@ class FlashTeamsController < ApplicationController
     @flash_team.save
 
     respond_to do |format|
-      format.json {render json: "saved", status: :ok}
+      format.json {render json: "saved".to_json, status: :ok}
     end
   end
 
