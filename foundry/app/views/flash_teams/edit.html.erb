@@ -1,5 +1,9 @@
 <input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
 
+<% if params[:notice] %>
+    <%= params[:notice] %>
+<% end %>
+
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
 
         <input type="hidden" id="flash_team_id" value="<%= @flash_team.id %>"/>

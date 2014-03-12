@@ -164,7 +164,7 @@ function deleteMember(pillId) {
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
-    var url = '/flash_teams/' + flash_team_id + '/invite';
+    var url = '/members/' + flash_team_id + '/invite';
     $.get(url, function(data){
         alert("Please send the member the following unique link to access this flash team: \n" + data);
         $("#invitation_link_" + pillId).html(data);
