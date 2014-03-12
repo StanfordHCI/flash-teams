@@ -60,7 +60,5 @@ class MembersController < ApplicationController
     # send confirmation email
     url = url_for :controller => 'members', :action => 'confirm_email', :id => params[:id], :u => uniq, :cu => confirm_email_uniq
     UserMailer.send_confirmation_email(email, url).deliver
-
-    redirect_to :action => 'created'
   end
 end

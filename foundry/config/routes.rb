@@ -78,7 +78,6 @@ Foundry::Application.routes.draw do
       get :invite
       get :invited
       get :confirm_email
-      get :created
       post :create
     end
   end
