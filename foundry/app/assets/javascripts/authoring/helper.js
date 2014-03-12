@@ -93,6 +93,14 @@ function drawFlashTeamFromJSON(ftJSON) {
     //DRAW INTERACTIONS
 }
 
+//CALL IN CONSOLE TO HIDE THE CHAT BOX AND PROJECT STATUS
+function hideAwareness() {
+    var projCont = document.getElementById("project-status-container");
+    projCont.style.display = "none";
+    var chatCont = document.getElementById("chat-box-container");
+    chatCont.style.display = "none";
+}
+
 function saveFlashTeam() {
 	console.log("Saving flash team");
     
