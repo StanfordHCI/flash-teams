@@ -1,3 +1,5 @@
+require 'json'
+
 class MembersController < ApplicationController
   def invite
     uuid = SecureRandom.uuid
@@ -25,19 +27,6 @@ class MembersController < ApplicationController
   	end
   end
 
-  def login uniq
-  	session[:uniq] = uniq
-  	redirect_to :controller => 'flash_teams', :action => 'edit', :id => params[:id], :notice => "You've been logged in!"
-  end
-
-  def check_email_confirmed uniq
-    member = Member.where(:uniq => uniq)[0]
-    if member != nil and member.email_confirmed
-        return true
-    end
-    return false
-  end
-
   def confirm_email
     uniq = params[:u]
     confirm_email_uniq = params[:cu]
@@ -48,7 +37,17 @@ class MembersController < ApplicationController
     login(uniq)
   end
 
-  def create
+  def login uniq
+  	session[:uniq] = uniq
+  	redirect_to :controller => 'flash_teams', :action => 'edit', :id => params[:id], :notice => "You've been logged in!"
+  end
+
+  def check_email_confirmed uniq
+    member = Member.where(:uniq => uniq)[0]
+    (member != nil and member.email_confirmed)
+  end
+
+  def register
     name = params[:name]
     email = params[:email]
     uniq = params[:uniq]
@@ -58,7 +57,7 @@ class MembersController < ApplicationController
     member = Member.create(:name => name, :email => email, :uniq => uniq, :confirm_email_uniq => confirm_email_uniq)
 
     # send confirmation email
-    url = url_for :controller => 'members', :action => 'confirm_email', :id => params[:id], :u => uniq, :cu => confirm_email_uniq
+    url = url_for :action => 'confirm_email', :id => params[:id], :u => uniq, :cu => confirm_email_uniq
     UserMailer.send_confirmation_email(email, url).deliver
   end
 end

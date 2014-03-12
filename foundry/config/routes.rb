@@ -55,7 +55,6 @@ Foundry::Application.routes.draw do
   #     resources :products
   #   end
 
-  resources :flash_teams
  
   root 'welcome#index'
 
@@ -63,11 +62,6 @@ Foundry::Application.routes.draw do
     member do 
       get :get_status
       post :update_status
-      get :invite
-      get :invited
-      post :login
-      post :confirm_email
-      post :send_confirmation_email
       post :update_json
       get :get_json
     end
@@ -78,7 +72,7 @@ Foundry::Application.routes.draw do
       get :invite
       get :invited
       get :confirm_email
-      post :create
+      post :register
     end
   end
 
