@@ -97,7 +97,6 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                 placement: "right",
                 html: "true",
                 class: "event",
-                style: "width: 650",
                 id: '"popover' + groupNum + '"',
                 trigger: "click",
                 title: '<input type ="text" name="eventName" id="eventName_' + groupNum + '" placeholder="'+title+'" >',
@@ -111,7 +110,7 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                 +'<br><b>Members</b><br> <div id="event' + groupNum + 'memberList">'+ writeEventMembers(groupNum) +'</div>'
                 +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" name="driName" id="driEvent_' + groupNum + '"' 
                 + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
-                +'<br><b>Notes: </b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
+                +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
                 +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
@@ -203,15 +202,15 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, dr
 
     $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
         +'<b>Event Start</b><br>' 
-        +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">'
-        +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
+        +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px"> hrs  '
+        +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"> min<br>'
         +'<b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
         +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
         +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" name="driName" id="driEvent_' + event_counter + '"' 
         + 'onchange="getDRI('+event_counter + ')">'+ writeDRIMembers(event_counter, driId) +'</select>'
-        +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
+        +'<br><b>Notes: <br></b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
         +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button> </p>' 
@@ -272,8 +271,8 @@ function getDRI(groupNum) {
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
-    console.log("These are the members!")
-    console.log(flashTeamsJSON["members"])
+    //console.log("These are the members!");
+    //console.log(flashTeamsJSON["members"]);
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
