@@ -1,5 +1,5 @@
 require 'json'
-require 'SecureRandom'
+require 'securerandom'
 
 class FlashTeamsController < ApplicationController
   helper_method :get_tasks
@@ -79,7 +79,7 @@ class FlashTeamsController < ApplicationController
     @flash_team.save
 
     respond_to do |format|
-      format.json {render json: "saved", status: :ok}
+      format.json {render json: "saved".to_json, status: :ok}
     end
   end
 
@@ -90,7 +90,7 @@ class FlashTeamsController < ApplicationController
     @flash_team.save
 
     respond_to do |format|
-      format.json {render json: "saved", status: :ok}
+      format.json {render json: "saved".to_json, status: :ok}
     end
   end
 
@@ -98,83 +98,6 @@ class FlashTeamsController < ApplicationController
     @flash_team = FlashTeam.find(params[:id])
     respond_to do |format|
       format.json {render json: @flash_team.json, status: :ok}
-    end
-  end
-
-  def invite
-    uuid = SecureRandom.uuid
-
-    # generate unique id and add to url below
-    url = url_for :action => 'edit', :id => params[:id], :u => uuid, :escape => false
-    
-    #UserMailer.send_email(email, url).deliver
-
-    respond_to do |format|
-      format.json {render json: url.to_json, status: :ok}
-    end
-  end
-
-  def login
-    uniq = params[:uniq]
-    member = Member.where(:uniq => uniq, :email_confirmed => true)[0]
-    if member != nil then
-      session[:uniq] = uniq
-      
-      respond_to do |format|
-        format.json {render json: member.email.to_json, status: :ok}
-      end
-    else
-      respond_to do |format|
-        format.json {render json: nil, status: :ok}
-      end
-    end
-  end
-
-  def check_email_confirmed
-    uniq = params[:uniq]
-    member = Member.where(:uniq => uniq)[0]
-    if member != nil then
-      if member.email_confirmed then
-        respond_to do |format|
-          format.json {render json: member.email.to_json, status: :ok}
-        end
-      else
-        respond_to do |format|
-          format.json {render json: nil, status: :ok}
-        end
-      end
-    else
-      respond_to do |format|
-        format.json {render json: nil, status: :ok}
-      end
-    end
-  end
-
-  def confirm_email
-    uniq = params[:uniq]
-    confirm_email_uniq = params[:confirm_email_uniq]
-    member = Member.where(:uniq => uniq, :confirm_email_uniq => confirm_email_uniq)[0]
-    member.email_confirmed = true
-    member.save
-
-    respond_to do |format|
-      format.json {render json: member.email.to_json, status: :ok}
-    end
-  end
-
-  def send_confirmation_email
-    name = params[:name]
-    email = params[:email]
-    uniq = params[:uniq]
-    confirm_email_uniq = SecureRandom.uuid
-    url = url_for :action => 'edit', :id => params[:id], :u => uniq, :cu => confirm_email_uniq, :escape => false
-    UserMailer.send_confirmation_email(email, url).deliver
-
-    # store email, uniq and confirm_email_uniq in db
-    member = Member.create(:name => name, :email => email, :uniq => uniq, :confirm_email_uniq => confirm_email_uniq)
-
-    respond_to do |format|
-      format.json {render json: nil, status: :ok}
     end
   end
 
