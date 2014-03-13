@@ -85,7 +85,7 @@ function addMember() {
     });
  
     //Add to Flash Teams JSON Object
-    var newMember = {"role":memberName, "id": pillCounter, "color":"rgb(0, 168, 0)", "skills":[], "category1":"", "category2":""};
+    var newMember = {"role":memberName, "id": pillCounter, "color":"#08c", "skills":[], "category1":"", "category2":""};
     flashTeamsJSON.members.push(newMember); 
     addMemberNode(memberName, pillCounter, "#808080");
 
@@ -142,6 +142,7 @@ function saveMemberInfo(popId) {
     updateMemberPillColor(newColor, popId);
     updateMemberPopover(popId);
 
+    console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
 };
 
@@ -164,7 +165,7 @@ function deleteMember(pillId) {
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
-    var url = '/flash_teams/' + flash_team_id + '/invite';
+    var url = '/members/' + flash_team_id + '/invite';
     $.get(url, function(data){
         alert("Please send the member the following unique link to access this flash team: \n" + data);
         $("#invitation_link_" + pillId).html(data);
@@ -195,7 +196,7 @@ function initializeColorPicker() {
     $(".full-spectrum").spectrum({
         showPaletteOnly: true,
         showPalette: true,
-        color: "rgb(0, 168, 0)",
+        color: "#08c",
         palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],

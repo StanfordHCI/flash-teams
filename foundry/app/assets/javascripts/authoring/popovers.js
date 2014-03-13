@@ -26,10 +26,63 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
     //add new event to flashTeams database
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":""};
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
     overlayOn();
+};
+
+function updateAllPopoversToReadOnly() {
+    for(var i=0;i<flashTeamsJSON.events.length;i++) {
+        var ev = flashTeamsJSON.events[i];
+        updatePopoverToReadOnly(ev, true);
+    }
+    console.log("UPDATED ALL POPOVERS TO BE READONLY");
+};
+
+function updatePopoverToReadOnly(ev, enableComplete) {
+    var groupNum = ev.id;
+    var hrs = Math.floor(ev.duration/60);
+    var mins = ev.duration % 60;
+
+    $("#rect_" + groupNum).data('popover').options.title = ev.title;
+
+    var content = '<b>Event Start:</b><br>'
+        + ev.startHr + ':'
+        + ev.startMin + '<br>'
+        +'<b>Total Runtime: </b><br>' 
+        + hrs + ' hrs ' + mins + ' mins<br>';
+
+    content += '<b>Members:</b><br>';
+    for (var j=0;j<ev.members.length;j++){
+        content += ev.members[j];
+        content += '<br>';
+    }
+
+    if (ev.dri != ""){
+        content += '<b>Directly-Responsible Individual:</b><br>';
+        content += ev.dri;
+        content += '<br>';
+    }
+
+    if (ev.content != ""){
+        content += '<b>Notes:</b><br>';
+        content += ev.notes;
+        content += '<br>';
+    }
+
+    if (enableComplete) {
+        content += '<br><form><button type="button" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+    } else {
+        content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+    }
+
+    $("#rect_" + groupNum).data('popover').options.content = content;
+};
+
+function hidePopover(popId){
+    $("#rect_" + popId).popover("hide");
+    overlayOff();
 };
 
 //The initialization of the twitter bootstrap popover on an event's task rectangle
@@ -55,8 +108,9 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                 +'<b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'+numHours+'" min="2" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft+'" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br><b>Members</b><br> <div id="event' + groupNum + 'memberList">'+ writeEventMembers(event_counter) +'</div>'
-                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
+                +'<br><b>Members</b><br> <div id="event' + groupNum + 'memberList">'+ writeEventMembers(groupNum) +'</div>'
+                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" name="driName" id="driEvent_' + groupNum + '"' 
+                + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
                 +'<br><b>Notes: </b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
                 +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
@@ -76,6 +130,7 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
     });
 };
 
+
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics
 function saveEventInfo (popId) {
@@ -91,6 +146,8 @@ function saveEventInfo (popId) {
     if (startMin == "") startMin = parseInt($("#startMin_" + popId).attr("placeholder"));
 
     var eventNotes = $("#notes_" + popId).val();
+    var driId = getDRI(popId);
+   
 
     //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
     var indexOfJSON = getEventJSONIndex(popId);
@@ -123,7 +180,7 @@ function saveEventInfo (popId) {
     updateStartPlace(popId, startHour, startMin, newWidth);
 
     //Update Popover
-    updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes);
+    updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes,driId);
 
     $("#rect_" + popId).popover("hide");
     overlayOff();
@@ -134,11 +191,14 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].hours = newHours;
     flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
     flashTeamsJSON["events"][indexOfJSON].notes = eventNotes;
+    flashTeamsJSON["events"][indexOfJSON].dri = driId;
+   
     //UPDATE EVENT MEMBERS?
+    
 };
 
 //Access the data of a single event's popover and changes the content
-function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
+function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, driId) {
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
 
     $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
@@ -149,7 +209,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
         +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
-        +'<br><b>Directly-Responsible Individual for This Event<b><br><select class="driInput" id="driEvent_' + pillCounter + '"></select>'
+        +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" name="driName" id="driEvent_' + event_counter + '"' 
+        + 'onchange="getDRI('+event_counter + ')">'+ writeDRIMembers(event_counter, driId) +'</select>'
         +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
         +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
@@ -157,10 +218,62 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes) {
         +'</form>';
 };
 
+
+// Adds/updates the DRI dropdown on the event popover
+function writeDRIMembers(idNum, driId){
+	var indexOfJSON = getEventJSONIndex(idNum);
+    var DRIString = '<option value="0">-- Choose DRI --</option>';
+    
+    var eventDRI = driId;
+    
+    // at some point change this to only members for that event (not all members in the flash team)
+    if (flashTeamsJSON["members"].length == 0) return "No Team Members";
+    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+    			var memberName = flashTeamsJSON["members"][i].role;
+				var memberId = flashTeamsJSON["members"][i].id;
+				
+				if (eventDRI == memberId){
+					DRIString += '<option value="'+memberId+'"' + 'selected="selected">' + memberName + '</option>';
+				}
+				else{
+					DRIString += '<option value="'+memberId+'">' + memberName + '</option>';
+				}	
+	    	           
+    }
+     
+    return DRIString;
+}
+
+
+// returns the id of the selected DRI in the DRI dropdown menu on the event popover 
+function getDRI(groupNum) {    
+    var dri = document.getElementById("driEvent_" + groupNum);
+    //var driId = dri.value;
+    var driId;
+    
+    if (dri == null){
+	     console.log("dri ID is null");
+	     driId = 0;       
+    }
+    else{
+	    console.log("The dri ID is:" + driId);
+	    var driId = dri.value;    
+    }
+
+    //var driName = flashTeamsJSON["members"][driId].role;
+    //console.log('DRI ID: ' + driId);
+    //console.log('DRI Name: ' + driName);
+   
+    return driId;
+    
+}
+
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
+    console.log("These are the members!")
+    console.log(flashTeamsJSON["members"])
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;

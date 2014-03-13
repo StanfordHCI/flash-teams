@@ -1,9 +1,8 @@
 require 'json'
-require 'SecureRandom'
 require 'google/api_client'
 require 'google/api_client/auth/file_storage'
 require 'google/api_client/auth/installed_app'
-
+require 'securerandom'
 
 class FlashTeamsController < ApplicationController
   helper_method :get_tasks
@@ -83,40 +82,25 @@ class FlashTeamsController < ApplicationController
     @flash_team.save
 
     respond_to do |format|
-      format.json {render json: nil, status: :ok}
+      format.json {render json: "saved".to_json, status: :ok}
     end
   end
 
-  def invite
-    uuid = SecureRandom.uuid
-
-    # generate unique id and add to url below
-    url = url_for :action => 'edit', :id => params[:id], :uniq => uuid, :escape => false
-    
-    #UserMailer.send_email(email, url).deliver
+  def update_json
+    json = params[:flashTeamJSON]
+    @flash_team = FlashTeam.find(params[:id])
+    @flash_team.json = json
+    @flash_team.save
 
     respond_to do |format|
-      format.json {render json: url.to_json, status: :ok}
+      format.json {render json: "saved".to_json, status: :ok}
     end
   end
 
-  def login
-    uniq = params[:uniq]
-    session[:uniq] = uniq
-
+  def get_json
+    @flash_team = FlashTeam.find(params[:id])
     respond_to do |format|
-      format.json {render json: nil, status: :ok}
-    end
-  end
-
-  def confirm_email
-    email = params[:email]
-    uniq = params[:uniq]
-    url = url_for :action => 'edit', :id => params[:id], :uniq => uniq, :email => email, :escape => false
-    UserMailer.send_confirmation_email(email, url).deliver
-
-    respond_to do |format|
-      format.json {render json: nil, status: :ok}
+      format.json {render json: @flash_team.json, status: :ok}
     end
   end
 

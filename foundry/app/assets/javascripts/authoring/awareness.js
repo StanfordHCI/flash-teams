@@ -50,11 +50,11 @@ $("#flashTeamStartBtn").click(function(){
     
     recordStartTime();
     updateStatus(true);
+    updateAllPopoversToReadOnly();
     
     setCursorMoving();
    
     setProjectStatusMoving();
-   
 
     trackLiveAndRemainingTasks();
     boldEvents(1);
@@ -74,6 +74,7 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 $("#flashTeamEndBtn").click(function(){
+    flashTeamsJSON["members"] = [];
     updateStatus(false);
 });
 
@@ -145,6 +146,7 @@ var poll = function(){
             console.log(loadedStatus);
 
             if(flashTeamEnded() || flashTeamUpdated()) {
+                flashTeamsJSON["members"] = [];
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -681,6 +683,16 @@ var trackUpcomingEvent = function(){
         var minutes = displayTimeinMinutes%60;
         var overallTime = hours + ":" + minutes;
         if (displayTimeinMinutes < 0){
+            // make the complete button clickable for live/delayed task
+            for (var i = 0; i<flashTeamsJSON["events"].length; i++){
+                var eventt = flashTeamsJSON["events"][i];
+                eventId = flashTeamsJSON["events"][i].id
+                if (eventId == upcomingEvent){
+                    updatePopoverToReadOnly(eventt, true);
+                    break;
+                }
+            }
+
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
                 $(statusText.attr("fill", "blue"));
@@ -747,8 +759,10 @@ var updateStatus = function(flash_team_in_progress){
         data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
     }).done(function(data){
         console.log("UPDATED FLASH TEAM STATUS");
+        console.log("WHATTUP");
         if(!flash_team_in_progress){
             window.location.reload();
+            console.log(flashTeamsJSON["members"])
         }
     });
 };
@@ -786,6 +800,8 @@ var completeTask = function(groupNum){
     updateStatus(true);
 };
 
+current = 1;
+
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
     return element.members.indexOf(memberName) != -1;
@@ -794,6 +810,12 @@ function isCurrent(element) {
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
     console.log("it's bold!")
+    var uniq = getParameterByName('uniq');
+    $("#uniq").value = uniq;
+    console.log("yoyoyoyoyo", uniq);
+    // if (session[:uniq]){
+    //     console.log("Hello");
+    // }
     var memberName = flashTeamsJSON["members"][currentUser].role;
     var newColor;
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
