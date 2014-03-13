@@ -2,15 +2,18 @@ require 'json'
 
 class MembersController < ApplicationController
   def invite
-    uuid = SecureRandom.uuid
+    uniq = params[:uniq]
+    if !uniq
+      uniq = SecureRandom.uuid
+    end
 
     # generate unique id and add to url below
-    url = url_for :action => 'invited', :id => params[:id], :uniq => uuid
+    url = url_for :action => 'invited', :id => params[:id], :uniq => uniq
     
     #UserMailer.send_email(email, url).deliver
 
     respond_to do |format|
-      format.json {render json: {:url => url, :uniq => uuid}.to_json, status: :ok}
+      format.json {render json: {:url => url, :uniq => uniq}.to_json, status: :ok}
     end
   end
 

@@ -29,7 +29,9 @@ function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
         var member = members[i];
         var member_id = member.id;
+        console.log("rendering popovers for member " + member_id);
         var member_name = member.role;
+        var invitation_link = member.invitation_link;
 
         var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
                 +'<div class="mForm_' + member_id + '">'
@@ -52,9 +54,10 @@ function renderMemberPopovers(members) {
                 +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
                 +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
                 +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
-                +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>     '
-                +'<button type="button" onclick="inviteMember(' + member_id + ');">Invite</button><br><br>'
-                + 'Invitation link: <a id="invitation_link_' + member_id + '" href="" target="_blank"></a>'
+                +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
+                + 'Invitation link: <a id="invitation_link_' + member_id + '" href="" target="_blank">'
+                + invitation_link
+                + '</a>'
             +'</p></form>' 
             +'</div>';
 
@@ -74,21 +77,22 @@ function renderMemberPopovers(members) {
         // show popover
         //$("#mPill_"+member_id).popover("show");
 
+        var mem_id = member_id;
+        console.log("attaching click handler to " + member_id);
         $("#mPill_" + member_id).on('click', function() {
-            console.log("changed");
-
-            $("#member" + member_id + "_category1").change(function(){
-                if ($("#member" + member_id + "_category1").value === "--oDesk Category--") {
-                    $("#member" + member_id + "_category2").attr("disabled", "disabled");
+            console.log("clicked on " + mem_id);
+            $("#member" + mem_id + "_category1").on('change', function(){
+                if ($("#member" + mem_id + "_category1").value === "--oDesk Category--") {
+                    $("#member" + mem_id + "_category2").attr("disabled", "disabled");
                 } else {
-                    $("#member" + member_id + "_category2").removeAttr("disabled");
-                    $("#member" + member_id + "_category2").empty();
+                    $("#member" + mem_id + "_category2").removeAttr("disabled");
+                    $("#member" + mem_id + "_category2").empty();
 
-                    var category1Select = document.getElementById("member" + member_id + "_category1");
+                    var category1Select = document.getElementById("member" + mem_id + "_category1");
                     var category1Name = category1Select.options[category1Select.selectedIndex].value;
                     for (var i = 0; i < oDeskCategories[category1Name].length; i++) {
                         var option = document.createElement("option");
-                        $("#member" + member_id + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
+                        $("#member" + mem_id + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
                     }
                 }
             });
@@ -129,8 +133,8 @@ function addMember() {
     var member_obj = newMemberObject(member_name);
     flashTeamsJSON.members.push(member_obj);
 
-    // display pills, popovers, and diagram
-    renderMembers();
+    console.log("member_obj.id: " + member_obj.id);
+    inviteMember(member_obj.id);
 };
 
 function autocompleteSkills() {
@@ -200,19 +204,19 @@ function deleteMember(pillId) {
     removeMemberNode(pillId);
 
     //REMOVE THE MEMBER FROM EVENTS
-
 };
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/invite';
-    $.get(url, function(data){
-        var invitation_link = data["url"];
-        var uniq = data["uniq"]
-        alert("Please send the member the following unique link to access this flash team: \n" + invitation_link);
-        $("#invitation_link_" + pillId).html(invitation_link);
-        $("#invitation_link_" + pillId).attr('href', invitation_link);
-        flashTeamsJSON["members"][pillId-1].uniq = uniq;
+    var data = {uniq: flashTeamsJSON["members"][pillId-1].uniq};
+    $.get(url, data, function(data){
+        flashTeamsJSON["members"][pillId-1].uniq = data["uniq"];
+        flashTeamsJSON["members"][pillId-1].invitation_link = data["url"];
+        updateStatus(false);
+
+        // display pills, popovers, and diagram
+        renderMembers();
     });
 };
 
