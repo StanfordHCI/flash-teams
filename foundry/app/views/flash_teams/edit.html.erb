@@ -113,8 +113,8 @@
                    <!-- chat end -->
 
                    <!--Add a file picker for the user to start the upload process -->
-                    <!--<input type="file" id="filePicker" style="display: none" />
-                    <input type="button" id="authorizeButton" style="display: none" value="Authorize" />-->
+                    <input type="file" id="filePicker" />
+                    <input type="button" id="authorizeButton" style="display: none" value="Authorize" />
                     
                     <div id="member-container" class="well">
                         <h3>Team Roles</h3>
@@ -160,7 +160,11 @@
             </div>
         </div>
 
+        <%= javascript_include_tag "authoring/gdrive" %>
         <%= javascript_include_tag "application" %>
         <%= javascript_include_tag "https://apis.google.com/js/client.js?onload=handleClientLoad" %>
+        <%= javascript_include_tag "https://apis.google.com/js/api.js"%>
+
+
         
 <%= link_to 'Back', flash_teams_path %>

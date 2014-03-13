@@ -1,5 +1,9 @@
 require 'json'
 require 'SecureRandom'
+require 'google/api_client'
+require 'google/api_client/auth/file_storage'
+require 'google/api_client/auth/installed_app'
+
 
 class FlashTeamsController < ApplicationController
   helper_method :get_tasks

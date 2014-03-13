@@ -87,6 +87,7 @@ function mousedown() {
     var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
     fillPopover(snapPoint[0], groupNum, true, null, null);
+    createNewFolder("New Event " + groupNum);
 };
 
 timeline_svg.append("rect")
@@ -214,8 +215,8 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("font-size", "12px");
 
     $("#handoffs_" + groupNum).on('click', function(){
-        window.open("https://drive.google.com/folderview?id=0B6HS2jq186KxbmkteU1JdGFyMzA&usp=sharing");
-    });
+        window.open(folderIds[groupNum-1][1])});
+        // window.open(folderIds[groupNum-1][1]);}););
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")

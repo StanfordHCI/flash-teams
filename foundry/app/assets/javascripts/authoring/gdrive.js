@@ -1,104 +1,199 @@
-var CLIENT_ID = '879470615919.apps.googleusercontent.com';
-var SCOPES = 'https://www.googleapis.com/auth/drive';
+var CLIENT_ID = '527471489694-b8dd7qjjc16rn2eks7299el2l5metk8j.apps.googleusercontent.com';
+var SCOPES = [
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/drive.install'];
+folderIds = [];
+overallFolder = null;
 
 /**
-* Called when the client library is loaded to start the auth flow.
-*/
+ * Called when the client library is loaded.
+ */
 function handleClientLoad() {
-  window.setTimeout(checkAuth, 1);
+  // gapi.load("auth:client,drive-realtime,drive-share", callback);
+  checkAuth();
 }
 
 /**
-* Check if the current user has authorized the application.
-*/
+ * Check if the current user has authorized the application.
+ */
 function checkAuth() {
+  gapi.auth.authorize(
+      {'client_id': CLIENT_ID, 'scope': SCOPES.join(' '), 'immediate': true},
+      handleAuthResult2);
+}
+
+/**
+ * Called when authorization server replies.
+ *
+ * @param {Object} authResult Authorization result.
+ */
+function handleAuthResult2(authResult) {
+  console.log("I get called");
+  if (authResult) {
+    console.log("Authorized!");
+    // Access token has been successfully retrieved, requests can be sent to the API
+  } else {
+    console.log("we need to authorize");
+    // No access token could be retrieved, force the authorization flow.
+    gapi.auth.authorize(
+        {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},
+        handleAuthResult2);
+  }
+}
+
+/* File-picker javascript files*/
+function onAuthApiLoad() {
   gapi.auth.authorize(
     {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': true},
     handleAuthResult);
 }
 
-/**
-* Called when authorization server replies.
-*
-* @param {Object} authResult Authorization result.
-*/
-function handleAuthResult(authResult) {
-  var authButton = document.getElementById('authorizeButton');
-  var filePicker = document.getElementById('filePicker');
-  authButton.style.display = 'none';
-  filePicker.style.display = 'none';
-  if (authResult && !authResult.error) {
-    // Access token has been successfully retrieved, requests can be sent to the API.
-    filePicker.style.display = 'block';
-    filePicker.onchange = uploadFile;
-  } else {
-    // No access token could be retrieved, show the button to start the authorization flow.
-    authButton.style.display = 'block';
-    authButton.onclick = function() {
-        gapi.auth.authorize(
-            {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},
-            handleAuthResult);
-    };
+function onApiLoad(){
+      gapi.load('auth', {'callback': onAuthApiLoad});
+      gapi.load('picker');
+}
+
+var oauthToken;
+function handleAuthResult(authResult){
+  if (authResult && !authResult.error){
+    oauthToken = authResult.access_token;
+    createPicker();
   }
 }
 
-/**
-* Start the file upload.
-*
-* @param {Object} evt Arguments from the file selector.
-*/
-function uploadFile(evt) {
+function createPicker(){
+  var docUpload = new google.picker.DocsUploadView();
+  var picker = new google.picker.PickerBuilder()
+    .addView(docUpload)
+    .setOAuthToken(oauthToken)
+    .setDeveloperKey('AIzaSyAgrd2gp5F3KdfCH_KfN88FLR1sVEfMJfQ')
+    .setCallback(pickerCallback)
+    .build()
+  picker.setVisible(true);
+}
+
+function pickerCallback(data){
+  if (data.action == google.picker.Action.PICKED){
+    alert('URL: ' + data.docs[0].url);
+  }
+}
+
+function createNew(eventName){
+  fileId = "";
   gapi.client.load('drive', 'v2', function() {
-    var file = evt.target.files[0];
-    insertFile(file);
-  });
+
+       var request = gapi.client.request({
+        'path': '/drive/v2/files',
+        'method': 'POST',
+        'body':{
+            "title" : eventName,
+            "mimeType" : "application/vnd.google-apps.folder",
+            "description" : "Shared Doc"
+         }
+     });
+
+     request.execute(function(resp) { console.log(resp); fileId = resp.id; console.log(resp.id);});
+     console.log(fileId);
+   });
+  gapi.client.load('drive', 'v2', function() {
+       console.log(fileId);
+       var request = gapi.client.request({
+        'path': '/drive/v2/files',
+        'method': 'POST',
+        'body':{
+            "title" : eventName + ".gdoc",
+            "mimeType" : "application/vnd.google-apps.document",
+            "description" : "Shared Doc",
+            "parents": [{"id": fileId}]
+         }
+     });
+
+      request.execute(function(resp) { console.log(resp); });
+   });
 }
 
-/**
-* Insert new file.
-*
-* @param {File} fileData File object to read data from.
-* @param {Function} callback Function to call when the request is complete.
-*/
-function insertFile(fileData, callback) {
-  const boundary = '-------314159265358979323846';
-  const delimiter = "\r\n--" + boundary + "\r\n";
-  const close_delim = "\r\n--" + boundary + "--";
+function createNewFolder(eventName){
+   console.log(eventName);
+   console.log(folderIds);
+   gapi.client.load('drive', 'v2', function() {
 
-  var reader = new FileReader();
-  reader.readAsBinaryString(fileData);
-  reader.onload = function(e) {
-    var contentType = fileData.type || 'application/octet-stream';
-    var metadata = {
-      'title': fileData.name,
-      'mimeType': contentType
-    };
-
-    var base64Data = btoa(reader.result);
-    var multipartRequestBody =
-        delimiter +
-        'Content-Type: application/json\r\n\r\n' +
-        JSON.stringify(metadata) +
-        delimiter +
-        'Content-Type: ' + contentType + '\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        '\r\n' +
-        base64Data +
-        close_delim;
-
-    var request = gapi.client.request({
-        'path': '/upload/drive/v2/files',
+   // if (overallFolder){
+   //     console.log("This one", overallFolder[0]);
+   //     var request = gapi.client.request({
+   //      'path': '/drive/v2/files',
+   //      'method': 'POST',
+   //      'body':{
+   //          "title" : eventName,
+   //          "mimeType" : "application/vnd.google-apps.folder",
+   //          "description" : "Shared Folder",
+   //          "parents": [{"id": overallFolder[0]}]
+   //       }
+   //    });
+   //  }
+     // else{
+      console.log("Nope, this one");
+      var request = gapi.client.request({
+        'path': '/drive/v2/files',
         'method': 'POST',
-        'params': {'uploadType': 'multipart'},
-        'headers': {
-          'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-        },
-        'body': multipartRequestBody});
-    if (!callback) {
-      callback = function(file) {
-        console.log(file)
-      };
-    }
-    request.execute(callback);
-  }
+        'body':{
+            "title" : eventName,
+            "mimeType" : "application/vnd.google-apps.folder",
+            "description" : "Overall Shared Folder"
+         }
+      });
+     // }
+
+      resp = request.execute(function(resp) { 
+        var folderArray = [resp.id, resp.alternateLink];
+        if (!overallFolder){
+          console.log("overall ", folderArray);
+          overallFolder = folderArray;
+          folderIds.push(folderArray);
+          insertPermission(overallFolder[0], "me", "anyone", "writer");
+        } 
+        else{
+          console.log(folderArray);
+          folderIds.push(folderArray);
+          insertPermission(folderArray[0], "me", "anyone", "writer");
+        }
+        return resp; 
+      });
+   });
+}
+
+function createNewFile(eventName) {
+
+    gapi.client.load('drive', 'v2', function() {
+
+       var request = gapi.client.request({
+        'path': '/drive/v2/files',
+        'method': 'POST',
+        'body':{
+            "title" : eventName + ".gdoc",
+            "mimeType" : "application/vnd.google-apps.document",
+            "description" : "Shared Doc"//,
+            // "parents": [{"id": "0B6l5YPiF_QFBUWtPaEgyOWZmOUk"}]
+         }
+     });
+
+      request.execute(function(resp) { console.log(resp); });
+   });
+}
+
+function insertPermission(fileId, value, type, role) {
+  gapi.client.load('drive', 'v2', function() {
+    var body = {
+      'value': value,
+      'type': type,
+      'role': role,
+      'withLink': true
+    };
+    var request = gapi.client.drive.permissions.insert({
+      'fileId': fileId,
+      'resource': body
+    });
+    request.execute(function(resp) { console.log(resp)});
+  });
 }

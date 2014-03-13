@@ -1,3 +1,9 @@
+<%= javascript_include_tag "authoring/gdrive" %>
+<%= javascript_include_tag "https://apis.google.com/js/client.js?onload=handleClientLoad" %>
+<%= javascript_include_tag "https://apis.google.com/js/api.js"%>
+
+<input type="button" id="submitButton" value="Start Google Drive!"></input>
+
 <%= form_for @flash_team do |f| %>
   <% if @flash_team.errors.any? %>
   <div id="error_explanation">
@@ -12,7 +18,7 @@
   <% end %>
   <p>
     <%= f.label :name %><br>
-    <%= f.text_field :name %>
+    <%= f.text_field :name, :id => "nameVal" %>
   </p>
 
   <p>
@@ -24,3 +30,10 @@
     <%= f.submit %>
   </p>
 <% end %>
+
+<script>
+  var submitButton = document.getElementById("submitButton");
+  submitButton.addEventListener("click", function(evt){
+    overallFolder = null;
+    createNewFolder("New Flash Team")});
+</script>

@@ -59,6 +59,8 @@ Foundry::Application.routes.draw do
  
   root 'welcome#index'
 
+  get 'oauth2callback' => 'welcome#index'
+  
   resources :flash_teams do
     member do 
       get :get_status
