@@ -43,9 +43,10 @@
 	border: 1px solid;
 	margin: 5px;
 	padding: 5px;
+/*<<<<<<< HEAD */
 }
 
-
+/*
 $(".full-spectrum").spectrum({
     color: "#ECC",
     showInput: true,
@@ -88,7 +89,7 @@ $(".full-spectrum").spectrum({
         "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
     ]
 });
-
+*/
 .messages {
     height: 150px;
     overflow-y: scroll;
@@ -104,4 +105,6 @@ $(".full-spectrum").spectrum({
     font-size: 8px;
     color: rgba(0,0,0,0.5);
     padding-left:40%;
+/*=======
+>>>>>>> master*/
 }
