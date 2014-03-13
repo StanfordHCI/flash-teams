@@ -40,6 +40,7 @@ function drawFlashTeamFromJSON(ftJSON) {
     //Populate members
     //console.log("ftJSON: ");
     //console.log(ftJSON);
+
     var members_len = ftJSON["members"].length;
     for (var i = 0; i < members_len; i++) {
     	$("#addMemberInput").val(ftJSON["members"][i].role); //Need to mimic adding this name manually
@@ -74,7 +75,7 @@ function drawFlashTeamFromJSON(ftJSON) {
 
     	var x = ftJSON["events"][j].startTime * (1 + (2/3));
     	var y = ftJSON["events"][j].yPosition;
-    	drawEvents(x, y);
+    	drawEvents(x, y, null, null, null);
 
     	//Add to JSON
     	ftJSON["events"][j].id = event_counter;
@@ -88,7 +89,6 @@ function drawFlashTeamFromJSON(ftJSON) {
     	$("#notes_" + pillCounter).val(ftJSON["events"][j].notes);
     	overlayOn();
     }
-    
     
     //DRAW INTERACTIONS
 }
@@ -106,7 +106,4 @@ function saveFlashTeam() {
     }).done(function(data){
         console.log("UPDATED FLASH TEAM JSON");
     });
-
-    //$('#flash_team_json').val(JSON.stringify(flashTeamsJSON));
-    //$('.edit_flash_team').submit();
 }

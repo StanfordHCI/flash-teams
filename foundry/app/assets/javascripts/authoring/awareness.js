@@ -100,10 +100,16 @@ $(document).ready(function(){
 
         loadedStatus = data;
         var in_progress = loadedStatus.flash_team_in_progress;
+        flashTeamsJSON = loadedStatus.flash_teams_json;
+        console.log("flashTeamsJSON: ");
+        console.log(flashTeamsJSON);
         if(in_progress){
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData();
             poll();
+        } else { // note: won't loadData(), even though there may be events created, so users don't see them
+            console.log("flash team not in progress");
+            renderMembers();
         }
     });
 });
@@ -147,7 +153,7 @@ var poll = function(){
             console.log(loadedStatus);
 
             if(flashTeamEnded() || flashTeamUpdated()) {
-                flashTeamsJSON["members"] = [];
+                //flashTeamsJSON["members"] = [];
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -202,12 +208,12 @@ var loadData = function(){
         delayed_tasks = loadedStatus.delayed_tasks;
         drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
         completed_red_tasks = loadedStatus.completed_red_tasks;
-        flashTeamsJSON = loadedStatus.flash_teams_json;
     
         var cursor_details = positionCursor(flashTeamsJSON);
         drawBlueBoxes();
         drawRedBoxes();
         drawDelayedTasks();
+        renderMembers();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
         trackUpcomingEvent();
@@ -781,13 +787,6 @@ var updateStatus = function(flash_team_in_progress){
         data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
     }).done(function(data){
         console.log("UPDATED FLASH TEAM STATUS");
-        console.log("WHATTUP");
-        if(!flash_team_in_progress){
-            localStatus.flash_teams_json.members = [];
-            loadedStatus.flash_teams_json.member = [];
-            window.location.reload();
-            console.log(flashTeamsJSON["members"])
-        }
     });
 };
 
@@ -838,6 +837,8 @@ var completeTask = function(groupNum){
     updateStatus(true);
 };
 
+current = 1;
+
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
     return element.members.indexOf(memberName) != -1;
@@ -846,6 +847,12 @@ function isCurrent(element) {
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
     console.log("it's bold!")
+    var uniq = getParameterByName('uniq');
+    $("#uniq").value = uniq;
+    console.log("yoyoyoyoyo", uniq);
+    // if (session[:uniq]){
+    //     console.log("Hello");
+    // }
     var memberName = flashTeamsJSON["members"][currentUser].role;
     var newColor;
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
