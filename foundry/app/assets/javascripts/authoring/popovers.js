@@ -107,21 +107,21 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                 trigger: "click",
                 title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
                     + '" placeholder="'+title+'" >',
-                content: '<table><tr><td>'
+                content: '<table><tr><td >'
                 + '<form name="eventForm_' + groupNum + '">'
                 +'<b>Event Start:          </b><br>' 
-                +'<input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
-                    + '" min="0" style="width:35px">  hrs'
-                +'<input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
-                    + '" min="0" step="15" max="45" style="width:35px">  min<br>'
-                +'<b>Total Runtime: </b><br>' 
+                +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
+                    + '" min="0" style="width:35px">'
+                +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
+                    + '" min="0" step="15" max="45" style="width:35px"><br>'
+                +'<br><b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
                     +numHours+'" min="2" style="width:35px"/>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
                     +'" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
+                +'</td><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
                     + writeEventMembers(groupNum) +'</div>'
-                +'</td><td><br>Directly-Responsible Individual for This Event<br><select class="driInput"' 
+                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput"' 
                     +' name="driName" id="driEvent_' + groupNum + '"' 
                 + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
                 +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
@@ -168,6 +168,8 @@ function saveEventInfo (popId) {
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         //START HERE
         var memberName = flashTeamsJSON["members"][i].role;
+
+        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
 
         if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
             if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
