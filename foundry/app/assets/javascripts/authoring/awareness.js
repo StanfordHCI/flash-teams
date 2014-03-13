@@ -48,14 +48,23 @@ var getXCoordForTime = function(t){
 $("#flashTeamStartBtn").click(function(){
     $("#flashTeamStartBtn").attr("disabled", "disabled");
     
+    //$('#flashTeamStartBtn').css('display','none');
+    $("div#search-events-container").css('display','none');
+    $("div#project-status-container").css('display','');
+    $("div#chat-box-container").css('display','');
+    $("#flashTeamTitle").css('display','none');
+
+    var title = $('#flashTeamTitle').val();
+    flashTeamsJSON["title"]=title;
+    var title_html = '<h3>'+title+'</h3>';
+    $("div#team_title").append(title_html);
+
+    
     recordStartTime();
     updateStatus(true);
     updateAllPopoversToReadOnly();
-    
     setCursorMoving();
-   
     setProjectStatusMoving();
-
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();

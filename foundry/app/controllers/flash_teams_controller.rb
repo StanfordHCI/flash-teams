@@ -26,8 +26,41 @@ class FlashTeamsController < ApplicationController
     @flash_teams = FlashTeam.all
   end
 
+ 
   def edit
+
     @flash_team = FlashTeam.find(params[:id])
+    #customize user views
+    status = @flash_team.status 
+    if status == nil
+      @author_runtime=false
+    else
+      json_status= JSON.parse(status)
+      if json_status["flash_team_in_progress"] == nil
+        @author_runtime=false
+      else
+        @author_runtime=json_status["flash_team_in_progress"]
+      end
+    end
+
+    if params.has_key?("u")
+     @in_expert_view = true
+     @in_author_view = false
+    else
+     @in_expert_view = false
+     @in_author_view = true
+    end
+    #end
+   
+    #show flash team title
+    if json_status.blank?
+       @flash_team_title = "New Flash Team" 
+    else
+      flash_team_json = json_status["flash_teams_json"]
+      @flash_team_title = flash_team_json["title"] 
+    end
+    #end
+   
 
     flash_teams = FlashTeam.all
     @events_array = []
@@ -51,7 +84,7 @@ class FlashTeamsController < ApplicationController
       render 'edit'
     end
   end
-
+  
   def destroy
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.destroy
@@ -100,6 +133,7 @@ class FlashTeamsController < ApplicationController
       format.json {render json: @flash_team.json, status: :ok}
     end
   end
+
 
   def flash_team_params
     params.require(:flash_team).permit(:name, :json)
