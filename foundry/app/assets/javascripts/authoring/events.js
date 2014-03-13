@@ -101,14 +101,16 @@ var drag = d3.behavior.drag()
         var groupNum = this.id.split("_")[1];
         var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
 
-        //Horiztonal draggingx
+        //Horizontal draggingx
         var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
-        var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
-        if (d3.event.dx + d.x < 0) newX = 0 - (DRAGBAR_WIDTH/2);
+        var newX = Math.max((0 - (DRAGBAR_WIDTH/2)), Math.min(SVG_WIDTH-rectWidth, dragX));
+        if (d3.event.dx + d.x < 0) newX = (0 - (DRAGBAR_WIDTH/2));
         d.x = newX;
 
         //Update event popover
-        var startHour = Math.floor((d.x/100));
+        if (d.x == (0 - (DRAGBAR_WIDTH/2))) var startHour = 0;
+        else var startHour = Math.floor((d.x/100));
+        
         var startMin = (d.x%100/25*15);
         if(startMin == 57.599999999999994) {
             startHour++;
