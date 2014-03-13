@@ -10,7 +10,7 @@ class MembersController < ApplicationController
     #UserMailer.send_email(email, url).deliver
 
     respond_to do |format|
-      format.json {render json: url.to_json, status: :ok}
+      format.json {render json: {:url => url, :uniq => uuid}.to_json, status: :ok}
     end
   end
 
