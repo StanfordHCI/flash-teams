@@ -125,7 +125,7 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                     +' name="driName" id="driEvent_' + groupNum + '"' 
                 + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
                 +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
-                +'</td></tr><tr><td><br><br><p><button type="button" id="delete"'
+                +'</td></tr><tr><td><p><button type="button" id="delete"'
                     +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
                 +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
@@ -218,7 +218,8 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, dr
     $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' 
         + event_counter + '" placeholder="' + title + '">';
 
-    $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
+    $("#rect_" + idNum).data('popover').options.content = '<table><tr><td >'
+        +'<form name="eventForm_' + event_counter + '">'
         +'<b>Event Start</b><br>' 
         +'<input type="number" id="startHr_' + event_counter 
             + '" placeholder="' + startHr + '" min="0" style="width:35px"> hrs  '
@@ -229,17 +230,17 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, dr
             + hrs + '" min="0" style="width:35px"/>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min 
             + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' 
+        +'</td><td><b>Members</b><br> <div id="event' + event_counter + 'memberList">' 
             +  writeEventMembers(event_counter) + '</div>'
         +'<br>Directly-Responsible Individual for This Event<br><select class="driInput"' 
             +' name="driName" id="driEvent_' + event_counter + '"' 
         + 'onchange="getDRI('+event_counter + ')">'+ writeDRIMembers(event_counter, driId) +'</select>'
         +'<br><b>Notes: <br></b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
-        +'<br><br><p><button type="button" id="delete"' 
+        +'</td></tr><tr><td><p><button type="button" id="delete"' 
             +' onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
         +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button> </p>' 
-        +'</form>';
+        +'</form></td></tr>';
 };
 
 
