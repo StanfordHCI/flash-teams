@@ -801,6 +801,8 @@ var completeTask = function(groupNum){
     updateStatus(true);
 };
 
+current = 1;
+
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
     return element.members.indexOf(memberName) != -1;
@@ -809,6 +811,12 @@ function isCurrent(element) {
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
     console.log("it's bold!")
+    var uniq = getParameterByName('uniq');
+    $("#uniq").value = uniq;
+    console.log("yoyoyoyoyo", uniq);
+    // if (session[:uniq]){
+    //     console.log("Hello");
+    // }
     var memberName = flashTeamsJSON["members"][currentUser].role;
     var newColor;
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {

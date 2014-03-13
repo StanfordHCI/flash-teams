@@ -174,8 +174,10 @@ function mousedown() {
     var point = d3.mouse(this);
     
     var snapPoint = calcSnap(point[0], point[1]);
-    var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-    fillPopover(snapPoint[0], groupNum, true, null, null);
+    if ((snapPoint[1] < 505) && (snapPoint[0] < 2396)){
+        var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
+        fillPopover(snapPoint[0], groupNum, true, null, null);
+    }
 };
 
 timeline_svg.append("rect")

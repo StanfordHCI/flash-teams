@@ -182,6 +182,7 @@ function saveMemberInfo(popId) {
     updateMemberPillColor(newColor, popId);
     updateMemberPopover(popId);
 
+    console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
 };
 
