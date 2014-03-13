@@ -99,10 +99,16 @@ $(document).ready(function(){
 
         loadedStatus = data;
         var in_progress = loadedStatus.flash_team_in_progress;
+        flashTeamsJSON = loadedStatus.flash_teams_json;
+        console.log("flashTeamsJSON: ");
+        console.log(flashTeamsJSON);
         if(in_progress){
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData();
             poll();
+        } else { // note: won't loadData(), even though there may be events created, so users don't see them
+            console.log("flash team not in progress");
+            renderMembers();
         }
     });
 });
@@ -146,7 +152,7 @@ var poll = function(){
             console.log(loadedStatus);
 
             if(flashTeamEnded() || flashTeamUpdated()) {
-                flashTeamsJSON["members"] = [];
+                //flashTeamsJSON["members"] = [];
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -201,12 +207,12 @@ var loadData = function(){
         delayed_tasks = loadedStatus.delayed_tasks;
         drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
         completed_red_tasks = loadedStatus.completed_red_tasks;
-        flashTeamsJSON = loadedStatus.flash_teams_json;
     
         var cursor_details = positionCursor(flashTeamsJSON);
         drawBlueBoxes();
         drawRedBoxes();
         drawDelayedTasks();
+        renderMembers();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
         trackUpcomingEvent();
@@ -759,11 +765,6 @@ var updateStatus = function(flash_team_in_progress){
         data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
     }).done(function(data){
         console.log("UPDATED FLASH TEAM STATUS");
-        console.log("WHATTUP");
-        if(!flash_team_in_progress){
-            window.location.reload();
-            console.log(flashTeamsJSON["members"])
-        }
     });
 };
 

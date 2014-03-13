@@ -402,10 +402,12 @@ function deleteRect (rectId) {
 //and a pill in the popover that can be deleted, both of the specified color of the member
 function addEventMember(eventId, memberIndex) {
     var memberName = flashTeamsJSON["members"][memberIndex].role;
+    var memberUniq = flashTeamsJSON["members"][memberIndex].uniq;
+    console.log(memberUniq);
     console.log("Adding member ", memberName);
     //Update JSON
     var indexOfEvent = getEventJSONIndex(eventId);
-    flashTeamsJSON["events"][indexOfEvent].members.push(memberName);
+    flashTeamsJSON["events"][indexOfEvent].members.push({name: memberName, uniq: memberUniq});
     var numMembers = flashTeamsJSON["events"][indexOfEvent].members.length;
 
     //Grab color of member
@@ -455,7 +457,7 @@ function deleteEventMember(eventId, memberNum, memberName) {
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
     for (i = 0; i < flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
-        if (flashTeamsJSON["events"][indexOfJSON].members[i] == memberName) {
+        if (flashTeamsJSON["events"][indexOfJSON].members[i]["name"] == memberName) {
             flashTeamsJSON["events"][indexOfJSON].members.splice(i, 1);
             //START HERE IF YOU WANT TO SHIFT UP MEMBER LINES AFTER DELETION
             break;

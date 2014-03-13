@@ -275,7 +275,7 @@ var memberName = member["role"];
    
 //Appends a list item pill to the memberPills ul
    $("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName
-       + '<div class="close" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">  X</div>' + '</a></li>');
+       + '<div class="close" onclick="deleteMember(' + pillCounter + '); updateStatus(false);">  X</div>' + '</a></li>');
 
    //Clears Input
    $("#addMemberInput").val(this.placeholder);
@@ -300,8 +300,8 @@ var memberName = member["role"];
            +'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
            +'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
            +'<script type="text/javascript"> initializeColorPicker(); </script>'
-           +'<p><button type="button" onclick="deleteMember(' + pillCounter + '); saveFlashTeam();">Delete</button>     '
-           +'<button type="button" onclick="saveMemberInfo(' + pillCounter + '); saveFlashTeam();">Save</button>'
+           +'<p><button type="button" onclick="deleteMember(' + pillCounter + '); updateStatus(false);">Delete</button>     '
+           +'<button type="button" onclick="saveMemberInfo(' + pillCounter + '); updateStatus(false);">Save</button>'
        +'</p></form>'
        +'</div>',
        container: $("#member-container")

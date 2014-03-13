@@ -28,18 +28,6 @@ class FlashTeamsController < ApplicationController
 
   def edit
     @flash_team = FlashTeam.find(params[:id])
-
-    flash_teams = FlashTeam.all
-    @events_array = []
-    flash_teams.each do |flash_team|
-      next if flash_team.json.blank?
-      flash_team_json = JSON.parse(flash_team.json)
-      flash_team_events = flash_team_json["events"]
-      flash_team_events.each do |flash_team_event|
-        @events_array << flash_team_event
-      end
-    end
-    @events_json = @events_array.to_json
   end
 
   def update
@@ -96,8 +84,10 @@ class FlashTeamsController < ApplicationController
 
   def get_json
     @flash_team = FlashTeam.find(params[:id])
+    status_hashmap = JSON.parse(@flash_team.status)
+    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + status_hashmap["flash_teams_json"].to_json
     respond_to do |format|
-      format.json {render json: @flash_team.json, status: :ok}
+      format.json {render json: status_hashmap["flash_teams_json"].to_json, status: :ok}
     end
   end
 
