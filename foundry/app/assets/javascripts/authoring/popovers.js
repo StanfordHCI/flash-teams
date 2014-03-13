@@ -113,15 +113,15 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
                 +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
                     + '" min="0" style="width:35px">'
                 +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
-                    + '" min="0" step="15" max="45" style="width:35px"><br>'
-                +'<br><b>Total Runtime: </b><br>' 
+                    + '" min="0" step="15" max="45" style="width:35px">'
+                +'</td><td><b>Total Runtime: </b><br>' 
                 +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
-                    +numHours+'" min="2" style="width:35px"/>          ' 
+                    +numHours+'" min="2" style="width:35px"/><br>          ' 
                 +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
                     +'" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'</td><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
+                +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
                     + writeEventMembers(groupNum) +'</div>'
-                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput"' 
+                +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
                     +' name="driName" id="driEvent_' + groupNum + '"' 
                 + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
                 +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
@@ -221,18 +221,18 @@ function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, dr
     $("#rect_" + idNum).data('popover').options.content = '<table><tr><td >'
         +'<form name="eventForm_' + event_counter + '">'
         +'<b>Event Start</b><br>' 
-        +'<input type="number" id="startHr_' + event_counter 
-            + '" placeholder="' + startHr + '" min="0" style="width:35px"> hrs  '
-        +'<input type="number" id="startMin_' + event_counter 
-            + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"> min<br>'
-        +'<b>Total Runtime: </b><br>' 
+        +'Hours: <input type="number" id="startHr_' + event_counter 
+            + '" placeholder="' + startHr + '" min="0" style="width:35px">  '
+        +'Minutes:<input type="number" id="startMin_' + event_counter 
+            + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
+        +'</td><td><b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' 
-            + hrs + '" min="0" style="width:35px"/>          ' 
+            + hrs + '" min="0" style="width:35px"/><br>    ' 
         +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min 
             + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'</td><td><b>Members</b><br> <div id="event' + event_counter + 'memberList">' 
+        +'</td><tr><td><b>Members</b><br> <div id="event' + event_counter + 'memberList">' 
             +  writeEventMembers(event_counter) + '</div>'
-        +'<br>Directly-Responsible Individual for This Event<br><select class="driInput"' 
+        +'</td><td><br><b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + event_counter + '"' 
         + 'onchange="getDRI('+event_counter + ')">'+ writeDRIMembers(event_counter, driId) +'</select>'
         +'<br><b>Notes: <br></b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
@@ -309,14 +309,14 @@ function writeEventMembers(idNum) {
             if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
                 //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 
-                    + i + 'checkbox" checked="true">' + memberName + "   ";
+                    + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
                 break;
             }
         }
         if (!found) {
             memberString +=  '<input type="checkbox" id="event' + idNum 
-                + 'member' + i + 'checkbox">' + memberName + "   "; 
+                + 'member' + i + 'checkbox">' + memberName + "   <br>"; 
         }      
     }
     return memberString;
