@@ -28,11 +28,10 @@ class FlashTeamsController < ApplicationController
 
  
   def edit
-    
-     @flash_team = FlashTeam.find(params[:id])
 
+    @flash_team = FlashTeam.find(params[:id])
     #customize user views
-    status =    @flash_team.status 
+    status = @flash_team.status 
     if status == nil
       @author_runtime=false
     else
@@ -43,7 +42,7 @@ class FlashTeamsController < ApplicationController
         @author_runtime=json_status["flash_team_in_progress"]
       end
     end
-    
+
     if params.has_key?("u")
      @in_expert_view = true
      @in_author_view = false
@@ -51,9 +50,16 @@ class FlashTeamsController < ApplicationController
      @in_expert_view = false
      @in_author_view = true
     end
-    
     #end
-
+   
+    #show flash team title
+    if json_status.blank?
+       @flash_team_title = "New Flash Team" 
+    else
+      flash_team_json = json_status["flash_teams_json"]
+      @flash_team_title = flash_team_json["title"] 
+    end
+    #end
    
 
     flash_teams = FlashTeam.all
@@ -78,7 +84,7 @@ class FlashTeamsController < ApplicationController
       render 'edit'
     end
   end
-
+  
   def destroy
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.destroy

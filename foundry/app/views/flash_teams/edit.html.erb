@@ -7,8 +7,21 @@
 <input type="hidden" id="uniq" value=""/>
 <!--Main Layout-->
 <div class="container-fluid" style="min-width: 1300px">       
-            
+     
+    
+              
     <% if @in_author_view %>
+   
+    <% if @author_runtime %>
+      <h3> <%= @flash_team_title %> </h3>
+    <% else %>
+       
+        <div id="team_title">
+            <input type = "text" id="flashTeamTitle" placeholder="New Flash Team"  />
+            <!--<button class="btn" type="button" onclick="addTitle()" id="addTitle">Save</button> -->
+        </div>
+    <% end %>        
+   
     <div class="row-fluid">
         <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>
         <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
@@ -23,7 +36,7 @@
 
             <% if @author_runtime %>
             <div id="project-status-container" class="well">
-                 <input type = "text" id="flashTeamTitle" placeholder="New Flash Team   " style="font-size:20px; height:26px; " />
+               
                <p>Progress Status:</p>   
                 <div class="progress progress-bar" style="background: #ffffff !important; border:solid 1px #c3c3c3;">
                     <div class="bar" style=" width: 0%; transition:width 1s linear;
@@ -78,7 +91,7 @@
             </div>
             <% else %>
             <div id="project-status-container" class="well" style="display: none;">
-                <input type = "text" id="flashTeamTitle" placeholder="New Flash Team   " style="font-size:20px; height:26px; " />
+                
                 <p>Progress Status:</p>   
                 <div class="progress progress-bar" style="background: #ffffff !important; border:solid 1px #c3c3c3;">
                     <div class="bar" style=" width: 0%; transition:width 1s linear;
@@ -168,7 +181,7 @@
    
     
     <% if  @in_expert_view %>
-   
+    <h3><%= @flash_team_title %> </h3>
     <div class="row-fluid">
         <div class="span3"> <!--Sidebar content-->
 <!--                     <div id = "title-container" class="well">
@@ -178,7 +191,9 @@
 				</div> 
 -->	
             <div id="project-status-container" class="well">
-                 <input type = "text" id="flashTeamTitle" placeholder="New Flash Team   " style="font-size:20px; height:26px; " />
+                
+                
+               
                 <p>Progress Status:</p>   
                 <div class="progress progress-bar" style="background: #ffffff !important; border:solid 1px #c3c3c3;">
                     <div class="bar" style=" width: 0%; transition:width 1s linear;

@@ -52,6 +52,13 @@ $("#flashTeamStartBtn").click(function(){
     $("div#search-events-container").css('display','none');
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
+    $("#flashTeamTitle").css('display','none');
+
+    var title = $('#flashTeamTitle').val();
+    flashTeamsJSON["title"]=title;
+    var title_html = '<h3>'+title+'</h3>';
+    $("div#team_title").append(title_html);
+
     
     recordStartTime();
     updateStatus(true);
