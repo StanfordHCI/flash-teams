@@ -175,9 +175,9 @@ function mousedown() {
     
     var snapPoint = calcSnap(point[0], point[1]);
     if ((snapPoint[1] < 505) && (snapPoint[0] < 2396)){
-        createNewFolder("New Event " + groupNum);
         var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
         fillPopover(snapPoint[0], groupNum, true, null, null);
+        createNewFolder("New Event " + groupNum);
     }
 };
 
@@ -403,6 +403,7 @@ function deleteRect (rectId) {
     $("#time_text_" + rectId).remove();
     $("#collab_btn_" + rectId).remove();
     $("#handoff_btn_" + rectId).remove();
+    $("#handoffs_" + rectId).remove();
 
     var indexOfJSON = getEventJSONIndex(rectId);
     for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
@@ -410,6 +411,8 @@ function deleteRect (rectId) {
     }
     //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
+    deleteFile(folderIds[indexOfJSON][0]);
+    folderIds.splice(indexOfJSON, 1);
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle

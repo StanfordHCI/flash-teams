@@ -5,7 +5,7 @@ var SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/drive.install'];
 folderIds = [];
-overallFolder = null;
+overallFolder = ["0B00Fgglh1uVXSzZHZGd5Yjhxanc", "https://docs.google.com/folderview?id=0B00Fgglh1uVXSzZHZGd5Yjhxanc&usp=drivesdk"] ;
 
 /**
  * Called when the client library is loaded.
@@ -80,59 +80,26 @@ function pickerCallback(data){
   }
 }
 
-function createNew(eventName){
-  fileId = "";
-  gapi.client.load('drive', 'v2', function() {
-
-       var request = gapi.client.request({
-        'path': '/drive/v2/files',
-        'method': 'POST',
-        'body':{
-            "title" : eventName,
-            "mimeType" : "application/vnd.google-apps.folder",
-            "description" : "Shared Doc"
-         }
-     });
-
-     request.execute(function(resp) { console.log(resp); fileId = resp.id; console.log(resp.id);});
-     console.log(fileId);
-   });
-  gapi.client.load('drive', 'v2', function() {
-       console.log(fileId);
-       var request = gapi.client.request({
-        'path': '/drive/v2/files',
-        'method': 'POST',
-        'body':{
-            "title" : eventName + ".gdoc",
-            "mimeType" : "application/vnd.google-apps.document",
-            "description" : "Shared Doc",
-            "parents": [{"id": fileId}]
-         }
-     });
-
-      request.execute(function(resp) { console.log(resp); });
-   });
-}
 
 function createNewFolder(eventName){
    console.log(eventName);
    console.log(folderIds);
    gapi.client.load('drive', 'v2', function() {
 
-   // if (overallFolder){
-   //     console.log("This one", overallFolder[0]);
-   //     var request = gapi.client.request({
-   //      'path': '/drive/v2/files',
-   //      'method': 'POST',
-   //      'body':{
-   //          "title" : eventName,
-   //          "mimeType" : "application/vnd.google-apps.folder",
-   //          "description" : "Shared Folder",
-   //          "parents": [{"id": overallFolder[0]}]
-   //       }
-   //    });
-   //  }
-     // else{
+   if (overallFolder){
+       console.log("This one", overallFolder[0]);
+       var request = gapi.client.request({
+        'path': '/drive/v2/files',
+        'method': 'POST',
+        'body':{
+            "title" : eventName,
+            "mimeType" : "application/vnd.google-apps.folder",
+            "description" : "Shared Folder",
+            "parents": [{"id": overallFolder[0]}]
+         }
+      });
+    }
+     else{
       console.log("Nope, this one");
       var request = gapi.client.request({
         'path': '/drive/v2/files',
@@ -143,7 +110,7 @@ function createNewFolder(eventName){
             "description" : "Overall Shared Folder"
          }
       });
-     // }
+     }
 
       resp = request.execute(function(resp) { 
         var folderArray = [resp.id, resp.alternateLink];
@@ -181,6 +148,16 @@ function createNewFile(eventName) {
       request.execute(function(resp) { console.log(resp); });
    });
 }
+
+function deleteFile(fileId){
+  gapi.client.load('drive', 'v2', function(){
+    var request = gapi.client.drive.files.delete({
+      'fileId': fileId
+    });
+    request.execute(function(resp) { });
+  });
+}
+
 
 function insertPermission(fileId, value, type, role) {
   gapi.client.load('drive', 'v2', function() {
