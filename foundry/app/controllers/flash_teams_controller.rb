@@ -92,23 +92,14 @@ class FlashTeamsController < ApplicationController
   end
 
   def early_completion_email
-    role = params[:email]
-    minutes = params[:minutes];
-    
-    @flash_team = FlashTeam.find(params[:id])
-    flash_team_status = JSON.parse(flash_team.status)
-    flash_team_json=flash_team_status["flash_teams_json"]
-    flash_team_members=flash_team_json["members"]
-    tmp_member= flash_team_members.detect{|m| m["role"] == role}
-    member_id= tmp_member["id"]
-    #Member.find(member_id).email
-    if Member.where(:id => member_id).blank?
-      print "member "+tmp_member["role"]+" was not saved in Members"
-    else
+    uniq = params[:uniq]
+    minutes = params[:minutes]
+
+    email = Member.where(:uniq => uniq)[0].email
+    if email
       UserMailer.send_early_completion_email(email,minutes).deliver
     end
-    
-    #NOTE: Rename ‘send_confirmation_email’ above to your method name. It may/may not have arguments, depends on how you defined your method. The ‘deliver’ at the end is what actually sends the email.
+
     respond_to do |format|
       format.json {render json: nil, status: :ok}
     end

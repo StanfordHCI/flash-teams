@@ -64,6 +64,7 @@ Foundry::Application.routes.draw do
       post :update_status
       post :update_json
       get :get_json
+      post :early_completion_email
     end
   end
 

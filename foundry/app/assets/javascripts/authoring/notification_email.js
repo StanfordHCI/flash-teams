@@ -1,9 +1,9 @@
-var sendEarlyCompletionEmail= function(email,minutes) {
+var sendEarlyCompletionEmail= function(uniq,minutes) {
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/early_completion_email';
-    $.post(url, {email: email, minutes:minutes} ,function(data){
-    	console.log("successfully sent Early Task Completion email");
+    $.post(url, {uniq: uniq, minutes:minutes} ,function(data){
+    	console.log("successfully sent Early Task Completion email for uniq: " + uniq);
     });
 };
 
@@ -67,33 +67,28 @@ function delayed_notification_helper(new_remaining_tasks){
 
  
 function  early_completion_helper(remaining_tasks,early_minutes){
-    var emails=[];
-     for (var i=0;i<remaining_tasks.length;i++){
+    console.log("sending emails..");
+    var uniqs_sent_already = [];
+    for (var i=0;i<remaining_tasks.length;i++){
         var groupNum = remaining_tasks[i];
         //alert(i+" "+groupNum);
     	for (var j = 0; j<flashTeamsJSON["events"].length; j++){
-       
-        eventId = flashTeamsJSON["events"][j].id;
+            eventId = flashTeamsJSON["events"][j].id;
 	        if (eventId == groupNum){
-	        	
 	            var event_tmp = flashTeamsJSON["events"][j];
-	            
 	            //TODO actual emails instead of roles
-	            for( var m_i=0;m_i<event_tmp["members"].length;m_i++ ){
-	            	tmp_email=event_tmp["members"][m_i];
-	             	
-	                if(emails.indexOf(tmp_email)==-1){
-	                emails.push(tmp_email);
-	                //alert("sent email to "+tmp_email);
-	               sendEarlyCompletionEmail(tmp_email,early_minutes);
-	               //alert("sent email to"+tmp_email+" "+early_minutes);
+	            for(var m_i=0;m_i<event_tmp["members"].length;m_i++){
+	            	var uniq = event_tmp["members"][m_i].uniq;
+	                if(uniqs_sent_already.indexOf(uniq)==-1){
+	                   uniqs_sent_already.push(uniq);
+	                   //alert("sent email to "+tmp_email);
+	                   sendEarlyCompletionEmail(uniq,early_minutes);
+	                   //alert("sent email to"+tmp_email+" "+early_minutes);
 	             	}
 	            }
 	        }
         }
     }
-
-
 };
   
 function DelayedTaskFinished_helper(remaining_tasks){
