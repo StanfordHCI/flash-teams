@@ -210,6 +210,9 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].dri = driId;
    
     //UPDATE EVENT MEMBERS?
+
+    console.log("saved event info");
+    updateStatus(false);
     
 };
 

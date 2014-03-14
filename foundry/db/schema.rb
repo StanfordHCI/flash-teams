@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20131127015448) do
     t.string   "name"
     t.text     "json"
     t.text     "status"
+    t.text     "notification_email_status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

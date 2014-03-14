@@ -28,18 +28,6 @@ class FlashTeamsController < ApplicationController
 
   def edit
     @flash_team = FlashTeam.find(params[:id])
-
-    flash_teams = FlashTeam.all
-    @events_array = []
-    flash_teams.each do |flash_team|
-      next if flash_team.json.blank?
-      flash_team_json = JSON.parse(flash_team.json)
-      flash_team_events = flash_team_json["events"]
-      flash_team_events.each do |flash_team_event|
-        @events_array << flash_team_event
-      end
-    end
-    @events_json = @events_array.to_json
   end
 
   def update
@@ -96,86 +84,115 @@ class FlashTeamsController < ApplicationController
 
   def get_json
     @flash_team = FlashTeam.find(params[:id])
+    status_hashmap = JSON.parse(@flash_team.status)
+    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + status_hashmap["flash_teams_json"].to_json
     respond_to do |format|
-      format.json {render json: @flash_team.json, status: :ok}
+      format.json {render json: status_hashmap["flash_teams_json"].to_json, status: :ok}
     end
   end
 
-  def invite
-    uuid = SecureRandom.uuid
-
-    # generate unique id and add to url below
-    url = url_for :action => 'edit', :id => params[:id], :u => uuid, :escape => false
-    
-    #UserMailer.send_email(email, url).deliver
-
-    respond_to do |format|
-      format.json {render json: url.to_json, status: :ok}
-    end
-  end
-
-  def login
+  def early_completion_email
     uniq = params[:uniq]
-    member = Member.where(:uniq => uniq, :email_confirmed => true)[0]
-    if member != nil then
-      session[:uniq] = uniq
-      
-      respond_to do |format|
-        format.json {render json: member.email.to_json, status: :ok}
-      end
-    else
-      respond_to do |format|
-        format.json {render json: nil, status: :ok}
-      end
+    minutes = params[:minutes]
+
+    email = Member.where(:uniq => uniq)[0].email
+    if email
+      UserMailer.send_early_completion_email(email,minutes).deliver
     end
-  end
-
-  def check_email_confirmed
-    uniq = params[:uniq]
-    member = Member.where(:uniq => uniq)[0]
-    if member != nil then
-      if member.email_confirmed then
-        respond_to do |format|
-          format.json {render json: member.email.to_json, status: :ok}
-        end
-      else
-        respond_to do |format|
-          format.json {render json: nil, status: :ok}
-        end
-      end
-    else
-      respond_to do |format|
-        format.json {render json: nil, status: :ok}
-      end
-    end
-  end
-
-  def confirm_email
-    uniq = params[:uniq]
-    confirm_email_uniq = params[:confirm_email_uniq]
-    member = Member.where(:uniq => uniq, :confirm_email_uniq => confirm_email_uniq)[0]
-    member.email_confirmed = true
-    member.save
-
-    respond_to do |format|
-      format.json {render json: member.email.to_json, status: :ok}
-    end
-  end
-
-  def send_confirmation_email
-    name = params[:name]
-    email = params[:email]
-    uniq = params[:uniq]
-    confirm_email_uniq = SecureRandom.uuid
-    url = url_for :action => 'edit', :id => params[:id], :u => uniq, :cu => confirm_email_uniq, :escape => false
-    UserMailer.send_confirmation_email(email, url).deliver
-
-    # store email, uniq and confirm_email_uniq in db
-    member = Member.create(:name => name, :email => email, :uniq => uniq, :confirm_email_uniq => confirm_email_uniq)
 
     respond_to do |format|
       format.json {render json: nil, status: :ok}
     end
+  end
+
+  def before_task_starts_email
+    email = params[:email]
+    minutes = params[:minutes];
+    # IMPORTANT
+    UserMailer.send_before_task_starts_email(email,minutes).deliver
+    
+    #NOTE: Rename ‘send_confirmation_email’ above to your method name. It may/may not have arguments, depends on how you defined your method. The ‘deliver’ at the end is what actually sends the email.
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
+  end
+
+
+ 
+  def delayed_task_finished_email
+    role = params[:email]
+    minutes = params[:minutes]
+    tmp_member= flash_team_members.detect{|m| m["role"] == role}
+    member_id= tmp_member["id"]
+    #Member.find(member_id).email
+    if Member.where(:id => member_id).blank?
+      print "member "+tmp_member["role"]+" was not saved in Members"
+    else  
+      member_email = Member.find(member_id).email
+      UserMailer.send_delayed_task_finished_email(member_email,minutes).deliver
+    end       
+
+    respond_to do |format|
+      format.json {render json: nil, status: :ok}
+    end
+  end
+  
+  #renders the delay form that the DRI has to fill out
+  def delay
+    @id_team = params[:id]
+
+    @action_link="/flash_teams/"+params[:id]+"/"+params[:event_id]+"/get_delay"
+  end  
+
+
+  def get_delay
+    event_id=params[:event_id]
+    event_id=event_id.to_f-1
+
+    #dri_estimation = params[:q] 
+    flash_team = FlashTeam.find(params[:id_team])
+    #flash_team_status = JSON.parse(flash_team.status)
+    #delayed_tasks_time=flash_team_status["delayed_tasks_time"]
+    #delay_start_time = delayed_tasks_time[event_id]
+    #delay_start_time = delay_start_time / 60
+
+    #@delay_estimation = dri_estimation + delay_start_time
+    @delay_estimation = params[:q]
+    
+    
+
+      if flash_team.notification_email_status != nil
+        notification_email_status = JSON.parse(flash_team.notification_email_status)
+      else
+        notification_email_status = []
+      end
+      notification_email_status[event_id.to_f+1] = true;
+      flash_team.notification_email_status = JSON.dump(notification_email_status)
+      flash_team.save
+
+      flash_team_status = JSON.parse(flash_team.status)
+      flash_team_json=flash_team_status["flash_teams_json"]
+      flash_team_members=flash_team_json["members"]
+      flash_team_events=flash_team_json["events"]
+    
+      #TODO dri is now the first member. 
+      dri_role=flash_team_events[event_id.to_f]["members"][0]
+      event_name= flash_team_events[event_id.to_f]["title"]
+
+     
+       
+    
+      flash_team_members.each do |member|
+         tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
+          member_id= tmp_member["id"]
+          #Member.find(member_id).email
+          if Member.where(:id => member_id).blank?
+            print "member "+tmp_member["role"]+" was not saved in Members"
+          else  
+            member_email = Member.find(member_id).email
+            UserMailer.send_task_delayed_email(member_email,@delay_estimation,event_name,dri_role).deliver
+          end
+      end
   end
 
   def flash_team_params
