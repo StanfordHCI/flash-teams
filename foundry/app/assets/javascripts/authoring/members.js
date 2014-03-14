@@ -55,7 +55,7 @@ function renderMemberPopovers(members) {
                 +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
                 +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
                 +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
-                + 'Invitation link: <a id="invitation_link_' + member_id + '" href="" target="_blank">'
+                + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
                 + invitation_link
                 + '</a>'
             +'</p></form>' 

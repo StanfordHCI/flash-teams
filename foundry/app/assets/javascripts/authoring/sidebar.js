@@ -1,6 +1,6 @@
 /***chat****/
 
-var myDataRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/'+ flash_team_id)    
+var myDataRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+ flash_team_id)    
                         
 var currentdate = new Date(); 
       var datetime = currentdate.getDate() + "/"
@@ -48,10 +48,10 @@ var lastMessage=0;
 //*** online users
 // since I can connect from multiple devices or browser tabs, we store each connection instance separately
 // any time that connectionsRef's value is null (i.e. has no children) I am offline
-var myConnectionsRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
+var myConnectionsRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
 // stores the timestamp of my last disconnect (the last time I was seen online)
-var lastOnlineRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
-var connectedRef = new Firebase('https://sizzling-fire-2681.firebaseio.com/.info/connected');
+var lastOnlineRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
+var connectedRef = new Firebase('https://intense-fire-1391.firebaseio.com/.info/connected');
 
 connectedRef.on('value', function(snap) {
     if (snap.val() === true) {
