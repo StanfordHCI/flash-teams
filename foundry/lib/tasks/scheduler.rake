@@ -131,6 +131,8 @@ namespace :notification do
               
               #member_id= delayed_event["dri"]
               tmp_member= flash_team_members.detect{|m| m["role"] == dri_role}
+
+              next if tmp_member  == nil
               member_id= tmp_member["id"]
               #dri_role= delayed_event["members"][member_id]
               if Member.where(:id => member_id).blank?
