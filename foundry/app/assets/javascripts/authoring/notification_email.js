@@ -17,11 +17,11 @@ var sendBeforeTaskStartsEmail=function(minutes,email){
 };
 
 
-var sendDelayedTaskFinishedEmail=function(minutes,email){
+var sendDelayedTaskFinishedEmail=function(minutes,uniq,title){
 	
-	var flash_team_id = $("#flash_team_id").val();
+    var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/delayed_task_finished_email';
-    $.post(url, {email: email, minutes:minutes} ,function(data){
+    $.post(url, {uniq: uniq, minutes:minutes, title: title} ,function(data){
     	console.log("successfully sent notification: delayed task is finished");
     });
 };
@@ -91,7 +91,7 @@ function  early_completion_helper(remaining_tasks,early_minutes){
     }
 };
   
-function DelayedTaskFinished_helper(remaining_tasks){
+function DelayedTaskFinished_helper(remaining_tasks,title){
   var emails=[];
   for (var i=0;i<remaining_tasks.length;i++){
         var groupNum = remaining_tasks[i];
@@ -105,14 +105,17 @@ function DelayedTaskFinished_helper(remaining_tasks){
 	            
 	            //TODO actual emails instead of roles
 	            for( var m_i=0;m_i<event_tmp["members"].length;m_i++ ){
-	            		var tmp_email=event_tmp["members"][m_i];
+	            		var uniq=event_tmp["members"][m_i]["uniq"];
 	             		var member_role=event_tmp["members"][m_i];
-	               	
-	                if(emails.indexOf(tmp_email)==-1){
-	                	emails.push(tmp_email);
-	                var remaining_time= getUserNextTaskStartTime(member_role);
-	                 
-	                sendDelayedTaskFinishedEmail(remaining_time,tmp_email);
+	               	  
+	           
+                    if(emails.indexOf(uniq)==-1){
+	                	emails.push(uniq);
+	                    var remaining_time= getUserNextTaskStartTime(member_role);
+	                    //var remaining_time = "30";
+                        //alert(remaining_time);
+                        //alert(uniq);
+	                    sendDelayedTaskFinishedEmail(remaining_time,uniq,title);
 	                //alert("sent delayed task finished email to"+tmp_email+" "+remaining_time);
 	             	}
 	            }
@@ -130,14 +133,14 @@ var getUserNextTaskStartTime= function(input_name){
     var memberName = input_name;
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent2);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-   	upcomingEvent = currentUserEvents[0].id;
+   	upcomingEvent2 = currentUserEvents[0].id;
   
-    task_g = getTaskGFromGroupNum(upcomingEvent);
-    if (task_g.data()[0].completed){
-        toDelete = upcomingEvent;
+    task_g2 = getTaskGFromGroupNum(upcomingEvent2);
+    if (task_g2.data()[0].completed){
+        toDelete = upcomingEvent2;
         currentUserEvents.splice(0,1);
-        upcomingEvent = currentUserEvents[0].id;
-        task_g = getTaskGFromGroupNum(upcomingEvent)
+        upcomingEvent2 = currentUserEvents[0].id;
+        task_g2 = getTaskGFromGroupNum(upcomingEvent2)
     }
     var cursor_x = cursor.attr("x1");
     var cursorHr = (cursor_x-(cursor_x%100))/100;
