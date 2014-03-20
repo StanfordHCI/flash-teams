@@ -116,22 +116,15 @@ class FlashTeamsController < ApplicationController
       format.json {render json: nil, status: :ok}
     end
   end
-
-
  
   def delayed_task_finished_email
-    role = params[:email]
+    uniq = params[:uniq]
     minutes = params[:minutes]
-    tmp_member= flash_team_members.detect{|m| m["role"] == role}
-    member_id= tmp_member["id"]
-    #Member.find(member_id).email
-    if Member.where(:id => member_id).blank?
-      print "member "+tmp_member["role"]+" was not saved in Members"
-    else  
-      member_email = Member.find(member_id).email
-      UserMailer.send_delayed_task_finished_email(member_email,minutes).deliver
-    end       
-
+    title = params[:title]
+    
+    email = Member.where(:uniq => uniq)[0].email
+    UserMailer.send_delayed_task_finished_email(email,minutes,title).deliver
+    
     respond_to do |format|
       format.json {render json: nil, status: :ok}
     end
@@ -158,8 +151,6 @@ class FlashTeamsController < ApplicationController
 
     #@delay_estimation = dri_estimation + delay_start_time
     @delay_estimation = params[:q]
-    
-    
 
       if flash_team.notification_email_status != nil
         notification_email_status = JSON.parse(flash_team.notification_email_status)
@@ -175,24 +166,42 @@ class FlashTeamsController < ApplicationController
       flash_team_members=flash_team_json["members"]
       flash_team_events=flash_team_json["events"]
     
-      #TODO dri is now the first member. 
-      dri_role=flash_team_events[event_id.to_f]["members"][0]
-      event_name= flash_team_events[event_id.to_f]["title"]
-
-     
-       
-    
-      flash_team_members.each do |member|
-         tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
-          member_id= tmp_member["id"]
-          #Member.find(member_id).email
-          if Member.where(:id => member_id).blank?
-            print "member "+tmp_member["role"]+" was not saved in Members"
-          else  
-            member_email = Member.find(member_id).email
-            UserMailer.send_task_delayed_email(member_email,@delay_estimation,event_name,dri_role).deliver
-          end
+      #dri_role=flash_team_events[event_id.to_f]["members"][0]
+      dri =  flash_team_events[event_id.to_f]["dri"]
+      dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
+      if dri_member  == nil
+        puts "dri is not defined"
+        dri_member= flash_team_members.detect{|m| m["role"] == flash_team_events[event_id.to_f]["members"][0]["name"]}
       end
+      dri_role=dri_member["role"]
+      event_name= flash_team_events[event_id.to_f]["title"]
+      flash_team_members.each do |member|
+          #tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
+          #member_id= tmp_member["id"]
+          uniq = member["uniq"]
+          email = Member.where(:uniq => uniq)[0].email
+          UserMailer.send_task_delayed_email(email,@delay_estimation,event_name,dri_role).deliver
+       
+      end
+  end
+
+  def get_user_name
+     
+     uniq=""
+     if params[:uniq] != ""
+       uniq = params[:uniq]
+      member = Member.where(:uniq => uniq)[0]
+    
+      user_name = member.name
+      user_role="" 
+     else
+        user_name="Daniela"
+        user_role="Author"
+     end
+
+     respond_to do |format|
+      format.json {render json: {:user_name => user_name, :user_role => user_role, :uniq => uniq}.to_json, status: :ok}
+    end
   end
 
   def flash_team_params

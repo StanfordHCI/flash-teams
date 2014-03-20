@@ -88,13 +88,48 @@ function getParameterByName(name) {
 var uniq = getParameterByName('uniq');
 $("#uniq").value = uniq;
 
+var chat_role;
+var chat_name;
 $(document).ready(function(){
+
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
     $.ajax({
         url: url,
         type: 'get'
     }).done(function(data){
+        //get user name and user role for the chat
+         
+        var uniq_u=getParameterByName('uniq');
+        
+        var url2 = '/flash_teams/' + flash_team_id + '/get_user_name';
+        $.ajax({
+           url: url2,
+           type: 'post',
+           data : { "uniq" : String(uniq_u) }
+        }).done(function(data){
+           chat_name = data["user_name"];
+           chat_role = data["user_role"];
+           //alert(chat_role);
+           if (chat_role == ""){
+             
+             uniq_u2 = data["uniq"];
+             flash_team_members = flashTeamsJSON["members"];
+             console.log(flash_team_members[0].uniq);
+             for(var i=0;i<flash_team_members.length;i++){
+                
+                if (flash_team_members[i].uniq == uniq_u2){
+                  chat_role = flash_team_members[i].role; 
+                }
+             }
+            
+           }
+
+           //alert(chat_role);
+           //alert(chat_name);
+           //end
+
+
         if(data == null) return; // status not set yet
 
         loadedStatus = data;
@@ -110,6 +145,9 @@ $(document).ready(function(){
             console.log("flash team not in progress");
             renderMembers();
         }
+
+        
+        });
     });
 });
 
@@ -185,6 +223,7 @@ var loadStatus = function(id){
         console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
  
+    
     return JSON.parse(loadedStatusJSON);
 };
 
