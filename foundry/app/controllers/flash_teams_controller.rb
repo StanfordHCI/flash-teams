@@ -185,6 +185,25 @@ class FlashTeamsController < ApplicationController
       end
   end
 
+  def get_user_name
+     
+     uniq=""
+     if params[:uniq] != ""
+       uniq = params[:uniq]
+      member = Member.where(:uniq => uniq)[0]
+    
+      user_name = member.name
+      user_role="" 
+     else
+        user_name="Daniela"
+        user_role="Author"
+     end
+
+     respond_to do |format|
+      format.json {render json: {:user_name => user_name, :user_role => user_role, :uniq => uniq}.to_json, status: :ok}
+    end
+  end
+
   def flash_team_params
     params.require(:flash_team).permit(:name, :json)
   end
