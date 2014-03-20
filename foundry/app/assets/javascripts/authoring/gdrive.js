@@ -81,7 +81,7 @@ function pickerCallback(data){
 }
 
 
-function createNewFolder(eventName){
+function createNewFolder(eventName, JSONId){
    console.log(eventName);
    console.log(folderIds);
    gapi.client.load('drive', 'v2', function() {
@@ -122,17 +122,21 @@ function createNewFolder(eventName){
           console.log("postFolder", flashTeamsJSON.folder);
         }
         else{
-          var lastIndex = flashTeamsJSON["events"].length-1;
-          flashTeamsJSON["events"][lastIndex].gdrive = folderArray;
+          flashTeamsJSON["events"][JSONId].gdrive = folderArray;
           console.log(folderIds);
           console.log("adding gdrive");
-          console.log(flashTeamsJSON["events"][lastIndex]);
+          console.log(flashTeamsJSON["events"][JSONId]);
           folderIds.push(folderArray);
         }
-        // insertPermission(overallFolder[0], "me", "anyone", "writer");
         return resp; 
       });
    });
+}
+
+function addAllFolders(){
+  for (var i = 0; i<flashTeamsJSON["events"].length; i++){
+    createNewFolder(flashTeamsJSON["events"][i].title + flashTeamsJSON["events"][i].id, i);
+  }
 }
 
 function createNewFile(eventName) {

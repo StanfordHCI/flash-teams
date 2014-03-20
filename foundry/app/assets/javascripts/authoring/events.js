@@ -177,7 +177,7 @@ function mousedown() {
     if ((snapPoint[1] < 505) && (snapPoint[0] < 2396)){
         var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
         fillPopover(snapPoint[0], groupNum, true, null, null);
-        createNewFolder("New Event " + groupNum);
+        // createNewFolder("New Event " + groupNum);
     }
 };
 
@@ -307,7 +307,9 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     console.log(groupNum);
     $("#handoffs_" + groupNum).on('click', function(){
-        window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+        if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
+            window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+        }
     });
         // window.open(folderIds[groupNum-1][1]);}););
 
