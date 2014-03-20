@@ -43,7 +43,7 @@ class FlashTeamsController < ApplicationController
       end
     end
 
-    if params.has_key?("u")
+    if params.has_key?("uniq")
      @in_expert_view = true
      @in_author_view = false
     else
