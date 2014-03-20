@@ -66,6 +66,7 @@ Foundry::Application.routes.draw do
       get :get_json
       post :early_completion_email
       post :get_user_name
+      post :delayed_task_finished_email
     end
   end
 

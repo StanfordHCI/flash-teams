@@ -685,7 +685,7 @@ var trackLiveAndRemainingTasks = function() {
 
                 //send email when a task is delayed
                 //TODO: call if in master
-                delayed_notification_helper(new_remaining_tasks);
+                //delayed_notification_helper(new_remaining_tasks);
                 //end   
 
                 // add to delayed_tasks list
@@ -846,8 +846,9 @@ var completeTask = function(groupNum){
         /*send delayed task is finished email*/
         
         if(remaining_tasks.length!=0){
-           
-            DelayedTaskFinished_helper(remaining_tasks);
+            var completed_task = getTaskGFromGroupNum (groupNum);
+
+            DelayedTaskFinished_helper(remaining_tasks,completed_task["title"]);
         } /* end */
 
     } else {

@@ -26,8 +26,9 @@ class UserMailer < ActionMailer::Base
     mail(:to => email, :subject => 'Flash Teams: '+ event_name +'is not finished on time')
   end
 
-  def send_delayed_task_finished_email(email,minutes)
+  def send_delayed_task_finished_email(email,minutes,title)
   	  @minutes=minutes
+      @title = title
   	  mail(:to => email, :subject => 'Flash Teams: The delayed task is finished')
   end
 
@@ -38,7 +39,7 @@ class UserMailer < ActionMailer::Base
   end
 
   #action is called in scheduler.rb
-  def send_dri_on_delay_email(email,event_name, dri_role,url,team_id,event_id)
+  def send_dri_on_delay_email(email,event_name, dri_role,url,team_id,event_id,cc_emails)
       @event_name=event_name
       @dri_role=dri_role
       @minutes="10"
@@ -47,7 +48,7 @@ class UserMailer < ActionMailer::Base
 
       #@url2 =  url_for :controller => 'FlashTeamsController', :team_id => team_id ,:event_id => event_id , :action => 'delay'
 
-      mail(:to => email, :subject => 'Flash Teams: '+ event_name +' run by ' + dri_role +' is running late')
+      mail(:to => email, :cc => cc_emails, :subject => 'Flash Teams: '+ event_name +' run by ' + dri_role +' is running late')
        
   end
 end

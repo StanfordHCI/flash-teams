@@ -10,7 +10,8 @@ namespace :notification do
    include Rails.application.routes.url_helpers
 
    #change default_url_option to current host
-   default_url_options[:host] = 'flashteams.herokuapp.com'
+   #default_url_options[:host] = 'flashteams.herokuapp.com'
+   default_url_options[:host] = 'localhost:3000'
    #script should be scheduled to run every call_period seconds
    call_period= 5 * 60 #seconds
    puts "checking if a task is delayed..."
@@ -55,7 +56,7 @@ namespace :notification do
       remaining_tasks = flash_team_status["remaining_tasks"]
       live_tasks = flash_team_status["live_tasks"]
       #get members of live and remaining tasks
-      #TODO get actual emails
+
       roles_remaining_live=[];
       remaining_tasks.each do |remaining_task|
          groupNum = remaining_task;
@@ -114,33 +115,57 @@ namespace :notification do
             if eventId == groupNum
               /send email to dri/
               delayed_event=event
-              /TODO considered the first member is the dri for now. Change this when dri feature is added/
-              /print flash_team_json["events"][0]["dri"]/
+             
               if delayed_event["members"].length == 0
                 print "error: delayed event has no members\n"
                 break
               end
-              dri =  delayed_event["members"][0]
+              dri =  delayed_event["dri"]
+              dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
+              if dri_member  == nil
+                puts "dri is not defined"
+                dri_member= flash_team_members.detect{|m| m["role"] == delayed_event["members"][0]["name"]}
+              end
+              next if dri_member  == nil
+              dri_role=dri_member["role"]
               event_name= delayed_event["title"]
-              dri_role=dri
-
+              
               event_id=eventId
               team_id=flash_team_json["id"]
-              
               url = url_for :controller => 'flash_teams',:action => 'delay',:id =>team_id.to_s, :event_id => event_id.to_s
-              
-              #member_id= delayed_event["dri"]
-              tmp_member= flash_team_members.detect{|m| m["role"] == dri_role}
-              member_id= tmp_member["id"]
-              #dri_role= delayed_event["members"][member_id]
-              if Member.where(:id => member_id).blank?
-                print "member "+tmp_member["role"]+" was not saved in Members"
-              else
-                  email_dri = Member.find(member_id).email
-                 UserMailer.send_dri_on_delay_email(email_dri,event_name, dri_role,url,team_id,event_id).deliver
+              member_id= dri_member["id"]
+              dri_event = delayed_event["members"].detect{|m| m["name"] == dri_role}
+             
+             if dri_event  == nil
+                print "dri_event is nil"
+                next
               end
 
-             
+              dri_uniq = dri_event["uniq"]
+              
+              next if dri_uniq == nil
+              
+              #get array of emails to be CCed
+              cc_emails=[]
+              print delayed_event["members"]
+              delayed_event["members"].each do |cc_member|
+                cc_uniq = cc_member["uniq"]
+                cc_emails.push(Member.where(:uniq => cc_uniq.to_s)[0].email)
+              end
+              print "list of CCed emails: "
+              print cc_emails
+
+              #email_dri = Member.where(:uniq => dri_uniq)[0].email
+              if Member.where(:uniq => dri_uniq.to_s)[0]==nil
+                puts "dri has not entered information yet"
+                next
+              end
+              email_dri = Member.where(:uniq => dri_uniq.to_s)[0].email
+              if email_dri == nil
+                puts "dri has not entered email yet"
+                next
+              end
+              UserMailer.send_dri_on_delay_email(email_dri,event_name, dri_role,url,team_id,event_id,cc_emails).deliver
               break
             end
           end
@@ -150,6 +175,8 @@ namespace :notification do
           print groupNum
         #DRI has not responded yet, send email to remaining members
         if delta_time_sec >= (2 * call_period) && delta_time_sec < (3 * call_period)
+        #if delta_time_sec >= (2 * call_period)
+         
           print "******\n"
           print notification_email_status
           print groupNum
@@ -159,30 +186,42 @@ namespace :notification do
             if eventId == groupNum
               
                delayed_event=event
-               /TODO considered the first member is the dri for now. Change this when dri feature is added/
                 if delayed_event["members"].length == 0
                   print "error: delayed event has no members\n"
                 break
                 end
                 event_name= delayed_event["title"]
-                dri =  delayed_event["members"][0]
-                dri_role=dri
+                
+                dri =  delayed_event["dri"]
+                dri_member = flash_team_members.detect{|m| m["id"] == dri.to_i}
+                if dri_member  == nil
+                  puts "dri is not defined"
+                  dri_member= flash_team_members.detect{|m| m["role"] == delayed_event["members"][0]["name"]}
+                end
+                if dri_member  == nil
+                  print "dri is nill\n"
+                  next
+                end
+                dri_role=dri_member["role"]
+                
+
                 event_id=eventId
                 team_id=flash_team_json["id"]
-
-                #TODO CC members
-                dri =  delayed_event["members"][0]
-
-                /TODO get  email instead of role!/
+                
                 roles_remaining_live.each do |role|
-                    tmp_member= flash_team_members.detect{|m| m["role"] == role}
-                    member_id= tmp_member["id"]
-                    #Member.find(member_id).email
-                    if Member.where(:id => member_id).blank?
-                      print "member "+tmp_member["role"]+" was not saved in Members"
-                    else
-                      UserMailer.send_delayed_dri_not_responded(Member.find(member_id).email,event_name,dri_role).deliver;   
-                    end
+                  uniq = role["uniq"]
+                  print "\n !!!!!!!###"
+                  print uniq
+                  if Member.where(:uniq => uniq.to_s)[0]==nil
+                    puts "dri has not entered information yet"
+                    next
+                  end
+                  email = Member.where(:uniq => uniq.to_s)[0].email
+                  if email == nil
+                    puts "member does not have email"
+                    next
+                  end
+                  UserMailer.send_delayed_dri_not_responded(email,event_name,dri_role).deliver;   
                 end
                 break
               end
@@ -194,5 +233,3 @@ namespace :notification do
   end
 end
 
-
-/TODO considered the first member is the dri/
