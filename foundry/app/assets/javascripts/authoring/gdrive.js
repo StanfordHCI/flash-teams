@@ -5,7 +5,7 @@ var SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/drive.install'];
 folderIds = [];
-overallFolder = ["0B00Fgglh1uVXSzZHZGd5Yjhxanc", "https://docs.google.com/folderview?id=0B00Fgglh1uVXSzZHZGd5Yjhxanc&usp=drivesdk"] ;
+overallFolder = ["0B6l5YPiF_QFBUUNvNWxyZXJaRGM", "https://docs.google.com/a/stanford.edu/folderview?id=0B6l5YPiF_QFBUUNvNWxyZXJaRGM&usp=drivesdk"];
 
 /**
  * Called when the client library is loaded.
@@ -86,8 +86,8 @@ function createNewFolder(eventName){
    console.log(folderIds);
    gapi.client.load('drive', 'v2', function() {
 
-   if (overallFolder){
-       console.log("This one", overallFolder[0]);
+   if (flashTeamsJSON.folder){
+       console.log("This one", flashTeamsJSON.folder);
        var request = gapi.client.request({
         'path': '/drive/v2/files',
         'method': 'POST',
@@ -95,7 +95,7 @@ function createNewFolder(eventName){
             "title" : eventName,
             "mimeType" : "application/vnd.google-apps.folder",
             "description" : "Shared Folder",
-            "parents": [{"id": overallFolder[0]}]
+            "parents": [{"id": flashTeamsJSON.folder[0]}]
          }
       });
     }
@@ -114,17 +114,22 @@ function createNewFolder(eventName){
 
       resp = request.execute(function(resp) { 
         var folderArray = [resp.id, resp.alternateLink];
-        if (!overallFolder){
+        if (!flashTeamsJSON.folder){
           console.log("overall ", folderArray);
-          overallFolder = folderArray;
-          folderIds.push(folderArray);
-          insertPermission(overallFolder[0], "me", "anyone", "writer");
-        } 
-        else{
-          console.log(folderArray);
-          folderIds.push(folderArray);
           insertPermission(folderArray[0], "me", "anyone", "writer");
+          console.log("preFolder", flashTeamsJSON.folder);
+          flashTeamsJSON.folder = folderArray;
+          console.log("postFolder", flashTeamsJSON.folder);
         }
+        else{
+          var lastIndex = flashTeamsJSON["events"].length-1;
+          flashTeamsJSON["events"][lastIndex].gdrive = folderArray;
+          console.log(folderIds);
+          console.log("adding gdrive");
+          console.log(flashTeamsJSON["events"][lastIndex]);
+          folderIds.push(folderArray);
+        }
+        // insertPermission(overallFolder[0], "me", "anyone", "writer");
         return resp; 
       });
    });

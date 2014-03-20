@@ -26,9 +26,15 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
     //add new event to flashTeams database
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin};
+    if (flashTeamsJSON.events.length == 0){
+        console.log("original overall", overallFolder);
+        // overallFolder = undefined;
+        createNewFolder("New Flash Team");
+    }
+    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin, "gdrive":[]};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
+    // flashTeamsJSON["events"][groupNum-1].gdrive = folderIds[groupNum-1];
     overlayOn();
 };
 

@@ -305,8 +305,10 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("y", function(d) {return d.y + 38})
         .attr("font-size", "12px");
 
+    console.log(groupNum);
     $("#handoffs_" + groupNum).on('click', function(){
-        window.open(folderIds[groupNum-1][1])});
+        window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+    });
         // window.open(folderIds[groupNum-1][1]);}););
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
