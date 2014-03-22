@@ -26,7 +26,9 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
     task_g.exit().remove();
     //add new event to flashTeams database
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin};
+    var newEvent = {"title":"New Event", "id":event_counter, 
+        "startTime": startTimeinMinutes, "duration":totalMinutes, 
+        "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin};
     flashTeamsJSON.events.push(newEvent);
     addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
     overlayOn();
@@ -72,9 +74,13 @@ function updatePopoverToReadOnly(ev, enableComplete) {
     }
 
     if (enableComplete) {
-        content += '<br><form><button type="button" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+        content += '<br><form><button type="button" id="complete_' + groupNum 
+        + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok"'
+        +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     } else {
-        content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
+        content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
+            + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button"' 
+            +' id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     }
 
     $("#rect_" + groupNum).data('popover').options.content = content;
@@ -96,26 +102,34 @@ function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showP
             $(this).popover({
                 placement: "right",
                 html: "true",
-                class: "event",
-                style: "width: 650",
+                class: "eventPopover",
                 id: '"popover' + groupNum + '"',
                 trigger: "click",
-                title: '<input type ="text" name="eventName" id="eventName_' + groupNum + '" placeholder="'+title+'" >',
-                content: '<form name="eventForm_' + groupNum + '">'
+                title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
+                    + '" placeholder="'+title+'" >',
+                content: '<table><tr><td >'
+                + '<form name="eventForm_' + groupNum + '">'
                 +'<b>Event Start:          </b><br>' 
-                +'<input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr + '" min="0" style="width:35px">  hrs'
-                +'<input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin + '" min="0" step="15" max="45" style="width:35px">  min<br>'
-                +'<b>Total Runtime: </b><br>' 
-                +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'+numHours+'" min="2" style="width:35px"/>          ' 
-                +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft+'" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'<br><b>Members</b><br> <div id="event' + groupNum + 'memberList">'+ writeEventMembers(groupNum) +'</div>'
-                +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" name="driName" id="driEvent_' + groupNum + '"' 
+                +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
+                    + '" min="0" style="width:35px">'
+                +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
+                    + '" min="0" step="15" max="45" style="width:35px">'
+                +'</td><td><b>Total Runtime: </b><br>' 
+                +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
+                    +numHours+'" min="2" style="width:35px"/><br>          ' 
+                +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
+                    +'" style="width:35px" min="0" step="15" max="45"/><br>'
+                +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
+                    + writeEventMembers(groupNum) +'</div>'
+                +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
+                    +' name="driName" id="driEvent_' + groupNum + '"' 
                 + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
-                +'<br><b>Notes: </b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
-                +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
+                +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
+                +'</td></tr><tr><td><p><button type="button" id="delete"'
+                    +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
                 +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
                 +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
-                +'</form>',
+                +'</form></td></tr>',
                 container: $("#timeline-container")
             });
             if(showPopover){
@@ -154,6 +168,8 @@ function saveEventInfo (popId) {
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         //START HERE
         var memberName = flashTeamsJSON["members"][i].role;
+
+        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
 
         if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
             if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
@@ -194,28 +210,40 @@ function saveEventInfo (popId) {
     flashTeamsJSON["events"][indexOfJSON].dri = driId;
    
     //UPDATE EVENT MEMBERS?
+
+    console.log("saved event info");
+    updateStatus(false);
     
 };
 
 //Access the data of a single event's popover and changes the content
 function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, driId) {
-    $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' + event_counter + '" placeholder="' + title + '">';
+    $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' 
+        + event_counter + '" placeholder="' + title + '">';
 
-    $("#rect_" + idNum).data('popover').options.content = '<form name="eventForm_' + event_counter + '">'
+    $("#rect_" + idNum).data('popover').options.content = '<table><tr><td >'
+        +'<form name="eventForm_' + event_counter + '">'
         +'<b>Event Start</b><br>' 
-        +'<input type="number" id="startHr_' + event_counter + '" placeholder="' + startHr + '" min="0" style="width:35px">'
-        +'<input type="number" id="startMin_' + event_counter + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
-        +'<b>Total Runtime: </b><br>' 
-        +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' + hrs + '" min="0" style="width:35px"/>          ' 
-        +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'<br><b>Members</b><br> <div id="event' + event_counter + 'memberList">' +  writeEventMembers(event_counter) + '</div>'
-        +'<br>Directly-Responsible Individual for This Event<br><select class="driInput" name="driName" id="driEvent_' + event_counter + '"' 
+        +'Hours: <input type="number" id="startHr_' + event_counter 
+            + '" placeholder="' + startHr + '" min="0" style="width:35px">  '
+        +'Minutes:<input type="number" id="startMin_' + event_counter 
+            + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
+        +'</td><td><b>Total Runtime: </b><br>' 
+        +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' 
+            + hrs + '" min="0" style="width:35px"/><br>    ' 
+        +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min 
+            + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
+        +'</td><tr><td><b>Members</b><br> <div id="event' + event_counter + 'memberList">' 
+            +  writeEventMembers(event_counter) + '</div>'
+        +'</td><td><br><b>Directly-Responsible Individual</b><br><select class="driInput"' 
+            +' name="driName" id="driEvent_' + event_counter + '"' 
         + 'onchange="getDRI('+event_counter + ')">'+ writeDRIMembers(event_counter, driId) +'</select>'
-        +'<br><b>Notes: </b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
-        +'<br><br><p><button type="button" id="delete" onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
+        +'<br><b>Notes: <br></b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
+        +'</td></tr><tr><td><p><button type="button" id="delete"' 
+            +' onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
         +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button> </p>' 
-        +'</form>';
+        +'</form></td></tr>';
 };
 
 
@@ -272,8 +300,8 @@ function getDRI(groupNum) {
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
-    console.log("These are the members!")
-    console.log(flashTeamsJSON["members"])
+    //console.log("These are the members!");
+    //console.log(flashTeamsJSON["members"]);
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
@@ -283,13 +311,15 @@ function writeEventMembers(idNum) {
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
             if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
                 //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
-                memberString += '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox" checked="true">' + memberName + "   ";
+                memberString += '<input type="checkbox" id="event' + idNum + 'member' 
+                    + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
                 break;
             }
         }
         if (!found) {
-            memberString +=  '<input type="checkbox" id="event' + idNum + 'member' + i + 'checkbox">' + memberName + "   "; 
+            memberString +=  '<input type="checkbox" id="event' + idNum 
+                + 'member' + i + 'checkbox">' + memberName + "   <br>"; 
         }      
     }
     return memberString;

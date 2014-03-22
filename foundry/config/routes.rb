@@ -64,8 +64,13 @@ Foundry::Application.routes.draw do
       post :update_status
       post :update_json
       get :get_json
+      post :early_completion_email
+      post :delayed_task_finished_email
     end
   end
+
+  get '/flash_teams/:id/:event_id/delay' => 'flash_teams#delay'
+  get '/flash_teams/:id_team/:event_id/get_delay' => 'flash_teams#get_delay'
 
   resources :members do
     member do
@@ -75,9 +80,4 @@ Foundry::Application.routes.draw do
       post :register
     end
   end
-
-  # get '/flash_teams/:id' => 'flash_teams#show'
-  # get '/flash_teams' => 'flash_teams#index'
-
 end
-

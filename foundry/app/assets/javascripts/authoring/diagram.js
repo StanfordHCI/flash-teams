@@ -126,6 +126,11 @@ function removeMemberNode(memberId) {
     start();
 }
 
+function removeAllMemberNodes() {
+    workers.nodes = [];
+    start();
+}
+
 $(window).resize(function() {
     diagram_width = $("#diagram-container").width();
     diagram_svg.attr("width", diagram_width);

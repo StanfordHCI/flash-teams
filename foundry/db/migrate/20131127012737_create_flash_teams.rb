@@ -4,7 +4,8 @@ class CreateFlashTeams < ActiveRecord::Migration
       t.string :name
       t.text :json
       t.text :status
-
+      
+      t.text :notification_email_status
       t.timestamps
     end
   end
