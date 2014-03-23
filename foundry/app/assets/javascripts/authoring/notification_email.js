@@ -68,18 +68,23 @@ function early_completion_helper(remaining_tasks,early_minutes){
     console.log("sending emails..");
     var uniqs_sent_already = [];
     for (var i=0;i<remaining_tasks.length;i++){
+        console.log("remaining task " + i);
         var groupNum = remaining_tasks[i];
         //alert(i+" "+groupNum);
     	for (var j = 0; j<flashTeamsJSON["events"].length; j++){
             eventId = flashTeamsJSON["events"][j].id;
+            console.log("event id: " + eventId);
 	        if (eventId == groupNum){
 	            var event_tmp = flashTeamsJSON["events"][j];
+                console.log("event_tmp: " + event_tmp);
 	            //TODO actual emails instead of roles
 	            for(var m_i=0;m_i<event_tmp["members"].length;m_i++){
 	            	var uniq = event_tmp["members"][m_i].uniq;
+                    console.log("uniq: " + uniq);
 	                if(uniqs_sent_already.indexOf(uniq)==-1){
 	                   uniqs_sent_already.push(uniq);
 	                   //alert("sent email to "+tmp_email);
+                       console.log("sending early completion email..");
 	                   sendEarlyCompletionEmail(uniq,early_minutes);
 	                   //alert("sent email to"+tmp_email+" "+early_minutes);
 	             	}
