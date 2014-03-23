@@ -7,7 +7,7 @@ function sendEarlyCompletionEmail(uniq,minutes) {
     });
 };
 
-var sendBeforeTaskStartsEmail=function(minutes,email){
+function sendBeforeTaskStartsEmail(minutes,email){
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/before_task_starts_email';
@@ -17,7 +17,7 @@ var sendBeforeTaskStartsEmail=function(minutes,email){
 };
 
 
-var sendDelayedTaskFinishedEmail=function(minutes,uniq,title){
+function sendDelayedTaskFinishedEmail(minutes,uniq,title){
 	
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/delayed_task_finished_email';
@@ -27,7 +27,7 @@ var sendDelayedTaskFinishedEmail=function(minutes,uniq,title){
 };
 
 
-var sendTaskDelayedEmail=function(email){
+function sendTaskDelayedEmail(email){
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/task_delayed_email';
