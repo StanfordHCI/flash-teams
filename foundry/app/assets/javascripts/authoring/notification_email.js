@@ -84,9 +84,11 @@ function early_completion_helper(remaining_tasks,early_minutes){
 	                if(uniqs_sent_already.indexOf(uniq)==-1){
 	                   uniqs_sent_already.push(uniq);
 	                   //alert("sent email to "+tmp_email);
+
                        console.log("sending early completion email..");
 	                   sendEarlyCompletionEmail(uniq,early_minutes);
 	                   //alert("sent email to"+tmp_email+" "+early_minutes);
+
 	             	}
 	            }
 	        }
@@ -131,7 +133,7 @@ function DelayedTaskFinished_helper(remaining_tasks,title){
 
 /* get the start time of the next upcoming task of user to be notified*/
 var memberName2=0;
-var getUserNextTaskStartTime= function(input_name){
+function getUserNextTaskStartTime(input_name){
     memberName2=input_name;
     var memberName = input_name;
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent2);
