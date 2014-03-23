@@ -1,4 +1,4 @@
-var sendEarlyCompletionEmail= function(uniq,minutes) {
+function sendEarlyCompletionEmail(uniq,minutes) {
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/early_completion_email';
@@ -64,9 +64,7 @@ function delayed_notification_helper(new_remaining_tasks){
     }  
 };
 
-
- 
-function  early_completion_helper(remaining_tasks,early_minutes){
+function early_completion_helper(remaining_tasks,early_minutes){
     console.log("sending emails..");
     var uniqs_sent_already = [];
     for (var i=0;i<remaining_tasks.length;i++){
