@@ -842,11 +842,17 @@ var completeTask = function(groupNum){
         completed_red_tasks.push(groupNum);
 
         /*send delayed task is finished email*/
+        var title="test";
         
         if(remaining_tasks.length!=0){
-            var completed_task = getTaskGFromGroupNum (groupNum);
-
-            DelayedTaskFinished_helper(remaining_tasks,completed_task["title"]);
+            for(var i=0;i<flashTeamsJSON["events"].length;i++){
+                var task_g = flashTeamsJSON["events"][i];
+                if ( parseInt(flashTeamsJSON["events"][i]["id"]) == groupNum){
+                    title = task_g["title"];
+                }
+            }
+            //alert(title);
+            DelayedTaskFinished_helper(remaining_tasks,title);
         } /* end */
 
     } else {

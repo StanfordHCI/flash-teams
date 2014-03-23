@@ -21,6 +21,7 @@ function sendDelayedTaskFinishedEmail(minutes,uniq,title){
 	
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/delayed_task_finished_email';
+    
     $.post(url, {uniq: uniq, minutes:minutes, title: title} ,function(data){
     	console.log("successfully sent notification: delayed task is finished");
     });
