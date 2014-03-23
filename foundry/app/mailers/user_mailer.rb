@@ -29,7 +29,7 @@ class UserMailer < ActionMailer::Base
   def send_delayed_task_finished_email(email,minutes,title)
   	  @minutes=minutes
       @title = title
-  	  mail(:to => email, :subject => 'Flash Teams: The delayed task is finished')
+  	  mail(:to => email, :subject => 'Flash Teams: '+title+' is finished')
   end
 
 
