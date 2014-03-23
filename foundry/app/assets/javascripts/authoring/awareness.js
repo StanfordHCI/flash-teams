@@ -856,7 +856,10 @@ var completeTask = function(groupNum){
 
             /* send early completion email */
             var early_minutes=parseInt((parseFloat(blue_width+4)/50.0)*30);
+            console.log("before early completion email");
             early_completion_helper(remaining_tasks,early_minutes);
+            console.log("after early completion email");
+            
             /* end */
              
             console.log(blue_width);

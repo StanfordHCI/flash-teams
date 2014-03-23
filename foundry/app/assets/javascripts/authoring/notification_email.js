@@ -82,8 +82,10 @@ function  early_completion_helper(remaining_tasks,early_minutes){
 	                if(uniqs_sent_already.indexOf(uniq)==-1){
 	                   uniqs_sent_already.push(uniq);
 	                   //alert("sent email to "+tmp_email);
-	                   sendEarlyCompletionEmail(uniq,early_minutes);
-	                   //alert("sent email to"+tmp_email+" "+early_minutes);
+	                   console.log("before sendEarlyCompletion");
+                       sendEarlyCompletionEmail(uniq,early_minutes);
+	                   console.log("after sendEarlyCompletion");
+                       //alert("sent email to"+tmp_email+" "+early_minutes);
 	             	}
 	            }
 	        }
