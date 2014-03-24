@@ -107,6 +107,7 @@ $(document).ready(function(){
         console.log("flashTeamsJSON: ");
         console.log(flashTeamsJSON);
         if(in_progress){
+            renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData();
             poll();
