@@ -53,7 +53,7 @@ $("#flashTeamStartBtn").click(function(){
     recordStartTime();
     updateStatus(true);
     updateAllPopoversToReadOnly();
-    
+    addAllFolders();
     setCursorMoving();
    
     setProjectStatusMoving();

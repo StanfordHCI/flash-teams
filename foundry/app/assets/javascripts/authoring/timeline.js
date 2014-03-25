@@ -27,6 +27,7 @@ var current = 1;
 var currentUserEvents = [];
 var upcomingEvent; 
 
+
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", SVG_WIDTH)
     .attr("height", SVG_HEIGHT)

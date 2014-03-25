@@ -179,6 +179,7 @@ function mousedown() {
     if ((snapPoint[1] < 505) && (snapPoint[0] < 2396)){
         var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
         fillPopover(snapPoint[0], groupNum, true, null, null);
+        // createNewFolder("New Event " + groupNum);
     }
 };
 
@@ -296,6 +297,24 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px");
 
+    //Add gdrive link
+    var gdrive_link = task_g.append("text")
+        .text("Handoffs")
+        .attr("style", "cursor:pointer; text-decoration:underline")
+        .attr("id", function(d) {return "handoffs_" + groupNum;})
+        .attr("groupNum", groupNum)
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 38})
+        .attr("font-size", "12px");
+
+    console.log(groupNum);
+    $("#handoffs_" + groupNum).on('click', function(){
+        if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
+            window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+        }
+    });
+        // window.open(folderIds[groupNum-1][1]);}););
+
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
         .attr("xlink:href", "/assets/rightArrow.png")
@@ -317,8 +336,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         container: $("#timeline-container")
     });
     $("#handoff_btn_" + groupNum).popover("show");
-    $("#handoff_btn_" + groupNum).popover("hide");
-        
+    $("#handoff_btn_" + groupNum).popover("hide");        
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -391,6 +409,7 @@ function deleteRect (rectId) {
     $("#time_text_" + rectId).remove();
     $("#collab_btn_" + rectId).remove();
     $("#handoff_btn_" + rectId).remove();
+    $("#handoffs_" + rectId).remove();
 
     var indexOfJSON = getEventJSONIndex(rectId);
     for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
@@ -398,6 +417,8 @@ function deleteRect (rectId) {
     }
     //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
+    deleteFile(folderIds[indexOfJSON][0]);
+    folderIds.splice(indexOfJSON, 1);
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
