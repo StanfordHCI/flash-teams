@@ -792,6 +792,9 @@ var getAllTasks = function(){
 };
 
 var constructStatusObj = function(){
+    var flash_team_id = $("#flash_team_id").val();
+    flashTeamsJSON["id"] = flash_team_id;
+
     var localStatus = {};
     localStatus.task_groups = getAllData(task_groups);
     localStatus.live_tasks = live_tasks;
@@ -799,6 +802,7 @@ var constructStatusObj = function(){
     localStatus.delayed_tasks = delayed_tasks;
     localStatus.drawn_blue_tasks = drawn_blue_tasks;
     localStatus.completed_red_tasks = completed_red_tasks;
+    
     localStatus.flash_teams_json = flashTeamsJSON;
 
     //delayed_task_time is required for sending notification emails on delay

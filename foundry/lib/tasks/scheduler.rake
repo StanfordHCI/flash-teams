@@ -27,12 +27,16 @@ namespace :notification do
     flash_teams = FlashTeam.all
    	flash_teams.each do |flash_team|
       next if flash_team.status == nil
-
+      
 
       flash_team_status = JSON.parse(flash_team.status)
            	
       flash_team_json=flash_team_status["flash_teams_json"]
       flash_team_members=flash_team_json["members"]
+      
+      print "Checking flash team number: "
+      print flash_team_json["id"]
+      puts "\n"
       
       #when end button is pushed members is emptied
 
@@ -97,10 +101,7 @@ namespace :notification do
       end
 
       #end
-      print "Checking flash team number: "
-      print flash_team_json["id"]
-      puts "\n"
-      
+     
       /get index of delayed event in events array/
       
       delayed_tasks_num.each do |groupNum|
@@ -136,7 +137,7 @@ namespace :notification do
               team_id=flash_team_json["id"]
               
               #url = url_for :controller => 'flash_teams',:action => 'delay',:id =>team_id.to_s, :event_id => event_id.to_s
-              url = default_url+"/"+team_id.to_s+"/"+event_id.to_s+"/delay"
+              url = default_url+"/flash_teams/"+team_id.to_s+"/"+event_id.to_s+"/delay"
               member_id= dri_member["id"]
               dri_event = delayed_event["members"].detect{|m| m["name"] == dri_role}
              
@@ -178,7 +179,7 @@ namespace :notification do
           print notification_email_status
           print groupNum
         #DRI has not responded yet, send email to remaining members
-        if delta_time_sec >= (2 * call_period) && delta_time_sec < (3 * call_period)
+        if delta_time_sec >= (1 * call_period) && delta_time_sec < (2 * call_period)
         #if delta_time_sec >= (2 * call_period)
          
           print "******\n"
