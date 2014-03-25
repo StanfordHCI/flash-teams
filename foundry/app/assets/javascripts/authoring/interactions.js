@@ -32,6 +32,13 @@ function drawInteraction(task2idNum) {
 
     //Check if interaction already exists
     if (DRAWING_COLLAB == true || DRAWING_HANDOFF == true) {
+        //Swap if task2 starts first
+        if(firstEvent(task1idNum, task2idNum) == task2idNum)  {
+            var t2Id = task2idNum;
+            task2idNum = task1idNum;
+            task1idNum = t2Id;
+        }
+        
         for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var inter = flashTeamsJSON["interactions"][i];
             if ((inter.event1 == task1idNum && inter.event2 == task2idNum) 
@@ -44,12 +51,7 @@ function drawInteraction(task2idNum) {
         }
     }
 
-    //Swap if task2 starts first
-    if(firstEvent(task1idNum, task2idNum) == task2idNum)  {
-        var t2Id = task2idNum;
-        task2idNum = task1idNum;
-        task1idNum = t2Id;
-    }
+
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
