@@ -55,7 +55,8 @@ $("#flashTeamStartBtn").click(function(){
     updateAllPopoversToReadOnly();
     
     setCursorMoving();
-   
+    
+    init_statusBar(status_bar_timeline_interval);
     setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     boldEvents(1);
@@ -101,7 +102,9 @@ $(document).ready(function(){
         
         if(data == null) return; // status not set yet
 
+
         loadedStatus = data;
+        
         var in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
         console.log("flashTeamsJSON: ");
@@ -245,6 +248,8 @@ var loadData = function(){
         drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
         completed_red_tasks = loadedStatus.completed_red_tasks;
     
+        load_statusBar(status_bar_timeline_interval);
+        setProjectStatusMoving();
         var cursor_details = positionCursor(flashTeamsJSON);
         drawBlueBoxes();
         drawRedBoxes();
@@ -681,11 +686,6 @@ var trackLiveAndRemainingTasks = function() {
             if (new_live_tasks.indexOf(groupNum) == -1 && !completed) { // groupNum is no longer live
                 drawRedBox(task_g, false);
 
-                //send email when a task is delayed
-                //TODO: call if in master
-                //delayed_notification_helper(new_remaining_tasks);
-                //end   
-
                 // add to delayed_tasks list
                 delayed_tasks.push(groupNum);
 
@@ -793,6 +793,8 @@ var getAllTasks = function(){
 
 var constructStatusObj = function(){
     var localStatus = {};
+
+
     localStatus.task_groups = getAllData(task_groups);
     localStatus.live_tasks = live_tasks;
     localStatus.remaining_tasks = remaining_tasks;
@@ -810,6 +812,7 @@ var constructStatusObj = function(){
 
 var updateStatus = function(flash_team_in_progress){
     var localStatus = constructStatusObj();
+
     localStatus.flash_team_in_progress = flash_team_in_progress;
     var localStatusJSON = JSON.stringify(localStatus);
     console.log("updating string: " + localStatusJSON);
@@ -881,6 +884,8 @@ var completeTask = function(groupNum){
     overlayOff();
 
     updateStatus(true);
+    //reload status bar after completion of tasks
+    load_statusBar(status_bar_timeline_interval);
 };
 
 current = 1;
