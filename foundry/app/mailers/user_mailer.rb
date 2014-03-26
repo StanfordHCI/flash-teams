@@ -23,7 +23,7 @@ class UserMailer < ActionMailer::Base
     
     @event_name = event_name
     @dri_role = dri_role
-    mail(:to => email, :subject => 'Flash Teams: '+ event_name +'is not finished on time')
+    mail(:to => email, :subject => 'Flash Teams: '+ event_name +' is not finished on time')
   end
 
   def send_delayed_task_finished_email(email,minutes,title)

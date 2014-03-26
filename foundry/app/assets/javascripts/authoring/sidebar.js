@@ -130,8 +130,38 @@ $(document).ready(function(){
 });
 */
 var moveProjectStatus = function(status_bar_timeline_interval){
-    if(first_move_status){
-        first_move_status=0;
+        var me = $('.progress .bar');
+        var perc = 100;
+
+        var current_perc = 0;
+
+        var progress = setInterval(function() {
+                //current_perc +=1;
+                if(curr_status_width<status_width && delayed_tasks.length==0){
+                    curr_status_width += project_status_interval_width;
+
+                }
+                if(curr_status_width>status_width){
+                    curr_status_width = status_width;
+                }
+                 me.css('width', (curr_status_width)+'%');
+                
+                 
+                //me.text(curr_status_width+'%');
+            
+           // var int_width=Math.round(curr_status_width);      
+        },status_bar_timeline_interval);
+
+        return progress;
+};
+
+var stopProjectStatus = function(){
+    var me = $('.progress .bar');
+    me.css('width', curr_status_width+'%');
+    window.clearInterval(project_status_handler);
+};
+
+function init_statusBar(status_bar_timeline_interval){
     var last_group_num=-1;
     var last_end_x=0;
       
@@ -162,39 +192,120 @@ var moveProjectStatus = function(status_bar_timeline_interval){
 
     num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
     project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
-
 }
+
+
+function load_statusBar(status_bar_timeline_interval){
     
-   
-        var me = $('.progress .bar');
-        var perc = 100;
-
-        var current_perc = 0;
-
-        var progress = setInterval(function() {
-            if (curr_status_width>=perc) {
-                clearInterval(progress);
-            } else {
-                //current_perc +=1;
-                if(curr_status_width<status_width && delayed_tasks.length==0){
-                    curr_status_width += project_status_interval_width;
-                }
-
-                me.css('width', (curr_status_width)+'%');
-                //me.text(curr_status_width+'%');
-            }
-           // var int_width=Math.round(curr_status_width);      
-
-        },status_bar_timeline_interval);
-
- 
+    //pause if a task is delayed
+    if(delayed_tasks.length != 0){
         
-};
+        var start_delayed_x;  //CHECK with Jay
+        var width_delayed;
+        var end_delayed_x;
+        
+        for (var i = 0; i<task_groups.length; i++){
+                var task = task_groups[i];
+                var data = task.data()[0];
+                var groupNum = data.groupNum;
+                
+                
+                if ( groupNum == delayed_tasks[0]){
+                  
+                    start_delayed_x = data.x+4;  //CHECK with Jay
+                    var task_rect = task.select("#rect_" + groupNum);
+                    width_delayed = task_rect.attr("width");
+                    end_delayed_x = parseFloat(start_delayed_x) + parseFloat(width_delayed);
+                    
+                   
+                    break;
+                }
+            }
 
+        var last_group_num=-1;
+        var last_end_x=0;
+          
+        for (var i=0;i<task_groups.length;i++){
+            var task = task_groups[i];
+            var data = task.data()[0];
+            var groupNum = data.groupNum;
+           
+            var task_rect = task.select("#rect_" + groupNum);
+           
+            var start_x = data.x+4;  //CHECK with Jay
+            var width = task_rect.attr("width");
+            var end_x = parseFloat(start_x) + parseFloat(width);
+            
+            if(last_end_x<end_x){
+                last_end_x=end_x;
+            }
+            
+        }
+        
+       
+        // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
+        console.log("last_end",last_end_x);
+        var cursor_x = cursor.attr("x1");
+        project_duration=parseInt((last_end_x)/50)*thirty_min;
+        console.log("project duration: ",project_duration);
+
+        num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
+        project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
+
+       
+        curr_status_width = status_width * parseFloat(end_delayed_x)/parseFloat(last_end_x);
+       
+        return;    
+    }
+    
+
+
+
+
+    if (flashTeamsJSON["startTime"] == null ){
+        return;
+    }
+    
+    var currTime = (new Date).getTime();
+    
+    var startTime = flashTeamsJSON["startTime"];
+    var diff = currTime - startTime;
+    var diff_sec = diff/1000;
+
+
+    var last_group_num=-1;
+    var last_end_x=0;
+      
+    for (var i=0;i<task_groups.length;i++){
+        var task = task_groups[i];
+        var data = task.data()[0];
+        var groupNum = data.groupNum;
+       
+        var task_rect = task.select("#rect_" + groupNum);
+                var start_x = data.x+4;  //CHECK with Jay
+        var width = task_rect.attr("width");
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        
+        if(last_end_x<end_x){
+            last_end_x=end_x;
+        }
+        
+    }
+  
+   // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
+    console.log("last_end",last_end_x);
+    project_duration=parseInt(last_end_x/50)*thirty_min;
+    console.log("project duration: ",project_duration);
+
+    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
+    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
+
+    curr_status_width = project_status_interval_width * diff_sec;
+}
 var status_interval_id;
 var setProjectStatusMoving = function(){
     
-    moveProjectStatus(status_bar_timeline_interval);
+    return moveProjectStatus(status_bar_timeline_interval);
 /*    status_interval_id = setInterval(function(){
         moveProjectStatus(status_bar_timeline_interval);
     }, status_bar_timeline_interval); // every 10 seconds currently*/
