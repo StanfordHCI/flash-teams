@@ -12,7 +12,14 @@ class FlashTeamsController < ApplicationController
   end
 
   def create
-    @flash_team = FlashTeam.new(flash_team_params)
+    name = flash_team_params(params[:flash_team])[:name]
+    @flash_team = FlashTeam.create(:name => name)
+
+    # get id
+    id = @flash_team[:id]
+
+    # store in flash team
+    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": []}'
 
     if @flash_team.save
       redirect_to @flash_team
@@ -83,7 +90,7 @@ class FlashTeamsController < ApplicationController
   def update
     @flash_team = FlashTeam.find(params[:id])
 
-    if @flash_team.update(flash_team_params)
+    if @flash_team.update(flash_team_params(params))
       redirect_to @flash_team
     else
       render 'edit'
@@ -254,9 +261,7 @@ class FlashTeamsController < ApplicationController
     end
   end
 
-  def flash_team_params
-    params.require(:flash_team).permit(:name, :json)
+  def flash_team_params params
+    params.permit(:name)
   end
-
-  private :flash_team_params
 end

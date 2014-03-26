@@ -6,12 +6,17 @@
 var pillCounter = 0;
 var colorToChange = "#ff0000";
 
-function renderMembers() {
+function renderMembersRequester() {
     var members = flashTeamsJSON.members;
     console.log("rendering members: " + members);
     renderPills(members);
     renderMemberPopovers(members);
     renderDiagram(members);
+    renderAllEventsMembers();
+};
+
+function renderMembersUser() {
+    var members = flashTeamsJSON.members;
     renderAllEventsMembers();
 };
 
@@ -221,7 +226,7 @@ function inviteMember(pillId) {
         updateStatus(false);
 
         // display pills, popovers, and diagram
-        renderMembers();
+        renderMembersRequester();
     });
 };
 
@@ -231,7 +236,7 @@ function renderMemberPillColor(memberId) {
 
     var pillLi = document.getElementById("mPill_" + memberId);
     pillLi.childNodes[0].style.backgroundColor = color;
-}
+};
 
 //Takes the new color, turns into hex and changes background color of a pill list item
 function updateMemberPillColor(color, memberId) {
