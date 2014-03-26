@@ -101,14 +101,16 @@ var drag = d3.behavior.drag()
         var groupNum = this.id.split("_")[1];
         var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
 
-        //Horiztonal draggingx
+        //Horizontal draggingx
         var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
-        var newX = Math.max(0, Math.min(SVG_WIDTH-rectWidth, dragX));
-        if (d3.event.dx + d.x < 0) newX = 0 - (DRAGBAR_WIDTH/2);
+        var newX = Math.max((0 - (DRAGBAR_WIDTH/2)), Math.min(SVG_WIDTH-rectWidth, dragX));
+        if (d3.event.dx + d.x < 0) newX = (0 - (DRAGBAR_WIDTH/2));
         d.x = newX;
 
         //Update event popover
-        var startHour = Math.floor((d.x/100));
+        if (d.x == (0 - (DRAGBAR_WIDTH/2))) var startHour = 0;
+        else var startHour = Math.floor((d.x/100));
+        
         var startMin = (d.x%100/25*15);
         if(startMin == 57.599999999999994) {
             startHour++;
@@ -177,6 +179,7 @@ function mousedown() {
     if ((snapPoint[1] < 505) && (snapPoint[0] < 2396)){
         var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
         fillPopover(snapPoint[0], groupNum, true, null, null);
+        // createNewFolder("New Event " + groupNum);
     }
 };
 
@@ -294,6 +297,24 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px");
 
+    //Add gdrive link
+    var gdrive_link = task_g.append("text")
+        .text("Handoffs")
+        .attr("style", "cursor:pointer; text-decoration:underline")
+        .attr("id", function(d) {return "handoffs_" + groupNum;})
+        .attr("groupNum", groupNum)
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 38})
+        .attr("font-size", "12px");
+
+    console.log(groupNum);
+    $("#handoffs_" + groupNum).on('click', function(){
+        if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
+            window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+        }
+    });
+        // window.open(folderIds[groupNum-1][1]);}););
+
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
         .attr("xlink:href", "/assets/rightArrow.png")
@@ -315,8 +336,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         container: $("#timeline-container")
     });
     $("#handoff_btn_" + groupNum).popover("show");
-    $("#handoff_btn_" + groupNum).popover("hide");
-        
+    $("#handoff_btn_" + groupNum).popover("hide");        
     var collab_btn = task_g.append("image")
         .attr("xlink:href", "/assets/doubleArrow.png")
         .attr("class", "collab_btn")
@@ -389,6 +409,7 @@ function deleteRect (rectId) {
     $("#time_text_" + rectId).remove();
     $("#collab_btn_" + rectId).remove();
     $("#handoff_btn_" + rectId).remove();
+    $("#handoffs_" + rectId).remove();
 
     var indexOfJSON = getEventJSONIndex(rectId);
     for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
@@ -396,52 +417,80 @@ function deleteRect (rectId) {
     }
     //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
+    deleteFile(folderIds[indexOfJSON][0]);
+    folderIds.splice(indexOfJSON, 1);
+
+    updateStatus(false);
+};
+
+function renderAllEventsMembers() {
+    var events = flashTeamsJSON["events"];
+    for (var i = 0; i < events.length; i++){
+        var ev = events[i];
+        console.log("EVENT ID: " + ev.id);
+        renderEventMembers(ev.id);
+    }
+};
+
+function renderEventMembers(eventId) {
+    // get event
+    var indexOfEvent = getEventJSONIndex(eventId);
+
+    // get number of members in the event
+    var eventMembers = flashTeamsJSON["events"][indexOfEvent].members;
+
+    for (var i = 0; i < eventMembers.length; i++) {
+        var member = eventMembers[i];
+        var color = member.color;
+        var name = member.name;
+
+        // add new line to represent member
+        var group = $("#rect_" + eventId)[0].parentNode;
+        var thisGroup = d3.select(group);
+        thisGroup.append("rect")
+            .attr("class", "member_line")
+            .attr("id", function(d) {
+                return "event_" + eventId + "_eventMemLine_" + (i+1);
+            })
+            .attr("x", function(d) {
+                return parseInt($("#rect_" + eventId).attr("x")) + 8;})
+            .attr("y", function(d) {
+                return parseInt($("#rect_" + eventId).attr("y")) + 40 + (i*8);})
+            .attr("groupNum", eventId)
+            .attr("height", 5)
+            .attr("width", function(d) {
+                return parseInt($("#rect_" + eventId).attr("width")) - 8;})
+            .attr("fill", color)
+            .attr("fill-opacity", .9);
+
+        // change color of rect
+        for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
+             if (flashTeamsJSON["members"][j].role == name){
+                 if (j == current){
+                     $("#rect_" + eventId).attr("fill", color)
+                         .attr("fill-opacity", .4);   
+                 }
+             } 
+        }
+    }
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
 //and a pill in the popover that can be deleted, both of the specified color of the member
 function addEventMember(eventId, memberIndex) {
+    // get details from members array
     var memberName = flashTeamsJSON["members"][memberIndex].role;
-    console.log("Adding member ", memberName);
-    //Update JSON
+    var memberUniq = flashTeamsJSON["members"][memberIndex].uniq;
+    var memberColor = flashTeamsJSON["members"][memberIndex].color;
+
+    // get event
     var indexOfEvent = getEventJSONIndex(eventId);
-    flashTeamsJSON["events"][indexOfEvent].members.push(memberName);
-    var numMembers = flashTeamsJSON["events"][indexOfEvent].members.length;
 
-    //Grab color of member
-    var newColor;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-    }
+    // add member to event
+    flashTeamsJSON["events"][indexOfEvent].members.push({name: memberName, uniq: memberUniq, color: memberColor});
 
-    //Add new line to represent member
-    var group = $("#rect_" + eventId)[0].parentNode;
-    var thisGroup = d3.select(group);
-    thisGroup.append("rect")
-        .attr("class", "member_line")
-        .attr("id", function(d) {
-            return "event_" + eventId + "_eventMemLine_" + numMembers;
-        })
-        .attr("x", function(d) {
-            return parseInt($("#rect_" + eventId).attr("x")) + 8;})
-        .attr("y", function(d) {
-            return parseInt($("#rect_" + eventId).attr("y")) + 40 + ((numMembers-1)*8);})
-        .attr("groupNum", eventId)
-        .attr("height", 5)
-        .attr("width", function(d) {
-            return parseInt($("#rect_" + eventId).attr("width")) - 8;})
-        .attr("fill", newColor)
-        .attr("fill-opacity", .9);
-
-    //Change color of rect
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-         if (flashTeamsJSON["members"][i].role == memberName){
-             if (i == current){
-                 $("#rect_" + eventId).attr("fill", newColor)
-                     .attr("fill-opacity", .4);   
-             }
-         } 
-     }
+    // render on events
+    renderAllEventsMembers();
 }
 
 //Remove a team member from an event
@@ -455,7 +504,7 @@ function deleteEventMember(eventId, memberNum, memberName) {
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
     for (i = 0; i < flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
-        if (flashTeamsJSON["events"][indexOfJSON].members[i] == memberName) {
+        if (flashTeamsJSON["events"][indexOfJSON].members[i]["name"] == memberName) {
             flashTeamsJSON["events"][indexOfJSON].members.splice(i, 1);
             //START HERE IF YOU WANT TO SHIFT UP MEMBER LINES AFTER DELETION
             break;

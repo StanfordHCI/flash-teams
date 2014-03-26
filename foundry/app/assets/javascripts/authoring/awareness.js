@@ -29,33 +29,47 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
+var delayed_tasks_time = [];
+var dri_responded = [];
 
 var getXCoordForTime = function(t){
-    console.log("time t: " + t);
+   // console.log("time t: " + t);
     var numInt = parseInt(t / timeline_interval);
     var remainder = t % timeline_interval;
-    console.log("numInt: " + numInt + " | remainder: " + remainder);
+   // console.log("numInt: " + numInt + " | remainder: " + remainder);
 
     var xCoordForRemainder = (remainder / timeline_interval) * 50;
     var xCoordForMainIntervals = 50*numInt;
-    console.log("xCoordForRemainder: " + xCoordForRemainder + " | xCoordForMainIntervals: " + xCoordForMainIntervals);
+   // console.log("xCoordForRemainder: " + xCoordForRemainder + " | xCoordForMainIntervals: " + xCoordForMainIntervals);
 
     var finalX = parseFloat(xCoordForRemainder) + parseFloat(xCoordForMainIntervals);
-    console.log("finalX: " + finalX);
+   // console.log("finalX: " + finalX);
     return {"finalX": finalX, "numInt": numInt};
 };
 
 $("#flashTeamStartBtn").click(function(){
     $("#flashTeamStartBtn").attr("disabled", "disabled");
     
+    //$('#flashTeamStartBtn').css('display','none');
+    $("div#search-events-container").css('display','none');
+    $("div#project-status-container").css('display','');
+    $("div#chat-box-container").css('display','');
+    $("#flashTeamTitle").css('display','none');
+
+    var title = $('#flashTeamTitle').val();
+    flashTeamsJSON["title"]=title;
+    var title_html = '<h3>'+title+'</h3>';
+    $("div#team_title").append(title_html);
+
+    
     recordStartTime();
     updateStatus(true);
     updateAllPopoversToReadOnly();
-    
+    addAllFolders();
     setCursorMoving();
-   
-    setProjectStatusMoving();
+    init_statusBar(status_bar_timeline_interval);
 
+    setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -74,7 +88,6 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 $("#flashTeamEndBtn").click(function(){
-    flashTeamsJSON["members"] = [];
     updateStatus(false);
 });
 
@@ -88,6 +101,8 @@ function getParameterByName(name) {
 var uniq = getParameterByName('uniq');
 $("#uniq").value = uniq;
 
+var chat_role;
+var chat_name;
 $(document).ready(function(){
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
@@ -95,17 +110,61 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
+        //get user name and user role for the chat
+        
         if(data == null) return; // status not set yet
 
+
         loadedStatus = data;
+        
         var in_progress = loadedStatus.flash_team_in_progress;
+        flashTeamsJSON = loadedStatus.flash_teams_json;
+        console.log("flashTeamsJSON: ");
+        console.log(flashTeamsJSON);
         if(in_progress){
+            renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData();
             poll();
+        } else { // note: won't loadData(), even though there may be events created, so users don't see them
+            console.log("flash team not in progress");
+            if(flashTeamsJSON){
+                console.log(flashTeamsJSON);
+                renderMembers();
+                renderChatbox();
+            }
         }
+
     });
 });
+
+var renderChatbox = function(){
+    var uniq_u=getParameterByName('uniq');
+        
+    var url2 = '/flash_teams/' + flash_team_id + '/get_user_name';
+    $.ajax({
+       url: url2,
+       type: 'post',
+       data : { "uniq" : String(uniq_u) }
+    }).done(function(data){
+       chat_name = data["user_name"];
+       chat_role = data["user_role"];
+       //alert(chat_role);
+       if (chat_role == ""){
+         
+         uniq_u2 = data["uniq"];
+         flash_team_members = flashTeamsJSON["members"];
+         console.log(flash_team_members[0].uniq);
+         for(var i=0;i<flash_team_members.length;i++){
+            
+            if (flash_team_members[i].uniq == uniq_u2){
+              chat_role = flash_team_members[i].role; 
+            }
+         }
+        
+       }
+    });
+};
 
 var flashTeamEnded = function(){
     return !loadedStatus.flash_team_in_progress;
@@ -115,10 +174,10 @@ var flashTeamUpdated = function(){
     var updated_drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
     var updated_completed_red_tasks = loadedStatus.completed_red_tasks;
 
-    console.log("updated drawn blue: " + updated_drawn_blue_tasks);
-    console.log("updated completed red: " + updated_completed_red_tasks);
-    console.log("drawn blue: " + drawn_blue_tasks);
-    console.log("completed red: " + completed_red_tasks);
+   // console.log("updated drawn blue: " + updated_drawn_blue_tasks);
+   // console.log("updated completed red: " + updated_completed_red_tasks);
+   // console.log("drawn blue: " + drawn_blue_tasks);
+   // console.log("completed red: " + completed_red_tasks);
 
     if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return true;
     if (updated_completed_red_tasks.length != completed_red_tasks.length) return true;
@@ -146,7 +205,7 @@ var poll = function(){
             console.log(loadedStatus);
 
             if(flashTeamEnded() || flashTeamUpdated()) {
-                flashTeamsJSON["members"] = [];
+                //flashTeamsJSON["members"] = [];
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -179,6 +238,7 @@ var loadStatus = function(id){
         console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
  
+    
     return JSON.parse(loadedStatusJSON);
 };
 
@@ -201,12 +261,14 @@ var loadData = function(){
         delayed_tasks = loadedStatus.delayed_tasks;
         drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
         completed_red_tasks = loadedStatus.completed_red_tasks;
-        flashTeamsJSON = loadedStatus.flash_teams_json;
     
+        load_statusBar(status_bar_timeline_interval);
+        setProjectStatusMoving();
         var cursor_details = positionCursor(flashTeamsJSON);
         drawBlueBoxes();
         drawRedBoxes();
         drawDelayedTasks();
+        renderMembers();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
         trackUpcomingEvent();
@@ -268,12 +330,12 @@ var drawRedBox = function(task_g, use_cursor){
             red_width = completed_x - task_end;
         }
     } else {
-        console.log("USING CURSOR!");
+     //   console.log("USING CURSOR!");
         var cursor_x = parseFloat(cursor.attr("x1"));
-        console.log("cursor_x: " + cursor_x);
-        console.log("task_end: " + task_end);
+     //   console.log("cursor_x: " + cursor_x);
+      //  console.log("task_end: " + task_end);
         red_width = cursor_x - task_end;
-        console.log("red_width: " + red_width);
+      //  console.log("red_width: " + red_width);
     }
 
     // add red box of width 1
@@ -411,7 +473,7 @@ var startCursor = function(cursor_details){
 
 var syncCursor = function(length_of_time, target_x){
     curr_x_standard = target_x;
-    console.log("time: " + length_of_time + " | target_x: " + target_x);
+   // console.log("time: " + length_of_time + " | target_x: " + target_x);
     cursor.transition()
         .duration(length_of_time)
         .ease("linear")
@@ -467,7 +529,6 @@ var computeLiveAndRemainingTasks = function(){
             remaining_tasks.push(groupNum);
         }
     }
-
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
 
@@ -565,9 +626,9 @@ var moveTasksRight = function(tasks, amount){
                     newMin = 0;
                 } else newMin += 2.4;
                 var newTime = parseInt((newHr*60)) + parseInt(newMin);
-                console.log("new time", newTime);
+               // console.log("new time", newTime);
                 flashTeamsJSON["events"][i].startTime = newTime;
-                console.log("time reset!", flashTeamsJSON["events"][i].startTime);
+               // console.log("time reset!", flashTeamsJSON["events"][i].startTime);
             } 
         }
     }
@@ -599,7 +660,7 @@ var moveTasksLeft = function(tasks, amount){
                 var newTime = parseInt((newHr*60)) + parseInt(newMin);
                 console.log("new time", newTime);
                 flashTeamsJSON["events"][i].startTime = newTime;
-                console.log("time reset!", flashTeamsJSON["events"][i].startTime);
+              //  console.log("time reset!", flashTeamsJSON["events"][i].startTime);
             } 
         }
     }
@@ -641,6 +702,10 @@ var trackLiveAndRemainingTasks = function() {
 
                 // add to delayed_tasks list
                 delayed_tasks.push(groupNum);
+
+                //updateStatus is required to send the notification email when a task is delayed
+                delayed_tasks_time[groupNum]=(new Date).getTime();
+                updateStatus(1);
             }
         }
         live_tasks = new_live_tasks;
@@ -669,7 +734,7 @@ var trackUpcomingEvent = function(){
             $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
             task_g = getTaskGFromGroupNum(upcomingEvent)
         }
-        console.log("time", currentUserEvents[0].startTime);
+       // console.log("time", currentUserEvents[0].startTime);
         var cursor_x = cursor.attr("x1");
         var cursorHr = (cursor_x-(cursor_x%100))/100;
         var cursorMin = (cursor_x%100)/25*15;
@@ -682,6 +747,15 @@ var trackUpcomingEvent = function(){
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
         var overallTime = hours + ":" + minutes;
+        
+        /*send notification email before task starts*/
+        var email="rahmati.nr@gmail.com";
+        if(minutes==30 && hours==0){
+          //  sendBeforeTaskStartsEmail(minutes,email);
+        }
+        /*end*/
+
+
         if (displayTimeinMinutes < 0){
             // make the complete button clickable for live/delayed task
             for (var i = 0; i<flashTeamsJSON["events"].length; i++){
@@ -702,8 +776,8 @@ var trackUpcomingEvent = function(){
                 $(statusText.attr("fill", "red"));
             }
         }else $(statusText.attr("fill", "black"))
-        console.log("cursor time", cursorTimeinMinutes);
-        console.log("distance", overallTime);
+      //  console.log("cursor time", cursorTimeinMinutes);
+       // console.log("distance", overallTime);
         $(statusText.text(overallTime));
     }, fire_interval);
 }
@@ -732,20 +806,31 @@ var getAllTasks = function(){
 };
 
 var constructStatusObj = function(){
+    var flash_team_id = $("#flash_team_id").val();
+    flashTeamsJSON["id"] = flash_team_id;
+
     var localStatus = {};
+
+
     localStatus.task_groups = getAllData(task_groups);
     localStatus.live_tasks = live_tasks;
     localStatus.remaining_tasks = remaining_tasks;
     localStatus.delayed_tasks = delayed_tasks;
     localStatus.drawn_blue_tasks = drawn_blue_tasks;
     localStatus.completed_red_tasks = completed_red_tasks;
+    
     localStatus.flash_teams_json = flashTeamsJSON;
+
+    //delayed_task_time is required for sending notification emails on delay
+    localStatus.delayed_tasks_time = delayed_tasks_time;
+    localStatus.dri_responded = dri_responded;
 
     return localStatus;
 };
 
 var updateStatus = function(flash_team_in_progress){
     var localStatus = constructStatusObj();
+
     localStatus.flash_team_in_progress = flash_team_in_progress;
     var localStatusJSON = JSON.stringify(localStatus);
     console.log("updating string: " + localStatusJSON);
@@ -759,11 +844,6 @@ var updateStatus = function(flash_team_in_progress){
         data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
     }).done(function(data){
         console.log("UPDATED FLASH TEAM STATUS");
-        console.log("WHATTUP");
-        if(!flash_team_in_progress){
-            window.location.reload();
-            console.log(flashTeamsJSON["members"])
-        }
     });
 };
 
@@ -781,10 +861,34 @@ var completeTask = function(groupNum){
     if (idx != -1) { // delayed task
         delayed_tasks.splice(idx, 1);
         completed_red_tasks.push(groupNum);
+
+        /*send delayed task is finished email*/
+        var title="test";
+        
+        if(remaining_tasks.length!=0){
+            for(var i=0;i<flashTeamsJSON["events"].length;i++){
+                var task_g = flashTeamsJSON["events"][i];
+                if ( parseInt(flashTeamsJSON["events"][i]["id"]) == groupNum){
+                    title = task_g["title"];
+                }
+            }
+            //alert(title);
+            DelayedTaskFinished_helper(remaining_tasks,title);
+        } /* end */
+
     } else {
         idx = live_tasks.indexOf(groupNum);
         if (idx != -1){ // live task
             var blue_width = drawBlueBox(task_g);
+
+            /* send early completion email */
+            var early_minutes=parseInt((parseFloat(blue_width+4)/50.0)*30);
+            console.log("before early completion email");
+            early_completion_helper(remaining_tasks,early_minutes);
+            console.log("after early completion email");
+            
+            /* end */
+             
             console.log(blue_width);
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);
@@ -798,6 +902,8 @@ var completeTask = function(groupNum){
     overlayOff();
 
     updateStatus(true);
+    //reload status bar after completion of tasks
+    load_statusBar(status_bar_timeline_interval);
 };
 
 current = 1;
@@ -836,7 +942,6 @@ function boldEvents(currentUser){
 };
 
 /* --------------- TEAM AWARENESS STUFF END ------------ */
-
 
 
 
