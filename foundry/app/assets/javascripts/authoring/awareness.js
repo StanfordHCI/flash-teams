@@ -69,7 +69,7 @@ $("#flashTeamStartBtn").click(function(){
     setCursorMoving();
     setProjectStatusMoving();
     trackLiveAndRemainingTasks();
-    boldEvents(1);
+    boldEvents(current);
     trackUpcomingEvent();
     poll();
 
@@ -154,6 +154,8 @@ var renderChatbox = function(){
             
             if (flash_team_members[i].uniq == uniq_u2){
               chat_role = flash_team_members[i].role; 
+              current = i;
+
             }
          }
         
@@ -247,7 +249,6 @@ var loadData = function(){
             j--;
             drawEvents(g[0].x, g[0].y, g, null, null); // need to change null and null to title and totalMinutes
             fillPopover(g[0].x, g[0].groupNum, false, null, null);
-
             //addEventToJSON(g[0].x, g[0].y, g[0].groupNum, false);
         }
 
@@ -264,6 +265,10 @@ var loadData = function(){
         renderMembers();
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
+        
+
+        boldEvents(current);
+        alert("here!!!!");        
         trackUpcomingEvent();
     }
 };
@@ -722,6 +727,7 @@ function isDelayed(element) {
 
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
+    
     setInterval(function(){
         task_g = getTaskGFromGroupNum(upcomingEvent)
         if (task_g.data()[0].completed){
@@ -746,13 +752,6 @@ var trackUpcomingEvent = function(){
         var minutes = displayTimeinMinutes%60;
         var overallTime = hours + ":" + minutes;
         
-        /*send notification email before task starts*/
-        var email="rahmati.nr@gmail.com";
-        if(minutes==30 && hours==0){
-          //  sendBeforeTaskStartsEmail(minutes,email);
-        }
-        /*end*/
-
 
         if (displayTimeinMinutes < 0){
             // make the complete button clickable for live/delayed task
@@ -777,6 +776,7 @@ var trackUpcomingEvent = function(){
       //  console.log("cursor time", cursorTimeinMinutes);
        // console.log("distance", overallTime);
         $(statusText.text(overallTime));
+
     }, fire_interval);
 }
 
@@ -899,10 +899,11 @@ var completeTask = function(groupNum){
     updateStatus(true);
 };
 
-current = 1;
+current = 0;
 
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
+    console.log("!!!!",element);
     return element.members.indexOf(memberName) != -1;
 };
 
@@ -928,12 +929,12 @@ function boldEvents(currentUser){
         }
     }
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-    console.log(currentUserEvents);
+    console.log("current user events ",currentUserEvents);
+    console.log(flashTeamsJSON["events"]);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
     upcomingEvent = currentUserEvents[0].id;
     $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
 };
-
 /* --------------- TEAM AWARENESS STUFF END ------------ */
 
 
