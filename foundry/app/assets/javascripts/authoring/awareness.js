@@ -125,6 +125,7 @@ $(document).ready(function(){
         } else { // note: won't loadData(), even though there may be events created, so users don't see them
             console.log("flash team not in progress");
             if(flashTeamsJSON){
+                console.log(flashTeamsJSON);
                 renderMembers();
                 renderChatbox();
             }

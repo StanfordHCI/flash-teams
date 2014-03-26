@@ -419,54 +419,78 @@ function deleteRect (rectId) {
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
     deleteFile(folderIds[indexOfJSON][0]);
     folderIds.splice(indexOfJSON, 1);
+
+    updateStatus(false);
+};
+
+function renderAllEventsMembers() {
+    var events = flashTeamsJSON["events"];
+    for (var i = 0; i < events.length; i++){
+        var ev = events[i];
+        console.log("EVENT ID: " + ev.id);
+        renderEventMembers(ev.id);
+    }
+};
+
+function renderEventMembers(eventId) {
+    // get event
+    var indexOfEvent = getEventJSONIndex(eventId);
+
+    // get number of members in the event
+    var eventMembers = flashTeamsJSON["events"][indexOfEvent].members;
+
+    for (var i = 0; i < eventMembers.length; i++) {
+        var member = eventMembers[i];
+        var color = member.color;
+        var name = member.name;
+
+        // add new line to represent member
+        var group = $("#rect_" + eventId)[0].parentNode;
+        var thisGroup = d3.select(group);
+        thisGroup.append("rect")
+            .attr("class", "member_line")
+            .attr("id", function(d) {
+                return "event_" + eventId + "_eventMemLine_" + (i+1);
+            })
+            .attr("x", function(d) {
+                return parseInt($("#rect_" + eventId).attr("x")) + 8;})
+            .attr("y", function(d) {
+                return parseInt($("#rect_" + eventId).attr("y")) + 40 + (i*8);})
+            .attr("groupNum", eventId)
+            .attr("height", 5)
+            .attr("width", function(d) {
+                return parseInt($("#rect_" + eventId).attr("width")) - 8;})
+            .attr("fill", color)
+            .attr("fill-opacity", .9);
+
+        // change color of rect
+        for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
+             if (flashTeamsJSON["members"][j].role == name){
+                 if (j == current){
+                     $("#rect_" + eventId).attr("fill", color)
+                         .attr("fill-opacity", .4);   
+                 }
+             } 
+        }
+    }
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
 //and a pill in the popover that can be deleted, both of the specified color of the member
 function addEventMember(eventId, memberIndex) {
+    // get details from members array
     var memberName = flashTeamsJSON["members"][memberIndex].role;
     var memberUniq = flashTeamsJSON["members"][memberIndex].uniq;
-    console.log(memberUniq);
-    console.log("Adding member ", memberName);
-    //Update JSON
+    var memberColor = flashTeamsJSON["members"][memberIndex].color;
+
+    // get event
     var indexOfEvent = getEventJSONIndex(eventId);
-    flashTeamsJSON["events"][indexOfEvent].members.push({name: memberName, uniq: memberUniq});
-    var numMembers = flashTeamsJSON["events"][indexOfEvent].members.length;
 
-    //Grab color of member
-    var newColor;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-    }
+    // add member to event
+    flashTeamsJSON["events"][indexOfEvent].members.push({name: memberName, uniq: memberUniq, color: memberColor});
 
-    //Add new line to represent member
-    var group = $("#rect_" + eventId)[0].parentNode;
-    var thisGroup = d3.select(group);
-    thisGroup.append("rect")
-        .attr("class", "member_line")
-        .attr("id", function(d) {
-            return "event_" + eventId + "_eventMemLine_" + numMembers;
-        })
-        .attr("x", function(d) {
-            return parseInt($("#rect_" + eventId).attr("x")) + 8;})
-        .attr("y", function(d) {
-            return parseInt($("#rect_" + eventId).attr("y")) + 40 + ((numMembers-1)*8);})
-        .attr("groupNum", eventId)
-        .attr("height", 5)
-        .attr("width", function(d) {
-            return parseInt($("#rect_" + eventId).attr("width")) - 8;})
-        .attr("fill", newColor)
-        .attr("fill-opacity", .9);
-
-    //Change color of rect
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-         if (flashTeamsJSON["members"][i].role == memberName){
-             if (i == current){
-                 $("#rect_" + eventId).attr("fill", newColor)
-                     .attr("fill-opacity", .4);   
-             }
-         } 
-     }
+    // render on events
+    renderAllEventsMembers();
 }
 
 //Remove a team member from an event

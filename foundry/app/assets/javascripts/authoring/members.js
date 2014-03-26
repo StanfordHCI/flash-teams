@@ -12,6 +12,7 @@ function renderMembers() {
     renderPills(members);
     renderMemberPopovers(members);
     renderDiagram(members);
+    renderAllEventsMembers();
 };
 
 function renderPills(members) {
@@ -20,8 +21,11 @@ function renderPills(members) {
         var member = members[i];
         var member_id = member.id;
         var member_name = member.role;
+        var member_color = member.color;
+        console.log("RENDERING PILL...COLOR IS: " + member_color);
         $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
         + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+        renderMemberPillColor(member_id);
     }
 };
 
@@ -182,8 +186,9 @@ function saveMemberInfo(popId) {
     flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
     flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
 
-    var newColor = $("#color_" + popId).spectrum("get");
+    var newColor = $("#color_" + popId).spectrum("get").toHexString();
     updateMemberPillColor(newColor, popId);
+    renderMemberPillColor(popId);
     updateMemberPopover(popId);
 
     console.log($("#mPill_"+popId).popover("show"));
@@ -220,17 +225,24 @@ function inviteMember(pillId) {
     });
 };
 
+function renderMemberPillColor(memberId) {
+    var indexOfJSON = getMemberJSONIndex(memberId);
+    var color = flashTeamsJSON["members"][indexOfJSON].color;
+
+    var pillLi = document.getElementById("mPill_" + memberId);
+    pillLi.childNodes[0].style.backgroundColor = color;
+}
+
 //Takes the new color, turns into hex and changes background color of a pill list item
 function updateMemberPillColor(color, memberId) {
-    var newColor = color.toHexString();
-    var pillLi = document.getElementById("mPill_" + memberId);
-    pillLi.childNodes[0].style.backgroundColor = newColor;
     var indexOfJSON = getMemberJSONIndex(memberId);
-    flashTeamsJSON["members"][indexOfJSON].color = newColor;
+    flashTeamsJSON["members"][indexOfJSON].color = color;
+
+    updateStatus(false);
 
     // Update JSON for team diagram
-    workers.nodes[searchById(workers.nodes, memberId)].color = newColor;
-    updateNodeColor();
+    //workers.nodes[searchById(workers.nodes, memberId)].color = color;
+    //updateNodeColor();
 };
 
 //Necessary to save member popover information
