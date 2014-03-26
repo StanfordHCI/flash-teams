@@ -65,6 +65,7 @@ $("#flashTeamStartBtn").click(function(){
     recordStartTime();
     updateStatus(true);
     updateAllPopoversToReadOnly();
+    addAllFolders();
     setCursorMoving();
     setProjectStatusMoving();
     trackLiveAndRemainingTasks();
@@ -98,6 +99,8 @@ function getParameterByName(name) {
 var uniq = getParameterByName('uniq');
 $("#uniq").value = uniq;
 
+var chat_role;
+var chat_name;
 $(document).ready(function(){
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
@@ -105,6 +108,8 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
+        //get user name and user role for the chat
+        
         if(data == null) return; // status not set yet
 
         loadedStatus = data;
@@ -113,15 +118,48 @@ $(document).ready(function(){
         console.log("flashTeamsJSON: ");
         console.log(flashTeamsJSON);
         if(in_progress){
+            renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData();
             poll();
         } else { // note: won't loadData(), even though there may be events created, so users don't see them
             console.log("flash team not in progress");
-            renderMembers();
+            if(flashTeamsJSON){
+                renderMembers();
+                renderChatbox();
+            }
         }
+
     });
 });
+
+var renderChatbox = function(){
+    var uniq_u=getParameterByName('uniq');
+        
+    var url2 = '/flash_teams/' + flash_team_id + '/get_user_name';
+    $.ajax({
+       url: url2,
+       type: 'post',
+       data : { "uniq" : String(uniq_u) }
+    }).done(function(data){
+       chat_name = data["user_name"];
+       chat_role = data["user_role"];
+       //alert(chat_role);
+       if (chat_role == ""){
+         
+         uniq_u2 = data["uniq"];
+         flash_team_members = flashTeamsJSON["members"];
+         console.log(flash_team_members[0].uniq);
+         for(var i=0;i<flash_team_members.length;i++){
+            
+            if (flash_team_members[i].uniq == uniq_u2){
+              chat_role = flash_team_members[i].role; 
+            }
+         }
+        
+       }
+    });
+};
 
 var flashTeamEnded = function(){
     return !loadedStatus.flash_team_in_progress;
@@ -195,6 +233,7 @@ var loadStatus = function(id){
         console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
  
+    
     return JSON.parse(loadedStatusJSON);
 };
 
@@ -765,6 +804,9 @@ var getAllTasks = function(){
 };
 
 var constructStatusObj = function(){
+    var flash_team_id = $("#flash_team_id").val();
+    flashTeamsJSON["id"] = flash_team_id;
+
     var localStatus = {};
     localStatus.task_groups = getAllData(task_groups);
     localStatus.live_tasks = live_tasks;
@@ -772,6 +814,7 @@ var constructStatusObj = function(){
     localStatus.delayed_tasks = delayed_tasks;
     localStatus.drawn_blue_tasks = drawn_blue_tasks;
     localStatus.completed_red_tasks = completed_red_tasks;
+    
     localStatus.flash_teams_json = flashTeamsJSON;
 
     //delayed_task_time is required for sending notification emails on delay
@@ -815,11 +858,17 @@ var completeTask = function(groupNum){
         completed_red_tasks.push(groupNum);
 
         /*send delayed task is finished email*/
+        var title="test";
         
         if(remaining_tasks.length!=0){
-            var completed_task = getTaskGFromGroupNum (groupNum);
-
-            DelayedTaskFinished_helper(remaining_tasks,completed_task["title"]);
+            for(var i=0;i<flashTeamsJSON["events"].length;i++){
+                var task_g = flashTeamsJSON["events"][i];
+                if ( parseInt(flashTeamsJSON["events"][i]["id"]) == groupNum){
+                    title = task_g["title"];
+                }
+            }
+            //alert(title);
+            DelayedTaskFinished_helper(remaining_tasks,title);
         } /* end */
 
     } else {
@@ -829,7 +878,10 @@ var completeTask = function(groupNum){
 
             /* send early completion email */
             var early_minutes=parseInt((parseFloat(blue_width+4)/50.0)*30);
+            console.log("before early completion email");
             early_completion_helper(remaining_tasks,early_minutes);
+            console.log("after early completion email");
+            
             /* end */
              
             console.log(blue_width);

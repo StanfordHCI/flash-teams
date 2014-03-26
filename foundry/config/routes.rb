@@ -58,6 +58,8 @@ Foundry::Application.routes.draw do
  
   root 'welcome#index'
 
+  get 'oauth2callback' => 'welcome#index'
+  
   resources :flash_teams do
     member do 
       get :get_status
@@ -65,6 +67,7 @@ Foundry::Application.routes.draw do
       post :update_json
       get :get_json
       post :early_completion_email
+      post :get_user_name
       post :delayed_task_finished_email
     end
   end

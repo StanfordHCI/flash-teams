@@ -78,6 +78,10 @@
             </div>
            <!-- chat end -->
 
+           <!--Add a file picker for the user to start the upload process -->
+            <input type="file" id="filePicker" />
+            <input type="button" id="authorizeButton" style="display: none" value="Authorize" />
+
            <div id="member-container" class="well" style="overflow-y:scroll;">
                <h3>Team Roles</h3>
                 <form name='newMemberForm' autocomplete="on">
@@ -271,4 +275,11 @@
 </div>
 <% end %>
 
-<%= javascript_include_tag "application" %>
+        <%= javascript_include_tag "authoring/gdrive" %>
+        <%= javascript_include_tag "application" %>
+        <%= javascript_include_tag "https://apis.google.com/js/client.js?onload=handleClientLoad" %>
+        <%= javascript_include_tag "https://apis.google.com/js/api.js"%>
+
+
+        
+<%= link_to 'Back', flash_teams_path %>

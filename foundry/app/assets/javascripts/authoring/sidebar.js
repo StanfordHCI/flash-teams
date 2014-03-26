@@ -9,8 +9,9 @@ var currentdate = new Date();
                 + currentdate.getHours() + ":"  
                 + currentdate.getMinutes();
 
-var name='flash';
+var name;
 $('#messageInput').keypress(function (e) {
+    name =  chat_name+" ("+chat_role+")";
     if (e.keyCode == 13) {
         //name = $('#nameInput').val();
         var text = $('#messageInput').val();

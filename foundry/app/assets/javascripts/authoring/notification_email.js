@@ -1,4 +1,4 @@
-var sendEarlyCompletionEmail= function(uniq,minutes) {
+function sendEarlyCompletionEmail(uniq,minutes) {
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/early_completion_email';
@@ -7,7 +7,7 @@ var sendEarlyCompletionEmail= function(uniq,minutes) {
     });
 };
 
-var sendBeforeTaskStartsEmail=function(minutes,email){
+function sendBeforeTaskStartsEmail(minutes,email){
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/before_task_starts_email';
@@ -17,17 +17,18 @@ var sendBeforeTaskStartsEmail=function(minutes,email){
 };
 
 
-var sendDelayedTaskFinishedEmail=function(minutes,uniq,title){
+function sendDelayedTaskFinishedEmail(minutes,uniq,title){
 	
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/delayed_task_finished_email';
+    
     $.post(url, {uniq: uniq, minutes:minutes, title: title} ,function(data){
     	console.log("successfully sent notification: delayed task is finished");
     });
 };
 
 
-var sendTaskDelayedEmail=function(email){
+function sendTaskDelayedEmail(email){
 	
 	var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/task_delayed_email';
@@ -64,26 +65,31 @@ function delayed_notification_helper(new_remaining_tasks){
     }  
 };
 
-
- 
-function  early_completion_helper(remaining_tasks,early_minutes){
+function early_completion_helper(remaining_tasks,early_minutes){
     console.log("sending emails..");
     var uniqs_sent_already = [];
     for (var i=0;i<remaining_tasks.length;i++){
+        console.log("remaining task " + i);
         var groupNum = remaining_tasks[i];
         //alert(i+" "+groupNum);
     	for (var j = 0; j<flashTeamsJSON["events"].length; j++){
             eventId = flashTeamsJSON["events"][j].id;
+            console.log("event id: " + eventId);
 	        if (eventId == groupNum){
 	            var event_tmp = flashTeamsJSON["events"][j];
+                console.log("event_tmp: " + event_tmp);
 	            //TODO actual emails instead of roles
 	            for(var m_i=0;m_i<event_tmp["members"].length;m_i++){
 	            	var uniq = event_tmp["members"][m_i].uniq;
+                    console.log("uniq: " + uniq);
 	                if(uniqs_sent_already.indexOf(uniq)==-1){
 	                   uniqs_sent_already.push(uniq);
 	                   //alert("sent email to "+tmp_email);
+
+                       console.log("sending early completion email..");
 	                   sendEarlyCompletionEmail(uniq,early_minutes);
 	                   //alert("sent email to"+tmp_email+" "+early_minutes);
+
 	             	}
 	            }
 	        }
@@ -128,7 +134,7 @@ function DelayedTaskFinished_helper(remaining_tasks,title){
 
 /* get the start time of the next upcoming task of user to be notified*/
 var memberName2=0;
-var getUserNextTaskStartTime= function(input_name){
+function getUserNextTaskStartTime(input_name){
     memberName2=input_name;
     var memberName = input_name;
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent2);
