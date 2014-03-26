@@ -50,13 +50,25 @@ var getXCoordForTime = function(t){
 $("#flashTeamStartBtn").click(function(){
     $("#flashTeamStartBtn").attr("disabled", "disabled");
     
+    //$('#flashTeamStartBtn').css('display','none');
+    $("div#search-events-container").css('display','none');
+    $("div#project-status-container").css('display','');
+    $("div#chat-box-container").css('display','');
+    $("#flashTeamTitle").css('display','none');
+
+    var title = $('#flashTeamTitle').val();
+    flashTeamsJSON["title"]=title;
+    var title_html = '<h3>'+title+'</h3>';
+    $("div#team_title").append(title_html);
+
+    
     recordStartTime();
     updateStatus(true);
     updateAllPopoversToReadOnly();
-    
+    addAllFolders();
     setCursorMoving();
-    
     init_statusBar(status_bar_timeline_interval);
+
     setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     boldEvents(1);
@@ -110,6 +122,7 @@ $(document).ready(function(){
         console.log("flashTeamsJSON: ");
         console.log(flashTeamsJSON);
         if(in_progress){
+            renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData();
             poll();
@@ -792,6 +805,9 @@ var getAllTasks = function(){
 };
 
 var constructStatusObj = function(){
+    var flash_team_id = $("#flash_team_id").val();
+    flashTeamsJSON["id"] = flash_team_id;
+
     var localStatus = {};
 
 
@@ -801,6 +817,7 @@ var constructStatusObj = function(){
     localStatus.delayed_tasks = delayed_tasks;
     localStatus.drawn_blue_tasks = drawn_blue_tasks;
     localStatus.completed_red_tasks = completed_red_tasks;
+    
     localStatus.flash_teams_json = flashTeamsJSON;
 
     //delayed_task_time is required for sending notification emails on delay

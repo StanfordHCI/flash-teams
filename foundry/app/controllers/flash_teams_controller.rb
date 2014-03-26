@@ -1,4 +1,7 @@
 require 'json'
+require 'google/api_client'
+require 'google/api_client/auth/file_storage'
+require 'google/api_client/auth/installed_app'
 require 'securerandom'
 
 class FlashTeamsController < ApplicationController
@@ -26,8 +29,55 @@ class FlashTeamsController < ApplicationController
     @flash_teams = FlashTeam.all
   end
 
+ 
   def edit
+
     @flash_team = FlashTeam.find(params[:id])
+
+    #customize user views
+    status = @flash_team.status 
+    if status == nil
+      @author_runtime=false
+    else
+      json_status= JSON.parse(status)
+      if json_status["flash_team_in_progress"] == nil
+        @author_runtime=false
+      else
+        @author_runtime=json_status["flash_team_in_progress"]
+      end
+    end
+
+    if params.has_key?("uniq")
+     @in_expert_view = true
+     @in_author_view = false
+    else
+     @in_expert_view = false
+     @in_author_view = true
+    end
+    #end
+   
+    #show flash team title
+    if json_status.blank?
+       @flash_team_title = "New Flash Team" 
+    else
+      flash_team_json = json_status["flash_teams_json"]
+      @flash_team_title = flash_team_json["title"] 
+    end
+    #end
+   
+
+    flash_teams = FlashTeam.all
+    @events_array = []
+    flash_teams.each do |flash_team|
+      next if flash_team.json.blank?
+      flash_team_json = JSON.parse(flash_team.json)
+      flash_team_events = flash_team_json["events"]
+      flash_team_events.each do |flash_team_event|
+        @events_array << flash_team_event
+      end
+    end
+    @events_json = @events_array.to_json
+
   end
 
   def update
@@ -39,7 +89,7 @@ class FlashTeamsController < ApplicationController
       render 'edit'
     end
   end
-
+  
   def destroy
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.destroy
