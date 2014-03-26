@@ -269,7 +269,7 @@ var loadData = function(){
         
 
         boldEvents(current);
-        alert("here!!!!");        
+             
         trackUpcomingEvent();
     }
 };
@@ -777,7 +777,7 @@ var trackUpcomingEvent = function(){
       //  console.log("cursor time", cursorTimeinMinutes);
        // console.log("distance", overallTime);
         $(statusText.text(overallTime));
-
+        //alert(overallTime);
     }, fire_interval);
 }
 
@@ -900,12 +900,19 @@ var completeTask = function(groupNum){
     updateStatus(true);
 };
 
-current = 0;
+current = -1;
 
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
-    console.log("!!!!",element);
-    return element.members.indexOf(memberName) != -1;
+    for (var i=0;i<element.members.length;i++){
+        var member = element.members[i];
+        
+        if (member["name"] == memberName)
+            return true;
+        else
+            return false;
+    }
+    //return element.members.name.indexOf(memberName) != -1;
 };
 
 //Bold and emphasize the tasks of the current user
@@ -930,8 +937,9 @@ function boldEvents(currentUser){
         }
     }
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
+    console.log("flash team events ", flashTeamsJSON["events"]);
     console.log("current user events ",currentUserEvents);
-    console.log(flashTeamsJSON["events"]);
+   
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
     upcomingEvent = currentUserEvents[0].id;
     $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
