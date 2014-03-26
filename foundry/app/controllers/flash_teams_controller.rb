@@ -50,6 +50,11 @@ class FlashTeamsController < ApplicationController
     if params.has_key?("uniq")
      @in_expert_view = true
      @in_author_view = false
+
+     uniq = params[:uniq]
+     member = Member.where(:uniq => uniq)[0]
+     @user_name = member.name
+
     else
      @in_expert_view = false
      @in_author_view = true
