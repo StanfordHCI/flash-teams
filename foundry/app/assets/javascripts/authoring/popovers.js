@@ -28,8 +28,7 @@ function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
     //add new event to flashTeams database
     if (flashTeamsJSON.events.length == 0){
         console.log("original overall", overallFolder);
-        // overallFolder = undefined;
-        createNewFolder("New Flash Team");
+        createNewFolder(flashTeamsJSON["title"]);
     }
     var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin, "gdrive":[]};
     flashTeamsJSON.events.push(newEvent);

@@ -101,6 +101,19 @@ var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(n
 var thirty_min=10000; //TODO back to 1800000
 var first_move_status=1;
 
+// var gdrive_link = project_status_svg.append("text")
+//         .text("Google Drive Folder")
+//         .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
+//         .attr("class", "gdrive_link")
+//         .attr("id", function(d) {return "folderLink";})
+//         // .attr("groupNum", groupNum)
+//         .attr("x", function(d) {return status_x})
+//         .attr("y", function(d) {return status_y + 10})
+//         .attr("font-size", "12px");
+
+// $("#folderLink").on('click', function(){
+//     window.open(flashTeamsJSON.folder[1]);
+// });
 
 /*var project_status_svg = d3.select("#status-bar-container").append("svg")
     .attr("width", SVG_WIDTH)

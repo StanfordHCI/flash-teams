@@ -32,7 +32,6 @@ ActiveRecord::Schema.define(version: 20131127015448) do
     t.string   "name"
     t.text     "json"
     t.text     "status"
-    t.text     "notification_email_status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -47,10 +46,6 @@ ActiveRecord::Schema.define(version: 20131127015448) do
   create_table "members", force: true do |t|
     t.string   "name"
     t.string   "color"
-    t.string   "email"
-    t.string   "uniq"
-    t.string   "confirm_email_uniq"
-    t.boolean  "email_confirmed"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -299,8 +299,8 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     //Add gdrive link
     var gdrive_link = task_g.append("text")
-        .text("Handoffs")
-        .attr("style", "cursor:pointer; text-decoration:underline")
+        .text("Upload")
+        .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
         .attr("class", "gdrive_link")
         .attr("id", function(d) {return "handoffs_" + groupNum;})
         .attr("groupNum", groupNum)
@@ -312,6 +312,9 @@ function  drawEvents(x, y, d, title, totalMinutes) {
     $("#handoffs_" + groupNum).on('click', function(){
         if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
             window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+        }
+        else{
+            alert("You must first start the task to upload!");
         }
     });
         // window.open(folderIds[groupNum-1][1]);}););
