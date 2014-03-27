@@ -23,7 +23,7 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-var current = 1;
+var current;
 var currentUserEvents = [];
 var upcomingEvent; 
 

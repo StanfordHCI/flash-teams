@@ -69,12 +69,13 @@ $("#flashTeamStartBtn").click(function(){
     updateAllPopoversToReadOnly();
     addAllFolders();
     setCursorMoving();
+    renderChatbox();
     init_statusBar(status_bar_timeline_interval);
 
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
-    boldEvents(current);
-    trackUpcomingEvent();
+    //boldEvents(current);
+    //trackUpcomingEvent();
     poll();
 
 
@@ -145,6 +146,7 @@ $(document).ready(function(){
     });
 });
 
+//finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
     var uniq_u=getParameterByName('uniq');
         
@@ -156,7 +158,7 @@ var renderChatbox = function(){
     }).done(function(data){
        chat_name = data["user_name"];
        chat_role = data["user_role"];
-       //alert(chat_role);
+     
        if (chat_role == ""){
          
          uniq_u2 = data["uniq"];
@@ -167,6 +169,9 @@ var renderChatbox = function(){
             if (flash_team_members[i].uniq == uniq_u2){
               chat_role = flash_team_members[i].role; 
               current = i;
+
+              boldEvents(current);
+              trackUpcomingEvent();
 
             }
          }
@@ -281,27 +286,27 @@ var loadData = function(in_progress){
         drawBlueBoxes();
         drawRedBoxes();
         drawDelayedTasks();
-<<<<<<< HEAD
-        renderMembers();
+
+        //renderMembers();
+        renderChatbox();
+
         trackLiveAndRemainingTasks();
         startCursor(cursor_details);
-        
-
-        boldEvents(current);
-             
-        trackUpcomingEvent();
-=======
+       //boldEvents(current);
+        //trackUpcomingEvent();
         renderMembersUser();
->>>>>>> master
     }
 };
 
 var startTeam = function(){
+    init_statusBar(status_bar_timeline_interval);
+
     setProjectStatusMoving();
+    renderChatbox();
     trackLiveAndRemainingTasks();
     startCursor(cursor_details);
-    boldEvents(1);
-    trackUpcomingEvent();
+    //boldEvents(current);
+    //trackUpcomingEvent();
 };
 
 var drawBlueBox = function(task_g){
@@ -757,7 +762,10 @@ function isDelayed(element) {
 
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
-    
+ 
+     if (current == null){
+        return;
+    }
     setInterval(function(){
         task_g = getTaskGFromGroupNum(upcomingEvent);
         if (task_g.data()[0].completed){
@@ -780,7 +788,7 @@ var trackUpcomingEvent = function(){
         var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
-        var overallTime = hours + ":" + minutes;
+        var overallTime = "Your Task Is In: "+ hours + ":" + minutes;
         
 
         if (displayTimeinMinutes < 0){
@@ -799,14 +807,14 @@ var trackUpcomingEvent = function(){
                 $(statusText.attr("fill", "blue"));
             }
             else{
-                overallTime = "DELAYED";
+                overallTime = "Your Task Is DELAYED";
                 $(statusText.attr("fill", "red"));
             }
         }else $(statusText.attr("fill", "black"))
       //  console.log("cursor time", cursorTimeinMinutes);
        // console.log("distance", overallTime);
         $(statusText.text(overallTime));
-        //alert(overallTime);
+       
     }, fire_interval);
 }
 
@@ -899,7 +907,7 @@ var completeTask = function(groupNum){
                     title = task_g["title"];
                 }
             }
-            //alert(title);
+           
             DelayedTaskFinished_helper(remaining_tasks,title);
         } /* end */
 
@@ -933,7 +941,7 @@ var completeTask = function(groupNum){
     load_statusBar(status_bar_timeline_interval);
 };
 
-current = -1;
+
 
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
@@ -948,8 +956,13 @@ function isCurrent(element) {
     //return element.members.name.indexOf(memberName) != -1;
 };
 
+
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
+    if (currentUser==null){
+        return;
+    }
+    
     console.log("it's bold!")
     var uniq = getParameterByName('uniq');
     $("#uniq").value = uniq;
