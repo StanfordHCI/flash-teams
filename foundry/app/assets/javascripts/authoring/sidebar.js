@@ -151,6 +151,14 @@ var moveProjectStatus = function(status_bar_timeline_interval){
             
            // var int_width=Math.round(curr_status_width);      
         },status_bar_timeline_interval);
+
+        return progress;
+};
+
+var stopProjectStatus = function(){
+    var me = $('.progress .bar');
+    me.css('width', curr_status_width+'%');
+    window.clearInterval(project_status_handler);
 };
 
 function init_statusBar(status_bar_timeline_interval){
@@ -297,7 +305,7 @@ function load_statusBar(status_bar_timeline_interval){
 var status_interval_id;
 var setProjectStatusMoving = function(){
     
-    moveProjectStatus(status_bar_timeline_interval);
+    return moveProjectStatus(status_bar_timeline_interval);
 /*    status_interval_id = setInterval(function(){
         moveProjectStatus(status_bar_timeline_interval);
     }, status_bar_timeline_interval); // every 10 seconds currently*/

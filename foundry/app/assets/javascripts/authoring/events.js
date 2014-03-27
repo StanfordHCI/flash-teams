@@ -301,6 +301,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
     var gdrive_link = task_g.append("text")
         .text("Handoffs")
         .attr("style", "cursor:pointer; text-decoration:underline")
+        .attr("class", "gdrive_link")
         .attr("id", function(d) {return "handoffs_" + groupNum;})
         .attr("groupNum", groupNum)
         .attr("x", function(d) {return d.x + 10})
@@ -367,7 +368,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
 //Redraw a single task rectangle after it is dragged
 function redraw(group, newWidth, gNum) {
-    var d3Group = d3.select(group)
+    var d3Group = d3.select(group);
     d3Group.selectAll(".task_rectangle")
         .attr("x", function(d) {return d.x})
         .attr("y", function(d) {return d.y});
@@ -389,6 +390,12 @@ function redraw(group, newWidth, gNum) {
     d3Group.selectAll(".collab_btn")
         .attr("x", function(d) {return d.x + newWidth - 38})
         .attr("y", function(d) {return d.y + 23});
+
+    console.log("REDRAWING GRDIVE LINK: ");
+    console.log(d3Group.selectAll(".gdrive_link"));
+    d3Group.selectAll(".gdrive_link")
+        .attr("x", function(d) {return d.x + 10})
+        .attr("y", function(d) {return d.y + 38});
 
     //Redraw member lines
     var indexOfJSON = getEventJSONIndex(gNum);

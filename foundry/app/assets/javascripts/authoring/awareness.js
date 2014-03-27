@@ -31,6 +31,8 @@ var task_groups = [];
 var loadedStatus;
 var delayed_tasks_time = [];
 var dri_responded = [];
+var project_status_handler;
+var cursor_details;
 
 var getXCoordForTime = function(t){
    // console.log("time t: " + t);
@@ -69,7 +71,7 @@ $("#flashTeamStartBtn").click(function(){
     setCursorMoving();
     init_statusBar(status_bar_timeline_interval);
 
-    setProjectStatusMoving();
+    project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     boldEvents(1);
     trackUpcomingEvent();
@@ -89,6 +91,9 @@ $("#flashTeamStartBtn").click(function(){
 
 $("#flashTeamEndBtn").click(function(){
     updateStatus(false);
+    stopCursor();
+    stopProjectStatus();
+    $("#flashTeamEndBtn").attr("disabled", "disabled");
 });
 
 function getParameterByName(name) {
@@ -124,13 +129,15 @@ $(document).ready(function(){
         if(in_progress){
             renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
-            loadData();
+            loadData(true);
+            startTeam();
             poll();
         } else { // note: won't loadData(), even though there may be events created, so users don't see them
             console.log("flash team not in progress");
             if(flashTeamsJSON){
                 console.log(flashTeamsJSON);
-                renderMembers();
+                loadData(false);
+                renderMembersRequester();
                 renderChatbox();
             }
         }
@@ -242,7 +249,7 @@ var loadStatus = function(id){
     return JSON.parse(loadedStatusJSON);
 };
 
-var loadData = function(){
+var loadData = function(in_progress){
     if (loadedStatus.task_groups !== undefined && loadedStatus.task_groups !== null) {
         task_groups = loadedStatus.task_groups;
         var j = task_groups.length - 1;
@@ -263,16 +270,26 @@ var loadData = function(){
         completed_red_tasks = loadedStatus.completed_red_tasks;
     
         load_statusBar(status_bar_timeline_interval);
-        setProjectStatusMoving();
-        var cursor_details = positionCursor(flashTeamsJSON);
+        var latest_time;
+        if (in_progress){
+            latest_time = (new Date).getTime();
+        } else {
+            latest_time = loadedStatus.latest_time;
+        }
+        cursor_details = positionCursor(flashTeamsJSON, latest_time);
         drawBlueBoxes();
         drawRedBoxes();
         drawDelayedTasks();
-        renderMembers();
-        trackLiveAndRemainingTasks();
-        startCursor(cursor_details);
-        trackUpcomingEvent();
+        renderMembersUser();
     }
+};
+
+var startTeam = function(){
+    setProjectStatusMoving();
+    trackLiveAndRemainingTasks();
+    startCursor(cursor_details);
+    boldEvents(1);
+    trackUpcomingEvent();
 };
 
 var drawBlueBox = function(task_g){
@@ -444,8 +461,8 @@ var computeTotalOffset = function(allRanges){
     return totalOffset;
 };
 
-var positionCursor = function(team){
-    var currTime = (new Date).getTime();
+var positionCursor = function(team, latest_time){
+    var currTime = latest_time;
     var startTime = team["startTime"];
     var diff = currTime - startTime;
 
@@ -505,7 +522,10 @@ var setCursorMoving = function(){
     }, timeline_interval); // every 18 seconds currently
 };
 
-
+var stopCursor = function() {
+    cursor.transition().duration(0);
+    window.clearInterval(cursor_interval_id);
+};
 
 var computeLiveAndRemainingTasks = function(){
     var curr_x = cursor.attr("x1");
@@ -606,6 +626,7 @@ var extendDelayedBoxes = function(){
 
 var moveTasksRight = function(tasks, amount){
     for (var i=0;i<tasks.length;i++){
+        console.log("MOVING REMAINING TASK RIGHT " + i);
         var groupNum = tasks[i];
         var task_g = getTaskGFromGroupNum(groupNum);
         var x = parseFloat(task_g.data()[0].x);
@@ -725,7 +746,7 @@ function isDelayed(element) {
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
     setInterval(function(){
-        task_g = getTaskGFromGroupNum(upcomingEvent)
+        task_g = getTaskGFromGroupNum(upcomingEvent);
         if (task_g.data()[0].completed){
             toDelete = upcomingEvent;
             currentUserEvents.splice(0,1);
@@ -811,7 +832,6 @@ var constructStatusObj = function(){
 
     var localStatus = {};
 
-
     localStatus.task_groups = getAllData(task_groups);
     localStatus.live_tasks = live_tasks;
     localStatus.remaining_tasks = remaining_tasks;
@@ -830,8 +850,8 @@ var constructStatusObj = function(){
 
 var updateStatus = function(flash_team_in_progress){
     var localStatus = constructStatusObj();
-
     localStatus.flash_team_in_progress = flash_team_in_progress;
+    localStatus.latest_time = (new Date).getTime();
     var localStatusJSON = JSON.stringify(localStatus);
     console.log("updating string: " + localStatusJSON);
 
@@ -935,7 +955,7 @@ function boldEvents(currentUser){
         }
     }
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-    console.log(currentUserEvents);
+    console.log("CURRENT USER EVENTS: " + currentUserEvents);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
     upcomingEvent = currentUserEvents[0].id;
     $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
