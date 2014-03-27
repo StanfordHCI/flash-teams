@@ -299,8 +299,9 @@ var loadData = function(in_progress){
 };
 
 var startTeam = function(){
-    init_statusBar(status_bar_timeline_interval);
+    //init_statusBar(status_bar_timeline_interval);
 
+     load_statusBar(status_bar_timeline_interval);
     setProjectStatusMoving();
     renderChatbox();
     trackLiveAndRemainingTasks();

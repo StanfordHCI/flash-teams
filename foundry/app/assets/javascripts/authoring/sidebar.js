@@ -32,12 +32,12 @@ var lastMessage=0;
             lastMessage=(lastMessage+1)%2;
             var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+':'));
             div1.css('padding-left','5%');
-            div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+            //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
             div1.appendTo($('#messageList'));
             
         }else{
             var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text);
-            div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+            //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
             div1.css('padding-left','5%');
             div1.appendTo($('#messageList'));
         }
