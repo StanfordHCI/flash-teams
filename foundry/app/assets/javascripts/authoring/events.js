@@ -306,6 +306,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("groupNum", groupNum)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 38})
+        .attr("fill", "blue")
         .attr("font-size", "12px");
 
     console.log(groupNum);
@@ -314,7 +315,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
             window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
         }
         else{
-            alert("You must first start the task to upload!");
+            alert("The flash team must be running for you to upload a file!");
         }
     });
         // window.open(folderIds[groupNum-1][1]);}););
