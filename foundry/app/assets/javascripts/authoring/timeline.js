@@ -104,14 +104,16 @@ var task_g = timeline_svg.selectAll(".task_g");
 
 //Turn on the overlay so a user cannot continue to draw events when focus is on a popover
 function overlayOn() {
-    document.getElementById("overlay").style.display = "block";
-}
+    console.log("TURNED OVERLAY ON");
+    $("#overlay").css("display", "block");
+};
 
 //Remove the overlay so a user can draw events again
 function overlayOff() {
+    console.log("TURNED OVERLAY OFF");
     $(".task_rectangle").popover("hide");
-    document.getElementById("overlay").style.display = "none";
-}
+    $("#overlay").css("display", "none");
+};
 
 //Access a particular "event" in the JSON by its id number and return its index in the JSON array of events
 function getEventJSONIndex(idNum) {

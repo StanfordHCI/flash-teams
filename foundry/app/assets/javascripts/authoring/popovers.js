@@ -5,12 +5,7 @@
  * when new information added including: duration, event members, etc.
  */
 
-//VCom Populates event block popover with correct info
-function drawPopover(eventObj, show) {
-    // d3: exit to remove deleted data
-    //task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
-    //task_g.exit().remove();
-
+function editablePopoverObj(eventObj) {
     var totalMinutes = eventObj["duration"];
     var groupNum = eventObj["id"];
     var title = eventObj["title"];
@@ -19,71 +14,48 @@ function drawPopover(eventObj, show) {
 
     var numHours = Math.floor(totalMinutes/60);
     var minutesLeft = totalMinutes%60;
-    
-    // draw it
-    timeline_svg.selectAll("#rect_" + groupNum).each(function(){
-        $(this).popover({
-            placement: "right",
-            html: "true",
-            class: "eventPopover",
-            id: '"popover' + groupNum + '"',
-            trigger: "click",
-            title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
-                + '" placeholder="'+title+'" >',
-            content: '<table><tr><td >'
-            + '<form name="eventForm_' + groupNum + '">'
-            +'<b>Event Start:          </b><br>' 
-            +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
-                + '" min="0" style="width:35px">'
-            +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
-                + '" min="0" step="15" max="45" style="width:35px">'
-            +'</td><td><b>Total Runtime: </b><br>' 
-            +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
-                +numHours+'" min="2" style="width:35px"/><br>          ' 
-            +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
-                +'" style="width:35px" min="0" step="15" max="45"/><br>'
-            +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
-                + writeEventMembers(groupNum) +'</div>'
-            +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
-                +' name="driName" id="driEvent_' + groupNum + '"' 
-            + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
-            +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
-            +'</td></tr><tr><td><p><button type="button" id="delete"'
-                +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
-            +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
-            +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
-            +'</form></td></tr>',
-            container: $("#timeline-container")
-        });
 
-        // show/hide it
-        if(show){
-            showPopover(groupNum);
-        } else {
-            hidePopover(groupNum);
-        }
-    });
+    var obj = {
+        placement: "right",
+        html: "true",
+        class: "eventPopover",
+        id: '"popover' + groupNum + '"',
+        trigger: "click",
+        title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
+            + '" placeholder="'+title+'" >',
+        content: '<table><tr><td >'
+        + '<form name="eventForm_' + groupNum + '">'
+        +'<b>Event Start:          </b><br>' 
+        +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
+            + '" min="0" style="width:35px">'
+        +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
+            + '" min="0" step="15" max="45" style="width:35px">'
+        +'</td><td><b>Total Runtime: </b><br>' 
+        +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
+            +numHours+'" min="2" style="width:35px"/><br>          ' 
+        +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
+            +'" style="width:35px" min="0" step="15" max="45"/><br>'
+        +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
+            + writeEventMembers(groupNum) +'</div>'
+        +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
+            +' name="driName" id="driEvent_' + groupNum + '"' 
+        + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
+        +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
+        +'</td></tr><tr><td><p><button type="button" id="delete"'
+            +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
+        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
+        +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
+        +'</form></td></tr>',
+        container: $("#timeline-container")
+    };
 
-    // allow using return key
-    $(document).ready(function() {
-        pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
-    });
+    return obj;
 };
 
-function updateAllPopoversToReadOnly() {
-    for(var i=0;i<flashTeamsJSON.events.length;i++) {
-        var ev = flashTeamsJSON.events[i];
-        updatePopoverToReadOnly(ev, true);
-    }
-    console.log("UPDATED ALL POPOVERS TO BE READONLY");
-};
-
-function updatePopoverToReadOnly(ev, enableComplete) {
+function readOnlyPopoverObj(ev) {
     var groupNum = ev.id;
     var hrs = Math.floor(ev.duration/60);
     var mins = ev.duration % 60;
-
-    //$("#rect_" + groupNum).data('popover').options.title = ev.title;
 
     var content = '<b>Event Start:</b><br>'
         + ev.startHr + ':'
@@ -109,24 +81,72 @@ function updatePopoverToReadOnly(ev, enableComplete) {
         content += '<br>';
     }
 
-    if (enableComplete) {
-        content += '<br><form><button type="button" id="complete_' + groupNum 
+    content += '<br><form><button type="button" id="complete_' + groupNum 
         + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok"'
         +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
-    } else {
-        content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
+    
+    /*content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
             + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button"' 
-            +' id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
-    }
+            +' id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';*/
+    
+    var obj = {
+        title: ev.title,
+        content: content,
+        placement: "right",
+        html: "true",
+        class: "eventPopover",
+        id: '"popover' + groupNum + '"',
+        trigger: "click",
+        container: $("#timeline-container")
+    };
 
+    return obj;
+}
+
+//VCom Populates event block popover with correct info
+function drawPopover(eventObj, editable, show) {
+    var groupNum = eventObj.id;
+    console.log("GROUP NUM: " + groupNum);
+
+    // draw it
     timeline_svg.selectAll("#rect_" + groupNum).each(function(){
-        $(this).popover({
-            title: ev.title,
-            content: content
-        });
+        var task = $(this);
+        var popover = task.data('popover');
+        if(!popover){
+            if(editable){
+                task.popover(editablePopoverObj(eventObj));
+            } else {
+                task.popover(readOnlyPopoverObj(eventObj));
+            }
+        } else {
+            var obj;
+            if(editable){
+                obj = editablePopoverObj(eventObj);
+            } else {
+                obj = readOnlyPopoverObj(eventObj);
+            }
+            popover.options.title = obj["title"];
+            popover.options.content = obj["content"];
+        }
+
+        // show/hide it
+        if(show){
+            showPopover(groupNum);
+        }
     });
 
-    //$("#rect_" + groupNum).data('popover').options.content = content;
+    // allow using return key
+    $(document).ready(function() {
+        pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
+    });
+};
+
+function updateAllPopoversToReadOnly() {
+    for(var i=0;i<flashTeamsJSON.events.length;i++) {
+        var ev = flashTeamsJSON.events[i];
+        drawPopover(ev, false, false);
+    }
+    console.log("UPDATED ALL POPOVERS TO BE READONLY");
 };
 
 function hidePopover(popId){

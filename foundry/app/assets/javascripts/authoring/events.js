@@ -204,6 +204,10 @@ function mousedown() {
         return;
     }
 
+    if(flashTeamsJSON["startTime"]) { // flash team already started
+        return;
+    }
+
     // get mouse coords
     var point = d3.mouse(this);
 
@@ -219,7 +223,7 @@ function mousedown() {
     drawEvent(eventObj);
     
     // render event popover
-    drawPopover(eventObj, true);
+    drawPopover(eventObj, true, true);
 
     // save
     updateStatus(false);
@@ -252,7 +256,7 @@ function getDuration(leftX, rightX) {
 function createEvent(snapPoint) {
     event_counter++;
     var startTimeObj = getStartTime(snapPoint[0]);
-    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed":false};
+    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
     flashTeamsJSON.events.push(newEvent);
     return newEvent;
 };
@@ -265,7 +269,7 @@ function getEventFromId(id) {
             return ev;
         }
     }
-    return false;
+    return null;
 };
 
 function updateEvent(id, dataObj) {
@@ -344,8 +348,6 @@ function  drawEvent(eventObj) {
             console.log(g.firstChild);
             g.removeChild(g.firstChild);
         }*/
-        console.log("removing ");
-        console.log(g);
         removeTaskG(groupNum);
         //g.remove();
     } else {
@@ -566,6 +568,7 @@ function renderAllEventsMembers() {
         var ev = events[i];
         console.log("EVENT ID: " + ev.id);
         renderEventMembers(ev.id);
+        console.log("rendered event");
     }
 };
 
