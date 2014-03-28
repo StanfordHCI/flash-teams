@@ -115,12 +115,13 @@ function overlayOff() {
 
 //Access a particular "event" in the JSON by its id number and return its index in the JSON array of events
 function getEventJSONIndex(idNum) {
-    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+    var num_events = flashTeamsJSON["events"].length;
+    for (var i = 0; i < num_events; i++) {
         if (flashTeamsJSON["events"][i].id == idNum) {
             return i;
         }
     }
-}
+};
 
 //VCom Time expansion button trial 
 function addTime() {

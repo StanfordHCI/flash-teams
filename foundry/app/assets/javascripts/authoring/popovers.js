@@ -6,36 +6,68 @@
  */
 
 //VCom Populates event block popover with correct info
-function fillPopover(newmouseX, groupNum, showPopover, title, totalMinutes) {
-    if (title == null) {
-        title = "New Event";
-    }
-    if (totalMinutes == null) {
-        totalMinutes = 60;
-    }
+function drawPopover(eventObj, show) {
+    // d3: exit to remove deleted data
+    //task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
+    //task_g.exit().remove();
+
+    var totalMinutes = eventObj["duration"];
+    var groupNum = eventObj["id"];
+    var title = eventObj["title"];
+    var startHr = eventObj["startHr"];
+    var startMin = eventObj["startMin"];
+
+    var numHours = Math.floor(totalMinutes/60);
+    var minutesLeft = totalMinutes%60;
     
-    //Find the start time
-    var startHr = (newmouseX-(newmouseX%100))/100;
-    var startMin = (newmouseX%100)/25*15;
-    if(startMin == 57.599999999999994) {
-        startHr++;
-        startMin = 0;
-    } else startMin += 2.4
-    var startTimeinMinutes = parseInt((startHr*60)) + parseInt(startMin); 
-    //D3, Exit to Remove Deleted Data
-    task_g = timeline_svg.selectAll(".task_g").data(task_groups, function(d) {return d.id});
-    task_g.exit().remove();
-    //add new event to flashTeams database
-    if (flashTeamsJSON.events.length == 0){
-        console.log("original overall", overallFolder);
-        // overallFolder = undefined;
-        createNewFolder("New Flash Team");
-    }
-    var newEvent = {"title":"New Event", "id":event_counter, "startTime": startTimeinMinutes, "duration":totalMinutes, "members":[], "dri":"", "notes":"", "startHr": startHr, "startMin": startMin, "gdrive":[]};
-    flashTeamsJSON.events.push(newEvent);
-    addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover);
-    // flashTeamsJSON["events"][groupNum-1].gdrive = folderIds[groupNum-1];
-    overlayOn();
+    // draw it
+    timeline_svg.selectAll("#rect_" + groupNum).each(function(){
+        $(this).popover({
+            placement: "right",
+            html: "true",
+            class: "eventPopover",
+            id: '"popover' + groupNum + '"',
+            trigger: "click",
+            title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
+                + '" placeholder="'+title+'" >',
+            content: '<table><tr><td >'
+            + '<form name="eventForm_' + groupNum + '">'
+            +'<b>Event Start:          </b><br>' 
+            +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
+                + '" min="0" style="width:35px">'
+            +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
+                + '" min="0" step="15" max="45" style="width:35px">'
+            +'</td><td><b>Total Runtime: </b><br>' 
+            +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
+                +numHours+'" min="2" style="width:35px"/><br>          ' 
+            +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
+                +'" style="width:35px" min="0" step="15" max="45"/><br>'
+            +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
+                + writeEventMembers(groupNum) +'</div>'
+            +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
+                +' name="driName" id="driEvent_' + groupNum + '"' 
+            + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
+            +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
+            +'</td></tr><tr><td><p><button type="button" id="delete"'
+                +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
+            +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
+            +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
+            +'</form></td></tr>',
+            container: $("#timeline-container")
+        });
+
+        // show/hide it
+        if(show){
+            showPopover(groupNum);
+        } else {
+            hidePopover(groupNum);
+        }
+    });
+
+    // allow using return key
+    $(document).ready(function() {
+        pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
+    });
 };
 
 function updateAllPopoversToReadOnly() {
@@ -51,7 +83,7 @@ function updatePopoverToReadOnly(ev, enableComplete) {
     var hrs = Math.floor(ev.duration/60);
     var mins = ev.duration % 60;
 
-    $("#rect_" + groupNum).data('popover').options.title = ev.title;
+    //$("#rect_" + groupNum).data('popover').options.title = ev.title;
 
     var content = '<b>Event Start:</b><br>'
         + ev.startHr + ':'
@@ -87,67 +119,26 @@ function updatePopoverToReadOnly(ev, enableComplete) {
             +' id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     }
 
-    $("#rect_" + groupNum).data('popover').options.content = content;
+    timeline_svg.selectAll("#rect_" + groupNum).each(function(){
+        $(this).popover({
+            title: ev.title,
+            content: content
+        });
+    });
+
+    //$("#rect_" + groupNum).data('popover').options.content = content;
 };
 
 function hidePopover(popId){
+    console.log("hiding popover");
     $("#rect_" + popId).popover("hide");
     overlayOff();
 };
 
-//The initialization of the twitter bootstrap popover on an event's task rectangle
-function addEventPopover(startHr, startMin, title, totalMinutes, groupNum, showPopover) {
-    var numHours = Math.floor(totalMinutes/60);
-    var minutesLeft = totalMinutes%60;
-    
-    //Add Popovers
-    timeline_svg.selectAll("#rect_" + groupNum).each(
-        function(d) {
-            $(this).popover({
-                placement: "right",
-                html: "true",
-                class: "eventPopover",
-                id: '"popover' + groupNum + '"',
-                trigger: "click",
-                title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
-                    + '" placeholder="'+title+'" >',
-                content: '<table><tr><td >'
-                + '<form name="eventForm_' + groupNum + '">'
-                +'<b>Event Start:          </b><br>' 
-                +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
-                    + '" min="0" style="width:35px">'
-                +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
-                    + '" min="0" step="15" max="45" style="width:35px">'
-                +'</td><td><b>Total Runtime: </b><br>' 
-                +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
-                    +numHours+'" min="2" style="width:35px"/><br>          ' 
-                +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
-                    +'" style="width:35px" min="0" step="15" max="45"/><br>'
-                +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
-                    + writeEventMembers(groupNum) +'</div>'
-                +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
-                    +' name="driName" id="driEvent_' + groupNum + '"' 
-                + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
-                +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
-                +'</td></tr><tr><td><p><button type="button" id="delete"'
-                    +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
-                +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
-                +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
-                +'</form></td></tr>',
-                container: $("#timeline-container")
-            });
-            if(showPopover){
-                $(this).popover("show");
-            } else {
-                $(this).popover("hide");
-            }
-        });
-
-    $(document).ready(function() {
-        pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
-    });
+function showPopover(popId){
+    $("#rect_" + popId).popover("show");
+    overlayOn();
 };
-
 
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics

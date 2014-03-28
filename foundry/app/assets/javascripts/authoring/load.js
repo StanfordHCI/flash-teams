@@ -10,6 +10,13 @@ function getParameterByName(name) {
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 };
 
+$(document).ready(function(){
+	var notice = getParameterByName("notice");
+	if(notice){
+		alert(notice);
+	}
+});
+
 /*
 var ready = function() {
   var flash_team_id = $("#flash_team_id").val();
