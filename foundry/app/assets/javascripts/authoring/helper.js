@@ -75,7 +75,7 @@ function drawFlashTeamFromJSON(ftJSON) {
 
     	var x = ftJSON["events"][j].startTime * (1 + (2/3));
     	var y = ftJSON["events"][j].yPosition;
-    	drawEvents(x, y, null, null, null);
+    	drawEvent(x, y, null, null, null);
 
     	//Add to JSON
     	ftJSON["events"][j].id = event_counter;
