@@ -1,5 +1,6 @@
 <input type="hidden" id="authenticity_token" value="<%= form_authenticity_token %>"/>
 <input type="hidden" id="flash_team_id" value="<%= @flash_team.id %>"/>
+<input type="hidden" id="flash_team_name" value="<%= @flash_team.name%>"/>
 <input type="hidden" id="uniq" value=""/>
 
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
@@ -167,6 +168,7 @@
     
     <% if  @in_expert_view %>
     <h3> <%= @flash_team.name %> </h3>
+    <script> var flash_team_name=<%= @flash_team.name %>;</script>
     <div class="row-fluid">
         <div class="span3"> <!--Sidebar content-->
 <!--                     <div id = "title-container" class="well">

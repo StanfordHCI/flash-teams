@@ -259,8 +259,7 @@ function createEvent(snapPoint) {
     var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
       //add new event to flashTeams database
     if (flashTeamsJSON.events.length == 0){
-        // console.log("original overall", overallFolder);
-        createNewFolder(flashTeamsJSON["title"]);
+        createNewFolder($("#flash_team_name").val());
     }
     flashTeamsJSON.events.push(newEvent);
     return newEvent;
