@@ -5,7 +5,7 @@ var SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/drive.install'];
 folderIds = [];
-overallFolder = ["0B6l5YPiF_QFBUUNvNWxyZXJaRGM", "https://docs.google.com/a/stanford.edu/folderview?id=0B6l5YPiF_QFBUUNvNWxyZXJaRGM&usp=drivesdk"];
+// overallFolder = ["0B6l5YPiF_QFBUUNvNWxyZXJaRGM", "https://docs.google.com/a/stanford.edu/folderview?id=0B6l5YPiF_QFBUUNvNWxyZXJaRGM&usp=drivesdk"];
 
 /**
  * Called when the client library is loaded.
@@ -135,7 +135,7 @@ function createNewFolder(eventName, JSONId){
 
 function addAllFolders(){
   for (var i = 0; i<flashTeamsJSON["events"].length; i++){
-    createNewFolder(flashTeamsJSON["events"][i].title + flashTeamsJSON["events"][i].id, i);
+    createNewFolder(flashTeamsJSON["events"][i].title, i);
   }
 }
 

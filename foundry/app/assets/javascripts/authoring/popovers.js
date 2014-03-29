@@ -11,6 +11,7 @@ function editablePopoverObj(eventObj) {
     var title = eventObj["title"];
     var startHr = eventObj["startHr"];
     var startMin = eventObj["startMin"];
+
     var numHours = Math.floor(totalMinutes/60);
     var minutesLeft = totalMinutes%60;
 
