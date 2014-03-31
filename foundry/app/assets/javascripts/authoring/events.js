@@ -564,8 +564,10 @@ function deleteRect (rectId) {
     }
     //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
-    deleteFile(folderIds[indexOfJSON][0]);
-    folderIds.splice(indexOfJSON, 1);
+    if (folderIds[indexOfJSON]){
+        deleteFile(folderIds[indexOfJSON][0]);
+        folderIds.splice(indexOfJSON, 1);
+    }
 
     updateStatus(false);
 };
