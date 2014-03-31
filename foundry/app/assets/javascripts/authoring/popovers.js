@@ -5,6 +5,13 @@
  * when new information added including: duration, event members, etc.
  */
 
+/*
+ * Input(s): 
+ * eventObj - event object taken from the events array within the flashTeamsJSON object
+ * 
+ * Output(s):
+ * an object that contains all info necessary to render an 'editable' popover
+ */
 function editablePopoverObj(eventObj) {
     var totalMinutes = eventObj["duration"];
     var groupNum = eventObj["id"];
@@ -52,6 +59,13 @@ function editablePopoverObj(eventObj) {
     return obj;
 };
 
+/*
+ * Input(s): 
+ * eventObj - event object taken from the events array within the flashTeamsJSON object
+ * 
+ * Output(s):
+ * an object that contains all info necessary to render an 'editable' popover
+ */
 function readOnlyPopoverObj(ev) {
     var groupNum = ev.id;
     var hrs = Math.floor(ev.duration/60);
@@ -103,7 +117,17 @@ function readOnlyPopoverObj(ev) {
     return obj;
 }
 
-//VCom Populates event block popover with correct info
+/*
+ * Draw popover on event.
+ *
+ * Input(s):
+ * eventObj - event object taken from the events array within the flashTeamsJSON object
+ * editable - boolean specifying whether to render an editable (true) or readonly (false) popover
+ * show - boolean specifying whether to show the popover after rendering it
+ *
+ * Output(s):
+ * None
+ */
 function drawPopover(eventObj, editable, show) {
     var groupNum = eventObj.id;
 
@@ -115,7 +139,7 @@ function drawPopover(eventObj, editable, show) {
         } else {
             setPopoverOnTask(groupNum, readOnlyPopoverObj(eventObj));
         }
-    } else {
+    } else { // update the popover's content
         var obj;
         if(editable){
             obj = editablePopoverObj(eventObj);
@@ -131,7 +155,7 @@ function drawPopover(eventObj, editable, show) {
         showPopover(groupNum);
     }
     
-    // allow using return key
+    // allow using return key to save and close the popover
     $(document).ready(function() {
         pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
     });
