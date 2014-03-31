@@ -155,7 +155,7 @@ var drag = d3.behavior.drag()
         var hours = $("#hours_" + groupNum).attr("placeholder");
         var min = $("#minutes_" + groupNum).attr("placeholder");
         var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
-        updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
+        //updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
         $("#rect_" + groupNum).popover("hide");
 
         //Vertical Dragging
@@ -325,10 +325,17 @@ function addEvent() { // events library box in the sidebar
     var snapPoint = calcSnap(point[0], point[1]);
     var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, null, null);
     fillPopover(snapPoint[0], groupNum, true, null, null);
-}
+};
+
+function getWidth(ev) {
+    var durationInMinutes = ev.duration;
+    var hrs = parseFloat(durationInMinutes)/parseFloat(60);
+    return hrs*RECTANGLE_WIDTH;
+};
 
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvent(eventObj) {
+    console.log("drawing event");
     var title = eventObj["title"];
     var totalMinutes = eventObj["duration"];
     var x = eventObj["x"];
@@ -340,22 +347,19 @@ function  drawEvent(eventObj) {
     var minutesLeft = totalMinutes%60;
     
     // remove any existing task group with same id
-    var g = getTaskGFromGroupNum(groupNum);
-    if(g){
-        //console.log("removing existing rect");
-        /*while (g.firstChild) {
-            console.log("removing child ");
-            console.log(g.firstChild);
-            g.removeChild(g.firstChild);
-        }*/
-        removeTaskG(groupNum);
-        //g.remove();
-    } else {
-        console.log("not removing existing rect");
-    }
+    removeTask(groupNum);
+
+    var new_data = {id: "task_g_" + groupNum, class: "task_g", groupNum: groupNum, x: x, y: y+17};
+    task_groups.push(new_data);
+
+    console.log(task_groups);
 
     // create task group
-    var task_g = timeline_svg.append("g").data([{id: "task_g_" + groupNum, class: "task_g", groupNum: groupNum, x: x, y: y+17}]);
+    var task_g = timeline_svg.selectAll("g")
+                .data(task_groups, function(d){ return d.groupNum; })
+                .enter()
+                .append("g")
+                .attr("id", "g_" + groupNum);
     
     //Task Rectangle, Holds Event Info
     var task_rectangle = task_g.append("rect")
@@ -366,7 +370,7 @@ function  drawEvent(eventObj) {
             return "rect_" + groupNum; })
         .attr("groupNum", groupNum)
         .attr("height", RECTANGLE_HEIGHT)
-        .attr("width", RECTANGLE_WIDTH*numHoursDec)
+        .attr("width", getWidth(eventObj))
         .attr("fill", "#C9C9C9")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
@@ -379,7 +383,7 @@ function  drawEvent(eventObj) {
     var rt_rect = task_g.append("rect")
         .attr("class", "rt_rect")
         .attr("x", function(d) { 
-            return d.x + RECTANGLE_WIDTH*numHoursDec; })
+            return d.x + getWidth(eventObj); })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rt_rect_" + groupNum; })
@@ -456,7 +460,7 @@ function  drawEvent(eventObj) {
         .attr("groupNum", groupNum)
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
+        .attr("x", function(d) {return d.x+(getWidth(eventObj))-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteHandoff);
     $("#handoff_btn_" + groupNum).popover({
@@ -477,7 +481,7 @@ function  drawEvent(eventObj) {
         .attr("groupNum", groupNum)
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
+        .attr("x", function(d) {return d.x+(getWidth(eventObj))-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteCollaboration);
     $("#collab_btn_" + groupNum).popover({
@@ -494,8 +498,6 @@ function  drawEvent(eventObj) {
 
     // render the member lines
     renderEventMembers(groupNum);
-
-    task_groups.push(task_g);
 };
 
 //Redraw a single task rectangle after it is dragged
@@ -574,32 +576,34 @@ function renderAllEventsMembers() {
 
 function renderEventMembers(eventId) {
     // get event
-    var indexOfEvent = getEventJSONIndex(eventId);
+    var ev = flashTeamsJSON["events"][getEventJSONIndex(eventId)];
 
     // get number of members in the event
-    var eventMembers = flashTeamsJSON["events"][indexOfEvent].members;
+    var members = ev.members;
 
-    for (var i = 0; i < eventMembers.length; i++) {
-        var member = eventMembers[i];
+    for (var i = 0; i < members.length; i++) {
+        // get member information
+        var member = members[i];
         var color = member.color;
         var name = member.name;
 
-        // add new line to represent member
-        var group = $("#rect_" + eventId)[0].parentNode;
-        var thisGroup = d3.select(group);
-        thisGroup.append("rect")
+        // get g in DOM
+        var task = getTaskGFromGroupNum(eventId);
+        
+        // append new line to it
+        task.append("rect")
             .attr("class", "member_line")
             .attr("id", function(d) {
                 return "event_" + eventId + "_eventMemLine_" + (i+1);
             })
             .attr("x", function(d) {
-                return parseInt($("#rect_" + eventId).attr("x")) + 8;})
+                return parseInt(ev.x) + 8;})
             .attr("y", function(d) {
-                return parseInt($("#rect_" + eventId).attr("y")) + 40 + (i*8);})
+                return parseInt(ev.y) + 60 + (i*8);})
             .attr("groupNum", eventId)
             .attr("height", 5)
             .attr("width", function(d) {
-                return parseInt($("#rect_" + eventId).attr("width")) - 8;})
+                return parseInt(getWidth(ev)) - 8;})
             .attr("fill", color)
             .attr("fill-opacity", .9);
 
@@ -613,6 +617,7 @@ function renderEventMembers(eventId) {
              } 
         }
     }
+
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
@@ -666,7 +671,7 @@ function updateTime(idNum) {
     var startHr = $("#startHr_" + idNum).attr("placeholder");
     var startMin = $("#startMin_" + idNum).attr("placeholder");
     var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(idNum)].notes;
-    updateEventPopover(idNum, title, startHr, startMin, hours, minutes, eventNotes);
+    //updateEventPopover(idNum, title, startHr, startMin, hours, minutes, eventNotes);
     $("#rect_" + idNum).popover("hide");
 
     //Update JSON

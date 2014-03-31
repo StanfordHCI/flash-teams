@@ -43,7 +43,7 @@ function editablePopoverObj(eventObj) {
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
         +'</td></tr><tr><td><p><button type="button" id="delete"'
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + ');">Save</button> </p>' 
+        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
         +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
         +'</form></td></tr>',
         container: $("#timeline-container")
@@ -106,35 +106,31 @@ function readOnlyPopoverObj(ev) {
 //VCom Populates event block popover with correct info
 function drawPopover(eventObj, editable, show) {
     var groupNum = eventObj.id;
-    console.log("GROUP NUM: " + groupNum);
 
     // draw it
-    timeline_svg.selectAll("#rect_" + groupNum).each(function(){
-        var task = $(this);
-        var popover = task.data('popover');
-        if(!popover){
-            if(editable){
-                task.popover(editablePopoverObj(eventObj));
-            } else {
-                task.popover(readOnlyPopoverObj(eventObj));
-            }
+    var data = getPopoverDataFromGroupNum(groupNum);
+    if(!data){ // popover not set yet
+        if(editable){
+            setPopoverOnTask(groupNum, editablePopoverObj(eventObj));
         } else {
-            var obj;
-            if(editable){
-                obj = editablePopoverObj(eventObj);
-            } else {
-                obj = readOnlyPopoverObj(eventObj);
-            }
-            popover.options.title = obj["title"];
-            popover.options.content = obj["content"];
+            setPopoverOnTask(groupNum, readOnlyPopoverObj(eventObj));
         }
-
-        // show/hide it
-        if(show){
-            showPopover(groupNum);
+    } else {
+        var obj;
+        if(editable){
+            obj = editablePopoverObj(eventObj);
+        } else {
+            obj = readOnlyPopoverObj(eventObj);
         }
-    });
+        data.options.title = obj["title"];
+        data.options.content = obj["content"];
+    }
 
+    // show/hide it
+    if(show){
+        showPopover(groupNum);
+    }
+    
     // allow using return key
     $(document).ready(function() {
         pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
@@ -149,15 +145,29 @@ function updateAllPopoversToReadOnly() {
     console.log("UPDATED ALL POPOVERS TO BE READONLY");
 };
 
+var setPopoverOnTask = function(groupNum, obj){
+    $(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).popover(obj);
+};
+
 function hidePopover(popId){
-    console.log("hiding popover");
-    $("#rect_" + popId).popover("hide");
+    console.log("hiding popover " + popId);
+    $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('hide');
     overlayOff();
 };
 
 function showPopover(popId){
-    $("#rect_" + popId).popover("show");
+    console.log("showing popover " + popId);
+    $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('show');
     overlayOn();
+};
+
+function destroyPopover(popId){
+    console.log("destroying popover " + popId);
+    $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('destroy');
+};
+
+var getPopoverDataFromGroupNum = function(groupNum){
+    return $(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data('bs.popover');
 };
 
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
@@ -211,11 +221,10 @@ function saveEventInfo (popId) {
     updateStartPlace(popId, startHour, startMin, newWidth);
 
     //Update Popover
-    updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes,driId);
+    //updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes,driId);
 
-    $("#rect_" + popId).popover("hide");
-    overlayOff();
-
+    hidePopover(popId);
+  
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
     flashTeamsJSON["events"][indexOfJSON].title = newTitle;
@@ -230,37 +239,6 @@ function saveEventInfo (popId) {
     updateStatus(false);
     
 };
-
-//Access the data of a single event's popover and changes the content
-function updateEventPopover(idNum, title, startHr, startMin, hrs, min, notes, driId) {
-    $("#rect_" + idNum).data('popover').options.title = '<input type ="text" name="eventName" id="eventName_' 
-        + event_counter + '" placeholder="' + title + '">';
-
-    $("#rect_" + idNum).data('popover').options.content = '<table><tr><td >'
-        +'<form name="eventForm_' + event_counter + '">'
-        +'<b>Event Start</b><br>' 
-        +'Hours: <input type="number" id="startHr_' + event_counter 
-            + '" placeholder="' + startHr + '" min="0" style="width:35px">  '
-        +'Minutes:<input type="number" id="startMin_' + event_counter 
-            + '" placeholder="' + startMin + '" step="15" max="45" min="0" style="width:35px"><br>'
-        +'</td><td><b>Total Runtime: </b><br>' 
-        +'Hours: <input type = "number" id="hours_' + event_counter + '" placeholder="' 
-            + hrs + '" min="0" style="width:35px"/><br>    ' 
-        +'Minutes: <input type = "number" id = "minutes_' + event_counter + '" placeholder="' + min 
-            + '" style="width:35px" min="0" step="15" max="45" min="0"/>'
-        +'</td><tr><td><b>Members</b><br> <div id="event' + event_counter + 'memberList">' 
-            +  writeEventMembers(event_counter) + '</div>'
-        +'</td><td><br><b>Directly-Responsible Individual</b><br><select class="driInput"' 
-            +' name="driName" id="driEvent_' + event_counter + '"' 
-        + 'onchange="getDRI('+event_counter + ')">'+ writeDRIMembers(event_counter, driId) +'</select>'
-        +'<br><b>Notes: <br></b><textarea rows="3" id="notes_' + event_counter + '">' + notes + '</textarea>'
-        +'</td></tr><tr><td><p><button type="button" id="delete"' 
-            +' onclick="deleteRect(' + event_counter +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + event_counter + ');">Save</button> </p>'
-        +'<button type="button" id="complete" onclick="completeTask(' + event_counter + ');">Complete</button> </p>' 
-        +'</form></td></tr>';
-};
-
 
 // Adds/updates the DRI dropdown on the event popover
 function writeDRIMembers(idNum, driId){
