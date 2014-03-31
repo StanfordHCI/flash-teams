@@ -42,7 +42,7 @@ class MembersController < ApplicationController
 
   def login uniq
   	session[:uniq] = uniq
-  	redirect_to :controller => 'flash_teams', :action => 'edit', :id => params[:id], :uniq => uniq, :notice => "You've been logged in!"
+  	redirect_to :controller => 'flash_teams', :action => 'edit', :id => params[:id], :uniq => uniq
   end
 
   def check_email_confirmed uniq
