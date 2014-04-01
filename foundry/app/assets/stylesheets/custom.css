@@ -70,3 +70,6 @@
     color: rgba(0,0,0,0.5);
     padding-left:40%;
 }
+#gFolder {
+    cursor:pointer;
+}
