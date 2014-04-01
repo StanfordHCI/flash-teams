@@ -83,9 +83,6 @@ function renderMemberPopovers(members) {
             container: $("#member-container")
         });
 
-        // show popover
-        //$("#mPill_"+member_id).popover("show");
-
         var mem_id = member_id;
         console.log("attaching click handler to " + member_id);
         $("#mPill_" + member_id).on('click', function() {
@@ -194,7 +191,7 @@ function saveMemberInfo(popId) {
     var newColor = $("#color_" + popId).spectrum("get").toHexString();
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
-    updateMemberPopover(popId);
+    //updateMemberPopover(popId);
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
