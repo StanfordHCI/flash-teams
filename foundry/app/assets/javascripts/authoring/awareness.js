@@ -30,7 +30,7 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
-var in_progress;
+var in_progress = false;
 var delayed_tasks_time = [];
 var dri_responded = [];
 var project_status_handler;
@@ -261,6 +261,8 @@ var loadData = function(in_progress){
         latest_time = loadedStatus.latest_time;
     }
     cursor_details = positionCursor(flashTeamsJSON, latest_time);
+
+    event_counter = flashTeamsJSON["events"].length;
     
     drawEvents(!in_progress);
     drawBlueBoxes();
@@ -268,10 +270,10 @@ var loadData = function(in_progress){
     drawDelayedTasks();
 };
 
-var startTeam = function(in_progress){
+var startTeam = function(team_in_progress){
     console.log("STARTING TEAM");
     updateAllPopoversToReadOnly();
-    if(in_progress){
+    if(team_in_progress){
         startCursor(cursor_details);
     } else {
         recordStartTime();
@@ -280,6 +282,8 @@ var startTeam = function(in_progress){
         setCursorMoving();
     }
     init_statusBar(status_bar_timeline_interval);
+
+    in_progress = true;
 
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
