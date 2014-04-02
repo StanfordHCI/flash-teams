@@ -73,20 +73,28 @@ function readOnlyPopoverObj(ev) {
 
     var content = '<b>Event Start:</b><br>'
         + ev.startHr + ':'
-        + ev.startMin + '<br>'
+        + ev.startMin.toFixed(0) + '<br>'
         +'<b>Total Runtime: </b><br>' 
         + hrs + ' hrs ' + mins + ' mins<br>';
 
-    content += '<b>Members:</b><br>';
-    for (var j=0;j<ev.members.length;j++){
-        content += ev.members[j];
-        content += '<br>';
+    var num_members = ev.members.length;
+    if(num_members > 0){
+        content += '<b>Members:</b><br>';
+        for (var j=0;j<num_members;j++){
+            content += ev.members[j].name;
+            content += '<br>';
+        }
     }
 
-    if (ev.dri != ""){
-        content += '<b>Directly-Responsible Individual:</b><br>';
-        content += ev.dri;
-        content += '<br>';
+    console.log("EV.DRI: " + ev.dri);
+
+    if (ev.dri != "" && ev.dri != undefined){
+        var mem = getMemberById(ev.dri);
+        if(mem){
+            content += '<b>Directly-Responsible Individual:</b><br>';
+            content += mem.role;
+            content += '<br>';
+        }
     }
 
     if (ev.content != ""){
@@ -288,7 +296,6 @@ function writeDRIMembers(idNum, driId){
      
     return DRIString;
 }
-
 
 // returns the id of the selected DRI in the DRI dropdown menu on the event popover 
 function getDRI(groupNum) {    
