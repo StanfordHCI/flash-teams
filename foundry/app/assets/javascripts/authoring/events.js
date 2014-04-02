@@ -634,13 +634,15 @@ function renderEventMembers(eventId) {
         else{
             current = undefined;
         }
-        console.log("This is the value of current", current);
         if (current != undefined){
             for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
                 console.log('NAME', name);
                  if (flashTeamsJSON["members"][j].role == name){
                      if (j == current){
-                        currentUserEvents.push(eventId);
+                        if (currentUserIds.indexOf(eventId) < 0){
+                            currentUserIds.push(eventId);
+                            currentUserEvents.push(ev);
+                        }
                          $("#rect_" + eventId).attr("fill", color)
                              .attr("fill-opacity", .4);   
                     }
@@ -648,7 +650,12 @@ function renderEventMembers(eventId) {
             }
         }
     }
-
+    if ((current != undefined) && (currentUserEvents.length > 0)){
+        currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
+        upcomingEvent = currentUserEvents[0].id;
+        $("#rect_" + upcomingEvent).attr("fill", color)
+            .attr("fill-opacity", .9);    
+    }
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle

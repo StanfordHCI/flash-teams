@@ -288,8 +288,7 @@ var startTeam = function(team_in_progress){
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     console.log("Let me show the current user's events", currentUserEvents);
-    // boldEvents(0);
-    // trackUpcomingEvent();
+    trackUpcomingEvent();
     // poll_interval_id = poll();
 };
 
@@ -774,10 +773,12 @@ var trackUpcomingEvent = function(){
         if(!upcomingEvent) return;
         var ev = flashTeamsJSON["events"][getEventJSONIndex(upcomingEvent)];
         var task_g = getTaskGFromGroupNum(upcomingEvent);
-        if (ev.completed){
+        if (ev.completed_x){
             toDelete = upcomingEvent;
+            console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
             upcomingEvent = currentUserEvents[0].id;
+            console.log("AFTER SPLICING", currentUserEvents, upcomingEvent);
             $("#rect_" + toDelete).attr("fill-opacity", .4);
             $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
             task_g = getTaskGFromGroupNum(upcomingEvent);
@@ -794,7 +795,11 @@ var trackUpcomingEvent = function(){
         var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
-        var overallTime = hours + ":" + minutes;
+        var minutesText = minutes;
+        if (minutes < 10){
+            minutesText = "0" + minutes;
+        }
+        var overallTime = hours + ":" + minutesText;
         
         /*send notification email before task starts*/
         var email="rahmati.nr@gmail.com";
@@ -805,15 +810,6 @@ var trackUpcomingEvent = function(){
 
 
         if (displayTimeinMinutes < 0){
-            // make the complete button clickable for live/delayed task
-            for (var i = 0; i<flashTeamsJSON["events"].length; i++){
-                var eventt = flashTeamsJSON["events"][i];
-                eventId = flashTeamsJSON["events"][i].id
-                if (eventId == upcomingEvent){
-                    updatePopoverToReadOnly(eventt, true);
-                    break;
-                }
-            }
 
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
