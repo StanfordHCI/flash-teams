@@ -777,13 +777,16 @@ var trackUpcomingEvent = function(){
             toDelete = upcomingEvent;
             console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
+            if (currentUserEvents.length == 0){
+                upcomingEvent = undefined;
+                return;
+            }
             upcomingEvent = currentUserEvents[0].id;
             console.log("AFTER SPLICING", currentUserEvents, upcomingEvent);
             $("#rect_" + toDelete).attr("fill-opacity", .4);
             $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
             task_g = getTaskGFromGroupNum(upcomingEvent);
         }
-       // console.log("time", currentUserEvents[0].startTime);
         var cursor_x = cursor.attr("x1");
         var cursorHr = (cursor_x-(cursor_x%100))/100;
         var cursorMin = (cursor_x%100)/25*15;
@@ -792,7 +795,18 @@ var trackUpcomingEvent = function(){
             cursorMin = 0;
         } else cursorMin += 2.4
         var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
+        console.log(currentUserEvents, currentUserEvents[0]);
+        console.log("THIS IS START HOUR AND MINUTES", currentUserEvents[0].startHr, currentUserEvents[0].startMin);
+        currentUserEvents[0].startTime = parseInt(currentUserEvents[0].startHr)*60 + parseInt(currentUserEvents[0].startMin);
+        // if ((currentUserEvents[0].startTime == undefined) || (currentUserEvents[0].startTime ==  NaN)){
+        //     console.log("GET INTO THIS FUNCTION PLEASE");
+        //     console.log(parseInt(currentUserEvents[0].startHr), currentUserEvents[0].startMin, "OK. PLEASE BE RIGHT");
+        //     currentUserEvents[0].startTime = parseInt(currentUserEvents[0].startHr)*60 + parseInt(currentUserEvents[0].startMin);
+        // }
+        console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
         var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
+        console.log(currentUserEvents[0].startTime);
+        console.log("DISPLAY TIME", displayTimeinMinutes);
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
         var minutesText = minutes;
