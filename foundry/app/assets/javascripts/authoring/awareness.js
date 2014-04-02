@@ -287,8 +287,9 @@ var startTeam = function(team_in_progress){
 
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
-    //boldEvents(0);
-    //trackUpcomingEvent();
+    console.log("Let me show the current user's events", currentUserEvents);
+    // boldEvents(0);
+    // trackUpcomingEvent();
     // poll_interval_id = poll();
 };
 
@@ -952,20 +953,17 @@ var completeTask = function(groupNum){
 };
 
 function isCurrent(element) {
-    var memberName = flashTeamsJSON["members"][current].role;
+    var memberName = flashTeamsJSON["members"][0].role;
     return element.members.indexOf(memberName) != -1;
 };
 
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
+    console.log("HELLO I ENTER HERE SO MUCH");
     if(flashTeamsJSON["members"].length == 0) return;
-    //console.log("it's bold!")
     var uniq = getParameterByName('uniq');
     $("#uniq").value = uniq;
-    //console.log("yoyoyoyoyo", uniq);
-    // if (session[:uniq]){
-    //     console.log("Hello");
-    // }
+    console.log("THIS IS THE UNIQ VALUE", uniq);
     var memberName = flashTeamsJSON["members"][currentUser].role;
     var newColor;
     for (i = 0; i < flashTeamsJSON["members"].length; i++) {
@@ -979,9 +977,10 @@ function boldEvents(currentUser){
         }
     }
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-    //console.log("CURRENT USER EVENTS: " + currentUserEvents);
+    console.log("CURRENT USER EVENTS: " + currentUserEvents);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
     upcomingEvent = currentUserEvents[0].id;
+    console.log("DOES THIS RECORD ANYTHING AT ALL?", currentUserEvents, upcomingEvent);
     $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
 };
 

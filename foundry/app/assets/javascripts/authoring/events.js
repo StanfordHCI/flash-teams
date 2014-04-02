@@ -618,13 +618,34 @@ function renderEventMembers(eventId) {
             .attr("fill-opacity", .9);
 
         // change color of rect
-        for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
-             if (flashTeamsJSON["members"][j].role == name){
-                 if (j == current){
-                     $("#rect_" + eventId).attr("fill", color)
-                         .attr("fill-opacity", .4);   
-                 }
-             } 
+
+        var uniq = getParameterByName('uniq');
+        $("#uniq").value = uniq;
+        console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
+        if (uniq){
+            flash_team_members = flashTeamsJSON["members"];
+            console.log(flash_team_members[0].uniq);
+            for(var i=0;i<flash_team_members.length;i++){            
+                if (flash_team_members[i].uniq == uniq){
+                    current = i;
+                }
+            }
+        }
+        else{
+            current = undefined;
+        }
+        console.log("This is the value of current", current);
+        if (current != undefined){
+            for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
+                console.log('NAME', name);
+                 if (flashTeamsJSON["members"][j].role == name){
+                     if (j == current){
+                        currentUserEvents.push(eventId);
+                         $("#rect_" + eventId).attr("fill", color)
+                             .attr("fill-opacity", .4);   
+                    }
+                } 
+            }
         }
     }
 

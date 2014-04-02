@@ -23,7 +23,24 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-var current = 1;
+// var uniq = getParameterByName('uniq');
+// $("#uniq").value = uniq;
+// console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
+// if (uniq){
+//     flash_team_members = flashTeamsJSON["members"];
+//     console.log(flash_team_members[0].uniq);
+//     for(var i=0;i<flash_team_members.length;i++){            
+//         if (flash_team_members[i].uniq == uniq_u2){
+//             console.log("CURRENT CURRENT", current);
+//             var current = i;
+//         }
+//     }
+// }
+// else{
+//     console.log("UNDEFINEDDDDDDDD");
+//     var current = undefined;
+// }
+var current;
 var currentUserEvents = [];
 var upcomingEvent; 
 
