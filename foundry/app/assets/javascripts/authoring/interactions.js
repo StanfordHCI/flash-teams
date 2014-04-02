@@ -39,7 +39,7 @@ function drawInteraction(task2idNum) {
             task1idNum = t2Id;
         }
         
-        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var inter = flashTeamsJSON["interactions"][i];
             if ((inter.event1 == task1idNum && inter.event2 == task2idNum) 
                 || (inter.event1 == task2idNum && inter.event2 == task1idNum)) {
@@ -70,6 +70,7 @@ function drawInteraction(task2idNum) {
             drawHandoff(task1idNum, task2idNum);
             DRAWING_HANDOFF = false;
             $(".task_rectangle").popover("hide");
+            d3.event.stopPropagation();
         } else {
             alert("Sorry, the second task must begin after the first task ends.");
             DRAWING_COLLAB = false;
@@ -90,6 +91,7 @@ function drawInteraction(task2idNum) {
             drawCollaboration(task1idNum, task2idNum, overlap);
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
+            d3.event.stopPropagation();
         } else {
             alert("These events do not overlap, so they cannot collaborate.");
             DRAWING_COLLAB = false;
@@ -105,6 +107,8 @@ function drawInteraction(task2idNum) {
 //Called when we find DRAWING_HANDOFF
 //initializes creating a handoff b/t two events
 function startWriteHandoff() {
+    d3.event.stopPropagation();
+
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
     DRAWING_HANDOFF = true;
     var m = d3.mouse(this);
@@ -198,7 +202,9 @@ function saveHandoff(intId) {
 
 //Called when we click the collaboration button initializes creating 
 //a collaboration b/t two events
-function startWriteCollaboration() {
+function startWriteCollaboration(ev) {
+    d3.event.stopPropagation();
+
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
     DRAWING_COLLAB = true;
     var m = d3.mouse(this);
@@ -337,7 +343,7 @@ function interMouseMove() {
 
 //Retrieve index of the JSON object using its id
 function getIntJSONIndex(idNum) {
-    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+    for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
         if (flashTeamsJSON["interactions"][i].id == idNum) {
             return i;
         }
