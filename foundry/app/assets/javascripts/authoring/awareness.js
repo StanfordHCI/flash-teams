@@ -61,22 +61,14 @@ $("#flashTeamStartBtn").click(function(){
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
     $("#flashTeamTitle").css('display','none');
+
     var gFolderLink = document.getElementById("gFolder");
     gFolderLink.onclick=function(){
         console.log("is clicked");
         window.open(flashTeamsJSON.folder[1]);
-    } 
+    }
+    
     startTeam(false);
-    // location.reload();
-
-    /******* projec status bar start*****/
-
-    //moveProjectStatus(timeline_interval);
-
-    
-
-    /******* projec status bar end*****/
-    
 });
 
 $("#flashTeamEndBtn").click(function(){
@@ -118,15 +110,18 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
+        renderChatbox();
+    
         //get user name and user role for the chat
         if(data == null) return; // status not set yet
         loadedStatus = data;
 
         in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
+
         if(in_progress){
             console.log("flash team in progress");
-            renderChatbox();
+            //renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData(true);
             renderMembersUser();
@@ -142,7 +137,7 @@ $(document).ready(function(){
                 // render view
                 loadData(false);
                 renderMembersRequester();
-                renderChatbox();
+                //renderChatbox();
             }
         }
 
@@ -150,6 +145,7 @@ $(document).ready(function(){
     poll_interval_id = poll();
 });
 
+//finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
     var uniq_u=getParameterByName('uniq');
         
@@ -161,16 +157,21 @@ var renderChatbox = function(){
     }).done(function(data){
        chat_name = data["user_name"];
        chat_role = data["user_role"];
-       //alert(chat_role);
-       if (chat_role == ""){
-         
+       if (chat_role == "" || chat_role == null){
          uniq_u2 = data["uniq"];
+         
+        
          flash_team_members = flashTeamsJSON["members"];
          console.log(flash_team_members[0].uniq);
          for(var i=0;i<flash_team_members.length;i++){
             
             if (flash_team_members[i].uniq == uniq_u2){
               chat_role = flash_team_members[i].role; 
+              current = i;
+
+              boldEvents(current);
+              trackUpcomingEvent();
+
             }
          }
         
@@ -280,10 +281,11 @@ var startTeam = function(team_in_progress){
         addAllFolders();
         setCursorMoving();
     }
-    init_statusBar(status_bar_timeline_interval);
+    //init_statusBar(status_bar_timeline_interval);
 
     in_progress = true;
 
+    load_statusBar(status_bar_timeline_interval);
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     console.log("Let me show the current user's events", currentUserEvents);
@@ -302,6 +304,7 @@ var drawEvents = function(editable){
 
 var drawBlueBox = function(ev, task_g){
     var completed_x = ev.completed_x;
+
     if (!completed_x){
         return null;
     }
@@ -768,6 +771,10 @@ function isDelayed(element) {
 
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
+ 
+     if (current == null){
+        return;
+    }
     setInterval(function(){
         if(!upcomingEvent) return;
         var ev = flashTeamsJSON["events"][getEventJSONIndex(upcomingEvent)];
@@ -811,14 +818,6 @@ var trackUpcomingEvent = function(){
         }
         var overallTime = hours + ":" + minutesText;
         
-        /*send notification email before task starts*/
-        var email="rahmati.nr@gmail.com";
-        if(minutes==30 && hours==0){
-          //  sendBeforeTaskStartsEmail(minutes,email);
-        }
-        /*end*/
-
-
         if (displayTimeinMinutes < 0){
 
             if(!isDelayed(upcomingEvent)){
@@ -826,7 +825,7 @@ var trackUpcomingEvent = function(){
                 $(statusText.attr("fill", "blue"));
             }
             else{
-                overallTime = "DELAYED";
+                overallTime = "Your Task Is DELAYED";
                 $(statusText.attr("fill", "red"));
             }
         } else{
@@ -834,6 +833,7 @@ var trackUpcomingEvent = function(){
         }
 
         $(statusText.text(overallTime));
+       
     }, fire_interval);
 
     console.log("EXITING TRACKUPCOMINGEVENT FUNCTION");
@@ -958,15 +958,18 @@ var completeTask = function(groupNum){
     load_statusBar(status_bar_timeline_interval);
 };
 
+
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][0].role;
     return element.members.indexOf(memberName) != -1;
 };
 
+
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
-    console.log("HELLO I ENTER HERE SO MUCH");
-    if(flashTeamsJSON["members"].length == 0) return;
+    if (currentUser==null || flashTeamsJSON["members"].length==0){
+        return;
+    }
     var uniq = getParameterByName('uniq');
     $("#uniq").value = uniq;
     console.log("THIS IS THE UNIQ VALUE", uniq);
@@ -983,14 +986,9 @@ function boldEvents(currentUser){
         }
     }
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-    console.log("CURRENT USER EVENTS: " + currentUserEvents);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
     upcomingEvent = currentUserEvents[0].id;
     console.log("DOES THIS RECORD ANYTHING AT ALL?", currentUserEvents, upcomingEvent);
     $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
 };
-
 /* --------------- TEAM AWARENESS STUFF END ------------ */
-
-
-
