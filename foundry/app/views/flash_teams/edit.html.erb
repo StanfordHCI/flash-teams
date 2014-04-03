@@ -36,7 +36,7 @@
             
               <div id="chat-box-container" class="well" >
                 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-                <script> var flash_team_id=<%= @flash_team.id %> </script>
+                <script> var flash_team_id=<%= @flash_team.id %>; </script>
                 
                 <div id="messageList" style="overflow: auto;
                     overflow-x: hidden;
@@ -96,7 +96,7 @@
             
               <div id="chat-box-container" class="well" style="display: none;">
                 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-                <script> var flash_team_id=<%= @flash_team.id %> </script>
+                <script> var flash_team_id=<%= @flash_team.id %>; </script>
                 <div id="messageList" style="overflow: auto;
                     overflow-x: hidden;
                     height: 250px;
@@ -168,7 +168,7 @@
     
     <% if  @in_expert_view %>
     <h3> <%= @flash_team.name %> </h3>
-    <script> var flash_team_name=<%= @flash_team.name %>;</script>
+    <script> var flash_team_name="<%= @flash_team.name %>";</script>
     <div class="row-fluid">
         <div class="span3"> <!--Sidebar content-->
 <!--                     <div id = "title-container" class="well">
@@ -210,7 +210,7 @@
             </div> 
                 <div id="chat-box-container" class="well" >
                 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-                <script> var flash_team_id=<%= @flash_team.id %> </script>
+                <script> var flash_team_id=<%= @flash_team.id %>; </script>
                 
                 <div id="messageList" style="overflow: auto;
                     overflow-x: hidden;
