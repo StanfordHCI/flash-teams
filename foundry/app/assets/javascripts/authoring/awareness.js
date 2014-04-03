@@ -288,8 +288,8 @@ var startTeam = function(team_in_progress){
     load_statusBar(status_bar_timeline_interval);
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
-    //boldEvents(0);
-    //trackUpcomingEvent();
+    console.log("Let me show the current user's events", currentUserEvents);
+    trackUpcomingEvent();
     // poll_interval_id = poll();
 };
 
@@ -779,15 +779,23 @@ var trackUpcomingEvent = function(){
         if(!upcomingEvent) return;
         var ev = flashTeamsJSON["events"][getEventJSONIndex(upcomingEvent)];
         var task_g = getTaskGFromGroupNum(upcomingEvent);
-        if (ev.completed){
+        if (ev.completed_x){
             toDelete = upcomingEvent;
+            console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
+            console.log("AFTER SPLICING", currentUserEvents);
+            if (currentUserEvents.length == 0){
+                $("#rect_" + toDelete).attr("fill-opacity", .4);
+                upcomingEvent = undefined;
+                $(statusText.text("You've Completed Your Tasks!"));
+                return;
+            }
             upcomingEvent = currentUserEvents[0].id;
+            // console.log("AFTER SPLICING", currentUserEvents, upcomingEvent);
             $("#rect_" + toDelete).attr("fill-opacity", .4);
             $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
             task_g = getTaskGFromGroupNum(upcomingEvent);
         }
-       // console.log("time", currentUserEvents[0].startTime);
         var cursor_x = cursor.attr("x1");
         var cursorHr = (cursor_x-(cursor_x%100))/100;
         var cursorMin = (cursor_x%100)/25*15;
@@ -796,22 +804,22 @@ var trackUpcomingEvent = function(){
             cursorMin = 0;
         } else cursorMin += 2.4
         var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
+        console.log(currentUserEvents, currentUserEvents[0]);
+        console.log("THIS IS START HOUR AND MINUTES", currentUserEvents[0].startHr, currentUserEvents[0].startMin);
+        currentUserEvents[0].startTime = parseInt(currentUserEvents[0].startHr)*60 + parseInt(currentUserEvents[0].startMin);
+        console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
         var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
+        console.log(currentUserEvents[0].startTime);
+        console.log("DISPLAY TIME", displayTimeinMinutes);
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
-        var overallTime = "Your Task Is In: "+ hours + ":" + minutes;
+        var minutesText = minutes;
+        if (minutes < 10){
+            minutesText = "0" + minutes;
+        }
+        var overallTime = hours + ":" + minutesText;
         
-
         if (displayTimeinMinutes < 0){
-            // make the complete button clickable for live/delayed task
-            for (var i = 0; i<flashTeamsJSON["events"].length; i++){
-                var eventt = flashTeamsJSON["events"][i];
-                eventId = flashTeamsJSON["events"][i].id
-                if (eventId == upcomingEvent){
-                    updatePopoverToReadOnly(eventt, true);
-                    break;
-                }
-            }
 
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
@@ -951,49 +959,4 @@ var completeTask = function(groupNum){
     load_statusBar(status_bar_timeline_interval);
 };
 
-
-function isCurrent(element) {
-    var memberName = flashTeamsJSON["members"][current].role;
-    for (var i=0;i<element.members.length;i++){
-        var member = element.members[i];
-        
-        if (member["name"] == memberName)
-            return true;
-        else
-            return false;
-    }
-    //return element.members.name.indexOf(memberName) != -1;
-};
-
-
-//Bold and emphasize the tasks of the current user
-function boldEvents(currentUser){
-    if (currentUser==null || flashTeamsJSON["members"].length==0){
-        return;
-    }
-    console.log("it's bold!")
-    var uniq = getParameterByName('uniq');
-    $("#uniq").value = uniq;
-    //console.log("yoyoyoyoyo", uniq);
-    // if (session[:uniq]){
-    //     console.log("Hello");
-    // }
-    var memberName = flashTeamsJSON["members"][currentUser].role;
-    var newColor;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-    }
-    for (i = 0; i<flashTeamsJSON["events"].length; i++){
-        eventId = flashTeamsJSON["events"][i].id
-        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-            $("#rect_" + eventId).attr("fill", newColor)
-                .attr("fill-opacity", .4);
-        }
-    }
-    currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-
-    currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-    upcomingEvent = currentUserEvents[0].id;
-    $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
-};
 /* --------------- TEAM AWARENESS STUFF END ------------ */

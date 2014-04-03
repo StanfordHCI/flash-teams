@@ -23,8 +23,9 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-var current;
+var current = undefined;
 var currentUserEvents = [];
+var currentUserIds = [];
 var upcomingEvent; 
 
 var overlayIsOn = false;
