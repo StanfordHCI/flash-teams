@@ -682,9 +682,13 @@ var moveTasksRight = function(tasks, amount){
 
         //Find Remaining Interactions and Draw
         var remainingHandoffs = getRemainingHandoffs();
-        for (i = 0; i < remainingHandoffs.length; i++) drawHandoff(remainingHandoffs[i]);
+        for (i = 0; i < remainingHandoffs.length; i++) {
+            deleteInteraction(remainingHandoffs[i].id);
+            drawHandoff(remainingHandoffs[i]);
+        }
         var remainingCollabs = getRemainingCollabs();
         for (i = 0; i < remainingCollabs.length; i++) {
+            deleteInteraction(remainingCollabs[i].id);
             var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event1)];
             var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event2)];
             var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
@@ -714,6 +718,21 @@ var moveTasksLeft = function(tasks, amount){
 
         drawEvent(ev);
         drawPopover(ev, false, false);
+
+        //Find Remaining Interactions and Draw
+        var remainingHandoffs = getRemainingHandoffs();
+        for (i = 0; i < remainingHandoffs.length; i++) {
+            deleteInteraction(remainingHandoffs[i].id);
+            drawHandoff(remainingHandoffs[i]);
+        }
+        var remainingCollabs = getRemainingCollabs();
+        for (i = 0; i < remainingCollabs.length; i++) {
+            deleteInteraction(remainingCollabs[i].id);
+            var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event1)];
+            var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event2)];
+            var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
+            drawCollaboration(remainingCollabs[i], overlap);
+        }
     }
 };
 
@@ -771,17 +790,18 @@ var trackLiveAndRemainingTasks = function() {
 
 //Search all handoffs, return those that involve only two remaining tasks
 function getRemainingHandoffs() {
+    //CODE BREAKS HERE
     var handoffs = [];
-    for (i=0; i<flashTeamsJSON["interactions"].length) {
+    for (i=0; i<flashTeamsJSON["interactions"].length; i++) {
         var inter = flashTeamsJSON["interactions"][i];
         if (inter.type == "collaboration") continue;
 
         //Search over remaining tasks
         for (j = 0; j<remaining_tasks.length; j++) {
-            var task1Id = remaining_tasks[j].id
+            var task1Id = remaining_tasks[j];
             for (k = 0; k<remaining_tasks.length; k++) {
                 if (j == k) continue;
-                var task2Id = remaining_tasks[k].id;
+                var task2Id = remaining_tasks[k];
                 if ((inter.event1 == task1Id && inter.event2 == task2Id) 
                 || (inter.event1 == task2Id && inter.event2 == task1Id)) {
                     handoffs.push(inter);
@@ -789,22 +809,24 @@ function getRemainingHandoffs() {
             }
         }
     }
+    updateStatus(true);
     return handoffs;
 }
 
 //Search all collaborations, return those that involve only two remaining tasks
 function getRemainingCollabs() {
+    //REPEAT OF BREAKING CODE
     var collabs = [];
-    for (i=0; i<flashTeamsJSON["interactions"].length) {
+    for (i=0; i<flashTeamsJSON["interactions"].length; i++) {
         var inter = flashTeamsJSON["interactions"][i];
         if (inter.type == "handoff") continue;
 
         //Search over remaining tasks
         for (j = 0; j<remaining_tasks.length; j++) {
-            var task1Id = remaining_tasks[j].id
+            var task1Id = remaining_tasks[j];
             for (k = 0; k<remaining_tasks.length; k++) {
                 if (j == k) continue;
-                var task2Id = remaining_tasks[k].id;
+                var task2Id = remaining_tasks[k];
                 if ((inter.event1 == task1Id && inter.event2 == task2Id) 
                 || (inter.event1 == task2Id && inter.event2 == task1Id)) {
                     collabs.push(inter);
@@ -812,6 +834,7 @@ function getRemainingCollabs() {
             }
         }
     }
+    updateStatus(true);
     return collabs;
 }
 
