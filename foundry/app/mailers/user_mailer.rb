@@ -1,10 +1,10 @@
 class UserMailer < ActionMailer::Base
-  default from: "jayhp9@stanford.edu"
- 
+  #default from: "jayhp9@stanford.edu"
+  default from: "stanfordhci.odesk@gmail.com"
+  
   def send_early_completion_email(email,minutes)
   	  @minutes=minutes
   	  mail(:to => email, :subject => 'Flash Teams: Your next upcoming task starts '+ minutes +' minutes early')
-  	   
   end
   
   def send_before_task_starts_email(email,minutes)

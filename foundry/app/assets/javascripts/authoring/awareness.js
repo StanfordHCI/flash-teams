@@ -61,23 +61,14 @@ $("#flashTeamStartBtn").click(function(){
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
     $("#flashTeamTitle").css('display','none');
+
     var gFolderLink = document.getElementById("gFolder");
     gFolderLink.onclick=function(){
         console.log("is clicked");
         window.open(flashTeamsJSON.folder[1]);
     }
 
-    startTeam(false);
-    // location.reload();
-
-    /******* projec status bar start*****/
-
-    //moveProjectStatus(timeline_interval);
-
-    
-
-    /******* projec status bar end*****/
-    
+    startTeam(false);    
 });
 
 $("#flashTeamEndBtn").click(function(){
@@ -151,6 +142,7 @@ $(document).ready(function(){
     poll_interval_id = poll();
 });
 
+//finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
     var uniq_u=getParameterByName('uniq');
         
@@ -162,7 +154,7 @@ var renderChatbox = function(){
     }).done(function(data){
        chat_name = data["user_name"];
        chat_role = data["user_role"];
-       //alert(chat_role);
+     
        if (chat_role == ""){
          
          uniq_u2 = data["uniq"];
@@ -172,6 +164,11 @@ var renderChatbox = function(){
             
             if (flash_team_members[i].uniq == uniq_u2){
               chat_role = flash_team_members[i].role; 
+              current = i;
+
+              boldEvents(current);
+              trackUpcomingEvent();
+
             }
          }
         
@@ -769,6 +766,10 @@ function isDelayed(element) {
 
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
+ 
+     if (current == null){
+        return;
+    }
     setInterval(function(){
         if(!upcomingEvent) return;
         var ev = flashTeamsJSON["events"][getEventJSONIndex(upcomingEvent)];
@@ -793,15 +794,8 @@ var trackUpcomingEvent = function(){
         var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
-        var overallTime = hours + ":" + minutes;
+        var overallTime = "Your Task Is In: "+ hours + ":" + minutes;
         
-        /*send notification email before task starts*/
-        var email="rahmati.nr@gmail.com";
-        if(minutes==30 && hours==0){
-          //  sendBeforeTaskStartsEmail(minutes,email);
-        }
-        /*end*/
-
 
         if (displayTimeinMinutes < 0){
             // make the complete button clickable for live/delayed task
@@ -819,7 +813,7 @@ var trackUpcomingEvent = function(){
                 $(statusText.attr("fill", "blue"));
             }
             else{
-                overallTime = "DELAYED";
+                overallTime = "Your Task Is DELAYED";
                 $(statusText.attr("fill", "red"));
             }
         } else{
@@ -827,6 +821,7 @@ var trackUpcomingEvent = function(){
         }
 
         $(statusText.text(overallTime));
+       
     }, fire_interval);
 
     console.log("EXITING TRACKUPCOMINGEVENT FUNCTION");
@@ -953,13 +948,21 @@ var completeTask = function(groupNum){
 
 function isCurrent(element) {
     var memberName = flashTeamsJSON["members"][current].role;
-    return element.members.indexOf(memberName) != -1;
+    for (var i=0;i<element.members.length;i++){
+        var member = element.members[i];
+        
+        if (member["name"] == memberName)
+            return true;
+        else
+            return false;
+    }
+    //return element.members.name.indexOf(memberName) != -1;
 };
+
 
 //Bold and emphasize the tasks of the current user
 function boldEvents(currentUser){
-    if(flashTeamsJSON["members"].length == 0) return;
-    //console.log("it's bold!")
+    if (currentUser == null || flashTeamsJSON["members"].length) return;
     var uniq = getParameterByName('uniq');
     $("#uniq").value = uniq;
     //console.log("yoyoyoyoyo", uniq);
@@ -979,13 +982,8 @@ function boldEvents(currentUser){
         }
     }
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-    //console.log("CURRENT USER EVENTS: " + currentUserEvents);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
     upcomingEvent = currentUserEvents[0].id;
     $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
 };
-
 /* --------------- TEAM AWARENESS STUFF END ------------ */
-
-
-
