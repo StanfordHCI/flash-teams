@@ -172,7 +172,7 @@ function mousedown() {
         return;
     } 
 
-    //Close all open popovers //START
+    //Close all open popovers
     for (i = 0; i<flashTeamsJSON["events"].length; i++) {
         var idNum = flashTeamsJSON["events"][i].id;
         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');

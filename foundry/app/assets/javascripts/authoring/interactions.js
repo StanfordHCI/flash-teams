@@ -24,14 +24,24 @@ timeline_svg.append("defs").append("marker")
 //Determines if the user is trying to draw an interaction and if so, what type
 function drawInteraction(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
-    timeline_svg.on("mousemove", null);
-    $(".followingLine").remove();
+    
+    //Close all open popovers
+    for (i = 0; i<flashTeamsJSON["events"].length; i++) {
+        var idNum = flashTeamsJSON["events"][i].id;
+        if (idNum != task1idNum && idNum != task2idNum) {
+            $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
+        }
+        
+    }
 
     if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
     if (DRAWING_COLLAB == true) $("#collab_btn_" + task1idNum).popover("hide");
 
     //Check if interaction already exists
     if (DRAWING_COLLAB == true || DRAWING_HANDOFF == true) {
+        timeline_svg.on("mousemove", null);
+        $(".followingLine").remove();
+
         //Swap if task2 starts first
         if(firstEvent(task1idNum, task2idNum) == task2idNum)  {
             var t2Id = task2idNum;
@@ -50,8 +60,6 @@ function drawInteraction(task2idNum) {
             }
         }
     }
-
-
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
