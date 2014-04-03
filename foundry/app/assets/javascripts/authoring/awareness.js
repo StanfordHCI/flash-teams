@@ -268,6 +268,7 @@ var loadData = function(in_progress){
     drawBlueBoxes();
     drawRedBoxes();
     drawDelayedTasks();
+    drawInteractions();
 };
 
 var startTeam = function(team_in_progress){
@@ -662,8 +663,31 @@ var extendDelayedBoxes = function(){
     }
 };
 
+var drawInteractions = function(tasks){
+    //Find Remaining Interactions and Draw
+    var remainingHandoffs = getHandoffs(tasks);
+    var numHandoffs = remainingHandoffs.length;
+
+    var remainingCollabs = getCollabs(tasks);
+    var numCollabs = remainingCollabs.length;
+
+    for (var j = 0; j < numHandoffs; j++) {
+        deleteInteraction(remainingHandoffs[j].id);
+        drawHandoff(remainingHandoffs[j]);
+    }
+
+    for (var k = 0; k < numCollabs; k++) {
+        deleteInteraction(remainingCollabs[k].id);
+        var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event1)];
+        var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event2)];
+        var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
+        drawCollaboration(remainingCollabs[k], overlap);
+    }
+};
+
 var moveTasksRight = function(tasks, amount){
-    for (var i=0;i<tasks.length;i++){
+    var len = tasks.length;
+    for (var i=0;i<len;i++){
         // get the task id
         var groupNum = tasks[i];
 
@@ -682,6 +706,8 @@ var moveTasksRight = function(tasks, amount){
         drawEvent(ev);
         drawPopover(ev, false, false);
     }
+
+    drawInteractions(remaining_tasks);
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -706,6 +732,8 @@ var moveTasksLeft = function(tasks, amount){
         drawEvent(ev);
         drawPopover(ev, false, false);
     }
+
+    drawInteractions(remaining_tasks);
 };
 
 var moveRemainingTasksRight = function(amount){
@@ -732,16 +760,20 @@ var trackLiveAndRemainingTasks = function() {
         // extend already delayed boxes
         extendDelayedBoxes();
 
+        var at_least_one_task_delayed = false;
+
         // detect any live task is delayed or completed early
         for (var i=0;i<live_tasks.length;i++){
             var groupNum = parseInt(live_tasks[i]);
             var task_g = getTaskGFromGroupNum (groupNum);
             var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
+            //console.log("LOOKING AT TASK " + ev.id);
             var completed = ev.completed_x;
             var task_rect_curr_width = parseFloat(getWidth(ev));
 
             // delayed
             if (new_live_tasks.indexOf(groupNum) == -1 && !completed) { // groupNum is no longer live
+                //console.log("TASK DELAYED!");
                 drawRedBox(ev, task_g, false);
 
                 // add to delayed_tasks list
@@ -750,15 +782,74 @@ var trackLiveAndRemainingTasks = function() {
                 // updateStatus is required to send the notification email when a task is delayed
                 delayed_tasks_time[groupNum]=(new Date).getTime();
 
-                live_tasks = new_live_tasks;
-                remaining_tasks = new_remaining_tasks;
-                updateStatus(true);
+                at_least_one_task_delayed = true;
             }
         }
+
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
+        if(at_least_one_task_delayed){
+            updateStatus(true);
+            at_least_one_task_delayed = false;
+        }
     }, fire_interval);
 };
+
+//Search all handoffs, return those that involve only two remaining tasks
+function getHandoffs(tasks) {
+    var handoffs = [];
+    for (var i=0; i<flashTeamsJSON["interactions"].length; i++) {
+        var inter = flashTeamsJSON["interactions"][i];
+        if (inter.type == "collaboration") continue;
+
+        if(tasks == undefined){
+            handoffs.push(inter);
+        } else {
+            for (var j = 0; j<tasks.length; j++) {
+                var task1Id = tasks[j];
+                for (var k = 0; k<tasks.length; k++) {
+                    if (j == k) continue;
+                    var task2Id = tasks[k];
+                    if ((inter.event1 == task1Id && inter.event2 == task2Id) 
+                    || (inter.event1 == task2Id && inter.event2 == task1Id)) {
+                        handoffs.push(inter);
+                    }
+                }
+            }
+        }
+    }
+
+    return handoffs;
+}
+
+//Search all collaborations, return those that involve only two remaining tasks
+function getCollabs(tasks) {
+    var collabs = [];
+    for (var i=0; i<flashTeamsJSON["interactions"].length; i++) {
+        var inter = flashTeamsJSON["interactions"][i];
+        if (inter.type == "handoff") continue;
+
+        if(tasks == undefined){
+            collabs.push(inter);
+        } else {
+            for (var j = 0; j<tasks.length; j++) {
+                var task1Id = tasks[j];
+                for (var k = 0; k<tasks.length; k++) {
+                    if (j == k) {
+                        continue;
+                    }
+                    var task2Id = tasks[k];
+                    if ((inter.event1 == task1Id && inter.event2 == task2Id) 
+                    || (inter.event1 == task2Id && inter.event2 == task1Id)) {
+                        collabs.push(inter);
+                    }
+                }
+            }
+        }
+    }
+
+    return collabs;
+}
 
 function isDelayed(element) {
     for (var i=0; i<delayed_tasks.length;i++){

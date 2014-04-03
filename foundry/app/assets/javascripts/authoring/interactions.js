@@ -22,7 +22,7 @@ timeline_svg.append("defs").append("marker")
 
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
-function drawInteraction(task2idNum) {
+function eventMousedown(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     
     //Close all open popovers
@@ -78,6 +78,7 @@ function drawInteraction(task2idNum) {
             var handoffData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"handoff", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(handoffData);
+            updateStatus(false);
             drawHandoff(handoffData);
             DRAWING_HANDOFF = false;
             $(".task_rectangle").popover("hide");
@@ -102,6 +103,7 @@ function drawInteraction(task2idNum) {
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(collabData);
+            updateStatus(false);
             drawCollaboration(collabData, overlap);
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
@@ -142,6 +144,7 @@ function startWriteHandoff() {
 function drawHandoff(handoffData) {
     var task1Id = handoffData["event1"];
     var task2Id = handoffData["event2"];
+    var handoffId = handoffData["id"];
 
     //Find end of task 1
     var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1Id)];
@@ -163,7 +166,7 @@ function drawHandoff(handoffData) {
     path = timeline_svg.append("path")
         .attr("class", "handoffLine")
         .attr("id", function () {
-            return "interaction_" + interaction_counter;
+            return "interaction_" + handoffId;
         })
         .attr("x1", x1)
         .attr("y1", y1)
@@ -182,18 +185,18 @@ function drawHandoff(handoffData) {
         .attr("fill", "none")
         .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
 
-    $("#interaction_" + interaction_counter).popover({
+    $("#interaction_" + handoffId).popover({
         class: "handoffPopover", 
-        id: '"handoffPopover_' + interaction_counter + '"',
+        id: '"handoffPopover_' + handoffId + '"',
         html: "true",
         trigger: "click",
         title: "Handoff",
         content: 'Description of Handoff Materials: '
-        +'<textarea rows="2.5" id="interactionNotes_' + interaction_counter + '"></textarea>'
-        + '<button type="button" id="saveHandoff' + interaction_counter + '"'
-            +' onclick="saveHandoff(' + interaction_counter +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + interaction_counter + '"'
-            +' onclick="deleteInteraction(' + interaction_counter +');">Delete</button>',
+        +'<textarea rows="2.5" id="interactionNotes_' + handoffId + '"></textarea>'
+        + '<button type="button" id="saveHandoff' + handoffId + '"'
+            +' onclick="saveHandoff(' + handoffId +');">Save</button>          '
+        + '<button type="button" id="deleteInteraction_' + handoffId + '"'
+            +' onclick="deleteInteraction(' + handoffId +');">Delete</button>',
         container: $("#timeline-container")
     })
 }
@@ -243,12 +246,14 @@ function startWriteCollaboration(ev) {
 function drawCollaboration(collabData, overlap) {
     var task1Id = collabData["event1"];
     var task2Id = collabData["event2"];
+    var collabId = collabData["id"];
 
     var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1Id)];
     var y1 = ev1.y + 17; // padding on the top and bottom of timeline rows + height of x-axis labels
 
     var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2Id)];
     var x2 = ev2.x + 3;
+    console.log("NEW X OF COLLAB: " + x2);
     var y2 = ev2.y + 17;
 
     var firstTaskY = 0;
@@ -263,7 +268,7 @@ function drawCollaboration(collabData, overlap) {
     collabLine = timeline_svg.append("rect")
         .attr("class", "collaborationRect")
         .attr("id", function () {
-            return "interaction_" + interaction_counter;
+            return "interaction_" + collabId;
         })
         .attr("x", x2)
         .attr("y", firstTaskY)
@@ -272,23 +277,23 @@ function drawCollaboration(collabData, overlap) {
         .attr("fill", "gray")
         .attr("fill-opacity", .7);
 
-    drawCollabPopover();
+    drawCollabPopover(collabId);
 }
 
 //Add a popover to the collaboration rect so the user can add notes and delete
-function drawCollabPopover() {
-    $("#interaction_" + interaction_counter).popover({
+function drawCollabPopover(collabId) {
+    $("#interaction_" + collabId).popover({
         class: "collabPopover", 
-        id: '"collabPopover_' + interaction_counter + '"',
+        id: '"collabPopover_' + collabId + '"',
         html: "true",
         trigger: "click",
         title: "Collaboration",
         content: 'Description of Collaborative Work: '
-        +'<textarea rows="2.5" id="collabNotes_' + interaction_counter + '"></textarea>'
-        + '<button type="button" id="saveCollab' + interaction_counter + '"'
-            +' onclick="saveCollab(' + interaction_counter +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + interaction_counter + '"'
-            +' onclick="deleteInteraction(' + interaction_counter +');">Delete</button>',
+        +'<textarea rows="2.5" id="collabNotes_' + collabId + '"></textarea>'
+        + '<button type="button" id="saveCollab' + collabId + '"'
+            +' onclick="saveCollab(' + collabId +');">Save</button>          '
+        + '<button type="button" id="deleteInteraction_' + collabId + '"'
+            +' onclick="deleteInteraction(' + collabId +');">Delete</button>',
         container: $("#timeline-container")
     });
 }
@@ -318,8 +323,10 @@ function deleteInteraction(intId) {
     $("#interaction_" + intId).popover("destroy");
 
     //Delete from JSON
-    var indexOfJSON = getIntJSONIndex(intId);
-    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    //var indexOfJSON = getIntJSONIndex(intId);
+    //flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+
+    console.log("REMOVING INTERACTION ID: " + intId);
 
     //Delete Rectangle
     $("#interaction_" + intId).remove();
