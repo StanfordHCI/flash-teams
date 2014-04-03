@@ -22,7 +22,7 @@ timeline_svg.append("defs").append("marker")
 
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
-function drawInteraction(task2idNum) {
+function eventMousedown(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     timeline_svg.on("mousemove", null);
     $(".followingLine").remove();
@@ -50,8 +50,6 @@ function drawInteraction(task2idNum) {
             }
         }
     }
-
-
 
     //The user has cancelled the drawing
     if (task1idNum == task2idNum) { 
