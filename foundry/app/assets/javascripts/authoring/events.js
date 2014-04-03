@@ -35,25 +35,6 @@ function leftResize(d) {
 
     ev.x = newX;
 
-/*
-    taskRect.attr("x", newX);
-
-    //Update task rectangle graphics
-    $("#lt_rect_" + d.groupNum).attr("x", newX - DRAGBAR_WIDTH/2 + 4);
-    $("#title_text_" + d.groupNum).attr("x", newX + 10);
-    $("#time_text_" + d.groupNum).attr("x", newX + 10);
-    taskRect.attr("width", rightX - newX);
-    updateTime(d.groupNum);
-
-    //Update event member lines
-    var indexOfJSON = getEventJSONIndex(d.groupNum);
-    var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
-    for (i = 1; i <= numEventMembers; i++) {
-        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("x", (newX+4));
-        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX - 4));        
-    }
-*/
-
     //Check for interactions, delete
     for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
         var interaction = flashTeamsJSON["interactions"][i];
@@ -72,24 +53,6 @@ function leftResize(d) {
     ev.duration = durationObj["duration"];
 
     drawEvent(ev);
-    
-    /*
-    //Update popover
-    $("#rect_" + d.groupNum).popover("show");
-    var hrs = Math.floor(((rightX-newX)/100));
-    var min = (((rightX-newX)%(Math.floor(((rightX-newX)/100))*100))/25*15);
-    var title = $("#eventName_" + d.groupNum).attr("placeholder");
-    var startHr = Math.floor(newX/100);
-    var startMin = newX%100/25*15;
-    if(startMin == 57.599999999999994) {
-        startHr++;
-        startMin = 0;
-    } else startMin += 2.41
-    startMin = Math.floor(startMin);
-    $("#rect_" + d.groupNum).popover("hide");
-    var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(d.groupNum)].notes;
-    updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min, eventNotes);
-    */
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -202,6 +165,17 @@ function mousedown() {
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
         return;
+    }
+
+    if (overlayIsOn) {
+        overlayOff();
+        return;
+    } 
+
+    //Close all open popovers //START
+    for (i = 0; i<flashTeamsJSON["events"].length; i++) {
+        var idNum = flashTeamsJSON["events"][i].id;
+        $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
     }
 
     if(flashTeamsJSON["startTime"]) { // flash team already started
@@ -542,7 +516,7 @@ function redraw(group, newWidth, gNum) {
 
 //Delete a task rectangle, all of its relevant components, and remove the event from the JSON
 function deleteRect (rectId) {
-    $("#rect_" + rectId).popover("destroy");
+    destroyPopover(rectId);
     $("#rect_" + rectId).remove();
     $("#lt_rect_" + rectId).remove();
     $("#rt_rect_" + rectId).remove();
@@ -558,10 +532,9 @@ function deleteRect (rectId) {
     }
     //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
-    deleteFile(folderIds[indexOfJSON][0]);
-    folderIds.splice(indexOfJSON, 1);
 
     updateStatus(false);
+    overlayOff();
 };
 
 function renderAllEventsMembers() {

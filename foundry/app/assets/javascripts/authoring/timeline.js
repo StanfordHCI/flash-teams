@@ -27,6 +27,8 @@ var current = 1;
 var currentUserEvents = [];
 var upcomingEvent; 
 
+var overlayIsOn = false;
+
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", SVG_WIDTH)
@@ -104,13 +106,13 @@ var task_g = timeline_svg.selectAll(".task_g");
 
 //Turn on the overlay so a user cannot continue to draw events when focus is on a popover
 function overlayOn() {
-    console.log("TURNED OVERLAY ON");
+    console.log("overlay on");
     $("#overlay").css("display", "block");
 };
 
 //Remove the overlay so a user can draw events again
 function overlayOff() {
-    console.log("TURNED OVERLAY OFF");
+    console.log("overlay off");
     $(".task_rectangle").popover("hide");
     $("#overlay").css("display", "none");
 };

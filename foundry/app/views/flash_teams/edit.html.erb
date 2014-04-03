@@ -232,17 +232,10 @@
         </div>
 
         <div class="span9"> <!--Body Content-->
-            
-            <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
+            <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                 <h3>Timeline</h3>
-                <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
-
-<!--
-            <div class="row-fluid">
-                <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
-                <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
-                <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
--->
+                </div>
             </div>
         </div>
     </div>
