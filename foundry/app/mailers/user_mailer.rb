@@ -3,8 +3,7 @@ class UserMailer < ActionMailer::Base
  
   def send_early_completion_email(email,minutes)
   	  @minutes=minutes
-  	  mail(:to => email, :subject => 'Your next upcoming task starts '+ minutes +' minutes early')
-  	   
+  	  mail(:to => email, :subject => 'Your next upcoming task starts '+ minutes +' minutes early')  	   
   end
   
   def send_before_task_starts_email(email,minutes)
