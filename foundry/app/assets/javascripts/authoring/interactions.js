@@ -39,7 +39,7 @@ function drawInteraction(task2idNum) {
             task1idNum = t2Id;
         }
         
-        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var inter = flashTeamsJSON["interactions"][i];
             if ((inter.event1 == task1idNum && inter.event2 == task2idNum) 
                 || (inter.event1 == task2idNum && inter.event2 == task1idNum)) {
@@ -60,16 +60,20 @@ function drawInteraction(task2idNum) {
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
         interaction_counter++;
-        var task1X = $("#rect_" + task1idNum)[0].x.animVal.value;
-        var task1Width = $("#rect_" + task1idNum)[0].width.animVal.value;
-        var task2X = $("#rect_" + task2idNum)[0].x.animVal.value;
+        var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1idNum)];
+        var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2idNum)];
+        var task1X = ev1.x;
+        var task1Width = getWidth(ev1);
+        var task2X = ev2.x;
+        
         if ((task1X + task1Width) <= task2X) {
             var handoffData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"handoff", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(handoffData);
-            drawHandoff(task1idNum, task2idNum);
+            drawHandoff(handoffData);
             DRAWING_HANDOFF = false;
             $(".task_rectangle").popover("hide");
+            d3.event.stopPropagation();
         } else {
             alert("Sorry, the second task must begin after the first task ends.");
             DRAWING_COLLAB = false;
@@ -77,19 +81,23 @@ function drawInteraction(task2idNum) {
         }
     //Draw a collaboration link between task one and task two
     } else if (DRAWING_COLLAB == true) {
-        var task1X = $("#rect_" + task1idNum)[0].x.animVal.value;
-        var task1Width = $("#rect_" + task1idNum)[0].width.animVal.value;
-        var task2X = $("#rect_" + task2idNum)[0].x.animVal.value;
-        var task2Width = $("#rect_" + task2idNum)[0].width.animVal.value;
+        var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1idNum)];
+        var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2idNum)];
+        var task1X = ev1.x;
+        var task1Width = getWidth(ev1);
+        var task2X = ev2.x;
+        var task2Width = getWidth(ev2);
+
         var overlap = eventsOverlap(task1X, task1Width, task2X, task2Width);
         if (overlap > 0) {
             interaction_counter++;
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(collabData);
-            drawCollaboration(task1idNum, task2idNum, overlap);
+            drawCollaboration(collabData, overlap);
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
+            d3.event.stopPropagation();
         } else {
             alert("These events do not overlap, so they cannot collaborate.");
             DRAWING_COLLAB = false;
@@ -105,6 +113,8 @@ function drawInteraction(task2idNum) {
 //Called when we find DRAWING_HANDOFF
 //initializes creating a handoff b/t two events
 function startWriteHandoff() {
+    d3.event.stopPropagation();
+
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
     DRAWING_HANDOFF = true;
     var m = d3.mouse(this);
@@ -121,15 +131,19 @@ function startWriteHandoff() {
 };
 
 //Redraw the position of the interaction line
-function drawHandoff(task1Id, task2Id) {
+function drawHandoff(handoffData) {
+    var task1Id = handoffData["event1"];
+    var task2Id = handoffData["event2"];
+
     //Find end of task 1
-    var task1Rect = $("#rect_" + task1Id)[0];
-    var x1 = task1Rect.x.animVal.value + 3 + task1Rect.width.animVal.value;
-    var y1 = task1Rect.y.animVal.value + 50;
+    var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1Id)];
+    var x1 = ev1.x + 3 + getWidth(ev1);
+    var y1 = ev1.y + 50;
+    
     //Find beginning of task 2
-    var task2Rect = $("#rect_" + task2Id)[0];
-    var x2 = task2Rect.x.animVal.value + 3;
-    var y2 = task2Rect.y.animVal.value + 50;
+    var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2Id)];
+    var x2 = ev2.x + 3;
+    var y2 = ev2.y + 50;
 
     var path = timeline_svg.selectAll("path")
        .data(flashTeamsJSON["interactions"]);
@@ -198,7 +212,9 @@ function saveHandoff(intId) {
 
 //Called when we click the collaboration button initializes creating 
 //a collaboration b/t two events
-function startWriteCollaboration() {
+function startWriteCollaboration(ev) {
+    d3.event.stopPropagation();
+
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
     DRAWING_COLLAB = true;
     var m = d3.mouse(this);
@@ -216,13 +232,16 @@ function startWriteCollaboration() {
 
 //Draw collaboration between two events, calculates which event 
 //comes first and what the overlap is
-function drawCollaboration(task1Id, task2Id, overlap) {
-    var task1Rect = $("#rect_" + task1Id)[0];
-    var y1 = task1Rect.y.animVal.value;
+function drawCollaboration(collabData, overlap) {
+    var task1Id = collabData["event1"];
+    var task2Id = collabData["event2"];
 
-    var task2Rect = $("#rect_" + task2Id)[0];
-    var x2 = task2Rect.x.animVal.value + 3;
-    var y2 = task2Rect.y.animVal.value;
+    var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1Id)];
+    var y1 = ev1.y + 17; // padding on the top and bottom of timeline rows + height of x-axis labels
+
+    var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2Id)];
+    var x2 = ev2.x + 3;
+    var y2 = ev2.y + 17;
 
     var firstTaskY = 0;
     var taskDistance = 0;
@@ -337,7 +356,7 @@ function interMouseMove() {
 
 //Retrieve index of the JSON object using its id
 function getIntJSONIndex(idNum) {
-    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+    for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
         if (flashTeamsJSON["interactions"][i].id == idNum) {
             return i;
         }
