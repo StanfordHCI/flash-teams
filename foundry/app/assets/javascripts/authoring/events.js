@@ -12,12 +12,30 @@ var event_counter = 0;
 
 var DRAGBAR_WIDTH = 8;
 
+$(document).ready(function(){
+    timeline_svg.append("rect")
+    .attr("class", "background")
+    .attr("width", SVG_WIDTH)
+    .attr("height", SVG_HEIGHT)
+    .attr("fill", "white")
+    .attr("fill-opacity", 0)
+    .on("mousedown", mousedown);
+});
+
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
-    var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
-    var rightX = $("#rt_rect_" + d.groupNum).get(0).x.animVal.value;
+    var groupNum = d.groupNum;
+    var indexOfJSON = getEventJSONIndex(d.groupNum);
+    var ev = flashTeamsJSON["events"][indexOfJSON];
+
+    var taskRect = timeline_svg.selectAll("#rect_" + groupNum);
+    var rightX = $("#rt_rect_" + groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
     var newX = Math.max(0, Math.min(rightX - 50, dragX));
+
+    ev.x = newX;
+
+/*
     taskRect.attr("x", newX);
 
     //Update task rectangle graphics
@@ -34,9 +52,10 @@ function leftResize(d) {
         $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("x", (newX+4));
         $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX - newX - 4));        
     }
+*/
 
     //Check for interactions, delete
-    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+    for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
         var interaction = flashTeamsJSON["interactions"][i];
         if (interaction.event1 == d.groupNum || interaction.event2 == d.groupNum) {
             deleteInteraction(interaction.id);
@@ -44,6 +63,17 @@ function leftResize(d) {
         }
     }
 
+    var startTimeObj = getStartTime(newX);
+    ev.startTime = startTimeObj["startTime"];
+    ev.startHr = startTimeObj["startHr"];
+    ev.startMin = startTimeObj["startMin"];
+
+    var durationObj = getDuration(newX, rightX);
+    ev.duration = durationObj["duration"];
+
+    drawEvent(ev);
+    
+    /*
     //Update popover
     $("#rect_" + d.groupNum).popover("show");
     var hrs = Math.floor(((rightX-newX)/100));
@@ -59,6 +89,7 @@ function leftResize(d) {
     $("#rect_" + d.groupNum).popover("hide");
     var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(d.groupNum)].notes;
     updateEventPopover(d.groupNum, title, startHr, startMin, hrs, min, eventNotes);
+    */
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -124,7 +155,7 @@ var drag = d3.behavior.drag()
         var hours = $("#hours_" + groupNum).attr("placeholder");
         var min = $("#minutes_" + groupNum).attr("placeholder");
         var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
-        updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
+        //updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
         $("#rect_" + groupNum).popover("hide");
 
         //Vertical Dragging
@@ -165,64 +196,175 @@ function calcSnap(mouseX, mouseY) {
     return [snapX, snapY];
 }
 
-//Draws event and adds it to the JSON when the timeline is clicked and overlay is off
+// mousedown on timeline => creates new event and draws it
 function mousedown() {
-    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
+    // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
         return;
     }
-    event_counter++; //To generate id
-    var point = d3.mouse(this);
-    
-    var snapPoint = calcSnap(point[0], point[1]);
-    if ((snapPoint[1] < 505) && (snapPoint[0] < 2396)){
-        var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
-        fillPopover(snapPoint[0], groupNum, true, null, null);
-        // createNewFolder("New Event " + groupNum);
+
+    if(flashTeamsJSON["startTime"]) { // flash team already started
+        return;
     }
+
+    // get mouse coords
+    var point = d3.mouse(this);
+
+    // get coords where event should snap to
+    var snapPoint = calcSnap(point[0], point[1]);
+  
+    if(!checkWithinTimelineBounds(snapPoint)){ return; }
+
+    // create event
+    var eventObj = createEvent(snapPoint);
+    
+    // render event
+    drawEvent(eventObj);
+    
+    // render event popover
+    drawPopover(eventObj, true, true);
+
+    // save
+    updateStatus(false);
 };
 
-timeline_svg.append("rect")
-    .attr("class", "background")
-    .attr("width", SVG_WIDTH)
-    .attr("height", SVG_HEIGHT)
-    .attr("fill", "white")
-    .attr("fill-opacity", 0)
-    .on("mousedown", mousedown);
+function checkWithinTimelineBounds(snapPoint) {
+    return ((snapPoint[1] < 505) && (snapPoint[0] < 2396));
+};
 
-function addEvent() {
+function getStartTime(mouseX) {
+    var startHr = (mouseX-(mouseX%100))/100;
+    var startMin = (mouseX%100)/25*15;
+    if(startMin == 57.599999999999994) {
+        startHr++;
+        startMin = 0;
+    } else startMin += 2.4
+    var startTimeinMinutes = parseInt((startHr*60)) + parseInt(startMin);
+
+    return {"startHr":startHr, "startMin":startMin, "startTimeinMinutes":startTimeinMinutes};
+};
+
+function getDuration(leftX, rightX) {
+    var hrs = Math.floor(((rightX-leftX)/100));
+    var min = (((rightX-leftX)%(Math.floor(((rightX-leftX)/100))*100))/25*15);
+    var durationInMinutes = parseInt((hrs*60)) + parseInt(min);
+
+    return {"duration":durationInMinutes, "hrs":hrs, "min":min};
+};
+
+function createEvent(snapPoint) {
+    event_counter++;
+    var startTimeObj = getStartTime(snapPoint[0]);
+    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
+      //add new event to flashTeams database
+    if (flashTeamsJSON.events.length == 0){
+        createNewFolder($("#flash_team_name").val());
+    }
+    flashTeamsJSON.events.push(newEvent);
+    return newEvent;
+};
+
+function getEventFromId(id) {
+    var events = flashTeamsJSON.events;
+    for(var i=0;i<events.length;i++){
+        var ev = events[i];
+        if(ev.id == id){
+            return ev;
+        }
+    }
+    return null;
+};
+
+function updateEvent(id, dataObj) {
+    var ev = getEventFromId(id);
+    if(!ev){
+        return;
+    }
+
+    if(dataObj["title"]){
+        ev["title"] = dataObj["title"];
+    }
+    if(dataObj["x"]){
+        ev["x"] = dataObj["x"];
+    }
+    if(dataObj["y"]){
+        ev["y"] = dataObj["y"];
+    }
+    if(dataObj["startTime"]){
+        ev["startTime"] = dataObj["startTime"];
+    }
+    if(dataObj["duration"]){
+        ev["duration"] = dataObj["duration"];
+    }
+    if(dataObj["members"]){
+        ev["members"] = dataObj["members"];
+    }
+    if(dataObj["dri"]){
+        ev["dri"] = dataObj["dri"];
+    }
+    if(dataObj["notes"]){
+        ev["notes"] = dataObj["notes"];
+    }
+    if(dataObj["startHr"]){
+        ev["startHr"] = dataObj["startHr"];
+    }
+    if(dataObj["startMin"]){
+        ev["startMin"] = dataObj["startMin"];
+    }
+    if(dataObj["gdrive"]){
+        ev["gdrive"] = dataObj["gdrive"];
+    }
+    if(dataObj["completed"]){
+        ev["completed"] = dataObj["completed"];
+    }
+
+    updateStatus();
+};
+
+// TODO: rewrite this
+function addEvent() { // events library box in the sidebar
     event_counter++;
     var point = [0,0];
     var snapPoint = calcSnap(point[0], point[1]);
-    var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, null, null);
+    var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, null, null);
     fillPopover(snapPoint[0], groupNum, true, null, null);
-}
+};
+
+function getWidth(ev) {
+    var durationInMinutes = ev.duration;
+    var hrs = parseFloat(durationInMinutes)/parseFloat(60);
+    return hrs*RECTANGLE_WIDTH;
+};
 
 //Creates graphical elements from array of data (task_rectangles)
-function  drawEvents(x, y, d, title, totalMinutes) {
-    if (title == null) {
-        title = "New Event";
-    }
-    if (totalMinutes == null) {
-        totalMinutes = 60;
-    }
+function  drawEvent(eventObj) {
+    console.log("drawing event");
+    var title = eventObj["title"];
+    var totalMinutes = eventObj["duration"];
+    var x = eventObj["x"];
+    var y = eventObj["y"];
+    var groupNum = eventObj["id"];
 
     var numHoursInt = Math.floor(totalMinutes/60);
     var numHoursDec = totalMinutes/60;
     var minutesLeft = totalMinutes%60;
     
-    var task_g;
-    var groupNum;
-    if (d === null) {
-        task_g = timeline_svg.append("g")
-        .data([{x: x, y: y+17, id: "task_g_" + event_counter, class: "task_g", groupNum: event_counter, completed: false}]);
-        groupNum = event_counter;
-    } else {
-        task_g = timeline_svg.append("g").data(d);
-        groupNum = d[0].groupNum;
-   }
+    // remove any existing task group with same id
+    removeTask(groupNum);
 
+    var new_data = {id: "task_g_" + groupNum, class: "task_g", groupNum: groupNum, x: x, y: y+17};
+    task_groups.push(new_data);
+
+    console.log(task_groups);
+
+    // create task group
+    var task_g = timeline_svg.selectAll("g")
+                .data(task_groups, function(d){ return d.groupNum; })
+                .enter()
+                .append("g")
+                .attr("id", "g_" + groupNum);
+    
     //Task Rectangle, Holds Event Info
     var task_rectangle = task_g.append("rect")
         .attr("class", "task_rectangle")
@@ -232,7 +374,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
             return "rect_" + groupNum; })
         .attr("groupNum", groupNum)
         .attr("height", RECTANGLE_HEIGHT)
-        .attr("width", RECTANGLE_WIDTH*numHoursDec)
+        .attr("width", getWidth(eventObj))
         .attr("fill", "#C9C9C9")
         .attr("fill-opacity", .6)
         .attr("stroke", "#5F5A5A")
@@ -245,7 +387,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
     var rt_rect = task_g.append("rect")
         .attr("class", "rt_rect")
         .attr("x", function(d) { 
-            return d.x + RECTANGLE_WIDTH*numHoursDec; })
+            return d.x + getWidth(eventObj); })
         .attr("y", function(d) {return d.y})
         .attr("id", function(d) {
             return "rt_rect_" + groupNum; })
@@ -299,22 +441,24 @@ function  drawEvents(x, y, d, title, totalMinutes) {
 
     //Add gdrive link
     var gdrive_link = task_g.append("text")
-        .text("Handoffs")
-        .attr("style", "cursor:pointer; text-decoration:underline")
+        .text("Upload")
+        .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
         .attr("class", "gdrive_link")
         .attr("id", function(d) {return "handoffs_" + groupNum;})
         .attr("groupNum", groupNum)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 38})
+        .attr("fill", "blue")
         .attr("font-size", "12px");
 
-    console.log(groupNum);
     $("#handoffs_" + groupNum).on('click', function(){
         if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
             window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
         }
+        else{
+            alert("The flash team must be running for you to upload a file!");
+        }
     });
-        // window.open(folderIds[groupNum-1][1]);}););
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
     var handoff_btn = task_g.append("image")
@@ -324,7 +468,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("groupNum", groupNum)
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-18})
+        .attr("x", function(d) {return d.x+(getWidth(eventObj))-18})
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteHandoff);
     $("#handoff_btn_" + groupNum).popover({
@@ -345,7 +489,7 @@ function  drawEvents(x, y, d, title, totalMinutes) {
         .attr("groupNum", groupNum)
         .attr("width", 16)
         .attr("height", 16)
-        .attr("x", function(d) {return d.x+RECTANGLE_WIDTH*numHoursDec-38; })
+        .attr("x", function(d) {return d.x+(getWidth(eventObj))-38; })
         .attr("y", function(d) {return d.y+23})
         .on("click", startWriteCollaboration);
     $("#collab_btn_" + groupNum).popover({
@@ -360,10 +504,8 @@ function  drawEvents(x, y, d, title, totalMinutes) {
     $("#collab_btn_" + groupNum).popover("show");
     $("#collab_btn_" + groupNum).popover("hide");
 
-
-    task_groups.push(task_g);
-
-    return groupNum;
+    // render the member lines
+    renderEventMembers(groupNum);
 };
 
 //Redraw a single task rectangle after it is dragged
@@ -391,8 +533,8 @@ function redraw(group, newWidth, gNum) {
         .attr("x", function(d) {return d.x + newWidth - 38})
         .attr("y", function(d) {return d.y + 23});
 
-    console.log("REDRAWING GRDIVE LINK: ");
-    console.log(d3Group.selectAll(".gdrive_link"));
+    //console.log("REDRAWING GRDIVE LINK: ");
+    //console.log(d3Group.selectAll(".gdrive_link"));
     d3Group.selectAll(".gdrive_link")
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 38});
@@ -424,8 +566,10 @@ function deleteRect (rectId) {
     }
     //Remove from JSON
     flashTeamsJSON["events"].splice(indexOfJSON, 1);
-    deleteFile(folderIds[indexOfJSON][0]);
-    folderIds.splice(indexOfJSON, 1);
+    if (folderIds[indexOfJSON]){
+        deleteFile(folderIds[indexOfJSON][0]);
+        folderIds.splice(indexOfJSON, 1);
+    }
 
     updateStatus(false);
 };
@@ -436,37 +580,40 @@ function renderAllEventsMembers() {
         var ev = events[i];
         console.log("EVENT ID: " + ev.id);
         renderEventMembers(ev.id);
+        console.log("rendered event");
     }
 };
 
 function renderEventMembers(eventId) {
     // get event
-    var indexOfEvent = getEventJSONIndex(eventId);
+    var ev = flashTeamsJSON["events"][getEventJSONIndex(eventId)];
 
     // get number of members in the event
-    var eventMembers = flashTeamsJSON["events"][indexOfEvent].members;
+    var members = ev.members;
 
-    for (var i = 0; i < eventMembers.length; i++) {
-        var member = eventMembers[i];
+    for (var i = 0; i < members.length; i++) {
+        // get member information
+        var member = members[i];
         var color = member.color;
         var name = member.name;
 
-        // add new line to represent member
-        var group = $("#rect_" + eventId)[0].parentNode;
-        var thisGroup = d3.select(group);
-        thisGroup.append("rect")
+        // get g in DOM
+        var task = getTaskGFromGroupNum(eventId);
+        
+        // append new line to it
+        task.append("rect")
             .attr("class", "member_line")
             .attr("id", function(d) {
                 return "event_" + eventId + "_eventMemLine_" + (i+1);
             })
             .attr("x", function(d) {
-                return parseInt($("#rect_" + eventId).attr("x")) + 8;})
+                return parseInt(ev.x) + 8;})
             .attr("y", function(d) {
-                return parseInt($("#rect_" + eventId).attr("y")) + 40 + (i*8);})
+                return parseInt(ev.y) + 60 + (i*8);})
             .attr("groupNum", eventId)
             .attr("height", 5)
             .attr("width", function(d) {
-                return parseInt($("#rect_" + eventId).attr("width")) - 8;})
+                return parseInt(getWidth(ev)) - 8;})
             .attr("fill", color)
             .attr("fill-opacity", .9);
 
@@ -480,6 +627,7 @@ function renderEventMembers(eventId) {
              } 
         }
     }
+
 };
 
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
@@ -533,7 +681,7 @@ function updateTime(idNum) {
     var startHr = $("#startHr_" + idNum).attr("placeholder");
     var startMin = $("#startMin_" + idNum).attr("placeholder");
     var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(idNum)].notes;
-    updateEventPopover(idNum, title, startHr, startMin, hours, minutes, eventNotes);
+    //updateEventPopover(idNum, title, startHr, startMin, hours, minutes, eventNotes);
     $("#rect_" + idNum).popover("hide");
 
     //Update JSON

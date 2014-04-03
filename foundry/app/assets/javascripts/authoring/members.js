@@ -83,9 +83,6 @@ function renderMemberPopovers(members) {
             container: $("#member-container")
         });
 
-        // show popover
-        //$("#mPill_"+member_id).popover("show");
-
         var mem_id = member_id;
         console.log("attaching click handler to " + member_id);
         $("#mPill_" + member_id).on('click', function() {
@@ -194,7 +191,7 @@ function saveMemberInfo(popId) {
     var newColor = $("#color_" + popId).spectrum("get").toHexString();
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
-    updateMemberPopover(popId);
+    //updateMemberPopover(popId);
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
@@ -283,13 +280,22 @@ function initializeColorPicker() {
 
 //Find the index of a member in the JSON object "members" array by using unique id
 function getMemberJSONIndex(idNum) {
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+    for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (flashTeamsJSON["members"][i].id == idNum) return i; 
     }
+    return null;
+};
+
+function getMemberById(id) {
+    var idx = getMemberJSONIndex(id);
+    if(idx){
+        return flashTeamsJSON["members"][idx];
+    }
+    return null;
 };
 
 function searchById (arr, id) {
-    for (i = 0; i < arr.length; i++) {
+    for (var i = 0; i < arr.length; i++) {
         if (arr[i].id == id) {
             return i;
         }

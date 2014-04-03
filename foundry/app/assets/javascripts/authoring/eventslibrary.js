@@ -171,7 +171,7 @@ function createDragEvent(mouseX, mouseY, EventJSONID) {
    event_counter++; //To generate id
 
 var snapPoint = calcSnap(mouseX, mouseY);
-var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, eventTitle, duration);
 fillPopover(snapPoint[0], groupNum, eventTitle, duration);
 };
 

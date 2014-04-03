@@ -1,46 +1,28 @@
-<input id="authenticity_token" value="<%= form_authenticity_token %>" type="hidden"/>
-
-<% if params[:notice] %>
-    <%= params[:notice] %>
-<% end %>
+<input type="hidden" id="authenticity_token" value="<%= form_authenticity_token %>"/>
+<input type="hidden" id="flash_team_id" value="<%= @flash_team.id %>"/>
+<input type="hidden" id="flash_team_name" value="<%= @flash_team.name%>"/>
+<input type="hidden" id="uniq" value=""/>
 
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
-        
 
-<input type="hidden" id="flash_team_id" value="<%= @flash_team.id %>"/>
-<input type="hidden" id="uniq" value=""/>
 <!--Main Layout-->
-<div class="container-fluid" style="min-width: 1300px">       
-     
-    
-              
+<div class="container-fluid" style="min-width: 1300px">
     <% if @in_author_view %>
-   
-    <% if @author_runtime %>
-      <h3> <%= @flash_team_title %> </h3>
-    <% else %>
-       
-        <div id="team_title">
-            <input type = "text" id="flashTeamTitle" placeholder="New Flash Team"  />
-            <!--<button class="btn" type="button" onclick="addTitle()" id="addTitle">Save</button> -->
-        </div>
-    <% end %>        
-   
-    <div class="row-fluid">
-        <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div>
-        <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
-        <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
-        <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
-       <!-- <div class="btn" id="flashTeamSaveBtn" onclick="saveFlashTeam" style="font-size:25px;">Save</div> -->
-    </div>
-              
+    <h3> <%= @flash_team.name %> </h3>
     
     <div class="row-fluid">
-        <div class="span3"> 
-
+        <input type="button" id="backBtn" value="Back" onclick="window.location='<%=flash_teams_path%>';"/>
+        <input type="button" id="flashTeamStartBtn" value="Start"/>
+        <input type="button" id="flashTeamEndBtn" value="End"/>
+        <input type="button" id="addTimeBtn" value="Add Time" onclick="addTime()"/>
+    </div>
+    <br/>
+    <div class="row-fluid">
+        <div class="span3">
             <% if @author_runtime %>
             <div id="project-status-container" class="well">
                
+               <a id="gFolder">Google Drive Folder</a>
                <p>Progress Status:</p>   
                 <div class="progress progress-bar" style="background: #ffffff !important; border:solid 1px #c3c3c3;">
                     <div class="bar" style=" width: 0%; transition:width 1s linear;
@@ -100,6 +82,7 @@
             <% else %>
             <div id="project-status-container" class="well" style="display: none;">
                 
+                <a id="gFolder">Google Drive Folder</a>
                 <p>Progress Status:</p>   
                 <div class="progress progress-bar" style="background: #ffffff !important; border:solid 1px #c3c3c3;">
                     <div class="bar" style=" width: 0%; transition:width 1s linear;
@@ -137,7 +120,7 @@
            <!-- chat end -->
         
 
-        <div id="member-container" class="well" style="overflow-y:scroll;">
+            <div id="member-container" class="well" style="overflow-y:scroll;">
                <h3>Team Roles</h3>
                 <form name='newMemberForm' autocomplete="on">
                     <div class="input-append">
@@ -166,30 +149,26 @@
             
            <% end %>
             
-            
-            <div id="diagram-container" class="well" style="visibility:hidden" >
+            <div id="diagram-container" class="well" style="display:none;" >
                 <h3>Team Structure</h3>
             </div>
-            
         </div>
 
         <div class="span9"> <!--Body Content-->
-            
             <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                 <h3>Timeline</h3>
-                <div class="overlay" id="overlay" onclick="overlayOff()" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
-
+                <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
             </div>
         </div>
     </div>
    
 </div>
-<%= link_to 'Back', flash_teams_path %>
 <% end %>
    
     
     <% if  @in_expert_view %>
-    <h3><%= @flash_team_title %> </h3>
+    <h3> <%= @flash_team.name %> </h3>
+    <script> var flash_team_name=<%= @flash_team.name %>;</script>
     <div class="row-fluid">
         <div class="span3"> <!--Sidebar content-->
 <!--                     <div id = "title-container" class="well">
@@ -201,7 +180,7 @@
             <div id="project-status-container" class="well">
                 
                 
-               
+                <a id="gFolder">Google Drive Folder</a>
                 <p>Progress Status:</p>   
                 <div class="progress progress-bar" style="background: #ffffff !important; border:solid 1px #c3c3c3;">
                     <div class="bar" style=" width: 0%; transition:width 1s linear;
@@ -260,7 +239,7 @@
             
             <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                 <h3>Timeline</h3>
-                <div class="overlay" id="overlay" onclick="overlayOff()" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
+                <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
 
 <!--
             <div class="row-fluid">
@@ -275,11 +254,7 @@
 </div>
 <% end %>
 
-        <%= javascript_include_tag "authoring/gdrive" %>
-        <%= javascript_include_tag "application" %>
-        <%= javascript_include_tag "https://apis.google.com/js/client.js?onload=handleClientLoad" %>
-        <%= javascript_include_tag "https://apis.google.com/js/api.js"%>
-
-
-        
-<%= link_to 'Back', flash_teams_path %>
+<%= javascript_include_tag "authoring/gdrive" %>
+<%= javascript_include_tag "application" %>
+<%= javascript_include_tag "https://apis.google.com/js/client.js?onload=handleClientLoad" %>
+<%= javascript_include_tag "https://apis.google.com/js/api.js"%>

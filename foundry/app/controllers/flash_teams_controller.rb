@@ -38,7 +38,6 @@ class FlashTeamsController < ApplicationController
 
  
   def edit
-
     @flash_team = FlashTeam.find(params[:id])
 
     #customize user views
@@ -67,16 +66,6 @@ class FlashTeamsController < ApplicationController
      @in_author_view = true
     end
     #end
-   
-    #show flash team title
-    if json_status.blank?
-       @flash_team_title = "New Flash Team" 
-    else
-      flash_team_json = json_status["flash_teams_json"]
-      @flash_team_title = flash_team_json["title"] 
-    end
-    #end
-   
 
     flash_teams = FlashTeam.all
     @events_array = []
