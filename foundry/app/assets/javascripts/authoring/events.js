@@ -652,9 +652,9 @@ function renderEventMembers(eventId) {
     }
     if ((current != undefined) && (currentUserEvents.length > 0)){
         currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-        upcomingEvent = currentUserEvents[0].id;
+        upcomingEvent = currentUserEvents[0].id; 
         $("#rect_" + upcomingEvent).attr("fill", color)
-            .attr("fill-opacity", .9);    
+            .attr("fill-opacity", .9);  
     }
 };
 

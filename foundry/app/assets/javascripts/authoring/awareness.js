@@ -65,8 +65,7 @@ $("#flashTeamStartBtn").click(function(){
     gFolderLink.onclick=function(){
         console.log("is clicked");
         window.open(flashTeamsJSON.folder[1]);
-    }
-
+    } 
     startTeam(false);
     // location.reload();
 
@@ -778,7 +777,9 @@ var trackUpcomingEvent = function(){
             console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
             if (currentUserEvents.length == 0){
+                $("#rect_" + toDelete).attr("fill-opacity", .4);
                 upcomingEvent = undefined;
+                $(statusText.text("You've Completed Your Tasks!"));
                 return;
             }
             upcomingEvent = currentUserEvents[0].id;
@@ -798,11 +799,6 @@ var trackUpcomingEvent = function(){
         console.log(currentUserEvents, currentUserEvents[0]);
         console.log("THIS IS START HOUR AND MINUTES", currentUserEvents[0].startHr, currentUserEvents[0].startMin);
         currentUserEvents[0].startTime = parseInt(currentUserEvents[0].startHr)*60 + parseInt(currentUserEvents[0].startMin);
-        // if ((currentUserEvents[0].startTime == undefined) || (currentUserEvents[0].startTime ==  NaN)){
-        //     console.log("GET INTO THIS FUNCTION PLEASE");
-        //     console.log(parseInt(currentUserEvents[0].startHr), currentUserEvents[0].startMin, "OK. PLEASE BE RIGHT");
-        //     currentUserEvents[0].startTime = parseInt(currentUserEvents[0].startHr)*60 + parseInt(currentUserEvents[0].startMin);
-        // }
         console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
         var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
         console.log(currentUserEvents[0].startTime);
