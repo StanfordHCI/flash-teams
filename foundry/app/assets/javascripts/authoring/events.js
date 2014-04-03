@@ -380,7 +380,7 @@ function  drawEvent(eventObj) {
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
         .on("click", function(d) {
-            drawInteraction(d.groupNum) })
+            eventMousedown(d.groupNum) })
         .call(drag);
 
     //Right Dragbar

@@ -268,6 +268,7 @@ var loadData = function(in_progress){
     drawBlueBoxes();
     drawRedBoxes();
     drawDelayedTasks();
+    drawInteractions();
 };
 
 var startTeam = function(team_in_progress){
@@ -660,8 +661,31 @@ var extendDelayedBoxes = function(){
     }
 };
 
+var drawInteractions = function(tasks){
+    //Find Remaining Interactions and Draw
+    var remainingHandoffs = getHandoffs(tasks);
+    var numHandoffs = remainingHandoffs.length;
+
+    var remainingCollabs = getCollabs(tasks);
+    var numCollabs = remainingCollabs.length;
+
+    for (var j = 0; j < numHandoffs; j++) {
+        deleteInteraction(remainingHandoffs[j].id);
+        drawHandoff(remainingHandoffs[j]);
+    }
+
+    for (var k = 0; k < numCollabs; k++) {
+        deleteInteraction(remainingCollabs[k].id);
+        var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event1)];
+        var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event2)];
+        var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
+        drawCollaboration(remainingCollabs[k], overlap);
+    }
+};
+
 var moveTasksRight = function(tasks, amount){
-    for (var i=0;i<tasks.length;i++){
+    var len = tasks.length;
+    for (var i=0;i<len;i++){
         // get the task id
         var groupNum = tasks[i];
 
@@ -679,22 +703,9 @@ var moveTasksRight = function(tasks, amount){
 
         drawEvent(ev);
         drawPopover(ev, false, false);
-
-        //Find Remaining Interactions and Draw
-        var remainingHandoffs = getRemainingHandoffs();
-        for (i = 0; i < remainingHandoffs.length; i++) {
-            deleteInteraction(remainingHandoffs[i].id);
-            drawHandoff(remainingHandoffs[i]);
-        }
-        var remainingCollabs = getRemainingCollabs();
-        for (i = 0; i < remainingCollabs.length; i++) {
-            deleteInteraction(remainingCollabs[i].id);
-            var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event1)];
-            var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event2)];
-            var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
-            drawCollaboration(remainingCollabs[i], overlap);
-        }
     }
+
+    drawInteractions(remaining_tasks);
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -718,22 +729,9 @@ var moveTasksLeft = function(tasks, amount){
 
         drawEvent(ev);
         drawPopover(ev, false, false);
-
-        //Find Remaining Interactions and Draw
-        var remainingHandoffs = getRemainingHandoffs();
-        for (i = 0; i < remainingHandoffs.length; i++) {
-            deleteInteraction(remainingHandoffs[i].id);
-            drawHandoff(remainingHandoffs[i]);
-        }
-        var remainingCollabs = getRemainingCollabs();
-        for (i = 0; i < remainingCollabs.length; i++) {
-            deleteInteraction(remainingCollabs[i].id);
-            var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event1)];
-            var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[i].event2)];
-            var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
-            drawCollaboration(remainingCollabs[i], overlap);
-        }
     }
+
+    drawInteractions(remaining_tasks);
 };
 
 var moveRemainingTasksRight = function(amount){
@@ -760,16 +758,20 @@ var trackLiveAndRemainingTasks = function() {
         // extend already delayed boxes
         extendDelayedBoxes();
 
+        var at_least_one_task_delayed = false;
+
         // detect any live task is delayed or completed early
         for (var i=0;i<live_tasks.length;i++){
             var groupNum = parseInt(live_tasks[i]);
             var task_g = getTaskGFromGroupNum (groupNum);
             var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
+            //console.log("LOOKING AT TASK " + ev.id);
             var completed = ev.completed_x;
             var task_rect_curr_width = parseFloat(getWidth(ev));
 
             // delayed
             if (new_live_tasks.indexOf(groupNum) == -1 && !completed) { // groupNum is no longer live
+                //console.log("TASK DELAYED!");
                 drawRedBox(ev, task_g, false);
 
                 // add to delayed_tasks list
@@ -778,63 +780,72 @@ var trackLiveAndRemainingTasks = function() {
                 // updateStatus is required to send the notification email when a task is delayed
                 delayed_tasks_time[groupNum]=(new Date).getTime();
 
-                live_tasks = new_live_tasks;
-                remaining_tasks = new_remaining_tasks;
-                updateStatus(true);
+                at_least_one_task_delayed = true;
             }
         }
+
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
+        if(at_least_one_task_delayed){
+            updateStatus(true);
+            at_least_one_task_delayed = false;
+        }
     }, fire_interval);
 };
 
 //Search all handoffs, return those that involve only two remaining tasks
-function getRemainingHandoffs() {
-    //CODE BREAKS HERE
+function getHandoffs(tasks) {
     var handoffs = [];
-    for (i=0; i<flashTeamsJSON["interactions"].length; i++) {
+    for (var i=0; i<flashTeamsJSON["interactions"].length; i++) {
         var inter = flashTeamsJSON["interactions"][i];
         if (inter.type == "collaboration") continue;
 
-        //Search over remaining tasks
-        for (j = 0; j<remaining_tasks.length; j++) {
-            var task1Id = remaining_tasks[j];
-            for (k = 0; k<remaining_tasks.length; k++) {
-                if (j == k) continue;
-                var task2Id = remaining_tasks[k];
-                if ((inter.event1 == task1Id && inter.event2 == task2Id) 
-                || (inter.event1 == task2Id && inter.event2 == task1Id)) {
-                    handoffs.push(inter);
+        if(tasks == undefined){
+            handoffs.push(inter);
+        } else {
+            for (var j = 0; j<tasks.length; j++) {
+                var task1Id = tasks[j];
+                for (var k = 0; k<tasks.length; k++) {
+                    if (j == k) continue;
+                    var task2Id = tasks[k];
+                    if ((inter.event1 == task1Id && inter.event2 == task2Id) 
+                    || (inter.event1 == task2Id && inter.event2 == task1Id)) {
+                        handoffs.push(inter);
+                    }
                 }
             }
         }
     }
-    updateStatus(true);
+
     return handoffs;
 }
 
 //Search all collaborations, return those that involve only two remaining tasks
-function getRemainingCollabs() {
-    //REPEAT OF BREAKING CODE
+function getCollabs(tasks) {
     var collabs = [];
-    for (i=0; i<flashTeamsJSON["interactions"].length; i++) {
+    for (var i=0; i<flashTeamsJSON["interactions"].length; i++) {
         var inter = flashTeamsJSON["interactions"][i];
         if (inter.type == "handoff") continue;
 
-        //Search over remaining tasks
-        for (j = 0; j<remaining_tasks.length; j++) {
-            var task1Id = remaining_tasks[j];
-            for (k = 0; k<remaining_tasks.length; k++) {
-                if (j == k) continue;
-                var task2Id = remaining_tasks[k];
-                if ((inter.event1 == task1Id && inter.event2 == task2Id) 
-                || (inter.event1 == task2Id && inter.event2 == task1Id)) {
-                    collabs.push(inter);
+        if(tasks == undefined){
+            collabs.push(inter);
+        } else {
+            for (var j = 0; j<tasks.length; j++) {
+                var task1Id = tasks[j];
+                for (var k = 0; k<tasks.length; k++) {
+                    if (j == k) {
+                        continue;
+                    }
+                    var task2Id = tasks[k];
+                    if ((inter.event1 == task1Id && inter.event2 == task2Id) 
+                    || (inter.event1 == task2Id && inter.event2 == task1Id)) {
+                        collabs.push(inter);
+                    }
                 }
             }
         }
     }
-    updateStatus(true);
+
     return collabs;
 }
 
