@@ -136,8 +136,8 @@ $(document).ready(function(){
 
                 // render view
                 loadData(false);
-                renderMembersRequester();
-                //renderChatbox();
+                //renderMembersRequester();
+                renderChatbox();
             }
         }
 
@@ -169,6 +169,7 @@ var renderChatbox = function(){
               chat_role = flash_team_members[i].role; 
               current = i;
 
+              // here there once existed a call to boldEvents
               trackUpcomingEvent();
 
             }
