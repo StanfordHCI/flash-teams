@@ -113,19 +113,21 @@ var chat_role;
 var chat_name;
 
 $(document).ready(function(){
-    renderChatbox();
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
     $.ajax({
         url: url,
         type: 'get'
     }).done(function(data){
+        renderChatbox();
+    
         //get user name and user role for the chat
         if(data == null) return; // status not set yet
         loadedStatus = data;
 
         in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
+
         if(in_progress){
             console.log("flash team in progress");
             //renderChatbox();
@@ -163,10 +165,12 @@ var renderChatbox = function(){
     }).done(function(data){
        chat_name = data["user_name"];
        chat_role = data["user_role"];
-       //alert(chat_role);
-       if (chat_role == ""){
-         
+      
+       if (chat_role == "" || chat_role == null){
+        
          uniq_u2 = data["uniq"];
+         
+        
          flash_team_members = flashTeamsJSON["members"];
          console.log(flash_team_members[0].uniq);
          for(var i=0;i<flash_team_members.length;i++){

@@ -135,19 +135,27 @@ function DelayedTaskFinished_helper(remaining_tasks,title){
 /* get the start time of the next upcoming task of user to be notified*/
 var memberName2=0;
 function getUserNextTaskStartTime(input_name){
+   
+
     memberName2=input_name;
     var memberName = input_name;
+
     currentUserEvents = flashTeamsJSON["events"].filter(isCurrent2);
     currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
    	upcomingEvent2 = currentUserEvents[0].id;
-  
+   
     task_g2 = getTaskGFromGroupNum(upcomingEvent2);
+    console.log("???");
+    console.log(currentUserEvents);
+    console.log(task_g2.data[0]);
+
     if (task_g2.data()[0].completed){
         toDelete = upcomingEvent2;
         currentUserEvents.splice(0,1);
         upcomingEvent2 = currentUserEvents[0].id;
         task_g2 = getTaskGFromGroupNum(upcomingEvent2)
     }
+    
     var cursor_x = cursor.attr("x1");
     var cursorHr = (cursor_x-(cursor_x%100))/100;
     var cursorMin = (cursor_x%100)/25*15;
@@ -156,7 +164,11 @@ function getUserNextTaskStartTime(input_name){
         cursorMin = 0;
     } else cursorMin += 2.4
     var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
-    var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
+  
+   
+    var displayTimeinMinutes = parseInt(currentUserEvents[0].startHr * 60 + currentUserEvents[0].startMin) - parseInt(cursorTimeinMinutes);
+   
+
     var hours = parseInt(displayTimeinMinutes/60);
     var minutes = displayTimeinMinutes%60;
     if (hours==0 && minutes>1)
@@ -166,11 +178,13 @@ function getUserNextTaskStartTime(input_name){
     if (hours>1 && minutes>1)
     	var overallTime= hours + " hours "+minutes+" minutes";
 
+   
     if (displayTimeinMinutes < 0){
        console.log("overallTime= "+overallTime+". Why do you want to notify the user?")
     }else{
     	return overallTime;
     } 
+
 };       
 
 function isCurrent2(element) {
