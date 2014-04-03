@@ -113,6 +113,7 @@ var chat_role;
 var chat_name;
 
 $(document).ready(function(){
+    renderChatbox();
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
     $.ajax({
@@ -127,7 +128,7 @@ $(document).ready(function(){
         flashTeamsJSON = loadedStatus.flash_teams_json;
         if(in_progress){
             console.log("flash team in progress");
-            renderChatbox();
+            //renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData(true);
             renderMembersUser();
@@ -143,7 +144,7 @@ $(document).ready(function(){
                 // render view
                 loadData(false);
                 renderMembersRequester();
-                renderChatbox();
+                //renderChatbox();
             }
         }
 
@@ -281,10 +282,11 @@ var startTeam = function(team_in_progress){
         addAllFolders();
         setCursorMoving();
     }
-    init_statusBar(status_bar_timeline_interval);
+    //init_statusBar(status_bar_timeline_interval);
 
     in_progress = true;
 
+    load_statusBar(status_bar_timeline_interval);
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     //boldEvents(0);
