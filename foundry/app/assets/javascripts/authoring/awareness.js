@@ -776,6 +776,7 @@ var trackUpcomingEvent = function(){
             toDelete = upcomingEvent;
             console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
+            console.log("AFTER SPLICING", currentUserEvents);
             if (currentUserEvents.length == 0){
                 $("#rect_" + toDelete).attr("fill-opacity", .4);
                 upcomingEvent = undefined;
@@ -783,7 +784,7 @@ var trackUpcomingEvent = function(){
                 return;
             }
             upcomingEvent = currentUserEvents[0].id;
-            console.log("AFTER SPLICING", currentUserEvents, upcomingEvent);
+            // console.log("AFTER SPLICING", currentUserEvents, upcomingEvent);
             $("#rect_" + toDelete).attr("fill-opacity", .4);
             $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
             task_g = getTaskGFromGroupNum(upcomingEvent);
@@ -958,37 +959,6 @@ var completeTask = function(groupNum){
     load_statusBar(status_bar_timeline_interval);
 };
 
-function isCurrent(element) {
-    var memberName = flashTeamsJSON["members"][0].role;
-    return element.members.indexOf(memberName) != -1;
-};
-
-//Bold and emphasize the tasks of the current user
-function boldEvents(currentUser){
-    console.log("HELLO I ENTER HERE SO MUCH");
-    if(flashTeamsJSON["members"].length == 0) return;
-    var uniq = getParameterByName('uniq');
-    $("#uniq").value = uniq;
-    console.log("THIS IS THE UNIQ VALUE", uniq);
-    var memberName = flashTeamsJSON["members"][currentUser].role;
-    var newColor;
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].role == memberName) newColor = flashTeamsJSON["members"][i].color;
-    }
-    for (i = 0; i<flashTeamsJSON["events"].length; i++){
-        eventId = flashTeamsJSON["events"][i].id
-        if (flashTeamsJSON["events"][i].members.indexOf(memberName) != -1) {
-            $("#rect_" + eventId).attr("fill", newColor)
-                .attr("fill-opacity", .4);
-        }
-    }
-    currentUserEvents = flashTeamsJSON["events"].filter(isCurrent);
-    console.log("CURRENT USER EVENTS: " + currentUserEvents);
-    currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-    upcomingEvent = currentUserEvents[0].id;
-    console.log("DOES THIS RECORD ANYTHING AT ALL?", currentUserEvents, upcomingEvent);
-    $("#rect_" + upcomingEvent).attr("fill-opacity", .9);
-};
 
 /* --------------- TEAM AWARENESS STUFF END ------------ */
 
