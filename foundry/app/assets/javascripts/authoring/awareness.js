@@ -30,12 +30,14 @@ var drawn_blue_tasks = [];
 var completed_red_tasks = [];
 var task_groups = [];
 var loadedStatus;
+var in_progress = false;
 var delayed_tasks_time = [];
 var dri_responded = [];
 var project_status_handler;
 var cursor_details;
 var cursor_interval_id;
 var tracking_tasks_interval_id;
+
 
 var getXCoordForTime = function(t){
    // console.log("time t: " + t);
@@ -59,8 +61,14 @@ $("#flashTeamStartBtn").click(function(){
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
     $("#flashTeamTitle").css('display','none');
+    var gFolderLink = document.getElementById("gFolder");
+    gFolderLink.onclick=function(){
+        console.log("is clicked");
+        window.open(flashTeamsJSON.folder[1]);
+    }
 
     startTeam(false);
+    // location.reload();
 
     /******* projec status bar start*****/
 
@@ -115,7 +123,7 @@ $(document).ready(function(){
         if(data == null) return; // status not set yet
         loadedStatus = data;
 
-        var in_progress = loadedStatus.flash_team_in_progress;
+        in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
         if(in_progress){
             console.log("flash team in progress");
@@ -129,7 +137,7 @@ $(document).ready(function(){
             if(flashTeamsJSON){
                 // gdrive
                 if (flashTeamsJSON.events.length == 0 && flashTeamsJSON.members.length == 0){
-                    createNewFolder("New Flash Team");
+                    createNewFolder(flashTeamsJSON["title"]);
                 }
 
                 // render view
@@ -140,6 +148,7 @@ $(document).ready(function(){
         }
 
     });
+    poll_interval_id = poll();
 });
 
 var renderChatbox = function(){
@@ -170,9 +179,11 @@ var renderChatbox = function(){
     });
 };
 
-var flashTeamEnded = function(){
-    console.log("CHECKING IF FLASH TEAM IN PROGRESS: " + loadedStatus.flash_team_in_progress);
-    return !loadedStatus.flash_team_in_progress;
+var flashTeamEndedorStarted = function(){
+    if (loadedStatus.flash_team_in_progress == undefined){
+        return false;
+    }
+    return in_progress != loadedStatus.flash_team_in_progress;
 };
 
 var flashTeamUpdated = function(){
@@ -205,7 +216,7 @@ var poll = function(){
             loadedStatus = data;
             //console.log(loadedStatus);
 
-            if(flashTeamEnded() || flashTeamUpdated()) {
+            if(flashTeamEndedorStarted() || flashTeamUpdated()) {
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -250,6 +261,8 @@ var loadData = function(in_progress){
         latest_time = loadedStatus.latest_time;
     }
     cursor_details = positionCursor(flashTeamsJSON, latest_time);
+
+    event_counter = flashTeamsJSON["events"].length;
     
     drawEvents(!in_progress);
     drawBlueBoxes();
@@ -257,10 +270,10 @@ var loadData = function(in_progress){
     drawDelayedTasks();
 };
 
-var startTeam = function(in_progress){
+var startTeam = function(team_in_progress){
     console.log("STARTING TEAM");
     updateAllPopoversToReadOnly();
-    if(in_progress){
+    if(team_in_progress){
         startCursor(cursor_details);
     } else {
         recordStartTime();
@@ -270,11 +283,13 @@ var startTeam = function(in_progress){
     }
     init_statusBar(status_bar_timeline_interval);
 
+    in_progress = true;
+
     project_status_handler = setProjectStatusMoving();
     trackLiveAndRemainingTasks();
     //boldEvents(0);
     //trackUpcomingEvent();
-    poll_interval_id = poll();
+    // poll_interval_id = poll();
 };
 
 var drawEvents = function(editable){

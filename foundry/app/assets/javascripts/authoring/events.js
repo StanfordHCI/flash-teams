@@ -231,6 +231,10 @@ function createEvent(snapPoint) {
     event_counter++;
     var startTimeObj = getStartTime(snapPoint[0]);
     var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
+      //add new event to flashTeams database
+    if (flashTeamsJSON.events.length == 0){
+        createNewFolder($("#flash_team_name").val());
+    }
     flashTeamsJSON.events.push(newEvent);
     return newEvent;
 };
@@ -411,18 +415,22 @@ function  drawEvent(eventObj) {
 
     //Add gdrive link
     var gdrive_link = task_g.append("text")
-        .text("Handoffs")
-        .attr("style", "cursor:pointer; text-decoration:underline")
+        .text("Upload")
+        .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
         .attr("class", "gdrive_link")
         .attr("id", function(d) {return "handoffs_" + groupNum;})
         .attr("groupNum", groupNum)
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 38})
+        .attr("fill", "blue")
         .attr("font-size", "12px");
 
     $("#handoffs_" + groupNum).on('click', function(){
         if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
             window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
+        }
+        else{
+            alert("The flash team must be running for you to upload a file!");
         }
     });
 

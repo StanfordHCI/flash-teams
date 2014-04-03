@@ -280,13 +280,22 @@ function initializeColorPicker() {
 
 //Find the index of a member in the JSON object "members" array by using unique id
 function getMemberJSONIndex(idNum) {
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+    for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (flashTeamsJSON["members"][i].id == idNum) return i; 
     }
+    return null;
+};
+
+function getMemberById(id) {
+    var idx = getMemberJSONIndex(id);
+    if(idx){
+        return flashTeamsJSON["members"][idx];
+    }
+    return null;
 };
 
 function searchById (arr, id) {
-    for (i = 0; i < arr.length; i++) {
+    for (var i = 0; i < arr.length; i++) {
         if (arr[i].id == id) {
             return i;
         }

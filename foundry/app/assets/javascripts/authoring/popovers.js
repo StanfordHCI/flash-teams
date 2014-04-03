@@ -5,6 +5,13 @@
  * when new information added including: duration, event members, etc.
  */
 
+/*
+ * Input(s): 
+ * eventObj - event object taken from the events array within the flashTeamsJSON object
+ * 
+ * Output(s):
+ * an object that contains all info necessary to render an 'editable' popover
+ */
 function editablePopoverObj(eventObj) {
     var totalMinutes = eventObj["duration"];
     var groupNum = eventObj["id"];
@@ -52,6 +59,13 @@ function editablePopoverObj(eventObj) {
     return obj;
 };
 
+/*
+ * Input(s): 
+ * eventObj - event object taken from the events array within the flashTeamsJSON object
+ * 
+ * Output(s):
+ * an object that contains all info necessary to render an 'editable' popover
+ */
 function readOnlyPopoverObj(ev) {
     var groupNum = ev.id;
     var hrs = Math.floor(ev.duration/60);
@@ -59,20 +73,28 @@ function readOnlyPopoverObj(ev) {
 
     var content = '<b>Event Start:</b><br>'
         + ev.startHr + ':'
-        + ev.startMin + '<br>'
+        + ev.startMin.toFixed(0) + '<br>'
         +'<b>Total Runtime: </b><br>' 
         + hrs + ' hrs ' + mins + ' mins<br>';
 
-    content += '<b>Members:</b><br>';
-    for (var j=0;j<ev.members.length;j++){
-        content += ev.members[j];
-        content += '<br>';
+    var num_members = ev.members.length;
+    if(num_members > 0){
+        content += '<b>Members:</b><br>';
+        for (var j=0;j<num_members;j++){
+            content += ev.members[j].name;
+            content += '<br>';
+        }
     }
 
-    if (ev.dri != ""){
-        content += '<b>Directly-Responsible Individual:</b><br>';
-        content += ev.dri;
-        content += '<br>';
+    console.log("EV.DRI: " + ev.dri);
+
+    if (ev.dri != "" && ev.dri != undefined){
+        var mem = getMemberById(ev.dri);
+        if(mem){
+            content += '<b>Directly-Responsible Individual:</b><br>';
+            content += mem.role;
+            content += '<br>';
+        }
     }
 
     if (ev.content != ""){
@@ -103,7 +125,17 @@ function readOnlyPopoverObj(ev) {
     return obj;
 }
 
-//VCom Populates event block popover with correct info
+/*
+ * Draw popover on event.
+ *
+ * Input(s):
+ * eventObj - event object taken from the events array within the flashTeamsJSON object
+ * editable - boolean specifying whether to render an editable (true) or readonly (false) popover
+ * show - boolean specifying whether to show the popover after rendering it
+ *
+ * Output(s):
+ * None
+ */
 function drawPopover(eventObj, editable, show) {
     var groupNum = eventObj.id;
 
@@ -115,7 +147,7 @@ function drawPopover(eventObj, editable, show) {
         } else {
             setPopoverOnTask(groupNum, readOnlyPopoverObj(eventObj));
         }
-    } else {
+    } else { // update the popover's content
         var obj;
         if(editable){
             obj = editablePopoverObj(eventObj);
@@ -131,7 +163,7 @@ function drawPopover(eventObj, editable, show) {
         showPopover(groupNum);
     }
     
-    // allow using return key
+    // allow using return key to save and close the popover
     $(document).ready(function() {
         pressEnterKeyToSubmit("#eventMember_" + groupNum, "#addEventMember_" + groupNum);
     });
@@ -260,7 +292,6 @@ function writeDRIMembers(idNum, driId){
     }
     return DRIString;
 }
-
 
 // returns the id of the selected DRI in the DRI dropdown menu on the event popover 
 function getDRI(groupNum) {    
