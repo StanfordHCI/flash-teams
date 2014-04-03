@@ -169,7 +169,6 @@ var renderChatbox = function(){
               chat_role = flash_team_members[i].role; 
               current = i;
 
-              boldEvents(current);
               trackUpcomingEvent();
 
             }
