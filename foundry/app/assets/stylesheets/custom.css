@@ -28,7 +28,7 @@
     height: 100%;
     width: 2400px;
     background-color: rgba(0, 0, 100, 0);
-    display: none;
+    display: block;
     position: absolute;
 }
 

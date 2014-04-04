@@ -110,6 +110,7 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
+        console.log("HELLO");
         renderChatbox();
     
         //get user name and user role for the chat
@@ -137,7 +138,7 @@ $(document).ready(function(){
                 // render view
                 loadData(false);
                 //renderMembersRequester();
-                renderChatbox();
+                //renderChatbox();
             }
         }
 
@@ -683,6 +684,8 @@ var drawInteractions = function(tasks){
         var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
         drawCollaboration(remainingCollabs[k], overlap);
     }
+
+    console.log("DONE DRAWING INTERACTIONS");
 };
 
 var moveTasksRight = function(tasks, amount){
@@ -862,7 +865,6 @@ function isDelayed(element) {
 
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
- 
      if (current == null){
         return;
     }
@@ -878,7 +880,7 @@ var trackUpcomingEvent = function(){
             if (currentUserEvents.length == 0){
                 $("#rect_" + toDelete).attr("fill-opacity", .4);
                 upcomingEvent = undefined;
-                $(statusText.text("You've Completed Your Tasks!"));
+                statusText.text("You've Completed Your Tasks!");
                 return;
             }
             upcomingEvent = currentUserEvents[0].id;
@@ -914,17 +916,17 @@ var trackUpcomingEvent = function(){
 
             if(!isDelayed(upcomingEvent)){
                 overallTime = "NOW";
-                $(statusText.attr("fill", "blue"));
+                statusText.attr("fill", "blue");
             }
             else{
                 overallTime = "Your Task Is DELAYED";
-                $(statusText.attr("fill", "red"));
+                statusText.attr("fill", "red");
             }
         } else{
-            $(statusText.attr("fill", "black"));
+            statusText.attr("fill", "black");
         }
 
-        $(statusText.text(overallTime));
+        statusText.text(overallTime);
        
     }, fire_interval);
 
