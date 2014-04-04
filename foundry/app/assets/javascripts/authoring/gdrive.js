@@ -84,6 +84,8 @@ function createNewFolder(eventName, JSONId){
   //console.log(eventName);
   //console.log(folderIds);
    
+  console.log("CREATING NEW FOLDER!");
+
   gapi.client.load('drive', 'v2', function() {
     var req;
     if (flashTeamsJSON.folder){
@@ -115,10 +117,14 @@ function createNewFolder(eventName, JSONId){
       if (!flashTeamsJSON.folder) {
         insertPermission(folderArray[0], "me", "anyone", "writer");
         flashTeamsJSON.folder = folderArray;
+        console.log("HERE");
       } else {
         flashTeamsJSON["events"][JSONId].gdrive = folderArray;
         folderIds.push(folderArray);
+        console.log("THERE");
       }
+
+      updateStatus(); // don't put true or false here
     });
   });
 };

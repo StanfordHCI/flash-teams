@@ -32,12 +32,12 @@ var lastMessage=0;
             lastMessage=(lastMessage+1)%2;
             var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+':'));
             div1.css('padding-left','5%');
-            div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+            //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
             div1.appendTo($('#messageList'));
             
         }else{
             var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text);
-            div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+            //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
             div1.css('padding-left','5%');
             div1.appendTo($('#messageList'));
         }
@@ -98,7 +98,7 @@ var project_duration=1440000;
 var status_bar_timeline_interval=1000;  //TODO back to 10 secs //start moving each second for the width of project_status_interval_width.
 var num_intervals;                      //=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
 var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(num_intervals);
-var thirty_min=10000; //TODO back to 1800000
+var thirty_min=1800000; //TODO back to 1800000
 var first_move_status=1;
 
 // var gdrive_link = project_status_svg.append("text")

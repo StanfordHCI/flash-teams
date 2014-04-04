@@ -184,13 +184,13 @@ var setPopoverOnTask = function(groupNum, obj){
 function hidePopover(popId){
     console.log("hiding popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('hide');
-    overlayOff();
+    //overlayOff();
 };
 
 function showPopover(popId){
     console.log("showing popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('show');
-    overlayOn();
+    //overlayOn();
 };
 
 function destroyPopover(popId){
@@ -252,9 +252,6 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
-    //Update Popover
-    //updateEventPopover(popId, newTitle, startHour, startMin, newHours, newMin, eventNotes,driId);
-
     hidePopover(popId);
   
     //Update JSON
@@ -267,8 +264,9 @@ function saveEventInfo (popId) {
    
     //UPDATE EVENT MEMBERS?
 
-    console.log("saved event info");
+    //console.log("saved event info");
     updateStatus(false);
+
     
 };
 
@@ -290,17 +288,14 @@ function writeDRIMembers(idNum, driId){
 				}
 				else{
 					DRIString += '<option value="'+memberId+'">' + memberName + '</option>';
-				}	
-	    	           
+				}	   	           
     }
-     
     return DRIString;
 }
 
 // returns the id of the selected DRI in the DRI dropdown menu on the event popover 
 function getDRI(groupNum) {    
     var dri = document.getElementById("driEvent_" + groupNum);
-    //var driId = dri.value;
     var driId;
     
     if (dri == null){
@@ -311,13 +306,7 @@ function getDRI(groupNum) {
 	    console.log("The dri ID is:" + driId);
 	    var driId = dri.value;    
     }
-
-    //var driName = flashTeamsJSON["members"][driId].role;
-    //console.log('DRI ID: ' + driId);
-    //console.log('DRI Name: ' + driName);
-   
     return driId;
-    
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event

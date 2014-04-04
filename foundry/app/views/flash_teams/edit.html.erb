@@ -36,7 +36,7 @@
             
               <div id="chat-box-container" class="well" >
                 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-                <script> var flash_team_id=<%= @flash_team.id %> </script>
+                <script> var flash_team_id=<%= @flash_team.id %>; </script>
                 
                 <div id="messageList" style="overflow: auto;
                     overflow-x: hidden;
@@ -96,7 +96,7 @@
             
               <div id="chat-box-container" class="well" style="display: none;">
                 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-                <script> var flash_team_id=<%= @flash_team.id %> </script>
+                <script> var flash_team_id=<%= @flash_team.id %>; </script>
                 <div id="messageList" style="overflow: auto;
                     overflow-x: hidden;
                     height: 250px;
@@ -168,7 +168,7 @@
     
     <% if  @in_expert_view %>
     <h3> <%= @flash_team.name %> </h3>
-    <script> var flash_team_name=<%= @flash_team.name %>;</script>
+    <script> var flash_team_name="<%= @flash_team.name %>";</script>
     <div class="row-fluid">
         <div class="span3"> <!--Sidebar content-->
 <!--                     <div id = "title-container" class="well">
@@ -190,7 +190,7 @@
                     </div>
                 </div>
                 
-                <div><b>Welcome</b>, tdoshi</div>
+                <div><h4>Welcome <%= @user_name %>!</h4></div>
                
                 
                 <!--<h4> Your Task Starts In 1:20 </h4> -->
@@ -204,13 +204,13 @@
 -->             
                 
                 <div id="status-bar-container" >
-                    <h4> Your Task Starts In </h4>
+                   <!-- <h4> Your Task Is </h4> -->
                 </div>
                
             </div> 
                 <div id="chat-box-container" class="well" >
                 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
-                <script> var flash_team_id=<%= @flash_team.id %> </script>
+                <script> var flash_team_id=<%= @flash_team.id %>; </script>
                 
                 <div id="messageList" style="overflow: auto;
                     overflow-x: hidden;
@@ -236,17 +236,9 @@
         </div>
 
         <div class="span9"> <!--Body Content-->
-            
             <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
                 <h3>Timeline</h3>
-                <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
-
-<!--
-            <div class="row-fluid">
-                <div class="btn" id="flashTeamStartBtn" style="font-size:25px;">Start</div>
-                <div class="btn" id="flashTeamEndBtn" style="font-size:25px;">End</div>
-                <div class="btn" id="addTimeBtn" onclick="addTime()" style="font-size:25px;">Add Time</div>
--->
+                <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
         </div>
     </div>

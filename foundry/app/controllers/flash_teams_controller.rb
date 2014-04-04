@@ -1,7 +1,7 @@
 require 'json'
-require 'google/api_client'
-require 'google/api_client/auth/file_storage'
-require 'google/api_client/auth/installed_app'
+#require 'google/api_client'
+#require 'google/api_client/auth/file_storage'
+#require 'google/api_client/auth/installed_app'
 require 'securerandom'
 
 class FlashTeamsController < ApplicationController
@@ -56,6 +56,11 @@ class FlashTeamsController < ApplicationController
     if params.has_key?("uniq")
      @in_expert_view = true
      @in_author_view = false
+
+     uniq = params[:uniq]
+     member = Member.where(:uniq => uniq)[0]
+     @user_name = member.name
+
     else
      @in_expert_view = false
      @in_author_view = true

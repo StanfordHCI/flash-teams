@@ -23,15 +23,20 @@ var y = d3.scale.linear()
     .domain([15, 600])
     .range([15, 600]);
 
-var current = 1;
+var current = undefined;
 var currentUserEvents = [];
+var currentUserIds = [];
 var upcomingEvent; 
+
+var overlayIsOn = false;
 
 
 var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("width", SVG_WIDTH)
     .attr("height", SVG_HEIGHT)
     .attr("class", "chart");
+
+console.log("APPENDED TIMELINE TO DOM!");
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-gr_hics)
 //Draw x grid lines
@@ -104,15 +109,15 @@ var task_g = timeline_svg.selectAll(".task_g");
 
 //Turn on the overlay so a user cannot continue to draw events when focus is on a popover
 function overlayOn() {
-    console.log("TURNED OVERLAY ON");
-    $("#overlay").css("display", "block");
+    console.log("overlay on");
+    //$("#overlay").css("display", "block");
 };
 
 //Remove the overlay so a user can draw events again
 function overlayOff() {
-    console.log("TURNED OVERLAY OFF");
+    console.log("overlay off");
     $(".task_rectangle").popover("hide");
-    $("#overlay").css("display", "none");
+    //$("#overlay").css("display", "none");
 };
 
 //Access a particular "event" in the JSON by its id number and return its index in the JSON array of events
