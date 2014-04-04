@@ -140,19 +140,19 @@ function getUserNextTaskStartTime(input_name){
     memberName2=input_name;
     var memberName = input_name;
 
-    currentUserEvents = flashTeamsJSON["events"].filter(isCurrent2);
-    currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
-   	upcomingEvent2 = currentUserEvents[0].id;
+    currentUserEvents2 = flashTeamsJSON["events"].filter(isCurrent2);
+    currentUserEvents2 = currentUserEvents2.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
+   	upcomingEvent2 = currentUserEvents2[0].id;
    
     task_g2 = getTaskGFromGroupNum(upcomingEvent2);
     console.log("???");
-    console.log(currentUserEvents);
+    console.log(currentUserEvents2);
     console.log(task_g2.data[0]);
 
     if (task_g2.data()[0].completed){
         toDelete = upcomingEvent2;
-        currentUserEvents.splice(0,1);
-        upcomingEvent2 = currentUserEvents[0].id;
+        currentUserEvents2.splice(0,1);
+        upcomingEvent2 = currentUserEvents2[0].id;
         task_g2 = getTaskGFromGroupNum(upcomingEvent2)
     }
     
@@ -166,7 +166,7 @@ function getUserNextTaskStartTime(input_name){
     var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
   
    
-    var displayTimeinMinutes = parseInt(currentUserEvents[0].startHr * 60 + currentUserEvents[0].startMin) - parseInt(cursorTimeinMinutes);
+    var displayTimeinMinutes = parseInt(currentUserEvents2[0].startHr * 60 + currentUserEvents2[0].startMin) - parseInt(cursorTimeinMinutes);
    
 
     var hours = parseInt(displayTimeinMinutes/60);
