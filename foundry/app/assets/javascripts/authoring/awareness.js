@@ -281,6 +281,7 @@ var startTeam = function(team_in_progress){
         recordStartTime();
         console.log("recorded Start time");
         addAllFolders();
+        updateStatus();
         setCursorMoving();
     }
     //init_statusBar(status_bar_timeline_interval);
