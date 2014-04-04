@@ -228,7 +228,7 @@ var poll = function(){
 
 var recordStartTime = function(){
     flashTeamsJSON["startTime"] = (new Date).getTime();
-    //updateStatus(true);
+    updateStatus(true);
 };
 
 var loadStatus = function(id){
@@ -281,7 +281,6 @@ var startTeam = function(team_in_progress){
         recordStartTime();
         console.log("recorded Start time");
         addAllFolders();
-        updateStatus(true);
         //updateStatus();
         setCursorMoving();
     }

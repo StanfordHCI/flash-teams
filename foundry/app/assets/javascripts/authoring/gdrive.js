@@ -123,6 +123,8 @@ function createNewFolder(eventName, JSONId){
         folderIds.push(folderArray);
         console.log("THERE");
       }
+      
+      updateStatus(true);
     });
   });
 };
