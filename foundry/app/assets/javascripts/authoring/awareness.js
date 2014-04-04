@@ -137,7 +137,7 @@ $(document).ready(function(){
 
                 // render view
                 loadData(false);
-                renderMembersRequester();
+                //renderMembersRequester();
                 //renderChatbox();
             }
         }
@@ -278,15 +278,13 @@ var startTeam = function(team_in_progress){
     if(team_in_progress){
         startCursor(cursor_details);
     } else {
+        in_progress = true;
         recordStartTime();
         console.log("recorded Start time");
         addAllFolders();
-        //updateStatus();
         setCursorMoving();
     }
     //init_statusBar(status_bar_timeline_interval);
-
-    in_progress = true;
 
     load_statusBar(status_bar_timeline_interval);
     project_status_handler = setProjectStatusMoving();
@@ -984,6 +982,8 @@ var updateStatus = function(flash_team_in_progress){
     var localStatus = constructStatusObj();
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
+    } else {
+        localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
     var localStatusJSON = JSON.stringify(localStatus);

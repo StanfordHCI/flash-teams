@@ -123,8 +123,8 @@ function createNewFolder(eventName, JSONId){
         folderIds.push(folderArray);
         console.log("THERE");
       }
-      
-      updateStatus(true);
+
+      updateStatus(); // don't put true or false here
     });
   });
 };
