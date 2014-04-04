@@ -137,7 +137,7 @@ $(document).ready(function(){
 
                 // render view
                 loadData(false);
-                //renderMembersRequester();
+                renderMembersRequester();
                 //renderChatbox();
             }
         }
@@ -665,6 +665,8 @@ var extendDelayedBoxes = function(){
 };
 
 var drawInteractions = function(tasks){
+    console.log("DRAWING INTERACTIONS FOR TASKS: " + tasks);
+
     //Find Remaining Interactions and Draw
     var remainingHandoffs = getHandoffs(tasks);
     var numHandoffs = remainingHandoffs.length;
@@ -710,7 +712,9 @@ var moveTasksRight = function(tasks, amount){
         drawPopover(ev, false, false);
     }
 
-    drawInteractions(remaining_tasks);
+    var tasks_with_current = tasks.slice(0);
+    tasks_with_current = tasks_with_current.concat(delayed_tasks);
+    drawInteractions(tasks_with_current);
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -736,7 +740,9 @@ var moveTasksLeft = function(tasks, amount){
         drawPopover(ev, false, false);
     }
 
-    drawInteractions(remaining_tasks);
+    var tasks_with_current = tasks.slice(0);
+    tasks_with_current = tasks_with_current.concat(delayed_tasks);
+    drawInteractions(tasks_with_current);
 };
 
 var moveRemainingTasksRight = function(amount){
