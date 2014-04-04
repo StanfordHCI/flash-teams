@@ -61,14 +61,8 @@ $("#flashTeamStartBtn").click(function(){
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
     $("#flashTeamTitle").css('display','none');
-
-    var gFolderLink = document.getElementById("gFolder");
-    gFolderLink.onclick=function(){
-        console.log("is clicked");
-        window.open(flashTeamsJSON.folder[1]);
-    }
-    
     startTeam(false);
+    googleDriveLink();
 });
 
 $("#flashTeamEndBtn").click(function(){
@@ -270,7 +264,16 @@ var loadData = function(in_progress){
     drawRedBoxes();
     drawDelayedTasks();
     drawInteractions();
+    googleDriveLink();
 };
+
+var googleDriveLink = function(){
+    var gFolderLink = document.getElementById("gFolder");
+    gFolderLink.onclick=function(){
+        console.log("is clicked");
+        window.open(flashTeamsJSON.folder[1]);
+    }
+}
 
 var startTeam = function(team_in_progress){
     console.log("STARTING TEAM");
