@@ -18,7 +18,7 @@ timeline_svg.append("defs").append("marker")
     .attr("stroke", "gray")
     .attr("fill", "gray")
     .append("path")
-        .attr("d", "M 0,0 V 4 L6,2 Z");
+        .attr("d", "M 0,0 V 4 L2,2 Z");
 
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
@@ -178,7 +178,7 @@ function drawHandoff(handoffData) {
                 dr = Math.sqrt(dx * dx + dy * dy);
             //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
             return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
-                + " 0 0,0 " + x2 + "," + y2; 
+                + " 0 0,0 " + x2 + "," + (y2+15); 
         })
         .attr("stroke", "gray")
         .attr("stroke-width", 7)

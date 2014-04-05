@@ -230,7 +230,10 @@ function getDuration(leftX, rightX) {
 function createEvent(snapPoint) {
     event_counter++;
     var startTimeObj = getStartTime(snapPoint[0]);
-    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
+    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], 
+        "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], 
+        "dri":"", "notes":"", "startHr": startTimeObj["startHr"], 
+        "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
       //add new event to flashTeams database
     if (flashTeamsJSON.events.length == 0){
         createNewFolder($("#flash_team_name").val());
