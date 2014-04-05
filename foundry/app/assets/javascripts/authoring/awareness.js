@@ -17,7 +17,7 @@ timeline_svg.append("line")
 
 var poll_interval = 5000; // 20 seconds
 var poll_interval_id;
-var timeline_interval = 1800000; // TODO: should be 30 minutes = 1800000 milliseconds
+var timeline_interval = 10000; // TODO: should be 30 minutes = 1800000 milliseconds
 var fire_interval = 180; // change back to 180
 var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
 var increment = parseFloat(50)/parseFloat(numIntervals);
@@ -38,6 +38,8 @@ var cursor_details;
 var cursor_interval_id;
 var tracking_tasks_interval_id;
 
+var window_visibility_state = null;
+var window_visibility_change = null;
 
 var getXCoordForTime = function(t){
    // console.log("time t: " + t);
@@ -137,8 +139,35 @@ $(document).ready(function(){
         }
 
     });
+
     poll_interval_id = poll();
+
+    listenForVisibilityChange();
 });
+
+function listenForVisibilityChange(){
+    if (typeof document.hidden !== "undefined") {
+        window_visibility_change = "visibilitychange";
+        window_visibility_state = "visibilityState";
+    } else if (typeof document.mozHidden !== "undefined") {
+        window_visibility_change = "mozvisibilitychange";
+        window_visibility_state = "mozVisibilityState";
+    } else if (typeof document.msHidden !== "undefined") {
+        window_visibility_change = "msvisibilitychange";
+        window_visibility_state = "msVisibilityState";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        window_visibility_change = "webkitvisibilitychange";
+        window_visibility_state = "webkitVisibilityState";
+    }
+
+    // Add a listener for the next time that the page becomes visible
+    document.addEventListener(window_visibility_change, function() {
+        var state = document[window_visibility_state];
+        if(state == "visible" && in_progress){
+            location.reload();
+        }
+    }, false);
+};  
 
 //finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
@@ -201,6 +230,7 @@ var flashTeamUpdated = function(){
 var poll = function(){
     console.log("POLLING");
     return setInterval(function(){
+        console.log("MAKING POLL NOW...");
         var flash_team_id = $("#flash_team_id").val();
         var url = '/flash_teams/' + flash_team_id + '/get_status';
         $.ajax({
@@ -212,6 +242,7 @@ var poll = function(){
             //console.log(loadedStatus);
 
             if(flashTeamEndedorStarted() || flashTeamUpdated()) {
+                stopPolling();
                 location.reload();
             } else {
                 console.log("Flash team not updated and not ended");
@@ -273,7 +304,7 @@ var googleDriveLink = function(){
         console.log("is clicked");
         window.open(flashTeamsJSON.folder[1]);
     }
-}
+};
 
 var startTeam = function(team_in_progress){
     console.log("STARTING TEAM");
@@ -519,21 +550,28 @@ var moveCursor = function(length_of_time){
     curr_x_standard += 50;
     console.log("curr_x_standard: " + curr_x_standard);
 
+    var next = function(){
+        moveCursor(length_of_time);
+    };
+
     cursor.transition()
         .duration(length_of_time)
         .ease("linear")
         .attr("x1", curr_x_standard)
-        .attr("x2", curr_x_standard);
+        .attr("x2", curr_x_standard)
+        .each("end", next);
 };
 
 var setCursorMoving = function(){
     moveCursor(timeline_interval);
+    /*
     cursor_interval_id = window.setInterval(function(){
-        console.log("CALLING INTERVAL METHOD FOR CURSOR");
+        //console.log("CALLING INTERVAL METHOD FOR CURSOR");
         moveCursor(timeline_interval);
     }, timeline_interval); // every 18 seconds currently
-    console.log("CURSOR INTERVAL: " + cursor_interval_id);
-    console.log("SET INTERVAL FOR CURSOR");
+    */
+    //console.log("CURSOR INTERVAL: " + cursor_interval_id);
+    //console.log("SET INTERVAL FOR CURSOR");
 };
 
 var stopCursor = function() {
