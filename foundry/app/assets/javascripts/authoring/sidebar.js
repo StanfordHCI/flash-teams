@@ -3,11 +3,11 @@
 var myDataRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+ flash_team_id)    
                         
 var currentdate = new Date(); 
-      var datetime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
+      var datetime = (currentdate.getUTCMonth()+1) + "/"
+                + currentdate.getUTCDate()  + "/" 
                 + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes();
+                + currentdate.getUTCHours() + ":"  
+                + currentdate.getUTCMinutes();
 
 var name;
 $('#messageInput').keypress(function (e) {
@@ -15,7 +15,7 @@ $('#messageInput').keypress(function (e) {
     if (e.keyCode == 13) {
         //name = $('#nameInput').val();
         var text = $('#messageInput').val();
-        myDataRef.push({name: name, text: text});
+        myDataRef.push({name: name+" ["+datetime+" GMT]", text: text});
         $('#messageInput').val('');
        }
     });
@@ -27,10 +27,15 @@ myDataRef.on('child_added', function(snapshot) {
 var lastMessage=0;
       var lastWriter;
       function displayChatMessage(name, text) {
-        
+        name_split = name.split(" ");
+        name = name_split[0]+" "+name_split[1];
+        var date_message =(name_split[2]+" "+name_split[3]+" "+name_split[4]+name_split[5]);
+        //name = name[0] + name[1];
+        //date = name[2];
+        //alert(date);
         if(lastWriter!=name){
             lastMessage=(lastMessage+1)%2;
-            var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+':'));
+            var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+': '+date_message));
             div1.css('padding-left','5%');
             //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
             div1.appendTo($('#messageList'));
