@@ -178,7 +178,7 @@ function mousedown() {
         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
     }
 
-    if(flashTeamsJSON["startTime"]) { // flash team already started
+    if(isUser) { // user page
         return;
     }
 
@@ -592,22 +592,6 @@ function renderEventMembers(eventId) {
             .attr("fill-opacity", .9);
 
         // change color of rect
-
-        var uniq = getParameterByName('uniq');
-        $("#uniq").value = uniq;
-        console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
-        if (uniq){
-            flash_team_members = flashTeamsJSON["members"];
-            console.log(flash_team_members[0].uniq);
-            for(var i=0;i<flash_team_members.length;i++){            
-                if (flash_team_members[i].uniq == uniq){
-                    current = i;
-                }
-            }
-        }
-        else{
-            current = undefined;
-        }
         if (current != undefined){
             for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
                 console.log('NAME', name);

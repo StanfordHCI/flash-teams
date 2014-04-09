@@ -108,13 +108,18 @@ $(document).ready(function(){
     }).done(function(data){
         console.log("HELLO");
         renderChatbox();
-    
+
         //get user name and user role for the chat
-        if(data == null) return; // status not set yet
+        if(data == null){
+            console.log("RETURNING BEFORE LOAD"); 
+            return; // status not set yet
+        }
         loadedStatus = data;
 
         in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
+
+        setCurrentMember();
 
         if(in_progress){
             console.log("flash team in progress");
