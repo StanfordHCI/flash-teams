@@ -970,6 +970,7 @@ var trackUpcomingEvent = function(){
             }
         } else{
             statusText.attr("fill", "black");
+            overallTime = "Your task starts in " + overallTime;
         }
 
         statusText.text(overallTime);
