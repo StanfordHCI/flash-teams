@@ -219,13 +219,13 @@ function saveEventInfo (popId) {
     var driId = getDRI(popId);
    
 
-    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+    //Add Event Members, see checkboxes
     var indexOfJSON = getEventJSONIndex(popId);
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         //START HERE
         var memberName = flashTeamsJSON["members"][i].role;
 
-        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
+        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return; //No members?
 
         if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
             if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
