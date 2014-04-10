@@ -138,6 +138,7 @@ $(document).ready(function(){
 
                 // render view
                 loadData(false);
+                updateAllPopoversToReadOnly();
                 //renderMembersRequester();
                 //renderChatbox();
             }

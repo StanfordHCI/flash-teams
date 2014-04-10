@@ -123,6 +123,10 @@ function eventMousedown(task2idNum) {
 //Called when we find DRAWING_HANDOFF
 //initializes creating a handoff b/t two events
 function startWriteHandoff() {
+    if(isUser) { // user page
+        return;
+    }
+
     d3.event.stopPropagation();
 
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum');
@@ -224,6 +228,10 @@ function saveHandoff(intId) {
 //Called when we click the collaboration button initializes creating 
 //a collaboration b/t two events
 function startWriteCollaboration(ev) {
+    if(isUser) { // user page
+        return;
+    }
+    
     d3.event.stopPropagation();
 
     INTERACTION_TASK_ONE_IDNUM = this.getAttribute('groupNum'); 
