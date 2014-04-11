@@ -18,6 +18,7 @@ function editablePopoverObj(eventObj) {
     var title = eventObj["title"];
     var startHr = eventObj["startHr"];
     var startMin = eventObj["startMin"];
+    var notes = eventObj["notes"];
 
     var numHours = Math.floor(totalMinutes/60);
     var minutesLeft = totalMinutes%60;
@@ -47,7 +48,7 @@ function editablePopoverObj(eventObj) {
         +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
-        +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '"></textarea>'
+        +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
         +'</td></tr><tr><td><p><button type="button" id="delete"'
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
@@ -252,7 +253,7 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
-    hidePopover(popId);
+    //hidePopover(popId);
   
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
