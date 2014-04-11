@@ -1,5 +1,6 @@
 class UserMailer < ActionMailer::Base
-  default from: "stanfordhci.odesk@gmail.com"
+  default from: "stanfordhci.odesk@gmail.com",
+          bcc: "stanfordhci.odesk@gmail.com"
  
   def send_early_completion_email(email,minutes)
   	  @minutes=minutes

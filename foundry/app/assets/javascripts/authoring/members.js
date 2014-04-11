@@ -5,6 +5,8 @@
 
 var pillCounter = 0;
 var colorToChange = "#ff0000";
+var current = undefined;
+var isUser = false;
 
 function renderMembersRequester() {
     var members = flashTeamsJSON.members;
@@ -18,6 +20,28 @@ function renderMembersRequester() {
 function renderMembersUser() {
     var members = flashTeamsJSON.members;
     renderAllEventsMembers();
+};
+
+function setCurrentMember() {
+    var uniq = getParameterByName('uniq');
+    console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
+    
+    if (uniq){
+        $("#uniq").value = uniq;
+        flash_team_members = flashTeamsJSON["members"];
+        console.log(flash_team_members[0].uniq);
+        for(var i=0;i<flash_team_members.length;i++){            
+            if (flash_team_members[i].uniq == uniq){
+                console.log("uniq1: " + flash_team_members[i].uniq);
+                console.log("uniq2: " + uniq);
+                current = i;
+                isUser = true;
+            }
+        }
+    } else {
+        current = undefined;
+        isUser = false;
+    }
 };
 
 function renderPills(members) {
@@ -138,6 +162,8 @@ function addMember() {
     // add member to json
     var member_obj = newMemberObject(member_name);
     flashTeamsJSON.members.push(member_obj);
+
+    updateStatus(false);
 
     console.log("member_obj.id: " + member_obj.id);
     inviteMember(member_obj.id);

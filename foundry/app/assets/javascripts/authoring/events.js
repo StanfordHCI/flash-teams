@@ -24,6 +24,10 @@ $(document).ready(function(){
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
+    if(isUser) { // user page
+        return;
+    }
+
     var groupNum = d.groupNum;
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var ev = flashTeamsJSON["events"][indexOfJSON];
@@ -57,6 +61,10 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
+    if(isUser) { // user page
+        return;
+    }
+
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
@@ -90,6 +98,10 @@ function rightResize(d) {
 var drag = d3.behavior.drag()
     .origin(Object)
     .on("drag", function (d) {
+        if(isUser) { // user page
+            return;
+        }
+
         var group = this.parentNode;
         var oldX = d.x;
         var groupNum = this.id.split("_")[1];
@@ -178,7 +190,7 @@ function mousedown() {
         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
     }
 
-    if(flashTeamsJSON["startTime"]) { // flash team already started
+    if(isUser) { // user page
         return;
     }
 
@@ -428,7 +440,9 @@ function  drawEvent(eventObj) {
         .attr("fill", "blue")
         .attr("font-size", "12px");
 
-    $("#handoffs_" + groupNum).on('click', function(){
+    $("#handoffs_" + groupNum).on('click', function(ev){
+        ev.stopPropagation();
+        
         if (flashTeamsJSON["events"][groupNum-1].gdrive.length > 0){
             window.open(flashTeamsJSON["events"][groupNum-1].gdrive[1])
         }
@@ -438,48 +452,50 @@ function  drawEvent(eventObj) {
     });
 
     //Add the 2 Interaction Buttons: Handoff and Collaboration
-    var handoff_btn = task_g.append("image")
-        .attr("xlink:href", "/assets/rightArrow.png")
-        .attr("class", "handoff_btn")
-        .attr("id", function(d) {return "handoff_btn_" + groupNum;})
-        .attr("groupNum", groupNum)
-        .attr("width", 16)
-        .attr("height", 16)
-        .attr("x", function(d) {return d.x+(getWidth(eventObj))-18})
-        .attr("y", function(d) {return d.y+23})
-        .on("click", startWriteHandoff);
-    $("#handoff_btn_" + groupNum).popover({
-        trigger: "click",
-        html: true,
-        class: "interactionPopover",
-        style: "font-size: 8px",
-        placement: "right",
-        content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
-        container: $("#timeline-container")
-    });
-    $("#handoff_btn_" + groupNum).popover("show");
-    $("#handoff_btn_" + groupNum).popover("hide");        
-    var collab_btn = task_g.append("image")
-        .attr("xlink:href", "/assets/doubleArrow.png")
-        .attr("class", "collab_btn")
-        .attr("id", function(d) {return "collab_btn_" + groupNum;})
-        .attr("groupNum", groupNum)
-        .attr("width", 16)
-        .attr("height", 16)
-        .attr("x", function(d) {return d.x+(getWidth(eventObj))-38; })
-        .attr("y", function(d) {return d.y+23})
-        .on("click", startWriteCollaboration);
-    $("#collab_btn_" + groupNum).popover({
-        trigger: "click",
-        html: true,
-        class: "interactionPopover",
-        style: "font-size: 8px",
-        placement: "right",
-        content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
-        container: $("#timeline-container")
-    });
-    $("#collab_btn_" + groupNum).popover("show");
-    $("#collab_btn_" + groupNum).popover("hide");
+    if(!isUser) { // user page
+        var handoff_btn = task_g.append("image")
+            .attr("xlink:href", "/assets/rightArrow.png")
+            .attr("class", "handoff_btn")
+            .attr("id", function(d) {return "handoff_btn_" + groupNum;})
+            .attr("groupNum", groupNum)
+            .attr("width", 16)
+            .attr("height", 16)
+            .attr("x", function(d) {return d.x+(getWidth(eventObj))-18})
+            .attr("y", function(d) {return d.y+23})
+            .on("click", startWriteHandoff);
+        $("#handoff_btn_" + groupNum).popover({
+            trigger: "click",
+            html: true,
+            class: "interactionPopover",
+            style: "font-size: 8px",
+            placement: "right",
+            content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
+            container: $("#timeline-container")
+        });
+        $("#handoff_btn_" + groupNum).popover("show");
+        $("#handoff_btn_" + groupNum).popover("hide");        
+        var collab_btn = task_g.append("image")
+            .attr("xlink:href", "/assets/doubleArrow.png")
+            .attr("class", "collab_btn")
+            .attr("id", function(d) {return "collab_btn_" + groupNum;})
+            .attr("groupNum", groupNum)
+            .attr("width", 16)
+            .attr("height", 16)
+            .attr("x", function(d) {return d.x+(getWidth(eventObj))-38; })
+            .attr("y", function(d) {return d.y+23})
+            .on("click", startWriteCollaboration);
+        $("#collab_btn_" + groupNum).popover({
+            trigger: "click",
+            html: true,
+            class: "interactionPopover",
+            style: "font-size: 8px",
+            placement: "right",
+            content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
+            container: $("#timeline-container")
+        });
+        $("#collab_btn_" + groupNum).popover("show");
+        $("#collab_btn_" + groupNum).popover("hide");
+    }
 
     // render the member lines
     renderEventMembers(groupNum);
@@ -592,22 +608,6 @@ function renderEventMembers(eventId) {
             .attr("fill-opacity", .9);
 
         // change color of rect
-
-        var uniq = getParameterByName('uniq');
-        $("#uniq").value = uniq;
-        console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
-        if (uniq){
-            flash_team_members = flashTeamsJSON["members"];
-            console.log(flash_team_members[0].uniq);
-            for(var i=0;i<flash_team_members.length;i++){            
-                if (flash_team_members[i].uniq == uniq){
-                    current = i;
-                }
-            }
-        }
-        else{
-            current = undefined;
-        }
         if (current != undefined){
             for (var j = 0; j < flashTeamsJSON["members"].length; j++) {
                 console.log('NAME', name);
