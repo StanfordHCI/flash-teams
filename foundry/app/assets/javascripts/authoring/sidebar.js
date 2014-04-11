@@ -1,54 +1,63 @@
 /***chat****/
 
-var myDataRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+ flash_team_id)    
-                        
+var myDataRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+ flash_team_id);
+
 var currentdate = new Date(); 
-      var datetime = (currentdate.getUTCMonth()+1) + "/"
-                + currentdate.getUTCDate()  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getUTCHours() + ":"  
-                + currentdate.getUTCMinutes();
+var datetime = (currentdate.getUTCMonth()+1) + "/"
++ currentdate.getUTCDate()  + "/" 
++ currentdate.getFullYear() + " @ "  
++ currentdate.getUTCHours() + ":"  
++ currentdate.getUTCMinutes();
 
 var name;
-$('#messageInput').keypress(function (e) {
+$('#messageInput').keypress(function(e){
     name =  chat_name+" ("+chat_role+")";
     if (e.keyCode == 13) {
+        console.log("PRESSED RETURN KEY!");
         //name = $('#nameInput').val();
         var text = $('#messageInput').val();
         myDataRef.push({name: name+" ["+datetime+" GMT]", text: text});
         $('#messageInput').val('');
-       }
-    });
+    }
+});
+
 myDataRef.on('child_added', function(snapshot) {
     var message = snapshot.val();
+    console.log(snapshot);
+    console.log(message);
+    console.log("MESSAGE NAME: " + message["name"]);
     displayChatMessage(message.name, message.text);
-    });
-      
+});
+
 var lastMessage=0;
-      var lastWriter;
-      function displayChatMessage(name, text) {
-        name_split = name.split(" ");
-        name = name_split[0]+" "+name_split[1];
-        var date_message =(name_split[2]+" "+name_split[3]+" "+name_split[4]+name_split[5]);
-        //name = name[0] + name[1];
-        //date = name[2];
-        //alert(date);
-        if(lastWriter!=name){
-            lastMessage=(lastMessage+1)%2;
-            var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+': '+date_message));
-            div1.css('padding-left','5%');
-            //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
-            div1.appendTo($('#messageList'));
-            
-        }else{
-            var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text);
-            //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
-            div1.css('padding-left','5%');
-            div1.appendTo($('#messageList'));
-        }
-        lastWriter=name;
-        $('#messageList')[0].scrollTop = $('#messageList')[0].scrollHeight;
-      };
+var lastWriter;
+function displayChatMessage(name, text) {
+    if(name == undefined){
+        return;
+    }
+    
+    name_split = name.split(" ");
+    name = name_split[0]+" "+name_split[1];
+    var date_message =(name_split[2]+" "+name_split[3]+" "+name_split[4]+name_split[5]);
+    //name = name[0] + name[1];
+    //date = name[2];
+    //alert(date);
+    if(lastWriter!=name){
+        lastMessage=(lastMessage+1)%2;
+        var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+': '+date_message));
+        div1.css('padding-left','5%');
+        //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+        div1.appendTo($('#messageList'));
+        
+    }else{
+        var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text);
+        //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
+        div1.css('padding-left','5%');
+        div1.appendTo($('#messageList'));
+    }
+    lastWriter=name;
+    $('#messageList')[0].scrollTop = $('#messageList')[0].scrollHeight;
+};
 
 
 //*** online users
@@ -62,7 +71,7 @@ var connectedRef = new Firebase('https://intense-fire-1391.firebaseio.com/.info/
 connectedRef.on('value', function(snap) {
     if (snap.val() === true) {
         // We're connected (or reconnected)! Do anything here that should happen only if online (or on reconnect)
-       
+
         // add this device to my connections list
         // this value could contain info about the device or a timestamp too
         var con = myConnectionsRef.push(true);
@@ -84,15 +93,15 @@ connectedRef.on('value', function(snap) {
 //var status_width=302; --> negar's
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
-    .attr("width", SVG_WIDTH)
-    .attr("height", 100);
-    
+.attr("width", SVG_WIDTH)
+.attr("height", 100);
+
 var statusText = project_status_svg.append("text").text("You currently have no tasks")
-    .attr("x", 0)
-    .attr("y", 15)
-    .attr("font-size", "sans-serif")
-    .attr("font-size", "20px")
-    .attr("fill", "black");
+.attr("x", 0)
+.attr("y", 15)
+.attr("font-size", "sans-serif")
+.attr("font-size", "20px")
+.attr("fill", "black");
 
 var status_width=100; 
 var status_height=32;
@@ -148,12 +157,12 @@ $(document).ready(function(){
 });
 */
 var moveProjectStatus = function(status_bar_timeline_interval){
-        var me = $('.progress .bar');
-        var perc = 100;
+    var me = $('.progress .bar');
+    var perc = 100;
 
-        var current_perc = 0;
+    var current_perc = 0;
 
-        var progress = setInterval(function() {
+    var progress = setInterval(function() {
                 //current_perc +=1;
                 if(curr_status_width<status_width && delayed_tasks.length==0){
                     curr_status_width += project_status_interval_width;
@@ -162,15 +171,15 @@ var moveProjectStatus = function(status_bar_timeline_interval){
                 if(curr_status_width>status_width){
                     curr_status_width = status_width;
                 }
-                 me.css('width', (curr_status_width)+'%');
+                me.css('width', (curr_status_width)+'%');
                 
-                 
-                //me.text(curr_status_width+'%');
-            
-           // var int_width=Math.round(curr_status_width);      
-        },status_bar_timeline_interval);
 
-        return progress;
+                //me.text(curr_status_width+'%');
+
+           // var int_width=Math.round(curr_status_width);      
+       },status_bar_timeline_interval);
+
+    return progress;
 };
 
 var stopProjectStatus = function(){
@@ -182,11 +191,11 @@ var stopProjectStatus = function(){
 function init_statusBar(status_bar_timeline_interval){
     var last_group_num=-1;
     var last_end_x=0;
-      
+
     for (var i=0;i<task_groups.length;i++){
         var data = task_groups[i];
         var groupNum = data.groupNum;
-       
+
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var start_x = ev.x+4;  //CHECK with Jay
         var width = getWidth(ev);
@@ -203,20 +212,20 @@ function init_statusBar(status_bar_timeline_interval){
         
     }
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-    console.log("last_end",last_end_x);
-    project_duration=parseInt(last_end_x/50)*thirty_min;
-    console.log("project duration: ",project_duration);
+   console.log("last_end",last_end_x);
+   project_duration=parseInt(last_end_x/50)*thirty_min;
+   console.log("project duration: ",project_duration);
 
-    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
-    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
+   num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
+   project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
 }
 
 
 function load_statusBar(status_bar_timeline_interval){
-    
+
     //pause if a task is delayed
     if(delayed_tasks.length != 0){
-        
+
         var start_delayed_x;  //CHECK with Jay
         var width_delayed;
         var end_delayed_x;
@@ -227,26 +236,26 @@ function load_statusBar(status_bar_timeline_interval){
             
             
             if ( groupNum == delayed_tasks[0]){
-              
+
                 start_delayed_x = data.x+4;  //CHECK with Jay
                 var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
                 width_delayed = getWidth(ev);
                 end_delayed_x = parseFloat(start_delayed_x) + parseFloat(width_delayed);
                 
-               
+
                 break;
             }
         }
 
         var last_group_num=-1;
         var last_end_x=0;
-          
+
         for (var i=0;i<task_groups.length;i++){
             var data = task_groups[i];
             var groupNum = data.groupNum;
-           
+
             var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
-           
+
             var start_x = ev.x+4;  //CHECK with Jay
             var width = getWidth(ev);
             var end_x = parseFloat(start_x) + parseFloat(width);
@@ -257,7 +266,7 @@ function load_statusBar(status_bar_timeline_interval){
             
         }
         
-       
+
         // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
         console.log("last_end",last_end_x);
         var cursor_x = cursor.attr("x1");
@@ -267,9 +276,9 @@ function load_statusBar(status_bar_timeline_interval){
         num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
         project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
 
-       
+
         curr_status_width = status_width * parseFloat(end_delayed_x)/parseFloat(last_end_x);
-       
+
         return;    
     }
     
@@ -290,11 +299,11 @@ function load_statusBar(status_bar_timeline_interval){
 
     var last_group_num=-1;
     var last_end_x=0;
-      
+
     for (var i=0;i<task_groups.length;i++){
         var data = task_groups[i];
         var groupNum = data.groupNum;
-       
+
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var start_x = ev.x+4;  //CHECK with Jay
         var width = getWidth(ev);
@@ -305,20 +314,20 @@ function load_statusBar(status_bar_timeline_interval){
         }
         
     }
-  
+
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-    console.log("last_end",last_end_x);
-    project_duration=parseInt(last_end_x/50)*thirty_min;
-    console.log("project duration: ",project_duration);
+   console.log("last_end",last_end_x);
+   project_duration=parseInt(last_end_x/50)*thirty_min;
+   console.log("project duration: ",project_duration);
 
-    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
-    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
+   num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
+   project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
 
-    curr_status_width = project_status_interval_width * diff_sec;
+   curr_status_width = project_status_interval_width * diff_sec;
 }
 var status_interval_id;
 var setProjectStatusMoving = function(){
-    
+
     return moveProjectStatus(status_bar_timeline_interval);
 /*    status_interval_id = setInterval(function(){
         moveProjectStatus(status_bar_timeline_interval);
