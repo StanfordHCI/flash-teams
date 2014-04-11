@@ -258,11 +258,12 @@ function saveEventInfo (popId) {
     var indexOfJSON = getEventJSONIndex(popId);
     var ev = flashTeamsJSON["events"][indexOfJSON];
     ev.title = newTitle;
-    ev.hours = newHours;
-    ev.minutes = newMin;
+    ev.duration = newHours*60 + newMin;
     ev.notes = eventNotes;
     ev.dri = driId;
 
+    console.log("DRAWING POPOVER AFTER SAVED EVENT POPOVER");
+    console.log("EV.duration: " + ev.duration);
     drawPopover(ev, true, false);
    
     //UPDATE EVENT MEMBERS?
