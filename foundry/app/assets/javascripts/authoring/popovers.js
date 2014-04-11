@@ -256,18 +256,19 @@ function saveEventInfo (popId) {
   
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
-    flashTeamsJSON["events"][indexOfJSON].title = newTitle;
-    flashTeamsJSON["events"][indexOfJSON].hours = newHours;
-    flashTeamsJSON["events"][indexOfJSON].minutes = newMin;
-    flashTeamsJSON["events"][indexOfJSON].notes = eventNotes;
-    flashTeamsJSON["events"][indexOfJSON].dri = driId;
+    var ev = flashTeamsJSON["events"][indexOfJSON];
+    ev.title = newTitle;
+    ev.hours = newHours;
+    ev.minutes = newMin;
+    ev.notes = eventNotes;
+    ev.dri = driId;
+
+    drawPopover(ev, true, false);
    
     //UPDATE EVENT MEMBERS?
 
     //console.log("saved event info");
     updateStatus(false);
-
-    
 };
 
 // Adds/updates the DRI dropdown on the event popover

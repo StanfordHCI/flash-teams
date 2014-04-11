@@ -163,6 +163,8 @@ function addMember() {
     var member_obj = newMemberObject(member_name);
     flashTeamsJSON.members.push(member_obj);
 
+    updateStatus(false);
+
     console.log("member_obj.id: " + member_obj.id);
     inviteMember(member_obj.id);
 };
