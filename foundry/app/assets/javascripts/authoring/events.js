@@ -153,7 +153,7 @@ var drag = d3.behavior.drag()
         //Update JSON
         var indexOfJSON = getEventJSONIndex(groupNum);
         flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
-        
+        flashTeamsJSON["events"][indexOfJSON].x = newX;
     });
 
 //Called when the right dragbar of a task rectangle is dragged

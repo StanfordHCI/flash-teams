@@ -187,7 +187,7 @@ function drawHandoff(handoffData) {
         .attr("stroke", "gray")
         .attr("stroke-width", 7)
         .attr("fill", "none")
-        .attr("marker-end", "url(#arrowhead)"); //FOR ARROW
+        .attr("marker-end", "url(#arrowhead)"); //For arrow, created above
 
     $("#interaction_" + handoffId).popover({
         class: "handoffPopover", 
@@ -331,8 +331,8 @@ function deleteInteraction(intId) {
     $("#interaction_" + intId).popover("destroy");
 
     //Delete from JSON
-    //var indexOfJSON = getIntJSONIndex(intId);
-    //flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
 
     console.log("REMOVING INTERACTION ID: " + intId);
 
