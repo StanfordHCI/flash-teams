@@ -6,7 +6,7 @@
 var XTicks = 50,
     YTicks = 5;
 
-var SVG_WIDTH = 2450,
+var SVG_WIDTH = 2550,
     SVG_HEIGHT = 570;
 
 var X_WIDTH = 25;
@@ -69,9 +69,10 @@ timeline_svg.selectAll("line.y")
 var numMins = -30;
 
 //Add X Axis Labels
-timeline_svg.selectAll(".rule")
+timeline_svg.selectAll("text.timelabel")
     .data(x.ticks(XTicks)) 
     .enter().append("text")
+    .attr("class", "timelabel")
     .attr("x", x)
     .attr("y", 15)
     .attr("dy", -3)
@@ -183,14 +184,15 @@ function addTime() {
     .style("stroke", "#000")
     .style("stroke-width", "4")
     
-    //Remove existing X-axis labels -- can't get this to work
-    //timeline_svg.selectAll(".rule").remove();
+    //Remove existing X-axis labels
+    timeline_svg.selectAll("text.timelabel").remove();
     numMins = -30;
 
     //Redraw X-axis labels
-    timeline_svg.selectAll(".rule")
+    timeline_svg.selectAll("text.timelabel")
     .data(x.ticks(XTicks))
     .enter().append("text")
+    .attr("class", "timelabel")
     .attr("x", x)
     .attr("y", 15)
     .attr("dy", -3)
@@ -216,10 +218,12 @@ function addTime() {
 }
 
 //VCom Calculates how many hours to add when user expands timeline
+//Increases by 1/3 each time (130% original length)
+//This function sets timelineHours and updates hours to match
 function calcAddHours(currentHours) {
     timelineHours = currentHours + Math.floor(currentHours/3);
     hours = timelineHours * Y_WIDTH;
     
-    SVG_WIDTH = timelineHours * 100 + 50;
+    SVG_WIDTH = timelineHours * Y_WIDTH + 50;
     XTicks = timelineHours * 2;
 }
