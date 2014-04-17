@@ -163,6 +163,8 @@ var drag = d3.behavior.drag()
         redraw(group, rectWidth, groupNum);
         //Update JSON
         var indexOfJSON = getEventJSONIndex(groupNum);
+        flashTeamsJSON["events"][indexOfJSON].startHr = startHour
+        flashTeamsJSON["events"][indexOfJSON].startMin = startMin
         flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
         flashTeamsJSON["events"][indexOfJSON].x = newX;
     });
