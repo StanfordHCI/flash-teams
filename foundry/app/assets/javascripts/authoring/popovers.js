@@ -23,6 +23,24 @@ function editablePopoverObj(eventObj) {
     var numHours = Math.floor(totalMinutes/60);
     var minutesLeft = totalMinutes%60;
 
+    // Render the template for the body
+    console.log(eventObj);
+    var renderedContent = _.template($('script#event-popover-template').html(), eventObj);
+
+    var obj = {
+        placement: "right",
+        html: "true",
+        class: "eventPopover",
+        id: '"popover' + groupNum + '"',
+        trigger: "click",
+        title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
+            + '" placeholder="'+title+'" >',
+        content: renderedContent,
+        container: $('#timeline-container')
+    };
+
+
+    /*
     var obj = {
         placement: "right",
         html: "true",
@@ -56,6 +74,7 @@ function editablePopoverObj(eventObj) {
         +'</form></td></tr>',
         container: $("#timeline-container")
     };
+    */
 
     return obj;
 };
@@ -138,6 +157,7 @@ function readOnlyPopoverObj(ev) {
  * None
  */
 function drawPopover(eventObj, editable, show) {
+
     var groupNum = eventObj.id;
 
     // draw it
@@ -220,7 +240,6 @@ function saveEventInfo (popId) {
     var eventNotes = $("#notes_" + popId).val();
     var driId = getDRI(popId);
    
-
     //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
     var indexOfJSON = getEventJSONIndex(popId);
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
@@ -253,7 +272,7 @@ function saveEventInfo (popId) {
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
 
-    //hidePopover(popId);
+    hidePopover(popId);
   
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);

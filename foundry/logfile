@@ -1,0 +1,10 @@
+LOG:  database system was shut down at 2014-04-16 16:59:45 PDT
+LOG:  autovacuum launcher started
+LOG:  database system is ready to accept connections
+FATAL:  role "postgres" does not exist
+ERROR:  syntax error at or near "update" at character 21
+STATEMENT:  alter user postgres update password = "Thisisadream70";
+ERROR:  unrecognized configuration parameter "password"
+STATEMENT:  alter user postgres set password = "Thisisadream70";
+ERROR:  syntax error at or near ""Thisisadream70"" at character 35
+STATEMENT:  alter user postgres with password "Thisisadream70";

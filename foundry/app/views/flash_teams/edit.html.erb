@@ -246,7 +246,37 @@
 </div>
 <% end %>
 
-<%= javascript_include_tag "authoring/gdrive" %>
+<script id="event-popover-template" type="text/template">
+<div>
+    <form name="eventForm_<%%= id %>">
+    <div>
+        <div>Event Start</div>
+        <input type="number" id="startHr_<%%= id %>" style="width: 30px;" value="<%%= startHr %>" />
+        <input type="number" id="startMin_<%%= id %>" style="width: 30px;" value="<%%= startMin %>" />
+    </div>
+    <div>
+        <div>Total Runtime</div>
+        <input type="number" id="hours_<%%= id %>" style="width: 30px;" value="1"/>
+        <input type="number" id="minutes_<%%= id %>" style="width: 30px;" value=""/>
+    </div>
+    <div>
+        <div>Members</div>
+        <div id="event<%%= id %>memberList"></div>
+    </div> 
+    <div>
+        <div>Notes</div>
+        <textarea rows="3" id="notes_<%%= id %>"></textarea>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="save" onclick="saveEventInfo(<%%= id %>); hidePopover(<%%= id %>);">Save</button>
+        <button class="btn btn-success" id="complete" onclick="completeTask(<%%= id %>);">Complete</button>
+        <button class="btn btn-danger" id="delete" onclick="deleteRect(<%%= id %>);">Delete</button>
+    </div>
+    </form>
+</div>
+</script>
+<%= javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js" %>
+
 <%= javascript_include_tag "application" %>
 <%= javascript_include_tag "https://apis.google.com/js/client.js?onload=handleClientLoad" %>
 <%= javascript_include_tag "https://apis.google.com/js/api.js"%>

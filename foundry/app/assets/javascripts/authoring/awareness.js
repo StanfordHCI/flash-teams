@@ -236,7 +236,7 @@ var flashTeamUpdated = function(){
 var poll = function(){
     console.log("POLLING");
     return setInterval(function(){
-        console.log("MAKING POLL NOW...");
+        // console.log("MAKING POLL NOW...");
         var flash_team_id = $("#flash_team_id").val();
         var url = '/flash_teams/' + flash_team_id + '/get_status';
         $.ajax({
@@ -251,7 +251,7 @@ var poll = function(){
                 stopPolling();
                 location.reload();
             } else {
-                console.log("Flash team not updated and not ended");
+                //console.log("Flash team not updated and not ended");
             }
         });
     }, poll_interval); // every 5 seconds currently
