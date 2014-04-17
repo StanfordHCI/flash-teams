@@ -246,42 +246,66 @@
 </div>
 <% end %>
 
+<!--
+This is an example of an Underscore template. It is rendered in popover.js:editablePopoverObj
+and has the advantage of (a) native HTML structure over string concatenation and (b) ability
+to interface directly with the objects being passed in, which are eventObj and flashTeamsJSON 
+-->
 <script id="event-popover-template" type="text/template">
 <div>
-    <form name="eventForm_<%%= id %>">
+    <form name="eventForm_<%%= eventObj.id %>">
     <div>
-        <div>Event Start</div>
-        <input type="number" id="startHr_<%%= id %>" style="width: 30px;" value="<%%= startHr %>" />
-        <input type="number" id="startMin_<%%= id %>" style="width: 30px;" value="<%%= startMin %>" />
+        <h5>Event Start</h5>
+        <input type="number" id="startHr_<%%= eventObj.id %>" style="width: 30px;" value="<%%= eventObj.startHr %>" />
+        <input type="number" id="startMin_<%%= eventObj.id %>" style="width: 30px;" value="<%%= eventObj.startMin %>" />
     </div>
     <div>
-        <div>Total Runtime</div>
-        <input type="number" id="hours_<%%= id %>" style="width: 30px;" value="<%%= hours %>"/>
-        <input type="number" id="minutes_<%%= id %>" style="width: 30px;" value="<%%= minutes %>"/>
+        <h5>Total Runtime</h5>
+        <input type="number" id="hours_<%%= eventObj.id %>" style="width: 30px;" value="<%%= eventObj.hours %>"/>
+        <input type="number" id="minutes_<%%= eventObj.id %>" style="width: 30px;" value="<%%= eventObj.minutes %>"/>
     </div>
     <div>
-        <div>Members</div>
-        <div id="event<%%= id %>memberList"></div>
+        <h5>Directly Responsible Individual</h5>
+        <select class="driInput" name="driName" id="driEvent_<%%= eventObj.id %>" onchange="getDIR(<%%= eventObj.id %>)">
+        <%% for (var i = 0; i < flashTeamsJSON.members.length; i++) {
+            var member = flashTeamsJSON.members[i]; %>
+            <option value="<%%= member.id %>" <%% if (member.id == eventObj.dri) { document.write("selected=selected"); } %>><%%= member.role %></option>
+        <%% } %>
+        </select>
     </div>
     <div>
-        <div>Inputs</div>
-        <input type="text" id="inputs_<%%= id %>" placeholder="Inputs" />
+        <h5>Members</h5>
+        <div id="event<%%= eventObj.id %>memberList">
+        <%% for (var i = 0; i < flashTeamsJSON.members.length; i++) {
+            var member = flashTeamsJSON.members[i]; %>
+            <div class="checkbox">
+                <input type="checkbox" id="event<%%= eventObj.id %>membercheckbox" value="<%%= member.id %>"> <%%= member.role %>
+            </div>
+        <%% } %>
+        </div>
+        <div>
     </div>
     <div>
-        <div>Outputs</div>
-        <input type="text" id="outputs_<%%= id %>" placeholder="Outputs" />
+        <h5>Inputs</h5>
+        <input type="text" id="inputs_<%%= eventObj.id %>" placeholder="Inputs" />
+    </div>
+    <div>
+        <h5>Outputs</h5>
+        <input type="text" id="outputs_<%%= eventObj.id %>" placeholder="Outputs" />
     </div> 
     <div>
-        <div>Notes</div>
-        <textarea rows="3" id="notes_<%%= id %>"></textarea>
+        <h5>Notes</h5>
+        <textarea rows="3" id="notes_<%%= eventObj.id %>"><%%= eventObj.notes %></textarea>
     </div>
     <div>
-        <button class="btn btn-primary" id="save" onclick="saveEventInfo(<%%= id %>); hidePopover(<%%= id %>);">Save</button>
-        <button class="btn btn-danger" id="delete" onclick="deleteRect(<%%= id %>);">Delete</button>
+        <button class="btn btn-primary" id="save" onclick="saveEventInfo(<%%= eventObj.id %>); hidePopover(<%%= eventObj.id %>);">Save</button>
+        <button class="btn btn-danger" id="delete" onclick="deleteRect(<%%= eventObj.id %>);">Delete</button>
     </div>
     </form>
 </div>
 </script>
+
+
 <%= javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js" %>
 <%= javascript_include_tag "authoring/gdrive" %>
 <%= javascript_include_tag "application" %>

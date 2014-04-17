@@ -86,9 +86,9 @@ var MembersJSONArray= [
 ]
 
 /* Dialog prompt code. Prevents dialogs from automatically opening upon initialization */
-//$( "#teamRolesPrompt" ).dialog({ autoOpen: false });
-//$( "#teamRolesPrompt" ).dialog({ height: "auto" },{ width: "450px" });
-//$( "#teamRolesPrompt" ).dialog({ modal: true }); //creates overlay between dialog and rest of the web page in order to disables interactions with other page elements
+$( "#teamRolesPrompt" ).dialog({ autoOpen: false });
+$( "#teamRolesPrompt" ).dialog({ height: "auto" },{ width: "450px" });
+$( "#teamRolesPrompt" ).dialog({ modal: true }); //creates overlay between dialog and rest of the web page in order to disables interactions with other page elements
 
 /* Called when user clicks on 'Go' button next to search bar in the 'Add Events' container in side menu and returns search results.
 Currently is a dummy function that each Event JSON in EventJSONArray into an Event div and displays them as search results. */

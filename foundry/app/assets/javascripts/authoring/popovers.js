@@ -26,7 +26,11 @@ function editablePopoverObj(eventObj) {
     // Render the template for the body
     eventObj["hours"] = Math.floor(totalMinutes / 60);
     eventObj["minutes"] = totalMinutes % 60;
-    var renderedContent = _.template($('script#event-popover-template').html(), eventObj);
+
+    var renderedContent = _.template($('script#event-popover-template').html(), {
+        'eventObj': eventObj,
+        'flashTeamsJSON': flashTeamsJSON
+    });
 
     console.log(eventObj);
 
@@ -41,7 +45,6 @@ function editablePopoverObj(eventObj) {
         content: renderedContent,
         container: $('#timeline-container')
     };
-
 
     /*
     var obj = {
