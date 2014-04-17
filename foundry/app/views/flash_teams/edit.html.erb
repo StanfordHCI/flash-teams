@@ -11,10 +11,10 @@
     <h3> <%= @flash_team.name %> </h3>
     
     <div class="row-fluid">
-        <input type="button" id="backBtn" value="Back" onclick="window.location='<%=flash_teams_path%>';"/>
-        <input type="button" id="flashTeamStartBtn" value="Start"/>
-        <input type="button" id="flashTeamEndBtn" value="End"/>
-        <input type="button" id="addTimeBtn" value="Add Time" onclick="addTime()"/>
+        <button class="btn btn-info" id="backBtn" onclick="window.location='<%=flash_teams_path%>';">Back</button>
+        <!-- <input type="button" id="flashTeamStartBtn" value="Start"/>
+        <input type="button" id="flashTeamEndBtn" value="End"/> -->
+        <button class="btn btn-success" id="addTimeBtn" onclick="addTime()">Add Time</button>
     </div>
     <br/>
     <div class="row-fluid">
