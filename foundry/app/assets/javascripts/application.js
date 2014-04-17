@@ -15,6 +15,7 @@
 //= require_tree ./d3
 //= require turbolinks
 //= require_tree ./bootstrap
+//= require ./authoring/bootstrap-tagsinput
 //= require ./authoring/load
 //= require ./authoring/timeline
 //= require ./authoring/events
