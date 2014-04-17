@@ -13,7 +13,7 @@
  * an object that contains all info necessary to render an 'editable' popover
  */
 function editablePopoverObj(eventObj) {
-    var totalMinutes = eventObj["duration"];
+    var totalMinutes = Number(eventObj["duration"]);
     var groupNum = eventObj["id"];
     var title = eventObj["title"];
     var startHr = eventObj["startHr"];
@@ -24,8 +24,11 @@ function editablePopoverObj(eventObj) {
     var minutesLeft = totalMinutes%60;
 
     // Render the template for the body
-    console.log(eventObj);
+    eventObj["hours"] = Math.floor(totalMinutes / 60);
+    eventObj["minutes"] = totalMinutes % 60;
     var renderedContent = _.template($('script#event-popover-template').html(), eventObj);
+
+    console.log(eventObj);
 
     var obj = {
         placement: "right",
@@ -34,7 +37,7 @@ function editablePopoverObj(eventObj) {
         id: '"popover' + groupNum + '"',
         trigger: "click",
         title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
-            + '" placeholder="'+title+'" >',
+            + '" value="'+title+'">',
         content: renderedContent,
         container: $('#timeline-container')
     };
@@ -263,6 +266,10 @@ function saveEventInfo (popId) {
         }
     }
 
+    // Make sure startHour and startMin are numbers
+    var startHour = Number(startHour);
+    var startMin = Number(startMin);
+
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
@@ -278,7 +285,9 @@ function saveEventInfo (popId) {
     var indexOfJSON = getEventJSONIndex(popId);
     var ev = flashTeamsJSON["events"][indexOfJSON];
     ev.title = newTitle;
-    ev.duration = newHours*60 + newMin;
+    console.log('UPDATING JSON');
+    console.log(newHours, newMin);
+    ev.duration = Number(newHours)*60 + Number(newMin);
     ev.notes = eventNotes;
     ev.dri = driId;
 
@@ -289,7 +298,7 @@ function saveEventInfo (popId) {
     //UPDATE EVENT MEMBERS?
 
     //console.log("saved event info");
-    updateStatus(false);
+    updateStatus();
 };
 
 // Adds/updates the DRI dropdown on the event popover

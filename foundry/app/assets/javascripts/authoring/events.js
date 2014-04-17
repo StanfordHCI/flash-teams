@@ -694,6 +694,8 @@ function updateTime(idNum) {
 
 //Change the starting location of a task rectangle and its relevant components when the user changes info in the popover
 function updateStartPlace(idNum, startHr, startMin, width) {
+    console.log('updatingstartplace');
+    console.log(idNum, startHr, startMin, width);
     var newX = (startHr*100) + (startMin/15*25) - 4;
     $("#rect_" + idNum).attr("x", newX);
     $("#rt_rect_" + idNum).attr("x", newX + width);
