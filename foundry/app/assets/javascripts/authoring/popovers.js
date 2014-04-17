@@ -13,15 +13,15 @@
  * an object that contains all info necessary to render an 'editable' popover
  */
 function editablePopoverObj(eventObj) {
-    var totalMinutes = eventObj["duration"];
+    // var totalMinutes = eventObj["duration"];
     var groupNum = eventObj["id"];
-    var title = eventObj["title"];
-    var startHr = eventObj["startHr"];
-    var startMin = eventObj["startMin"];
-    var notes = eventObj["notes"];
+    // var title = eventObj["title"];
+    // var startHr = eventObj["startHr"];
+    // var startMin = eventObj["startMin"];
+    // var notes = eventObj["notes"];
 
-    var numHours = Math.floor(totalMinutes/60);
-    var minutesLeft = totalMinutes%60;
+    // var numHours = Math.floor(totalMinutes/60);
+    // var minutesLeft = totalMinutes%60;
 
     var obj = {
         placement: "right",
@@ -29,12 +29,21 @@ function editablePopoverObj(eventObj) {
         class: "eventPopover",
         id: '"popover' + groupNum + '"',
         trigger: "click",
-        title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
-            + '" placeholder="'+title+'" >',
-        content: '<table><tr><td >'
-        + '<form name="eventForm_' + groupNum + '">'
+        title: function() {
+            return '<input type ="text" name="eventName" id="eventName_' + groupNum 
+            + '" placeholder="'+ eventObj["title"] +'" >'},
+        content: function() {
+            var totalMinutes = eventObj["duration"];
+            var startHr = eventObj["startHr"];
+            var startMin = eventObj["startMin"];
+            var notes = eventObj["notes"];
+
+            var numHours = Math.floor(totalMinutes/60);
+            var minutesLeft = totalMinutes%60;
+
+            return '<form name="eventForm_' + groupNum + '">' + '<table><tr><td>'
         +'<b>Event Start:          </b><br>' 
-        +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
+        +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr
             + '" min="0" style="width:35px">'
         +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
             + '" min="0" step="15" max="45" style="width:35px">'
@@ -52,8 +61,8 @@ function editablePopoverObj(eventObj) {
         +'</td></tr><tr><td><p><button type="button" id="delete"'
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
-        +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
-        +'</form></td></tr>',
+        // +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
+        +'</td></tr></table></form>'},
         container: $("#timeline-container")
     };
 

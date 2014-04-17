@@ -27,7 +27,7 @@ function leftResize(d) {
     if(isUser) { // user page
         return;
     }
-
+    console.log('leftResize');
     var groupNum = d.groupNum;
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var ev = flashTeamsJSON["events"][indexOfJSON];
@@ -56,7 +56,18 @@ function leftResize(d) {
     var durationObj = getDuration(newX, rightX);
     ev.duration = durationObj["duration"];
 
-    drawEvent(ev);
+    $(this).attr("x", newX);
+    $("#title_text_" + d.groupNum).attr("x", newX + 10);
+    $("#time_text_" + d.groupNum).attr("x", newX + 10);
+    $("#handoffs_" + d.groupNum).attr("x", newX + 10);
+    taskRect.attr("width", rightX - newX);
+    taskRect.attr("x", newX);
+    updateTime(d.groupNum);
+
+    flashTeamsJSON["events"][indexOfJSON] = ev;
+    console.log("runtime: " + flashTeamsJSON["events"][indexOfJSON].duration);
+
+    //drawEvent(ev);
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -163,7 +174,7 @@ var drag_right = d3.behavior.drag()
 //Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
     .on("drag", leftResize);
-
+    
 //VCom Calculates where to snap event block to when created
 function calcSnap(mouseX, mouseY) {
     var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
