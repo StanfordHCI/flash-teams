@@ -286,6 +286,8 @@ function saveEventInfo (popId) {
     ev.duration = newHours*60 + newMin;
     ev.notes = eventNotes;
     ev.dri = driId;
+    ev.inputs = $('#inputs_' + popId).val();
+    ev.outputs = $('#outputs_' + popId).val();
 
     console.log("DRAWING POPOVER AFTER SAVED EVENT POPOVER");
     console.log("EV.duration: " + ev.duration);
