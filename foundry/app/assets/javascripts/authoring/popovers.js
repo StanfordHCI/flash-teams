@@ -46,6 +46,8 @@ function editablePopoverObj(eventObj) {
             var startHr = eventObj["startHr"];
             var startMin = eventObj["startMin"];
             var notes = eventObj["notes"];
+            var inputs = eventObj["inputs"];
+            var outputs = eventObj["outputs"];
 
             var numHours = Math.floor(totalMinutes/60);
             var minutesLeft = totalMinutes%60;
@@ -68,8 +70,8 @@ function editablePopoverObj(eventObj) {
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
         +'</td></tr>'
-        +'<div><input type="text" data-role="tagsinput" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
-        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
+        +'<div><input type="text" data-role="tagsinput" placeholder="Add input" id="inputs_' + groupNum + '" value="' + inputs + '" /></div>'
+        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" value="' + outputs + '" /></div>'
         +'<tr><td><p><button type="button" id="delete"'
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
