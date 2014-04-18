@@ -31,4 +31,5 @@
 //= require ./authoring/eventslibrary
 //= require ./authoring/flash_team_update
 //= require ./authoring/notification_email
-// require ./authoring/gdrive
+//= require ./authoring/gdrive
+//= require ./authoring/bootstrap-tagsinput

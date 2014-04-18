@@ -5,6 +5,15 @@
  * when new information added including: duration, event members, etc.
  */
 
+// Quick hack that allows popovers to take callback functions
+var tmp = $.fn.popover.Constructor.prototype.show; 
+$.fn.popover.Constructor.prototype.show = function () { 
+    tmp.call(this); 
+    if (this.options.callback) { 
+        this.options.callback(); 
+    } 
+};
+
 /*
  * Input(s): 
  * eventObj - event object taken from the events array within the flashTeamsJSON object
@@ -58,12 +67,18 @@ function editablePopoverObj(eventObj) {
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
-        +'</td></tr><tr><td><p><button type="button" id="delete"'
+        +'</td></tr>'
+        +'<div><input type="text" data-role="tagsinput" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
+        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
+        +'<tr><td><p><button type="button" id="delete"'
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
         // +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
         +'</td></tr></table></form>'},
-        container: $("#timeline-container")
+        container: $("#timeline-container"),
+        callback: function() {
+            $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
+        }
     };
 
     return obj;
