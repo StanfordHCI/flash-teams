@@ -46,22 +46,30 @@ function editablePopoverObj(eventObj) {
             var startHr = eventObj["startHr"];
             var startMin = eventObj["startMin"];
             var notes = eventObj["notes"];
+            
             var inputs = eventObj["inputs"];
+            if (inputs == null) {
+                inputs = ""
+            }
+
             var outputs = eventObj["outputs"];
+            if (outputs == null) {
+                outputs = ""
+            }
 
             var numHours = Math.floor(totalMinutes/60);
             var minutesLeft = totalMinutes%60;
 
             return '<form name="eventForm_' + groupNum + '">' + '<table><tr><td>'
         +'<b>Event Start:          </b><br>' 
-        +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr
+        +'Hours: <input type="number" id="startHr_' + groupNum + '" value="' + startHr
             + '" min="0" style="width:35px">'
-        +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
+        +'Minutes: <input type="number" id="startMin_' + groupNum + '" value="' + startMin 
             + '" min="0" step="15" max="45" style="width:35px">'
         +'</td><td><b>Total Runtime: </b><br>' 
-        +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
+        +'Hours: <input type = "number" id="hours_' + groupNum + '" value="'
             +numHours+'" min="2" style="width:35px"/><br>          ' 
-        +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
+        +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" value="'+minutesLeft
             +'" style="width:35px" min="0" step="15" max="45"/><br>'
         +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
             + writeEventMembers(groupNum) +'</div>'
