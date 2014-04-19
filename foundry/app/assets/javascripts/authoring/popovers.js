@@ -84,6 +84,7 @@ function editablePopoverObj(eventObj) {
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
         // +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
+        +'<button type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button> </p>' 
         +'</td></tr></table></form>'},
         container: $("#timeline-container"),
         callback: function() {
