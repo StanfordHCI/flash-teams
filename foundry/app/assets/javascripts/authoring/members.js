@@ -228,7 +228,7 @@ function saveMemberInfo(popId) {
 function deleteMember(pillId) {
     //Remove Member from JSON
     var indexOfJSON = getMemberJSONIndex(pillId);
-    var memberName = flashTeamsJSON["members"][indexOfJSON].role;
+    var memName = flashTeamsJSON["members"][indexOfJSON].role;
     flashTeamsJSON["members"].splice(indexOfJSON, 1);
 
     $("#mPill_" + pillId).popover("destroy");
@@ -237,7 +237,18 @@ function deleteMember(pillId) {
     //REMOVE THE CIRCLES
     removeMemberNode(pillId);
 
-    //REMOVE THE MEMBER FROM EVENTS
+    //Remove member from events, iterate over events looking for role/name
+    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        for (j = 0; j < flashTeamsJSON["events"][i].members.length; j++) {
+            if (flashTeamsJSON["events"][i].members.length == 0) { 
+                return;
+            } else if (flashTeamsJSON["events"][i].members[j].name == memName) {
+                var eventId = flashTeamsJSON["events"][i].id;
+                flashTeamsJSON["events"][indexOfJSON].members.splice(j, 1);
+                $("#event_" + eventId + "_eventMemLine_" + pillId).remove();
+            }
+        }
+    }
 };
 
 function inviteMember(pillId) {
