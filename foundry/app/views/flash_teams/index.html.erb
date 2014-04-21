@@ -22,7 +22,7 @@
       <!-- <td><%= flash_team.name %></td> -->
       <!-- <td><%= link_to 'Show', flash_team %></td> -->
       <td><%= link_to 'Edit', edit_flash_team_path(flash_team) %></td>
-      <td><%= link_to 'Destroy', flash_team_path(flash_team), method: :destroy, data: { confirm: 'Are you sure?' } %></td>
+      <td><%= link_to 'Delete', flash_team_path(flash_team), :method => :delete, :confirm => 'Are you sure?' %></td>
     </tr>
   <% end %>
   </tbody>
