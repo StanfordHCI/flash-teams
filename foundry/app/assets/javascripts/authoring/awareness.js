@@ -99,6 +99,7 @@ $("#uniq").value = uniq;
 var chat_role;
 var chat_name;
 
+//First AJAX request to get status
 $(document).ready(function(){
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
@@ -139,7 +140,11 @@ $(document).ready(function(){
                 // render view
                 loadData(false);
                 updateAllPopoversToReadOnly();
-                //renderMembersRequester();
+
+                //On requester page
+                if (current == undefined) renderMembersRequester(); 
+                else renderMembersUser();
+                
                 //renderChatbox();
             }
         }
