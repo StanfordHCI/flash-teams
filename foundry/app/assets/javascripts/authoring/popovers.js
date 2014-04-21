@@ -282,8 +282,16 @@ function saveEventInfo (popId) {
     //Update width
     var newHours = $("#hours_" + popId).val();
     var newMin = $("#minutes_" + popId).val();
-    if (newHours == "") newHours = parseInt($("#hours_" + popId)[0].placeholder);
-    if (newMin == "") newMin = parseInt($("#minutes_" + popId)[0].placeholder);
+    if (newHours == "") {
+        newHours = parseInt($("#hours_" + popId)[0].placeholder);
+    } else {
+        newHours = parseInt(newHours);
+    }
+    if (newMin == "") { 
+        newMin = parseInt($("#minutes_" + popId)[0].placeholder);
+    } else {
+        newMin = parseInt(newMin);
+    }
     var newWidth = (newHours * 100) + (newMin/15*25);
     updateWidth(popId, newHours, newMin); //Also updates width of event members
     updateStartPlace(popId, startHour, startMin, newWidth);
