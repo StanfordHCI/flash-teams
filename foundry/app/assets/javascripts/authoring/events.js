@@ -326,14 +326,18 @@ function updateEvent(id, dataObj) {
 
 // TODO: rewrite this
 function addEvent() { // events library box in the sidebar
-    event_counter++;
     var point = [0,0];
     var snapPoint = calcSnap(point[0], point[1]);
-    //START HERE ALEXANDRA, CREATE AN EVENTOBJ
-    // create event
-    //var eventObj = createEvent(snapPoint); //FIND OUT WHAT THIS IS
-    var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, null, null);
-    fillPopover(snapPoint[0], groupNum, true, null, null);
+    var eventObj = createEvent(snapPoint);
+
+    // render event
+    drawEvent(eventObj);
+    
+    // render event popover
+    drawPopover(eventObj, true, true);
+
+    // save
+    updateStatus(false);
 };
 
 function getWidth(ev) {
