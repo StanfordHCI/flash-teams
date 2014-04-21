@@ -62,7 +62,6 @@ function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
         var member = members[i];
         var member_id = member.id;
-        console.log("rendering popovers for member " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
 
@@ -212,15 +211,16 @@ function deleteSkill(memberId, pillId, skillName) {
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
     var indexOfJSON = getMemberJSONIndex(popId);
-    flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
-    flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
+    //debugger;
+    flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1")[0].value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2")[0].value;
 
     var newColor = $("#color_" + popId).spectrum("get").toHexString();
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
     //updateMemberPopover(popId);
+    //ALEXANDRA: START HERE
 
-    console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
 };
 
