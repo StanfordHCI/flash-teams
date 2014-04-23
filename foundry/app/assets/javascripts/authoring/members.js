@@ -62,39 +62,71 @@ function renderPills(members) {
 
 function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
-        var member = members[i];
+        (function(){
+        var ind = i;
+        var member = members[ind];
         var member_id = member.id;
         var member_name = member.role;
-        var invitation_link = member.invitation_link;
-
-        var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
-                +'<div class="mForm_' + member_id + '">'
+        var membersarr = members
+        var content = function() {
+            var this_member = membersarr[ind];
+            var this_member_id = this_member.id;
+            var this_member_color = this_member.color;
+            var invitation_link = this_member.invitation_link;
+            var html = '<form name="memberForm_' + this_member_id + '" autocomplete="on">'
+                +'<div class="mForm_' + this_member_id + '">'
                 +'<div class="input-append" > ' 
-                +'<select class="category1Input" id="member' + member_id + '_category1">';
+                +'<select class="category1Input" id="member' + this_member_id + '_category1">';
 
-        // add the drop-down for two-tiered oDesk job posting categories on popover
-        for (var key in oDeskCategories) {
-            var option = document.createElement("option");
-            content += '<option value="' + key + '">' + key + '</option>';
+            // add the drop-down for two-tiered oDesk job posting categories on popover
+            for (var key in oDeskCategories) {
+                //var option = document.createElement("option");
+                html += '<option value="' + key + '"';
+                if (key == this_member.category1){
+                    html += 'selected="selected"';
+                }
+                html += '>' + key + '</option>';
+            }
+
+            html += '</select>';
+            html += '<br><br><select class="category2Input" id="member' + this_member_id + '_category2"';
+
+            //populate subcategory drop-down
+            if (this_member.category1 == "" || this_member.category1 == "--oDesk Category--"){
+                html += ' disabled="disabled"><option selected="selected">--oDesk Sub-Category--</option>';
+            } else {
+                var subcats = oDeskCategories[this_member.category1];
+                for (var j = 0; j < subcats.length; j++) {
+                    html += '><option value="' + subcats[j] + '"';
+                    if (subcats[j] == this_member.category2){
+                        html += 'selected="selected"';
+                    }
+                    html += '>' + subcats[j] + '</option>';
+                }
+            }
+            html += '</select><br><br><input class="skillInput" id="addSkillInput_' + this_member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
+                    +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + this_member_id + '" onclick="addSkill(' + this_member_id + ');">+</button>'
+                    +'</div>'
+                    +'Skills:'  
+                    +'<ul class="nav nav-pills" id="skillPills_' + this_member_id + '">';
+            if (this_member.skills.length > 0){
+                for (var j = 0; j < this_member.skills.length; j++){
+                    html += '<li class="active" id="sPill_mem' + this_member_id + '_skill' + (j+1) + '"><a>' + this_member.skills[j] 
+                         + '<div class="close" onclick="deleteSkill(' + this_member_id + ', ' + (j+1) + ', &#39' + this_member.skills[j] + '&#39)">  X</div></a></li>';
+                }
+            }
+            html += '</ul>Member Color: <input type="text" class="full-spectrum" id="color_' + this_member_id + '"/>'
+                    +'<p><script type="text/javascript"> initializeColorPicker(\'' + this_member_color + '\'); </script></p>'
+                    +'<p><button type="button" onclick="deleteMember(' + this_member_id + '); updateStatus();">Delete</button>     '
+                    +'<button type="button" onclick="saveMemberInfo(' + this_member_id + '); updateStatus();">Save</button><br><br>'
+                    +'<button type="button" onclick="$(\'#mPill_' + this_member_id + '\').popover(\'hide\');">Cancel</button><br><br>'
+                    + 'Invitation link: <a id="invitation_link_' + this_member_id + '" href="' + invitation_link + '" target="_blank">'
+                    + invitation_link
+                    + '</a>'
+                +'</p></form>' 
+                +'</div>';
+            return html;
         }
-
-        content += '</select>';
-        content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
-                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
-                +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + member_id + '" onclick="addSkill(' + member_id + ');">+</button>'
-                +'</div>'
-                +'Skills:'  
-                +'<ul class="nav nav-pills" id="skillPills_' + member_id + '"> </ul>'
-                +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
-                +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
-                +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
-                +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
-                +'<button type="button" onclick="$(\'#mPill_' + member_id + '\').popover(\'hide\');">Cancel</button><br><br>'
-                + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
-                + invitation_link
-                + '</a>'
-            +'</p></form>' 
-            +'</div>';
 
         $("#mPill_" + member_id).popover('destroy');
 
@@ -115,6 +147,7 @@ function renderMemberPopovers(members) {
             console.log("clicked on " + mem_id);
             $("#member" + mem_id + "_category1").on('change', function(){
                 if ($("#member" + mem_id + "_category1").value === "--oDesk Category--") {
+                    $("#member" + mem_id + "_category2").value = "--oDesk Sub-Category--";
                     $("#member" + mem_id + "_category2").attr("disabled", "disabled");
                 } else {
                     $("#member" + mem_id + "_category2").removeAttr("disabled");
@@ -124,7 +157,12 @@ function renderMemberPopovers(members) {
                     var category1Name = category1Select.options[category1Select.selectedIndex].value;
                     for (var i = 0; i < oDeskCategories[category1Name].length; i++) {
                         var option = document.createElement("option");
-                        $("#member" + mem_id + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
+                        var str = '<option';
+                        if (member.category2 == oDeskCategories[category1Name][i]){
+                            str += ' selected="selected"';
+                        }
+                        str += '>' + oDeskCategories[category1Name][i] + '</option>';
+                        $("#member" + mem_id + "_category2").append(str);
                     }
                 }
             });
@@ -134,6 +172,8 @@ function renderMemberPopovers(members) {
         $(document).ready(function() {
             pressEnterKeyToSubmit("#addSkillInput_" + member_id, "#addSkillButton_" + member_id);
         });
+
+        })();
     }
 };
 
@@ -238,6 +278,7 @@ function deleteMember(pillId) {
 
     //REMOVE THE CIRCLES
     removeMemberNode(pillId);
+    renderMemberPopovers(flashTeamsJSON['members']);
 
     //Remove member from events, iterate over events looking for role/name
     for (i = 0; i < flashTeamsJSON["events"].length; i++) {
@@ -293,11 +334,11 @@ function updateMemberPopover(idNum) {
 };
 
 //Draws the color picker on a member popover
-function initializeColorPicker() {
+function initializeColorPicker(curColor) {
     $(".full-spectrum").spectrum({
         showPaletteOnly: true,
         showPalette: true,
-        color: "#08c",
+        color: curColor || "#08c",
         palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],

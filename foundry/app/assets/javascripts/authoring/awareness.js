@@ -14,6 +14,7 @@ timeline_svg.append("line")
     .attr("class", "cursor")
     .style("stroke", "red")
     .style("stroke-width", "2")
+    .style("display", "none")
 
 var poll_interval = 5000; // 20 seconds
 var poll_interval_id;
