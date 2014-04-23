@@ -9,7 +9,9 @@ var current = undefined;
 var isUser = false;
 
 function renderMembersRequester() {
+    console.log('renderMembersRequester called');
     var members = flashTeamsJSON.members;
+    console.log(flashTeamsJSON.members);
     console.log("rendering members: " + members);
     renderPills(members);
     renderMemberPopovers(members);

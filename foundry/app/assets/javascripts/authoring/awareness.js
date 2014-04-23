@@ -118,6 +118,8 @@ $(document).ready(function(){
 
         in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
+        console.log('TEAM LOADED.');
+        renderMembersRequester();
 
         setCurrentMember();
 
