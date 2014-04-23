@@ -12,7 +12,7 @@ folderIds = [];
  */
 function handleClientLoad() {
   // gapi.load("auth:client,drive-realtime,drive-share", callback);
-  checkAuth();
+  // checkAuth();
 };
 
 /**
