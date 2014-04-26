@@ -51,8 +51,7 @@ function editablePopoverObj(eventObj) {
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
         +'</td></tr><tr><td><p><button type="button" id="delete"'
             +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
-        +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
+        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>'  
         +'</form></td></tr>',
         container: $("#timeline-container")
     };
@@ -221,13 +220,13 @@ function saveEventInfo (popId) {
     var driId = getDRI(popId);
    
 
-    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+    //Add Event Members, see checkboxes
     var indexOfJSON = getEventJSONIndex(popId);
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         //START HERE
         var memberName = flashTeamsJSON["members"][i].role;
 
-        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
+        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return; //No members?
 
         if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
             if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
