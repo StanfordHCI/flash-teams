@@ -120,6 +120,7 @@ function createNewFolder(eventName, JSONId){
         console.log("HERE");
       } else {
         flashTeamsJSON["events"][JSONId].gdrive = folderArray;
+        insertPermission(folderArray[0], "me", "anyone", "writer");
         folderIds.push(folderArray);
         console.log("THERE");
       }
@@ -133,6 +134,7 @@ function addAllFolders(){
   for (var i = 0; i<flashTeamsJSON["events"].length; i++){
     createNewFolder(flashTeamsJSON["events"][i].title, i);
   }
+  console.log("isAddingFolders");
 };
 
 function createNewFile(eventName) {
