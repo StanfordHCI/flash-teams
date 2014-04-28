@@ -348,7 +348,6 @@ function getWidth(ev) {
 
 //Creates graphical elements from array of data (task_rectangles)
 function  drawEvent(eventObj) {
-    console.log("drawing event");
     var title = eventObj["title"];
     var totalMinutes = eventObj["duration"];
     var x = eventObj["x"];
