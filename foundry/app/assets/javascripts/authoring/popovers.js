@@ -22,15 +22,7 @@ $.fn.popover.Constructor.prototype.show = function () {
  * an object that contains all info necessary to render an 'editable' popover
  */
 function editablePopoverObj(eventObj) {
-    // var totalMinutes = eventObj["duration"];
     var groupNum = eventObj["id"];
-    // var title = eventObj["title"];
-    // var startHr = eventObj["startHr"];
-    // var startMin = eventObj["startMin"];
-    // var notes = eventObj["notes"];
-
-    // var numHours = Math.floor(totalMinutes/60);
-    // var minutesLeft = totalMinutes%60;
 
     var obj = {
         placement: "right",
@@ -122,8 +114,6 @@ function readOnlyPopoverObj(ev) {
             content += '<br>';
         }
     }
-
-    console.log("EV.DRI: " + ev.dri);
 
     if (ev.dri != "" && ev.dri != undefined){
         var mem = getMemberById(ev.dri);
@@ -257,10 +247,9 @@ function saveEventInfo (popId) {
     var driId = getDRI(popId);
    
 
-    //ADD EVENT MEMBERS, SEE IF THEY ARE CHECKED OR UNCHECKED???
+    //Check event members for checked or unchecked
     var indexOfJSON = getEventJSONIndex(popId);
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
-        //START HERE
         var memberName = flashTeamsJSON["members"][i].role;
 
         if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
@@ -362,17 +351,22 @@ function getDRI(groupNum) {
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
-    //console.log("These are the members!");
-    //console.log(flashTeamsJSON["members"]);
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
+<<<<<<< HEAD
         var memberUniq = flashTeamsJSON["members"][i].uniq;
         var found = false;
 
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
             if (flashTeamsJSON["events"][indexOfJSON].members[j].uniq == memberUniq) {
                 //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
+=======
+        var found = false;
+
+        for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
+            if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
+>>>>>>> fe33e63d7bee8387320590b37f5ec465dbc8ce50
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
