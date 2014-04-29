@@ -596,10 +596,13 @@ function renderAllEventsMembers() {
 function renderEventMembers(eventId) {
     // get event
     var ev = flashTeamsJSON["events"][getEventJSONIndex(eventId)];
-
+    $('event_eventMemLine_*');
     // get number of members in the event
     var members = ev.members;
-
+    //remove member lines before redrawing them
+    $('[id^="event_' + eventId + '_eventMemLine"]').each(function(){
+        this.remove();
+    });
     for (var i = 0; i < members.length; i++) {
         // get member information
         var member = members[i];
@@ -675,8 +678,7 @@ function deleteEventMember(eventId, memberNum, memberName) {
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();
     if (memberNum == current){
          $("#rect_" + eventId).attr("fill", "#C9C9C9")
-     }
-
+    }
     //Update the JSON
     var indexOfJSON = getEventJSONIndex(eventId);
     for (i = 0; i < flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
@@ -686,6 +688,7 @@ function deleteEventMember(eventId, memberNum, memberName) {
             break;
         }
     }
+    renderEventMembers(eventId);
 }
 
 //Updates the physical task rectangle representation of start and duration, also update JSON

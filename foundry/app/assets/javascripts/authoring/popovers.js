@@ -249,23 +249,53 @@ function saveEventInfo (popId) {
     //Check event members for checked or unchecked
     var indexOfJSON = getEventJSONIndex(popId);
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var memberUniq = flashTeamsJSON["members"][i].uniq;
         var memberName = flashTeamsJSON["members"][i].role;
-
         if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
-
-        if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
-            if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
-                addEventMember(popId, i);
-            }
-        } else {
-            for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
-                if (flashTeamsJSON["events"][indexOfJSON].members[j] == flashTeamsJSON["members"][i].role) {
-                    var memId = flashTeamsJSON["members"][i].id;
-                    flashTeamsJSON["events"][indexOfJSON].members.splice(j, 1);
-                    $("#event_" + popId + "_eventMemLine_" + memId).remove(); //THIS IS THE PROBLEM, j
+        //for each member check their check mark & previous status
+        var wasMember = false;
+        for (var j = 0; j < flashTeamsJSON["events"][indexOfJSON].members.length; j++){
+            var u = flashTeamsJSON["events"][indexOfJSON].members[j].uniq
+            if (u == undefined){ //for back-compatibility
+                if (flashTeamsJSON["events"][indexOfJSON].members[j].name == memberName){
+                    wasMember = true;
+                    break;
                 }
+            } else if (u == memberUniq) {
+                wasMember = true;
+                break;
             }
         }
+        if ($("#event" + popId + "member" + i + "checkbox")[0].checked == true) { //checked
+            if (wasMember){
+                continue;
+            } else {
+                addEventMember(popId, i);
+            }
+        } else { //not checked
+           if (wasMember) {
+                deleteEventMember(popId, i, memberName); // THIS SHOULD BE CHANGED TO UNIQ! change the deleteEventMember func and anything that calls it
+           } else {
+
+           }
+        }
+        // var memberName = flashTeamsJSON["members"][i].role;
+
+        // if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return;
+
+        // if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
+        //     if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
+        //         addEventMember(popId, i);
+        //     }
+        // } else {
+        //     for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
+        //         if (flashTeamsJSON["events"][indexOfJSON].members[j] == flashTeamsJSON["members"][i].role) {
+        //             var memId = flashTeamsJSON["members"][i].id;
+        //             flashTeamsJSON["events"][indexOfJSON].members.splice(j, 1);
+        //             $("#event_" + popId + "_eventMemLine_" + memId).remove(); //THIS IS THE PROBLEM, j
+        //         }
+        //     }
+        // }
     }
 
     //Update width
