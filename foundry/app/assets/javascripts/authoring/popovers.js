@@ -357,7 +357,7 @@ function writeEventMembers(idNum) {
         var found = false;
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
         //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
-            if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
+            if (flashTeamsJSON["events"][indexOfJSON].members[j].uniq == memberUniq) {
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
