@@ -108,7 +108,6 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
-        console.log("HELLO");
         renderChatbox();
 
         //get user name and user role for the chat
@@ -120,7 +119,12 @@ $(document).ready(function(){
 
         in_progress = loadedStatus.flash_team_in_progress;
         flashTeamsJSON = loadedStatus.flash_teams_json;
-        console.log('TEAM LOADED.');
+        pillCounter = 0; //set pillCounter to highest existing member id
+        $(flashTeamsJSON['members']).each(function(i){
+            if (this.id > pillCounter){
+                pillCounter = this.id;
+            }
+        });
         renderMembersRequester();
 
         setCurrentMember();

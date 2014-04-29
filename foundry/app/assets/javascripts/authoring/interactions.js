@@ -31,7 +31,6 @@ function eventMousedown(task2idNum) {
         if (idNum != task1idNum && idNum != task2idNum) {
             $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
         }
-        
     }
 
     if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
@@ -113,7 +112,7 @@ function eventMousedown(task2idNum) {
             DRAWING_COLLAB = false;
             DRAWING_HANDOFF = false;
         }
-    //There is no interation being drawn
+    //There is no interaction being drawn
     } else {
         return;
     }

@@ -59,6 +59,7 @@ function editablePopoverObj(eventObj) {
 
             var numHours = Math.floor(totalMinutes/60);
             var minutesLeft = totalMinutes%60;
+            var driId = eventObj["dri"] || 0;
 
             return '<form name="eventForm_' + groupNum + '">' + '<table><tr><td>'
         +'<b>Event Start:          </b><br>' 
@@ -75,7 +76,7 @@ function editablePopoverObj(eventObj) {
             + writeEventMembers(groupNum) +'</div>'
         +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
-        + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
+        + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,driId) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
         +'</td></tr>'
         +'<div><input type="text" data-role="tagsinput" placeholder="Add input" id="inputs_' + groupNum + '" value="' + inputs + '" /></div>'
@@ -366,11 +367,11 @@ function writeEventMembers(idNum) {
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
     for (i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
-
+        var memberUniq = flashTeamsJSON["members"][i].uniq;
         var found = false;
 
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
-            if (flashTeamsJSON["events"][indexOfJSON].members[j] == memberName) {
+            if (flashTeamsJSON["events"][indexOfJSON].members[j].uniq == memberUniq) {
                 //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
