@@ -113,6 +113,10 @@ var drag = d3.behavior.drag()
             return;
         }
 
+        if (DRAWING_HANDOFF || DRAWING_COLLAB) {
+            return;
+        }
+
         var group = this.parentNode;
         var oldX = d.x;
         var groupNum = this.id.split("_")[1];
@@ -189,6 +193,10 @@ function mousedown() {
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
+        return;
+    }
+
+    if (d3.event.button != 0) { //don't do anything if not left click
         return;
     }
 
