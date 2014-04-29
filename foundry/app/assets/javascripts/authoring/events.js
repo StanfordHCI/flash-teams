@@ -27,6 +27,7 @@ function leftResize(d) {
     if(isUser) { // user page
         return;
     }
+    console.log('leftResize');
     var groupNum = d.groupNum;
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var ev = flashTeamsJSON["events"][indexOfJSON];
@@ -64,6 +65,8 @@ function leftResize(d) {
     updateTime(d.groupNum);
 
     flashTeamsJSON["events"][indexOfJSON] = ev;
+    console.log("runtime: " + flashTeamsJSON["events"][indexOfJSON].duration);
+
     //drawEvent(ev);
 }
 
@@ -109,9 +112,7 @@ var drag = d3.behavior.drag()
         if(isUser) { // user page
             return;
         }
-        if (DRAWING_HANDOFF || DRAWING_COLLAB) { //don't allow dragging if user is selecting end of handoff
-            return;
-        }
+
         var group = this.parentNode;
         var oldX = d.x;
         var groupNum = this.id.split("_")[1];
@@ -166,8 +167,6 @@ var drag = d3.behavior.drag()
         flashTeamsJSON["events"][indexOfJSON].startMin = startMin
         flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
         flashTeamsJSON["events"][indexOfJSON].x = newX;
-
-        updateStatus(false);
     });
 
 //Called when the right dragbar of a task rectangle is dragged
@@ -187,11 +186,6 @@ function calcSnap(mouseX, mouseY) {
 
 // mousedown on timeline => creates new event and draws it
 function mousedown() {
-    // don't do anything if it's not a left click
-    // change this if we want to enable some other functions with other clicks
-    if (d3.event.button != 0){
-        return;
-    }
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
@@ -327,7 +321,7 @@ function updateEvent(id, dataObj) {
         ev["completed"] = dataObj["completed"];
     }
 
-    updateStatus(false);
+    updateStatus();
 };
 
 // TODO: rewrite this

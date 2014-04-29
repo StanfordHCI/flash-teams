@@ -108,6 +108,7 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
+        console.log("HELLO");
         renderChatbox();
 
         //get user name and user role for the chat

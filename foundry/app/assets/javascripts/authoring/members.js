@@ -3,7 +3,7 @@
  *
  */
 
-// var pillCounter = 0;
+var pillCounter = 0;
 var colorToChange = "#ff0000";
 var current = undefined;
 var isUser = false;
@@ -63,13 +63,11 @@ function renderPills(members) {
 function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
         (function(){
-
         var ind = i;
         var member = members[ind];
         var member_id = member.id;
         var member_name = member.role;
         var membersarr = members
-        console.log('Drawing popover for' + member_name);
         var content = function() {
             var this_member = membersarr[ind];
             var this_member_id = this_member.id;
