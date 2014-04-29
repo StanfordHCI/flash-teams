@@ -9,11 +9,11 @@ var XTicks = 50,
 var SVG_WIDTH = 2450,
     SVG_HEIGHT = 570;
 
-var X_WIDTH = 25;
-    Y_WIDTH = 100;
+var STEP_WIDTH = 25,
+    HOUR_WIDTH = 100;
 
 var timelineHours = 25;
-var hours = timelineHours*Y_WIDTH;
+var hours = timelineHours*HOUR_WIDTH;
 
 var x = d3.scale.linear()
     .domain([0, hours])
@@ -211,14 +211,14 @@ function addTime() {
     .attr("height", SVG_HEIGHT)
     .attr("fill", "white")
     .attr("fill-opacity", 0)
-    .on("mousedown", mousedown);
+    .on("mousedown", addEvent);
     
 }
 
 //VCom Calculates how many hours to add when user expands timeline
 function calcAddHours(currentHours) {
     timelineHours = currentHours + Math.floor(currentHours/3);
-    hours = timelineHours * Y_WIDTH;
+    hours = timelineHours * HOUR_WIDTH;
     
     SVG_WIDTH = timelineHours * 100 + 50;
     XTicks = timelineHours * 2;

@@ -338,7 +338,7 @@ var drawEvents = function(editable){
     for(var i=0;i<flashTeamsJSON.events.length;i++){
         var ev = flashTeamsJSON.events[i];
         console.log("DRAWING EVENT " + i);
-        drawEvent(ev);
+        drawEvent(ev, true);
         drawPopover(ev, editable, false);
     }
 };
@@ -754,7 +754,7 @@ var moveTasksRight = function(tasks, amount){
         ev.startHr = startTimeObj["startHr"];
         ev.startMin = startTimeObj["startMin"];
 
-        drawEvent(ev);
+        drawEvent(ev, false);
         drawPopover(ev, false, false);
     }
 
@@ -782,7 +782,7 @@ var moveTasksLeft = function(tasks, amount){
         ev.startHr = startTimeObj["startHr"];
         ev.startMin = startTimeObj["startMin"];
 
-        drawEvent(ev);
+        drawEvent(ev, false);
         drawPopover(ev, false, false);
     }
 
