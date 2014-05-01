@@ -254,6 +254,31 @@ class FlashTeamsController < ApplicationController
       format.json {render json: {:user_name => user_name, :user_role => user_role, :uniq => uniq}.to_json, status: :ok}
     end
   end
+  
+
+  def event_search
+ 	@search = params[:params]
+ 	@flash_teams = FlashTeam.all
+ 	
+ 	flash_teams = FlashTeam.all
+	@events_array = []
+	flash_teams.each do |flash_team|
+    if !flash_team.status.blank?
+    
+		flash_team_status = JSON.parse(flash_team.status)
+		flash_team_status_json = flash_team_status["flash_teams_json"]
+		flash_team_events = flash_team_status['flash_teams_json']['events']
+		flash_team_events.each do |flash_team_event|
+			@events_array << flash_team_event
+		end
+	end
+    end
+  	
+  	#@events_json = @events_array.to_json
+ 	
+ 	render :partial => "event_search_results"
+ end
+
 
   def flash_team_params params
     params.permit(:name)
