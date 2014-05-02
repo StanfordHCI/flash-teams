@@ -86,7 +86,7 @@ function readOnlyPopoverObj(ev) {
         }
     }
 
-    console.log("EV.DRI: " + ev.dri);
+    //console.log("EV.DRI: " + ev.dri);
 
     if (ev.dri != "" && ev.dri != undefined){
         var mem = getMemberById(ev.dri);
@@ -174,7 +174,7 @@ function updateAllPopoversToReadOnly() {
         var ev = flashTeamsJSON.events[i];
         drawPopover(ev, false, false);
     }
-    console.log("UPDATED ALL POPOVERS TO BE READONLY");
+    //console.log("UPDATED ALL POPOVERS TO BE READONLY");
 };
 
 var setPopoverOnTask = function(groupNum, obj){
@@ -182,19 +182,19 @@ var setPopoverOnTask = function(groupNum, obj){
 };
 
 function hidePopover(popId){
-    console.log("hiding popover " + popId);
+    //console.log("hiding popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('hide');
     //overlayOff();
 };
 
 function showPopover(popId){
-    console.log("showing popover " + popId);
+    //console.log("showing popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('show');
     //overlayOn();
 };
 
 function destroyPopover(popId){
-    console.log("destroying popover " + popId);
+    //console.log("destroying popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('destroy');
 };
 
@@ -262,14 +262,16 @@ function saveEventInfo (popId) {
     ev.notes = eventNotes;
     ev.dri = driId;
 
-    console.log("DRAWING POPOVER AFTER SAVED EVENT POPOVER");
-    console.log("EV.duration: " + ev.duration);
+    //console.log("DRAWING POPOVER AFTER SAVED EVENT POPOVER");
+    //console.log("EV.duration: " + ev.duration);
     drawPopover(ev, true, false);
    
     //UPDATE EVENT MEMBERS?
 
     //console.log("saved event info");
     updateStatus(false);
+
+    // #TODO1
 };
 
 // Adds/updates the DRI dropdown on the event popover
@@ -301,11 +303,11 @@ function getDRI(groupNum) {
     var driId;
     
     if (dri == null){
-	     console.log("dri ID is null");
+	     //console.log("dri ID is null");
 	     driId = 0;       
     }
     else{
-	    console.log("The dri ID is:" + driId);
+	    //console.log("The dri ID is:" + driId);
 	    var driId = dri.value;    
     }
     return driId;

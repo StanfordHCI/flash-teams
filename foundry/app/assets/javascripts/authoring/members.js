@@ -14,12 +14,12 @@ function renderMembersRequester() {
     renderPills(members);
     renderMemberPopovers(members);
     renderDiagram(members);
-    renderAllEventsMembers();
+    renderAllMemberLines();
 };
 
 function renderMembersUser() {
     var members = flashTeamsJSON.members;
-    renderAllEventsMembers();
+    renderAllMemberLines();
 };
 
 function setCurrentMember() {
