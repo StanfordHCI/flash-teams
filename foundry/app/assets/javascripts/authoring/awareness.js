@@ -666,6 +666,16 @@ var getTaskGFromGroupNum = function(groupNum){
     return timeline_svg.selectAll("g#g_"+groupNum);
 };
 
+var getDataIndexFromGroupNum = function(groupNum){
+    for(var i=0;i<task_groups.length;i++){
+        var data = task_groups[i];
+        if(data.groupNum == groupNum){
+            return i;
+        }
+    }
+    return null;
+};
+
 var removeTask = function(groupNum){
     // destroy popover
     destroyPopover(groupNum);
