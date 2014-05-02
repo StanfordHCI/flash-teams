@@ -3,14 +3,11 @@
  * 
  */
 
- var RECTANGLE_WIDTH = 100,
-    RECTANGLE_HEIGHT = 90;
-
+var RECTANGLE_WIDTH = 100;
+var RECTANGLE_HEIGHT = 90;
 var ROW_HEIGHT = 100;
-
-var event_counter = 0;
-
 var DRAGBAR_WIDTH = 8;
+var event_counter = 0;
 
 $(document).ready(function(){
     timeline_svg.append("rect")
@@ -24,6 +21,19 @@ $(document).ready(function(){
         newEvent(point);
     });
 });
+
+//Called when the right dragbar of a task rectangle is dragged
+var drag_right = d3.behavior.drag()
+                .on("drag", rightResize);
+
+//Called when the left dragbar of a task rectangle is dragged
+var drag_left = d3.behavior.drag()
+                .on("drag", leftResize);
+
+//Called when task rectangles are dragged
+var drag = d3.behavior.drag()
+            .origin(Object)
+            .on("drag", dragEvent);
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
@@ -39,11 +49,11 @@ function leftResize(d) {
     
     // get new left x
     var width = getWidth(ev);
-    //var taskRect = timeline_svg.selectAll("#rect_" + groupNum);
-    //var rightX = $("#rt_rect_" + groupNum).get(0).x.animVal.value;
     var rightX = ev.x + width;
-    var dragX = d3.event.x - (d3.event.x%(STEP_WIDTH)) - DRAGBAR_WIDTH/2;
-    var newX = Math.max(0, Math.min(rightX - width, dragX));
+    var newX = d3.event.x - (d3.event.x%(STEP_WIDTH)) - DRAGBAR_WIDTH/2;
+    if(newX < 0){
+        newX = 0;
+    }
     var newWidth = width + (ev.x - newX);
 
     // update x and draw event
@@ -51,8 +61,9 @@ function leftResize(d) {
     ev.duration = durationForWidth(newWidth);
     drawEvent(ev, false);
 
-    // update status with new x
-    //updateStatus(false);
+    drawPopover(ev, true, false);
+
+    updateStatus(false);
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -61,104 +72,61 @@ function rightResize(d) {
         return;
     }
 
-    var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
-    var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
-    var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
-    var newX = Math.max(leftX + 50, Math.min(dragX, SVG_WIDTH));
+    // get event id
+    var groupNum = d.groupNum;
 
-    //Update position of latter half of event items
-    $(this).attr("x", newX);
-    $("#handoff_btn_" + d.groupNum).attr("x", newX-18);
-    $("#collab_btn_" + d.groupNum).attr("x", newX - 38);
-    taskRect.attr("width", newX - leftX);
-    updateTime(d.groupNum);
+    // get event object
+    var ev = getEventFromId(groupNum);
 
-    //Check for interactions, delete
-    for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
-        var interaction = flashTeamsJSON["interactions"][i];
-        if (interaction.event1 == d.groupNum || interaction.event2 == d.groupNum) {
-            deleteInteraction(interaction.id);
-            //ADD WARNING THAT THEY DELETED B/C THEY MOVED
-        }
+    var newX = d3.event.x - (d3.event.x%(STEP_WIDTH)) - (DRAGBAR_WIDTH/2);
+    if(newX > SVG_WIDTH){
+        newX = SVG_WIDTH;
     }
+    var newWidth = newX - ev.x;
 
-    //Update JSON
-    var indexOfJSON = getEventJSONIndex(d.groupNum);
-    var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
-    for (i = 1; i <= numEventMembers; i++) {
-        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (newX-leftX-8));        
-    }
+    ev.duration = durationForWidth(newWidth);
+    drawEvent(ev, false);
+
+    drawPopover(ev, true, false);
+
+    updateStatus(false);
 }
 
-//Called when task rectangles are dragged
-var drag = d3.behavior.drag()
-    .origin(Object)
-    .on("drag", function (d) {
-        if(isUser) { // user page
-            return;
-        }
+function dragEvent(d) {
+    if(isUser) { // user page
+        return;
+    }
 
-        var group = this.parentNode;
-        var oldX = d.x;
-        var groupNum = this.id.split("_")[1];
-        var rectWidth = $("#rect_" + groupNum)[0].width.animVal.value;
+    // get event id
+    var groupNum = d.groupNum;
 
-        //Horizontal draggingx
-        var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - DRAGBAR_WIDTH/2;
-        var newX = Math.max((0 - (DRAGBAR_WIDTH/2)), Math.min(SVG_WIDTH-rectWidth, dragX));
-        if (d3.event.dx + d.x < 0) newX = (0 - (DRAGBAR_WIDTH/2));
-        d.x = newX;
+    // get event object
+    var ev = getEventFromId(groupNum);
 
-        //Update event popover
-        if (d.x == (0 - (DRAGBAR_WIDTH/2))) var startHour = 0;
-        else var startHour = Math.floor((d.x/100));
-        
-        var startMin = (d.x%100/25*15);
-        if(startMin == 57.599999999999994) {
-            startHour++;
-            startMin = 0;
-        } else {
-            startMin += 2.41
-            startMin = Math.floor(startMin);
-        }
-        $("#rect_" + groupNum).popover("show");
-        var title = $("#eventName_" + groupNum).attr("placeholder");
-        var hours = $("#hours_" + groupNum).attr("placeholder");
-        var min = $("#minutes_" + groupNum).attr("placeholder");
-        var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(groupNum)].notes;
-        //updateEventPopover(groupNum, title, startHour, startMin, hours, min, eventNotes);  
-        $("#rect_" + groupNum).popover("hide");
+    var width = getWidth(ev);
 
-        //Vertical Dragging
-        var dragY = d3.event.y - (d3.event.y%(ROW_HEIGHT)) + 17 + 5;
-        var newY = Math.min(SVG_HEIGHT - ROW_HEIGHT, dragY);
-        if (d3.event.dy + d.y < 20) d.y = 17;
-        else d.y = newY;
+    //Horizontal dragging
+    var dragX = d3.event.x - (d3.event.x%(STEP_WIDTH)) - DRAGBAR_WIDTH/2;
+    var newX = Math.max((0 - (DRAGBAR_WIDTH/2)), Math.min(SVG_WIDTH-width, dragX));
+    if (d3.event.dx + d.x < 0) newX = (0 - (DRAGBAR_WIDTH/2));
+    
+    ev.x = newX;
 
-        //Check for interactions, delete
-        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
-            var interaction = flashTeamsJSON["interactions"][i];
-            if (interaction.event1 == groupNum || interaction.event2 == groupNum) {
-                deleteInteraction(interaction.id);
-                //ADD WARNING THAT THEY DELETED B/C THEY MOVED
-            }
-        }
-        
-        //Redraw event
-        redraw(group, rectWidth, groupNum);
-        //Update JSON
-        var indexOfJSON = getEventJSONIndex(groupNum);
-        flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
-        
-    });
+    //Vertical Dragging
+    var dragY = d3.event.y - (d3.event.y%(ROW_HEIGHT)) + 5;
+    var newY = Math.min(SVG_HEIGHT - ROW_HEIGHT, dragY);
+    if (d3.event.dy + d.y < 20) {
+        ev.y = 17;
+    } else {
+        ev.y = newY;
+    }
 
-//Called when the right dragbar of a task rectangle is dragged
-var drag_right = d3.behavior.drag()
-    .on("drag", rightResize);
+    drawEvent(ev, false);
 
-//Called when the left dragbar of a task rectangle is dragged
-var drag_left = d3.behavior.drag()
-    .on("drag", leftResize);
+    drawPopover(ev, true, false);
+
+    updateStatus(false);
+}
 
 //VCom Calculates where to snap event block to when created
 function calcSnap(mouseX, mouseY) {
@@ -189,8 +157,6 @@ function newEvent(point) {
     if(isUser) { // user page
         return;
     }
-
-    // get mouse coords
     
     createEvent(point);
 };
@@ -201,10 +167,10 @@ function createEvent(point) {
   
     if(!checkWithinTimelineBounds(snapPoint)){ return; }
 
-    // create event
+    // create event object
     var eventObj = createEventObj(snapPoint);
     
-    // render event
+    // render event on timeline
     drawEvent(eventObj, true);
     
     // render event popover
@@ -331,15 +297,19 @@ function getMemberIndexFromName(name) {
 }
 
 function drawG(eventObj, firstTime) {
-    if(!firstTime){ return; } // don't need to re-draw outer <g> on changes to event
-    
     var x = eventObj["x"];
     var y = eventObj["y"];
     var groupNum = eventObj["id"];
+    var y_offset = 17;
 
-    // create data object
-    var new_data = {id: "task_g_" + groupNum, class: "task_g", groupNum: groupNum, x: x, y: y+17};
-    task_groups.push(new_data);
+    if(!firstTime){ // update existing data object
+        var idx = getDataIndexFromGroupNum(groupNum);
+        task_groups[idx].x = x;
+        task_groups[idx].y = y+y_offset;
+    } else { // create data object
+        var new_data = {id: "task_g_" + groupNum, class: "task_g", groupNum: groupNum, x: x, y: y+y_offset};
+        task_groups.push(new_data);
+    }
     
     // add group to timeline, based on the data object
     timeline_svg.selectAll("g")
@@ -369,6 +339,7 @@ function drawMainRect(eventObj, firstTime) {
             .attr("stroke", "#5F5A5A")
             .attr('pointer-events', 'all')
             .on("click", function(d) {
+                if(d3.event.defaultPrevented) return;
                 eventMousedown(d.groupNum) })
             .call(drag);
     } else {
@@ -451,6 +422,7 @@ function drawTitleText(eventObj, firstTime) {
             .attr("font-size", "12px");
     } else {
         task_g.selectAll(".title_text")
+            .text(title)
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
@@ -480,6 +452,9 @@ function drawDurationText(eventObj, firstTime) {
             .attr("font-size", "12px");
     } else {
         task_g.selectAll(".time_text")
+            .text(function (d) {
+                return numHoursInt+"hrs "+minutesLeft+"min";
+            })
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
@@ -604,7 +579,6 @@ function drawCollabBtn(eventObj, firstTime) {
 
 function drawMemberLines(eventObj, firstTime) {
     var x_offset = 8; // unique for member lines
-    var y_offset = 60 + (i*8); // unique for member lines
     var width = getWidth(eventObj) - 8;
 
     var groupNum = eventObj["id"];
@@ -617,6 +591,7 @@ function drawMemberLines(eventObj, firstTime) {
             var member = members[i];
             var color = member.color;
             var name = member.name;
+            var y_offset = 60 + (i*8); // unique for member lines
             
             task_g.append("rect")
                 .attr("class", "member_line")
@@ -636,9 +611,10 @@ function drawMemberLines(eventObj, firstTime) {
         }
     } else {
         for (var i=0; i<members.length; i++) {
-            $("#event_" + groupNum + "_eventMemLine_" + i) // TODO JAY
-                .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); }) // TODO JAY
-                .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))}); // TODO JAY
+            var y_offset = 60 + (i*8); // unique for member lines
+            task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1))
+                .attr("x", function(d) {return d.x + x_offset})
+                .attr("y", function(d) {return d.y + y_offset});
         }
     }
 };
