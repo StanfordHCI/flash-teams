@@ -653,6 +653,86 @@ function drawShade(eventObj, firstTime) {
     }
 }
 
+function drawEachHandoff(eventObj, firstTime){
+    var interactions = flashTeamsJSON["interactions"];
+    for (var i = 0; i < interactions.length; i++){
+        var inter = interactions[i];
+        var draw;
+        if (inter["type"] == "handoff"){
+            if (inter["event1"] == eventObj["id"]){
+                draw = true;
+                var ev1 = eventObj;
+                var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
+            }
+            else if (inter["event2"] == eventObj["id"]){
+                draw = true;
+                var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
+                var ev2 = eventObj;
+            }
+            if (draw){
+                var x1 = ev1.x + 3 + getWidth(eventObj);
+                var y1 = ev1.y + 50;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y + 50;
+                $("#interaction_" + inter["id"])
+                    .attr("x1", x1)
+                    .attr("y1", y1)
+                    .attr("x2", x2)
+                    .attr("y2", y2)
+                    .attr("d", function(d) {
+                        var dx = x1 - x2,
+                        dy = y1 - y2,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                        //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+                        return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
+                        + " 0 0,0 " + x2 + "," + (y2+15); 
+                    });
+            }
+        }
+    }
+}
+
+function drawEachCollab(eventObj, firstTime){
+    var interactions = flashTeamsJSON["interactions"];
+    for (var i = 0; i < interactions.length; i++){
+        var inter = interactions[i];
+        var draw;
+        if (inter["type"] == "collaboration"){
+            if (inter["event1"] == eventObj["id"]){
+                draw = true;
+                var ev1 = eventObj;
+                var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
+            }
+            else if (inter["event2"] == eventObj["id"]){
+                draw = true;
+                var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
+                var ev2 = eventObj;
+            }
+            if (draw){
+                var y1 = ev1.y + 17;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y + 17;
+                var firstTaskY = 0;
+                var taskDistance = 0;
+                var overlap = eventsOverlap(ev1.x, getWidth(ev1), ev2.x, getWidth(ev2));
+                if (y1 < y2) {
+                    firstTaskY = y1 + 90;
+                    taskDistance = y2 - firstTaskY;
+                } else {
+                    firstTaskY = y2 + 90;
+                    taskDistance = y1 - firstTaskY;
+                }
+                $("#interaction_" + inter["id"])
+                    .attr("x", x2)
+                    .attr("y", firstTaskY)
+                    .attr("height", taskDistance)
+                    .attr("width", overlap);
+            }
+        }
+    }
+
+}
+
 //Creates graphical elements from array of data (task_rectangles)
 function drawEvent(eventObj, firstTime) {    
     drawG(eventObj, firstTime);
@@ -666,8 +746,8 @@ function drawEvent(eventObj, firstTime) {
     drawCollabBtn(eventObj, firstTime);
     drawMemberLines(eventObj, firstTime);
     drawShade(eventObj, firstTime);
-
-    // #TODO2
+    drawEachHandoff(eventObj, firstTime);
+    drawEachCollab(eventObj, firstTime);
 };
 
 function renderAllMemberLines() {
