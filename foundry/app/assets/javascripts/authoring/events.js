@@ -296,7 +296,9 @@ function updateEvent(id, dataObj) {
 function getWidth(ev) {
     var durationInMinutes = ev.duration;
     var hrs = parseFloat(durationInMinutes)/parseFloat(60);
-    return hrs*RECTANGLE_WIDTH;
+    var width = hrs*RECTANGLE_WIDTH;
+    var roundedWidth = Math.round(width/STEP_WIDTH) * STEP_WIDTH;
+    return roundedWidth;
 };
 
 function durationForWidth(width) {
@@ -305,12 +307,14 @@ function durationForWidth(width) {
 };
 
 function startHrForX(X){
-    var hrs = Math.floor(parseFloat(X)/parseFloat(RECTANGLE_WIDTH));
+    var roundedX = Math.round(X/STEP_WIDTH) * STEP_WIDTH;
+    var hrs = Math.floor(parseFloat(roundedX)/parseFloat(RECTANGLE_WIDTH));
     return hrs;
 };
 
 function startMinForX(X){
-    var mins = (parseFloat(X) % parseFloat(RECTANGLE_WIDTH)) * 60 / parseFloat(RECTANGLE_WIDTH);
+    var roundedX = Math.round(X/STEP_WIDTH) * STEP_WIDTH;
+    var mins = (parseFloat(roundedX) % parseFloat(RECTANGLE_WIDTH)) * 60 / parseFloat(RECTANGLE_WIDTH);
     return mins;
 };
 
