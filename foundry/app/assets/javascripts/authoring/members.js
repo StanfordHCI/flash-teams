@@ -163,6 +163,12 @@ function addMember() {
     var member_obj = newMemberObject(member_name);
     flashTeamsJSON.members.push(member_obj);
 
+    //update event popovers to show the new member
+    var events = flashTeamsJSON.events;
+    for(var i=0;i<events.length;i++){
+         drawPopover(events[i], true, false);
+    }
+
     updateStatus(false);
 
     console.log("member_obj.id: " + member_obj.id);
