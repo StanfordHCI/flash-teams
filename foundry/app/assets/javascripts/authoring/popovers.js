@@ -209,7 +209,7 @@ function destroyPopover(popId){
 
 var getPopoverDataFromGroupNum = function(groupNum){
    //console.log($(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data);
-   return $(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data('popover');
+   return $(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data('bs.popover');
 };
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics

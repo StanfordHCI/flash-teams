@@ -92,6 +92,7 @@ function rightResize(d) {
     var newWidth = newX - ev.x;
 
     ev.duration = durationForWidth(newWidth);
+
     drawEvent(ev, false);
 
     drawPopover(ev, true, false);
