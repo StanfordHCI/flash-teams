@@ -28,12 +28,28 @@ class FlashTeamsController < ApplicationController
     end
   end
 
+  def duplicate
+    
+    # Locate data from the original
+    original = FlashTeam.find(params[:id])
+
+    # Then create a copy from the original data
+    copy = FlashTeam.create(:name => original.name + " Copy")
+    copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": []}'
+    copy.status = original.status
+    copy.save
+
+    # Redirect to the list of things
+    redirect_to :action => 'index'
+
+  end
+
   def show
     @flash_team = FlashTeam.find(params[:id])
   end
 
   def index
-    @flash_teams = FlashTeam.all
+    @flash_teams = FlashTeam.all.order(:id)
   end
 
  

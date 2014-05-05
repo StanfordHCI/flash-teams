@@ -71,6 +71,9 @@ Foundry::Application.routes.draw do
       post :get_user_name
       post :delayed_task_finished_email
       post :create
+      get :settings
+      get :duplicate
+      post :settings
     end
   end
 
