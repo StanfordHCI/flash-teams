@@ -270,37 +270,25 @@ function saveEventInfo (popId) {
     var newMin = $("#minutes_" + popId).val();
     if (newHours == "") newHours = parseInt($("#hours_" + popId)[0].placeholder);
     if (newMin == "") newMin = parseInt($("#minutes_" + popId)[0].placeholder);
+    newMin = Math.round(parseInt(newMin)/15) * 15;
     var newWidth = (newHours * 100) + (newMin/15*25);
-    //hidePopover(popId);
   
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
     var ev = flashTeamsJSON["events"][indexOfJSON];
     ev.title = newTitle;
-    //ev.duration = newHours*60 + newMin;
     ev.notes = eventNotes;
     ev.dri = driId;
     ev.startHr = parseInt(startHour);
-    ev.startMin = parseInt(startMin);
-    //ev.startTime = startHour*60 + startMin;
+    ev.startMin = Math.round(parseInt(startMin)/15) * 15;
+    ev.startTime = ev.startHr*60 + ev.startMin;
+    ev.duration = durationForWidth(newWidth);
     ev.x = newX;
-    
-    flashTeamsJSON["events"][indexOfJSON] = ev;
-    updateWidth(popId, newHours, newMin); //Also updates width of event members
-    updateStartPlace(popId, startHour, startMin, newWidth); //also updates the start time based on the previous placeholer. 
-    flashTeamsJSON["events"][indexOfJSON].startTime = startHour*60 + startMin;
 
-    console.log(flashTeamsJSON["events"][indexOfJSON]);
-    //console.log("DRAWING POPOVER AFTER SAVED EVENT POPOVER");
-    //console.log("EV.duration: " + ev.duration);
-    
-    //console.log("saved event info");
-    drawEvent(flashTeamsJSON["events"][indexOfJSON], 0);
-    drawPopover(flashTeamsJSON["events"][indexOfJSON], true, false);
+    drawEvent(ev, 0);
+    drawPopover(ev, true, false);
     
     updateStatus(false);
-
-    // #TODO1
 };
 
 // Adds/updates the DRI dropdown on the event popover
