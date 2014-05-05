@@ -136,8 +136,6 @@ function dragEvent(d) {
         ev.y = newY;
     }
 
-    
-
     drawEvent(ev, false);
 
     drawPopover(ev, true, false);

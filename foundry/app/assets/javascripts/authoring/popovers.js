@@ -228,6 +228,7 @@ function saveEventInfo (popId) {
     startHour = parseInt(startHour);
     startMin = parseInt(startMin);
     var newX = (startHour * 100) + (startMin/15*25);
+    newX = newX - (newX%(STEP_WIDTH)) - DRAGBAR_WIDTH/2;
 
     var eventNotes = $("#notes_" + popId).val();
     var driId = getDRI(popId);
