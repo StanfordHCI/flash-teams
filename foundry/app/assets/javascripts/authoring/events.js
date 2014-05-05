@@ -59,6 +59,13 @@ function leftResize(d) {
     // update x and draw event
     ev.x = newX;
     ev.duration = durationForWidth(newWidth);
+    
+    var startHr = startHrForX(newX);
+    var startMin = startMinForX(newX);
+    ev.startHr = startHr;
+    ev.startMin = startMin;
+    ev.startTime = startHr * 60 + startMin;
+
     drawEvent(ev, false);
 
     drawPopover(ev, true, false);
@@ -112,6 +119,13 @@ function dragEvent(d) {
     
     ev.x = newX;
 
+    //update start time, start hour, start minute
+    var startHr = startHrForX(newX);
+    var startMin = startMinForX(newX);
+    ev.startHr = startHr;
+    ev.startMin = startMin;
+    ev.startTime = startHr * 60 + startMin;
+
     //Vertical Dragging
     var dragY = d3.event.y - (d3.event.y%(ROW_HEIGHT)) + 5;
     var newY = Math.min(SVG_HEIGHT - ROW_HEIGHT, dragY);
@@ -120,6 +134,8 @@ function dragEvent(d) {
     } else {
         ev.y = newY;
     }
+
+    
 
     drawEvent(ev, false);
 
@@ -287,6 +303,17 @@ function durationForWidth(width) {
     return hrs*60;
 };
 
+function startHrForX(X){
+    var hrs = Math.floor(parseFloat(X)/parseFloat(RECTANGLE_WIDTH));
+    return hrs;
+};
+
+function startMinForX(X){
+    var mins = (parseFloat(X) % parseFloat(RECTANGLE_WIDTH)) * 60 / parseFloat(RECTANGLE_WIDTH);
+    return mins;
+};
+
+
 function getMemberIndexFromName(name) {
     for (var j = 0; j < flashTeamsJSON["members"].length; j++) { // go through all members
         if (flashTeamsJSON["members"][j].role == name){
@@ -434,7 +461,7 @@ function drawDurationText(eventObj, firstTime) {
 
     var totalMinutes = eventObj["duration"];
     var numHoursInt = Math.floor(totalMinutes/60);
-    var minutesLeft = totalMinutes%60;
+    var minutesLeft = Math.round(totalMinutes%60);
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -491,7 +518,7 @@ function drawGdriveLink(eventObj, firstTime) {
             }
         });
     } else {
-        task_g.selectAll(".gdrive_link")
+         task_g.selectAll(".gdrive_link")
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
@@ -736,7 +763,9 @@ function updateTime(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
     flashTeamsJSON["events"][indexOfJSON].startTime = parseInt((startHr*60)) + parseInt(startMin);
+    
 }
+
 
 //Change the starting location of a task rectangle and its relevant components when the user changes info in the popover
 function updateStartPlace(idNum, startHr, startMin, width) {
