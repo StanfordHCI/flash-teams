@@ -336,16 +336,18 @@ function getDRI(groupNum) {
 function writeEventMembers(idNum) {
     var indexOfJSON = getEventJSONIndex(idNum);
     var memberString = "";
-    //console.log("These are the members!");
-    //console.log(flashTeamsJSON["members"]);
+    
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
-    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
         var memberName = flashTeamsJSON["members"][i].role;
 
         var found = false;
 
-        for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
-            if (flashTeamsJSON["events"][indexOfJSON].members[j].name == memberName) {
+        for (var j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
+            var member = getMemberById(flashTeamsJSON["events"][indexOfJSON].members[j]);
+            console.log("first: " + member.role);
+            console.log("second: " + memberName);
+            if (member.role == memberName) {
                 //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
