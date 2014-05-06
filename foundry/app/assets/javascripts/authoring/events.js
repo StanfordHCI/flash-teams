@@ -613,21 +613,16 @@ function drawMemberLines(eventObj) {
 
     var groupNum = eventObj["id"];
     var members = eventObj["members"];
-    var width = getWidth(eventObj);
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    var firstTime = false;
-    var existingLines = $("rect[id^=event_"+groupNum+"_eventMemLine_]");
-    if(existingLines.length == 0){
-        firstTime = true;
-    }
-
-    if(firstTime){
-        for (var i=0; i<members.length; i++) {
+    // figure out if first time or not for each member line
+    for(var i=0;i<members.length;i++){
+        var existingLine = task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1));
+        var y_offset = 60 + (i*8); // unique for member lines
+        if(existingLine[0].length == 0){ // first time
             var member = getMemberById(members[i]);
             var color = member.color;
             var name = member.name;
-            var y_offset = 60 + (i*8); // unique for member lines
             
             task_g.append("rect")
                 .attr("class", "member_line")
@@ -643,11 +638,8 @@ function drawMemberLines(eventObj) {
                 .attr("width", width)
                 .attr("fill", color)
                 .attr("fill-opacity", .9);
-        }
-    } else {
-        for (var i=0; i<members.length; i++) {
-            var y_offset = 60 + (i*8); // unique for member lines
-            task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1))
+        } else { // line already exists, just need to redraw
+            existingLine
                 .attr("x", function(d) {return d.x + x_offset})
                 .attr("y", function(d) {return d.y + y_offset})
                 .attr("width", width);
@@ -794,6 +786,7 @@ function renderAllMemberLines() {
     }
 };
 
+// deprecated
 //Add one of the team members to an event, includes a bar to represent it on the task rectangle
 //and a pill in the popover that can be deleted, both of the specified color of the member
 function addEventMember(eventId, memberIndex) {
