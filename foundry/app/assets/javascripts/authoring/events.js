@@ -607,7 +607,7 @@ function drawCollabBtn(eventObj, firstTime) {
     }
 }
 
-function drawMemberLines(eventObj, firstTime) {
+function drawMemberLines(eventObj) {
     var x_offset = 8; // unique for member lines
     var width = getWidth(eventObj) - 8;
 
@@ -616,9 +616,15 @@ function drawMemberLines(eventObj, firstTime) {
     var width = getWidth(eventObj);
     var task_g = getTaskGFromGroupNum(groupNum);
 
+    var firstTime = false;
+    var existingLines = $("rect[id^=event_"+groupNum+"_eventMemLine_]");
+    if(existingLines.length == 0){
+        firstTime = true;
+    }
+
     if(firstTime){
         for (var i=0; i<members.length; i++) {
-            var member = members[i];
+            var member = getMemberById(members[i]);
             var color = member.color;
             var name = member.name;
             var y_offset = 60 + (i*8); // unique for member lines
@@ -629,13 +635,12 @@ function drawMemberLines(eventObj, firstTime) {
                     return "event_" + groupNum + "_eventMemLine_" + (i+1);
                 })
                 .attr("x", function(d) {
-                    return ev.x + x_offset;})
+                    return d.x + x_offset;})
                 .attr("y", function(d) {
-                    return ev.y + y_offset;})
-                .attr("groupNum", eventId)
+                    return d.y + y_offset;})
+                .attr("groupNum", groupNum)
                 .attr("height", 5)
-                .attr("width", function(d) {
-                    return width;})
+                .attr("width", width)
                 .attr("fill", color)
                 .attr("fill-opacity", .9);
         }
@@ -644,7 +649,8 @@ function drawMemberLines(eventObj, firstTime) {
             var y_offset = 60 + (i*8); // unique for member lines
             task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1))
                 .attr("x", function(d) {return d.x + x_offset})
-                .attr("y", function(d) {return d.y + y_offset});
+                .attr("y", function(d) {return d.y + y_offset})
+                .attr("width", width);
         }
     }
 };
@@ -774,7 +780,7 @@ function drawEvent(eventObj, firstTime) {
     drawGdriveLink(eventObj, firstTime);
     drawHandoffBtn(eventObj, firstTime);
     drawCollabBtn(eventObj, firstTime);
-    drawMemberLines(eventObj, firstTime);
+    drawMemberLines(eventObj);
     drawShade(eventObj, firstTime);
     drawEachHandoff(eventObj, firstTime);
     drawEachCollab(eventObj, firstTime);

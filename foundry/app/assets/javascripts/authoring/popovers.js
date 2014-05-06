@@ -255,14 +255,18 @@ function saveEventInfo (popId) {
         }
     }*/
 
+    var ev = flashTeamsJSON["events"][indexOfJSON];
+
     //update members of event
     flashTeamsJSON["events"][indexOfJSON].members =[];
-    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
-        var memberName = flashTeamsJSON["members"][i].role;
-        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return; //No members?
-        if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
-            addEventMember(popId, i);
-        } 
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var member = flashTeamsJSON["members"][i];
+        var memberId = member.id;
+        var checkbox = $("#event" + popId + "member" + i + "checkbox")[0];
+        if (checkbox == undefined) return;
+        if (checkbox.checked == true) {
+            ev.members.push(memberId);
+        }
     }
 
     //Update width
@@ -275,7 +279,6 @@ function saveEventInfo (popId) {
   
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
-    var ev = flashTeamsJSON["events"][indexOfJSON];
     ev.title = newTitle;
     ev.notes = eventNotes;
     ev.dri = driId;

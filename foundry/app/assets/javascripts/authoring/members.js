@@ -206,7 +206,7 @@ function deleteSkill(memberId, pillId, skillName) {
     $("#sPill_mem" + memberId + '_skill' + pillId).remove();
     //Update JSON
     var indexOfJSON = getMemberJSONIndex(memberId);
-    for (i = 0; i < flashTeamsJSON["members"][indexOfJSON].skills.length; i++) {
+    for (var i = 0; i < flashTeamsJSON["members"][indexOfJSON].skills.length; i++) {
         if (flashTeamsJSON["members"][indexOfJSON].skills[i] == skillName) {
             flashTeamsJSON["members"][indexOfJSON].skills.splice(i, 1);
             break;
@@ -313,14 +313,16 @@ function initializeColorPicker() {
 //Find the index of a member in the JSON object "members" array by using unique id
 function getMemberJSONIndex(idNum) {
     for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i].id == idNum) return i; 
+        if (parseInt(flashTeamsJSON["members"][i].id) == parseInt(idNum)) return i; 
     }
-    return null;
+    console.log("NOT FOUND MEMBER WITH ID: " + idNum);
+    return -1;
 };
 
 function getMemberById(id) {
     var idx = getMemberJSONIndex(id);
-    if(idx){
+    if(idx != -1){
+        console.log("FOUND MEMBER WITH ID: " + id);
         return flashTeamsJSON["members"][idx];
     }
     return null;
