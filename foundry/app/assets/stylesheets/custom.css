@@ -3,7 +3,7 @@
     padding: 5px 0;
 }
 
-#memberPills:hover {
+#memberPills li:hover {
     cursor: pointer;
 }
 
@@ -20,12 +20,8 @@
     cursor:pointer;
 }
 
-.lt_rect {
-    cursor: w-resize;
-}
-
-.rt_rect {
-    cursor: e-resize;
+.lt_rect, .rt_rect {
+    cursor: col-resize;
 }
 
 .handoffLine, .collaborationRect {
