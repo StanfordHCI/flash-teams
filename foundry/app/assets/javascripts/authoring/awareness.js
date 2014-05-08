@@ -139,7 +139,9 @@ $(document).ready(function(){
                 // render view
                 loadData(false);
                 updateAllPopoversToReadOnly();
-                //renderMembersRequester();
+                if(!isUser) {
+                    renderMembersRequester();
+                }
                 //renderChatbox();
             }
         }
