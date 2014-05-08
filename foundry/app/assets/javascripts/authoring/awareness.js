@@ -128,8 +128,9 @@ $(document).ready(function(){
         });
         //console.log('TEAM LOADED.');
         renderMembersRequester();
-
+        colorBox();
         setCurrentMember();
+
 
         if(in_progress){
             //console.log("flash team in progress");

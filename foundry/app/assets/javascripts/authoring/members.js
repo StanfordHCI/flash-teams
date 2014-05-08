@@ -8,6 +8,34 @@ var colorToChange = "#ff0000";
 var current = undefined;
 var isUser = false;
 
+//WARNING: This has to be called once, and before any of the other colorBox functions!
+function colorBox() {
+    colorBox.colors = ["#00ffff","#f0ffff","#f5f5dc","#000000","#0000ff","#a52a2a","#00ffff",
+    "#00008b","#008b8b","#a9a9a9","#006400","#bdb76b","#8b008b","#556b2f","#ff8c00","#9932cc",
+    "#8b0000","#e9967a","#9400d3","#ff00ff","#ffd700","#008000","#4b0082","#f0e68c","#add8e6",
+    "#e0ffff","#90ee90","#d3d3d3","#ffb6c1","#ffffe0","#00ff00","#ff00ff","#800000","#000080",
+    "#808000","#ffa500","#ffc0cb","#800080","#800080","#ff0000","#c0c0c0","#ffff00"];
+    for (var i = 0; i < flashTeamsJSON.members.length; i++){
+        var ind = $.inArray(flashTeamsJSON.members[i].color, colorBox.colors);
+        if (ind != 0) { //if found, remove from possible colors array
+            colorBox.colors.splice(ind,1);
+        }
+    }
+}
+
+//grabColor returns a hex code not currently used by any member
+colorBox.grabColor = function() {
+    var ind = Math.floor(Math.random()*colorBox.colors.length);
+    var color = colorBox.colors[ind];
+    colorBox.colors.splice(ind,1);
+    return color;
+};
+
+//replaceColor adds a color back into possible space
+colorBox.replaceColor = function(color) {
+    colorBox.colors.push(color);
+};
+
 function renderMembersRequester() {
     console.log('renderMembersRequester called');
     var members = flashTeamsJSON.members;
@@ -193,7 +221,8 @@ function renderDiagram(members) {
 
 function newMemberObject(memberName) {
     pillCounter++;
-    return {"role":memberName, "id": pillCounter, "color":"#08c", "skills":[], "category1":"", "category2":""};
+    var color = colorBox.grabColor();
+    return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
 };
 
 function addMember() {
@@ -277,6 +306,8 @@ function deleteMember(pillId) {
     //Remove Member from JSON
     var indexOfJSON = getMemberJSONIndex(pillId);
     var memName = flashTeamsJSON["members"][indexOfJSON].role;
+    var color = flashTeamsJSON["members"][indexOfJSON].color;
+    colorBox.replaceColor(color);
     flashTeamsJSON["members"].splice(indexOfJSON, 1);
 
     $("#mPill_" + pillId).popover("destroy");
