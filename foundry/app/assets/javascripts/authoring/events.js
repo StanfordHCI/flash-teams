@@ -24,16 +24,31 @@ $(document).ready(function(){
 
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
-                .on("drag", rightResize);
+                .on("drag", rightResize)
+                .on("dragend", function(d){
+                    var ev = getEventFromId(d.groupNum);
+                    drawPopover(ev, true, false);
+                    updateStatus(false);
+                });
 
 //Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
-                .on("drag", leftResize);
+                .on("drag", leftResize)
+                .on("dragend", function(d){
+                    var ev = getEventFromId(d.groupNum);
+                    drawPopover(ev, true, false);
+                    updateStatus(false);
+                });
 
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
             .origin(Object)
-            .on("drag", dragEvent);
+            .on("drag", dragEvent)
+            .on("dragend", function(d){
+                var ev = getEventFromId(d.groupNum);
+                drawPopover(ev, true, false);
+                updateStatus(false);
+            });
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
@@ -68,9 +83,9 @@ function leftResize(d) {
 
     drawEvent(ev, false);
 
-    drawPopover(ev, true, false);
+    //drawPopover(ev, true, false);
 
-    updateStatus(false);
+    //updateStatus(false);
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -95,9 +110,9 @@ function rightResize(d) {
 
     drawEvent(ev, false);
 
-    drawPopover(ev, true, false);
+    //drawPopover(ev, true, false);
 
-    updateStatus(false);
+    //updateStatus(false);
 }
 
 function dragEvent(d) {
@@ -138,9 +153,9 @@ function dragEvent(d) {
 
     drawEvent(ev, false);
 
-    drawPopover(ev, true, false);
+    //drawPopover(ev, true, false);
 
-    updateStatus(false);
+    //updateStatus(false);
 }
 
 //VCom Calculates where to snap event block to when created
