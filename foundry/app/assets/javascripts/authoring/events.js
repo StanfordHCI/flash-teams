@@ -82,10 +82,6 @@ function leftResize(d) {
     ev.startTime = startHr * 60 + startMin;
 
     drawEvent(ev, false);
-
-    //drawPopover(ev, true, false);
-
-    //updateStatus(false);
 }
 
 // rightResize: resize the rectangle by dragging the right handle
@@ -109,10 +105,6 @@ function rightResize(d) {
     ev.duration = durationForWidth(newWidth);
 
     drawEvent(ev, false);
-
-    //drawPopover(ev, true, false);
-
-    //updateStatus(false);
 }
 
 function dragEvent(d) {
@@ -152,10 +144,6 @@ function dragEvent(d) {
     }
 
     drawEvent(ev, false);
-
-    //drawPopover(ev, true, false);
-
-    //updateStatus(false);
 }
 
 //VCom Calculates where to snap event block to when created
