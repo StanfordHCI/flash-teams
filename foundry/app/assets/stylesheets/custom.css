@@ -3,6 +3,10 @@
     padding: 5px 0;
 }
 
+#memberPills:hover {
+    cursor: pointer;
+}
+
 .popover-content {
     overflow-y: scroll;
     max-height: 225px;
@@ -14,6 +18,14 @@
 
 .task_rectangle {
     cursor:pointer;
+}
+
+.lt_rect {
+    cursor: w-resize;
+}
+
+.rt_rect {
+    cursor: e-resize;
 }
 
 .handoffLine, .collaborationRect {
