@@ -28,6 +28,10 @@
     cursor: pointer;
 }
 
+.member_line {
+    pointer-events: none;
+}
+
 #timeline-container {
     position: relative;
 }
