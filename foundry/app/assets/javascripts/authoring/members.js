@@ -334,10 +334,11 @@ function deleteMember(pillId) {
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/invite';
-    var data = {uniq: flashTeamsJSON["members"][pillId-1].uniq};
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq};
     $.get(url, data, function(data){
-        flashTeamsJSON["members"][pillId-1].uniq = data["uniq"];
-        flashTeamsJSON["members"][pillId-1].invitation_link = data["url"];
+        flashTeamsJSON["members"][indexOfJSON].uniq = data["uniq"];
+        flashTeamsJSON["members"][indexOfJSON].invitation_link = data["url"];
         updateStatus(false);
 
         // display pills, popovers, and diagram
