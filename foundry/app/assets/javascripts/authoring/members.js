@@ -145,6 +145,12 @@ function renderMemberPopovers(members) {
         console.log("attaching click handler to " + member_id);
         $("#mPill_" + member_id).on('click', function() {
             console.log("clicked on " + mem_id);
+            for (var i = 0; i < flashTeamsJSON['members'].length; i++){
+                var id = flashTeamsJSON['members'][i].id;
+                if (id != mem_id){
+                    $('#mPill_' + id).popover('hide');
+                }
+            }
             $("#member" + mem_id + "_category1").on('change', function(){
                 if ($("#member" + mem_id + "_category1").value === "--oDesk Category--") {
                     $("#member" + mem_id + "_category2").value = "--oDesk Sub-Category--";

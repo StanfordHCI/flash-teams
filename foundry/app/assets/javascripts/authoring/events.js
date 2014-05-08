@@ -679,7 +679,7 @@ function addEventMember(eventId, memberIndex) {
     flashTeamsJSON["events"][indexOfEvent].members.push({name: memberName, uniq: memberUniq, color: memberColor});
 
     // render on events
-    renderAllEventsMembers();
+    renderEventMembers(eventId);
 }
 
 //Remove a team member from an event
