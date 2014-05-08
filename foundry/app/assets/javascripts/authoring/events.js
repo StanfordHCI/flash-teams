@@ -370,7 +370,7 @@ function drawMainRect(eventObj, firstTime) {
             .attr('pointer-events', 'all')
             .on("click", function(d) {
                 if(d3.event.defaultPrevented) return;
-                eventMousedown(d.groupNum) })
+                eventMousedown(d.groupNum); })
             .call(drag);
     } else {
         task_g.selectAll(".task_rectangle")
