@@ -170,6 +170,11 @@ var drag = d3.behavior.drag()
         flashTeamsJSON["events"][indexOfJSON].startTime = (startHour*60 + startMin);
         flashTeamsJSON["events"][indexOfJSON].x = newX;
         flashTeamsJSON["events"][indexOfJSON].y = Math.floor(newY/ROW_HEIGHT) * ROW_HEIGHT + 5;
+        //updateStatus(false);
+    })
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
         updateStatus(false);
     });
 
