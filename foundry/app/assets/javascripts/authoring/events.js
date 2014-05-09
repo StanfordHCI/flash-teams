@@ -396,10 +396,7 @@ function  drawEvent(eventObj) {
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
         .on("click", function(d) {
-            if (d3.event.defaultPrevented) {
-                console.log('drag event already in progress.');
-                return;
-            }
+            if(d3.event.defaultPrevented) return;
             eventMousedown(d.groupNum); })
         .call(drag);
 
