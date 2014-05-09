@@ -89,6 +89,8 @@ function renderPills(members) {
 };
 
 function renderMemberPopovers(members) {
+    //remove all existing click handlers first so we don't have multiple bindings on each pill
+    $("[id ^= mPill_]").off('click');
     for (var i=0;i<members.length;i++){
         (function(){
         var ind = i;
@@ -227,6 +229,7 @@ function newMemberObject(memberName) {
 
 function addMember() {
     // retrieve member role
+    console.trace();
     var member_name = $("#addMemberInput").val();
     if (member_name === "") {
         alert("Please enter a member role.");
