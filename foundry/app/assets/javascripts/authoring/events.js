@@ -683,6 +683,7 @@ function addEventMember(eventId, memberIndex) {
 }
 
 //Remove a team member from an event
+//memberNum is the (index+1) in the member array for that event, NOT the member id number
 function deleteEventMember(eventId, memberNum, memberName) {
     //Delete the line
     $("#event_" + eventId + "_eventMemLine_" + memberNum).remove();

@@ -306,6 +306,7 @@ function deleteMember(pillId) {
     //Remove Member from JSON
     var indexOfJSON = getMemberJSONIndex(pillId);
     var memName = flashTeamsJSON["members"][indexOfJSON].role;
+    var memUniq = flashTeamsJSON["members"][indexOfJSON].uniq;
     var color = flashTeamsJSON["members"][indexOfJSON].color;
     colorBox.replaceColor(color);
     flashTeamsJSON["members"].splice(indexOfJSON, 1);
@@ -319,13 +320,14 @@ function deleteMember(pillId) {
 
     //Remove member from events, iterate over events looking for role/name
     for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        if (flashTeamsJSON["events"][i].members.length == 0) { 
+                 continue;
+        }
         for (j = 0; j < flashTeamsJSON["events"][i].members.length; j++) {
-            if (flashTeamsJSON["events"][i].members.length == 0) { 
-                return;
-            } else if (flashTeamsJSON["events"][i].members[j].name == memName) {
+            if (flashTeamsJSON["events"][i].members[j].uniq === memUniq) {
                 var eventId = flashTeamsJSON["events"][i].id;
-                flashTeamsJSON["events"][indexOfJSON].members.splice(j, 1);
-                $("#event_" + eventId + "_eventMemLine_" + pillId).remove();
+                $("#event_" + eventId + "_eventMemLine_" + (j+1)).remove();
+                flashTeamsJSON["events"][i].members.splice(j, 1);
             }
         }
     }
@@ -358,6 +360,21 @@ function renderMemberPillColor(memberId) {
 function updateMemberPillColor(color, memberId) {
     var indexOfJSON = getMemberJSONIndex(memberId);
     flashTeamsJSON["members"][indexOfJSON].color = color;
+    var uniq =  flashTeamsJSON["members"][indexOfJSON].uniq;
+
+    //update colors of member lines in events
+    for (var i = 0; i < flashTeamsJSON['events'].length; i++){
+        if (flashTeamsJSON['events'][i].members.length == 0){
+            continue;
+        }
+        for (var j = 0; j < flashTeamsJSON['events'][i].members.length; j++){
+            console.log("Event " + i + " member " + j);
+            if (flashTeamsJSON['events'][i].members[j].uniq === uniq){
+                $('#event_' + flashTeamsJSON['events'][i].id + '_eventMemLine_' + (j+1)).attr("fill", color);
+                flashTeamsJSON['events'][i].members[j].color = color;
+            }
+        }
+    }
 
     updateStatus(false);
 

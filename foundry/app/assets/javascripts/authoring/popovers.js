@@ -261,7 +261,7 @@ function saveEventInfo (popId) {
                     wasMember = true;
                     break;
                 }
-            } else if (u == memberUniq) {
+            } else if (u === memberUniq) {
                 wasMember = true;
                 break;
             }
@@ -274,7 +274,7 @@ function saveEventInfo (popId) {
             }
         } else { //not checked
            if (wasMember) {
-                deleteEventMember(popId, i, memberName); // THIS SHOULD BE CHANGED TO UNIQ! change the deleteEventMember func and anything that calls it
+                deleteEventMember(popId, flashTeamsJSON["events"][indexOfJSON].members.length + 1, memberName); // THIS SHOULD BE CHANGED TO UNIQ! change the deleteEventMember func and anything that calls it
            } else {
 
            }
@@ -387,7 +387,7 @@ function writeEventMembers(idNum) {
         var found = false;
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
         //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
-            if (flashTeamsJSON["events"][indexOfJSON].members[j].uniq == memberUniq) {
+            if (flashTeamsJSON["events"][indexOfJSON].members[j].uniq === memberUniq) {
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
