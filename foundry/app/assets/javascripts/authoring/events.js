@@ -24,10 +24,10 @@ $(document).ready(function(){
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
+
     if(isUser) { // user page
         return;
     }
-    console.log('leftResize');
     var groupNum = d.groupNum;
     var indexOfJSON = getEventJSONIndex(d.groupNum);
     var ev = flashTeamsJSON["events"][indexOfJSON];
@@ -75,7 +75,6 @@ function rightResize(d) {
     if(isUser) { // user page
         return;
     }
-
     var taskRect = timeline_svg.selectAll("#rect_" + d.groupNum);
     var leftX = $("#lt_rect_" + d.groupNum).get(0).x.animVal.value;
     var dragX = d3.event.x - (d3.event.x%(X_WIDTH)) - (DRAGBAR_WIDTH/2);
@@ -116,7 +115,6 @@ var drag = d3.behavior.drag()
         if (DRAWING_HANDOFF || DRAWING_COLLAB) {
             return;
         }
-
         var group = this.parentNode;
         var oldX = d.x;
         var groupNum = this.id.split("_")[1];
@@ -398,7 +396,11 @@ function  drawEvent(eventObj) {
         .attr("stroke", "#5F5A5A")
         .attr('pointer-events', 'all')
         .on("click", function(d) {
-            eventMousedown(d.groupNum) })
+            if (d3.event.defaultPrevented) {
+                console.log('drag event already in progress.');
+                return;
+            }
+            eventMousedown(d.groupNum); })
         .call(drag);
 
     //Right Dragbar
