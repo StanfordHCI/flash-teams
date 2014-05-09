@@ -13,9 +13,13 @@ var flashTeamsJSON = {
 };
 
 function pressEnterKeyToSubmit(inputId, buttonId) {
+    $(inputId).unbind('keyup');
 	$(inputId).keyup(function(event){
 		if(event.keyCode == 13){
+            console.log("called from enter event");
 			$(buttonId).click();
+            event.stopPropagation(); //if unbind is removed at the beginning, use stopImmediatePropagation instead
+            event.preventDefault();
 		}
 	});
 }
