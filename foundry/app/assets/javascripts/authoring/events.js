@@ -180,12 +180,22 @@ var drag = d3.behavior.drag()
 
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
-    .on("drag", rightResize);
+    .on("drag", rightResize)
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
+        updateStatus(false);
+    });
 
 //Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
-    .on("drag", leftResize);
-    
+    .on("drag", leftResize)
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
+        updateStatus(false);
+    });
+        
 //VCom Calculates where to snap event block to when created
 function calcSnap(mouseX, mouseY) {
     var snapX = Math.floor(mouseX - (mouseX%50) - DRAGBAR_WIDTH/2),
