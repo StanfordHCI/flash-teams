@@ -227,6 +227,8 @@ function saveMemberInfo(popId) {
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
+
+    renderAllMemberLines();
 };
 
 //Delete team member from team list, JSON, diagram, and events
@@ -234,6 +236,8 @@ function deleteMember(pillId) {
     //Remove Member from JSON
     var indexOfJSON = getMemberJSONIndex(pillId);
     var memberName = flashTeamsJSON["members"][indexOfJSON].role;
+    var memberId = flashTeamsJSON["members"][indexOfJSON].id;
+    
     flashTeamsJSON["members"].splice(indexOfJSON, 1);
 
     $("#mPill_" + pillId).popover("destroy");
@@ -243,6 +247,25 @@ function deleteMember(pillId) {
     removeMemberNode(pillId);
 
     //REMOVE THE MEMBER FROM EVENTS
+     //redraw events
+    for(var i=0; i<flashTeamsJSON["events"].length; i++){
+        var member_event_index = flashTeamsJSON["events"][i].members.indexOf(memberId);
+        if(member_event_index != -1){
+                //remove dri if the member was a dri
+                if (flashTeamsJSON["events"][i].dri == String(memberId)){
+                    flashTeamsJSON["events"][i].dri = "";
+                }
+
+                removeAllMemberLines(flashTeamsJSON["events"][i]);
+                
+                flashTeamsJSON["events"][i].members.splice(member_event_index,1);
+                
+                drawEvent(flashTeamsJSON["events"][i],0);
+        }
+    }
+    //renderAllMemberLines();
+    //REMOVE THE MEMBER FROM EVENTS' POPOVERS
+    drawAllPopovers();      
 };
 
 function inviteMember(pillId) {

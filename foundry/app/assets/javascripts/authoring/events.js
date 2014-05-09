@@ -642,9 +642,14 @@ function drawMemberLines(eventObj) {
                 .attr("fill", color)
                 .attr("fill-opacity", .9);
         } else { // line already exists, just need to redraw
+            var members = eventObj["members"];
+            var member = getMemberById(members[i]);
+            var color = member.color;
+
             existingLine
                 .attr("x", function(d) {return d.x + x_offset})
                 .attr("y", function(d) {return d.y + y_offset})
+                .attr("fill", color)
                 .attr("width", width);
         }
     }
@@ -779,6 +784,24 @@ function drawEvent(eventObj, firstTime) {
     drawShade(eventObj, firstTime);
     drawEachHandoff(eventObj, firstTime);
     drawEachCollab(eventObj, firstTime);
+};
+function drawAllPopovers() {
+    var events = flashTeamsJSON["events"];
+    for (var i = 0; i < events.length; i++){
+        var ev = events[i];
+        drawPopover(ev, true, false);
+    }
+};
+
+
+function removeAllMemberLines(eventObj){
+    var groupNum = eventObj["id"];
+    var members = eventObj["members"];
+    var task_g = getTaskGFromGroupNum(groupNum);
+
+    for(var i=0;i<members.length;i++){
+        task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1)).remove();
+    }
 };
 
 function renderAllMemberLines() {
