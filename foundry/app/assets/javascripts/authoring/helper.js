@@ -25,6 +25,25 @@ function pressEnterKeyToSubmit(inputId, buttonId) {
 }
 
 
+// Clears all popovers
+function clearPopovers() {
+
+    // First locate all popover titles, we will pick things off from here
+    $('.popover-title').each(function() {
+        
+        // Isolate the title DOM element
+        var title = $(this).children()[0];
+
+        // Extract the corresponding number
+        var eventId = $(title).attr('id').split('_')[1];
+
+        // Now find the DOM element and hide the popover
+        $('#g_' + eventId).popover('hide');
+
+    });
+
+}
+
 //Takes a Flash Teams JSON Object and Draws a Flash Team
 function drawFlashTeamFromJSON(ftJSON) {
     //Populate members
