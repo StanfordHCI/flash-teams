@@ -7,24 +7,26 @@
 // Reusable AJAX function, which takes 4 arguments, including: the ID of the input element (i.e. text field), the type of AJAX request (i.e. GET or POST), the 				URL for the AJAX request and the id for the container where the results will appear 
 
 function callajaxreq(inputid, type, url, resultsid){
-	//var obj = this; 
-	
-	// Setup AJAX request onclick
-	var query_input = document.getElementById(inputid);
-	
-	query_input.onkeyup = function(event){
-		var query_value = document.getElementById(inputid).value;
-		var request = $.ajax({
-			url: url,
-			type: "GET",
-			data: { params : query_value },
-			dataType: "html"
-		}); //end var request
- 
-		request.done(function( msg ) {
-			$( "#" + resultsid ).html( msg );
-		}); //end request.done
-  	}// end query_input.onkeyup
+  
+  // Setup AJAX request onclick
+  var query_input = document.getElementById(inputid);
+
+  query_input.onkeyup = function(event){
+    
+    var query_value = document.getElementById(inputid).value;
+    var request = $.ajax({
+      url: url,
+      type: "GET",
+      data: { params : query_value },
+      dataType: "html"
+    }); //end var request
+   
+    request.done(function( msg ) {
+      $( "#" + resultsid ).html( msg );
+    }); //end request.done
+
+  }// end query_input.onkeyup
+
 } //end callajaxreq
 
 callajaxreq("searchEventsInput", "GET", "/flash_teams/event_search", "search-results");

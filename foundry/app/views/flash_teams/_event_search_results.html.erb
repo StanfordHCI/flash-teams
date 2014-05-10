@@ -1,24 +1,15 @@
-<% if @search.length > 0 %>
-
-<p> Query: <%= @search %> </p>
-
-
-<% @events_array.each do |ev| %>
-	<% @ev = ev  %>
-	<% if ev['title'].include?(@search)  %> <!-- Events that match search --> 
-	<!-- <p id="matchblock"> <% ev  %> </p> --> <!-- need to figure out how to pass ev in to dragEvent --> 
-	<div class="event-block" draggable="true" ondragstart="dragEvent(event)" style="cursor:move">
-		<div class="row-fluid" style="background:#C9C9C9">
-			<div class="span9"><b><span id="matchtitle"><%= ev['title']%></span></b> </div>
-			<div class="span3"><span id="matchduration"><%= ev['duration']/60 %> </span>Hours </div>
-			<p> DRI: <%= ev['dri'] %> </p>
-			<p> Inputs: <%= ev['inputs'] %> </p>
-			<p> Outputs: <%= ev['inputs'] %> </p>
+<% @events.each do |event| %>
+	<div class="event-block" draggable="true" ondragstart="dragEvent(event)" style="cursor:move;">
+		<div class="row-fluid" style="background: #C9C9C9;">
+			<div class="span9">
+				<span id="matchtitle"><b><%= event['title'] %></b></span>
+			</div>
+			<div class="span3">
+				<span id="matchduration"><b><%= event['duration']/60 %></b></span> hours
+			</div>
+			<p> DRI: <%= event['dri'] %> </p>
+			<p> Inputs: <%= event['inputs'] %> </p>
+			<p> Outputs: <%= event['inputs'] %> </p>
 		</div>
 	</div>
-		
-	<% end %> <!-- end include? -->
 <% end %>
-<% end %>
-
-
