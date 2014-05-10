@@ -52,32 +52,32 @@ function editablePopoverObj(eventObj) {
             var numHours = Math.floor(totalMinutes/60);
             var minutesLeft = totalMinutes%60;
 
-            return '<form name="eventForm_' + groupNum + '">' + '<table><tr><td>'
+            return '<form name="eventForm_' + groupNum + '">' + '<div class="event-popover-table"><div class="event-table-wrapper"><div class="event-table-row"><div class="event-table-cell">'
         +'<b>Event Start:          </b><br>' 
         +'Hours: <input type="number" id="startHr_' + groupNum + '" value="' + startHr
-            + '" min="0" style="width:35px">'
+            + '" min="0" style="width:35px"><br />'
         +'Minutes: <input type="number" id="startMin_' + groupNum + '" value="' + startMin 
             + '" min="0" step="15" max="45" style="width:35px">'
-        +'</td><td><b>Total Runtime: </b><br>' 
+        +'</div><div class="event-table-cell"><b>Total Runtime: </b><br>' 
         +'Hours: <input type = "number" id="hours_' + groupNum + '" value="'
             +numHours+'" min="2" style="width:35px"/><br>          ' 
         +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" value="'+minutesLeft
             +'" style="width:35px" min="0" step="15" max="45"/><br>'
-        +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
+        +'</div></div><div class="event-table-row"><div class="event-table-cell"><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
             + writeEventMembers(groupNum) +'</div>'
-        +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
+        +'</div><div class="event-table-cell"><b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,0) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
-        +'</td></tr>'
+        +'</div></div>'
         +'<div><input type="text" data-role="tagsinput" placeholder="Add input" id="inputs_' + groupNum + '" value="' + inputs + '" /></div>'
-        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" value="' + outputs + '" /></div>'
-        +'<tr><td><p><button type="button" id="delete"'
-            +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>' 
+        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" value="' + outputs + '" /></div></div>'
+        +'<div class="event-table-row event-table-footer">' 
+        +'<button class="btn btn-success" type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>' 
+        +'<button class="btn btn-danger" type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>'
         // +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
-        +'<button type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button> </p>' 
-        +'</td></tr></table></form>'},
+        +'<button class="btn btn-primary" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button>' 
+        +'</div></div></form>'},
         container: $("#timeline-container"),
         callback: function() {
             $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();

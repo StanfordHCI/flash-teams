@@ -25,6 +25,33 @@ function pressEnterKeyToSubmit(inputId, buttonId) {
 }
 
 
+// Clears all popovers
+function clearPopovers() {
+
+    // First locate all popover content blocks, we will pick things off from here
+    $('.popover-content').each(function() {
+        
+        // Isolate the form DOM element
+        var form = $(this).children()[0];
+
+        // Extract the corresponding number
+        var formName = $(form).attr('name').split('_');
+
+        // Split the name into the data we want
+        var popoverType = formName[0];
+        var popoverId = formName[1];
+
+        // Find the popover type dependent on the type
+        if (popoverType == 'eventForm') {
+            $('#g_' + popoverId).popover('hide');
+        } else if (popoverType == 'memberForm') {
+            $('#mPill_' + popoverId).popover('hide');
+        }
+
+    });
+
+}
+
 //Takes a Flash Teams JSON Object and Draws a Flash Team
 function drawFlashTeamFromJSON(ftJSON) {
     //Populate members

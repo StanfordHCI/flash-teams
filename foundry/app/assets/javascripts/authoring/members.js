@@ -445,6 +445,11 @@ $(document).ready(function() {
     pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
 });
 
+// Adding an event listener to the members input box to close popovers
+$('#addMemberInput').click(function() {
+    clearPopovers();
+});
+
 //Populate the autocomplete function for the event members
 //TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
 function addMemAuto() {
