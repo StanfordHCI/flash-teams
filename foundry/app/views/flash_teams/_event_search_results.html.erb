@@ -1,12 +1,13 @@
 <% @events.each_with_index do |event, index| %>
 
 	<div data-hash="<%= @eventHashes[index] %>" class="event-block" draggable="true" ondragstart="dragEvent(event)" style="cursor:move;">
+	
 		<div class="row-fluid">
 			<div class="span9">
-				<b><span id="matchtitle-<%= @eventHashes[index] %>"><%= event['title'] %></span></b>
+				<b><span id="title-<%= @eventHashes[index] %>"><%= event['title'] %></span></b>
 			</div>
 			<div class="span3">
-				<b><span id="matchduration-<%= @eventHashes[index] %>"><%= event['duration']/60 %></span></b> hours
+				<b><span id="duration-<%= @eventHashes[index] %>"><%= event['duration']/60 %></span></b> hours
 			</div>
 		</div>
 				
@@ -29,6 +30,12 @@
 			<% end %>
 		<% end %>
 		</div>
+	
+		<div class="event-metadata">
+			<div id="inputs-<%= @eventHashes[index] %>"><%= event['inputs'] %></div>
+			<div id="outputs-<%= @eventHashes[index] %>"><%= event['outputs'] %></div>
+		</div>
 
 	</div>
+
 <% end %>

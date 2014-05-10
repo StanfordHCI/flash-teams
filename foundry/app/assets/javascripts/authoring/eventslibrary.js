@@ -213,17 +213,10 @@ var matchblock = document.getElementById("matchblock");
 console.log("matchblock: " + matchblock.innerHTML);
 */
 
-var matchtitle = document.getElementById("matchtitle-" + targetHash).innerHTML;
-console.log("matchtitle: " + matchtitle);
-
-var matchduration = document.getElementById("matchduration-" + targetHash).innerHTML;
-console.log("matchduration: " + matchduration*60);
-
-//i added var eventTitle and var duration
-var eventTitle = matchtitle;
-
-//var duration = null;
-var duration = matchduration*60;
+var title = document.getElementById("title-" + targetHash).innerHTML;
+var duration = document.getElementById("duration-" + targetHash).innerHTML * 60;
+var inputs = document.getElementById("inputs-" + targetHash).innerHTML;
+var outputs = document.getElementById("outputs-" + targetHash).innerHTML;
 
 var snapPoint = calcSnap(mouseX, mouseY);
 
@@ -236,7 +229,7 @@ var snapPoint = calcSnap(mouseX, mouseY);
 //fillPopover(snapPoint[0], groupNum, false, eventTitle, duration);
 
 //var crev = createEvent(snapPoint);
-var crev = newEventFromLib(snapPoint, eventTitle, duration); //add DRI, members, other attributes to the arguments (and method params)
+var crev = newEventFromLib(snapPoint, title, duration, inputs, outputs); //add DRI, members, other attributes to the arguments (and method params)
 
 drawEvents(crev);
 
@@ -246,10 +239,10 @@ drawEvents(crev);
 };
 
 //I added this
-function newEventFromLib(snapPoint, eventTitle, duration) {
+function newEventFromLib(snapPoint, eventTitle, duration, inputs, outputs) {
     event_counter++;
     var startTimeObj = getStartTime(snapPoint[0]);
-    var newEvent = {"title": eventTitle, "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration": duration, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
+    var newEvent = {"title": eventTitle, "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration": duration, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x": null, "inputs": inputs, "outputs": outputs };
     flashTeamsJSON.events.push(newEvent);
     return newEvent;
 };
