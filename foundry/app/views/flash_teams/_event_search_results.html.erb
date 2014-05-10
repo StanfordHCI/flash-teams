@@ -1,15 +1,34 @@
 <% @events.each do |event| %>
 	<div class="event-block" draggable="true" ondragstart="dragEvent(event)" style="cursor:move;">
-		<div class="row-fluid" style="background: #C9C9C9;">
+		<div class="row-fluid">
 			<div class="span9">
 				<span id="matchtitle"><b><%= event['title'] %></b></span>
 			</div>
 			<div class="span3">
 				<span id="matchduration"><b><%= event['duration']/60 %></b></span> hours
 			</div>
-			<p> DRI: <%= event['dri'] %> </p>
-			<p> Inputs: <%= event['inputs'] %> </p>
-			<p> Outputs: <%= event['inputs'] %> </p>
+		</div>
+		
+		<div class="event-block-data event-block-dri"> DRI: <%= event['dri'] %> </div>
+		
+		<div class="event-block-data event-block-inputs"> Inputs: 
+		<% if event['inputs'].empty? %>
+			No inputs
+		<% else %>
+			<% event['inputs'].split(',').each do |input| %> 
+				<span><%= input %></span>
+			<% end %>		
+		<% end %>
+		</div>
+
+		<div class="event-block-data event-block-outputs"> Outputs: 
+		<% if event['outputs'].empty? %>
+			No outputs
+		<% else %>
+			<% event['outputs'].split(',').each do |output| %>
+				<span><%= output %></span>
+			<% end %>
+		<% end %>
 		</div>
 	</div>
 <% end %>
