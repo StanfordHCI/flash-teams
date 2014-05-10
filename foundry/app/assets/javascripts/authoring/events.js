@@ -111,7 +111,6 @@ var drag = d3.behavior.drag()
         if(isUser) { // user page
             return;
         }
-
         if (DRAWING_HANDOFF || DRAWING_COLLAB) {
             return;
         }
@@ -175,6 +174,7 @@ var drag = d3.behavior.drag()
     .on("dragend", function(d){
         var ev = getEventFromId(d.groupNum);
         drawPopover(ev, true, false);
+
         updateStatus(false);
     });
 
@@ -471,17 +471,17 @@ function  drawEvent(eventObj) {
         .attr("y", function(d) {return d.y + 26})
         .attr("font-size", "12px");
 
-    //Add gdrive link
-    var gdrive_link = task_g.append("text")
-        .text("Upload")
-        .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
-        .attr("class", "gdrive_link")
-        .attr("id", function(d) {return "handoffs_" + groupNum;})
-        .attr("groupNum", groupNum)
-        .attr("x", function(d) {return d.x + 10})
-        .attr("y", function(d) {return d.y + 38})
-        .attr("fill", "blue")
-        .attr("font-size", "12px");
+    // //Add gdrive link
+    // var gdrive_link = task_g.append("text")
+    //     .text("Upload")
+    //     .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
+    //     .attr("class", "gdrive_link")
+    //     .attr("id", function(d) {return "handoffs_" + groupNum;})
+    //     .attr("groupNum", groupNum)
+    //     .attr("x", function(d) {return d.x + 10})
+    //     .attr("y", function(d) {return d.y + 38})
+    //     .attr("fill", "blue")
+    //     .attr("font-size", "12px");
 
     $("#handoffs_" + groupNum).on('click', function(ev){
         ev.stopPropagation();
