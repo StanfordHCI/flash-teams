@@ -28,17 +28,25 @@ function pressEnterKeyToSubmit(inputId, buttonId) {
 // Clears all popovers
 function clearPopovers() {
 
-    // First locate all popover titles, we will pick things off from here
-    $('.popover-title').each(function() {
+    // First locate all popover content blocks, we will pick things off from here
+    $('.popover-content').each(function() {
         
-        // Isolate the title DOM element
-        var title = $(this).children()[0];
+        // Isolate the form DOM element
+        var form = $(this).children()[0];
 
         // Extract the corresponding number
-        var eventId = $(title).attr('id').split('_')[1];
+        var formName = $(form).attr('name').split('_');
 
-        // Now find the DOM element and hide the popover
-        $('#g_' + eventId).popover('hide');
+        // Split the name into the data we want
+        var popoverType = formName[0];
+        var popoverId = formName[1];
+
+        // Find the popover type dependent on the type
+        if (popoverType == 'eventForm') {
+            $('#g_' + popoverId).popover('hide');
+        } else if (popoverType == 'memberForm') {
+            $('#mPill_' + popoverId).popover('hide');
+        }
 
     });
 
