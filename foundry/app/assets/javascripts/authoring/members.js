@@ -315,14 +315,14 @@ function getMemberJSONIndex(idNum) {
     for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (parseInt(flashTeamsJSON["members"][i].id) == parseInt(idNum)) return i; 
     }
-    console.log("NOT FOUND MEMBER WITH ID: " + idNum);
+    //console.log("NOT FOUND MEMBER WITH ID: " + idNum);
     return -1;
 };
 
 function getMemberById(id) {
     var idx = getMemberJSONIndex(id);
     if(idx != -1){
-        console.log("FOUND MEMBER WITH ID: " + id);
+        //console.log("FOUND MEMBER WITH ID: " + id);
         return flashTeamsJSON["members"][idx];
     }
     return null;

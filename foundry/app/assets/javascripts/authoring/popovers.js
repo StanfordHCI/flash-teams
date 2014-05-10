@@ -28,7 +28,7 @@ function editablePopoverObj(eventObj) {
         html: "true",
         class: "eventPopover",
         id: '"popover' + groupNum + '"',
-        trigger: "click",
+        trigger: "manual",
         title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
             + '" placeholder="'+title+'" >',
         content: '<table><tr><td >'
@@ -127,7 +127,7 @@ function readOnlyPopoverObj(ev) {
         html: "true",
         class: "eventPopover",
         id: '"popover' + groupNum + '"',
-        trigger: "click",
+        trigger: "manual",
         container: $("#timeline-container")
     };
 
@@ -324,8 +324,8 @@ function writeEventMembers(idNum) {
 
         for (var j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
             var member = getMemberById(flashTeamsJSON["events"][indexOfJSON].members[j]);
-            console.log("first: " + member.role);
-            console.log("second: " + memberName);
+            //console.log("first: " + member.role);
+            //console.log("second: " + memberName);
             if (member.role == memberName) {
                 //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
                 memberString += '<input type="checkbox" id="event' + idNum + 'member' 

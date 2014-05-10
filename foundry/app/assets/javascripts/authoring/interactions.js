@@ -30,8 +30,7 @@ function eventMousedown(task2idNum) {
         var idNum = flashTeamsJSON["events"][i].id;
         if (idNum != task1idNum && idNum != task2idNum) {
             $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
-        }
-        
+        }   
     }
 
     if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
@@ -115,6 +114,8 @@ function eventMousedown(task2idNum) {
         }
     //There is no interation being drawn
     } else {
+        console.log("TOGGLING POPOVER");
+        $(timeline_svg.selectAll("g#g_"+task2idNum)[0][0]).popover('toggle');
         return;
     }
 }
