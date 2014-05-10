@@ -266,6 +266,7 @@ class FlashTeamsController < ApplicationController
 
     # Create an array for storing event matches
     @events = Array.new
+    @eventHashes = Array.new
 
     # Iterate through them to pick up on events
     flash_teams.each do |flash_team|
@@ -283,6 +284,7 @@ class FlashTeamsController < ApplicationController
           # Case insensitive search match
           if flash_team_event['title'].downcase.include? query
             @events << flash_team_event
+            @eventHashes << Digest::MD5.hexdigest(flash_team_event.to_s)
           end
 
         end

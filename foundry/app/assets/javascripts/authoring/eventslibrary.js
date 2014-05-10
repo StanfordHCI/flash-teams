@@ -148,6 +148,8 @@ ev.preventDefault();
 
 /* Called when an Event div is being dragged. */
 function dragEvent(ev) {
+  console.log(ev);
+ev.dataTransfer.setData('eventHash', ev.target.getAttribute('data-hash'));
 ev.dataTransfer.setData("Text",ev.target.id); //saves id of dragged Event div into 'data'
 document.getElementById("overlay").style.display = "block"; //turns overlay on
 }
@@ -155,7 +157,10 @@ document.getElementById("overlay").style.display = "block"; //turns overlay on
 /* Called when a user drops an event in a div that allows drop, in this case, overlay. Mouse coordinates at the point of drop are detected and members belonging to the dragged event and members belonging to the existing flash-team are compared */
 function drop(ev) {
 ev.preventDefault();
-var data = ev.dataTransfer.getData("Text");
+
+console.log(ev);
+
+var targetHash = ev.dataTransfer.getData('eventHash');
 
 //calculates mouse coordinates relative to timeline svg to draw dragged event in corresponding location
 var mouseCoords = calcMouseCoords(ev);
@@ -163,12 +168,8 @@ var mouseCoords = calcMouseCoords(ev);
 //turn overlay off so event blocks can be drawn on timeline svg
 document.getElementById("overlay").style.display = "none";  
 
-//maps Event div id back to corresponding Event JSON from database. Currently, maps back to an Event JSON in EventJSONArray
-var eventBlockDivId = data.split("_"); //returns array of strings before and after '_'
-var eventJSONindex = eventBlockDivId[1]; // gets the latter half of the array which is the div id
-
-//added createdragevent (and changed eventJSONId to eventJSONindex) here instead of compMember to test: 
-createDragEvent(mouseCoords[0],mouseCoords[1],eventJSONindex);
+//added createdragevent (and changed eventJSONId to eventJSONindex) here instead of compMember to test:
+createDragEvent(mouseCoords[0], mouseCoords[1], targetHash);
 
 //compares two members. Currently both are sample Member JSONs from MembersJSONArray, but should compared a team member from dragged Event and an existing team member in flash-team
 //compMember(MembersJSONArray[0], MembersJSONArray[2], mouseCoords, eventJSONindex); //TO BE CHANGED
@@ -198,7 +199,7 @@ return svgpoint;
 }
 
 /* Creates event block on timeline with according pop up information*/
-function createDragEvent(mouseX, mouseY, EventJSONID) {
+function createDragEvent(mouseX, mouseY, targetHash) {
    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
        alert("Please click on another event or the same event to cancel");
@@ -208,40 +209,40 @@ function createDragEvent(mouseX, mouseY, EventJSONID) {
    event_counter++; //To generate id
 
     /*
-	var matchblock = document.getElementById("matchblock");
-	console.log("matchblock: " + matchblock.innerHTML);
-	*/
-	
-	var matchtitle = document.getElementById("matchtitle").innerHTML;
-	console.log("matchtitle: " + matchtitle);
-	
-	var matchduration = document.getElementById("matchduration").innerHTML;
-	console.log("matchduration: " + matchduration*60);
-	
-	//i added var eventTitle and var duration 
-	var eventTitle = matchtitle;
-	
-	//var duration = null;
-	var duration = matchduration*60;
-	
-	var snapPoint = calcSnap(mouseX, mouseY);
+var matchblock = document.getElementById("matchblock");
+console.log("matchblock: " + matchblock.innerHTML);
+*/
 
-	//DRAWEVENT HAS DIFFERENT PARAMETERS NOW
-	//var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, eventTitle, duration);
-	//var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+var matchtitle = document.getElementById("matchtitle-" + targetHash).innerHTML;
+console.log("matchtitle: " + matchtitle);
 
-	//FILLPOPOVER NO LONGER EXISTS 
-	//fillPopover(snapPoint[0], groupNum, eventTitle, duration);
-	//fillPopover(snapPoint[0], groupNum, false, eventTitle, duration);
-	
-	//var crev = createEvent(snapPoint);
-	var crev = newEventFromLib(snapPoint, eventTitle, duration); //add DRI, members, other attributes to the arguments (and method params)
-	
-	drawEvents(crev);
-	
-	//editablePopoverObj(crev);
-	
-	//drawPopover(crev, true, true);
+var matchduration = document.getElementById("matchduration-" + targetHash).innerHTML;
+console.log("matchduration: " + matchduration*60);
+
+//i added var eventTitle and var duration
+var eventTitle = matchtitle;
+
+//var duration = null;
+var duration = matchduration*60;
+
+var snapPoint = calcSnap(mouseX, mouseY);
+
+//DRAWEVENT HAS DIFFERENT PARAMETERS NOW
+//var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+//var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+
+//FILLPOPOVER NO LONGER EXISTS
+//fillPopover(snapPoint[0], groupNum, eventTitle, duration);
+//fillPopover(snapPoint[0], groupNum, false, eventTitle, duration);
+
+//var crev = createEvent(snapPoint);
+var crev = newEventFromLib(snapPoint, eventTitle, duration); //add DRI, members, other attributes to the arguments (and method params)
+
+drawEvents(crev);
+
+//editablePopoverObj(crev);
+
+//drawPopover(crev, true, true);
 };
 
 //I added this
