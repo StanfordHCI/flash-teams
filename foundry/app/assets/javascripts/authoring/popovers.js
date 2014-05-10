@@ -52,7 +52,7 @@ function editablePopoverObj(eventObj) {
             var numHours = Math.floor(totalMinutes/60);
             var minutesLeft = totalMinutes%60;
 
-            return '<form name="eventForm_' + groupNum + '">' + '<div class="event-popover-table"><div class="event-table-row"><div class="event-table-cell">'
+            return '<form name="eventForm_' + groupNum + '">' + '<div class="event-popover-table"><div class="event-table-wrapper"><div class="event-table-row"><div class="event-table-cell">'
         +'<b>Event Start:          </b><br>' 
         +'Hours: <input type="number" id="startHr_' + groupNum + '" value="' + startHr
             + '" min="0" style="width:35px"><br />'
@@ -71,12 +71,12 @@ function editablePopoverObj(eventObj) {
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '" placeholder="' + notes + '"></textarea>'
         +'</div></div>'
         +'<div><input type="text" data-role="tagsinput" placeholder="Add input" id="inputs_' + groupNum + '" value="' + inputs + '" /></div>'
-        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" value="' + outputs + '" /></div>'
-        +'<div class="event-table-row"><p>' 
+        +'<div><input type="text" data-role="tagsinput" placeholder="Add output" id="outputs_' + groupNum + '" value="' + outputs + '" /></div></div>'
+        +'<div class="event-table-row event-table-footer">' 
         +'<button class="btn btn-success" type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>' 
         +'<button class="btn btn-danger" type="button" id="delete" onclick="deleteRect(' + groupNum +');">Delete</button>'
         // +'<button type="button" id="complete" onclick="completeTask(' + groupNum + ');">Complete</button> </p>' 
-        +'<button class="btn btn-primary" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button> </p>' 
+        +'<button class="btn btn-primary" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button>' 
         +'</div></div></form>'},
         container: $("#timeline-container"),
         callback: function() {

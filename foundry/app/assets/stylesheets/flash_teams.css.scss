@@ -48,6 +48,20 @@
 
 .event-popover-table {
 
+	height: 220px;
+	overflow: hidden;
+
+	.event-table-wrapper {
+		height: 180px;
+		overflow-y: scroll;
+	}
+
+	.event-table-footer {
+		position: static;
+		height: 40px;
+		bottom: 0;
+	}
+
 	.event-table-row {
 	}
 
