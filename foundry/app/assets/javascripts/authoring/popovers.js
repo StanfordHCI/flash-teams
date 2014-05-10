@@ -44,7 +44,7 @@ function editablePopoverObj(eventObj) {
         +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
             +'" style="width:35px" min="0" step="15" max="45"/><br>'
         +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
-            + writeEventMembers(groupNum) +'</div>'
+            + writeEventMembers(eventObj) +'</div>'
         +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
@@ -312,33 +312,25 @@ function getDRI(groupNum) {
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
-function writeEventMembers(idNum) {
-    var indexOfJSON = getEventJSONIndex(idNum);
+function writeEventMembers(eventObj) {
     var memberString = "";
-    
-    if (flashTeamsJSON["members"].length == 0) return "No Team Members";
-    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+        var memberId = flashTeamsJSON["members"][i].id;
         var memberName = flashTeamsJSON["members"][i].role;
-
         var found = false;
-
-        for (var j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
-            var member = getMemberById(flashTeamsJSON["events"][indexOfJSON].members[j]);
-            //console.log("first: " + member.role);
-            //console.log("second: " + memberName);
-            if (member.role == memberName) {
-                //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
-                memberString += '<input type="checkbox" id="event' + idNum + 'member' 
+        for (j = 0; j < eventObj.members.length; j++) {
+            var evMemId = eventObj.members[i];
+            if (evMemId == memberId) {
+                memberString += '<input type="checkbox" id="event' + eventObj.id + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
                 break;
             }
         }
-
         if (!found) {
-            memberString +=  '<input type="checkbox" id="event' + idNum 
-                + 'member' + i + 'checkbox">' + memberName + "   <br>"; 
-        }      
+            memberString +=  '<input type="checkbox" id="event' + eventObj.id 
+                + 'member' + i + 'checkbox">' + memberName + "   <br>";
+        }
     }
     return memberString;
 };
