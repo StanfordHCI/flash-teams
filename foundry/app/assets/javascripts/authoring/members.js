@@ -60,16 +60,18 @@ function renderPills(members) {
 
 function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
+
         var member = members[i];
         var member_id = member.id;
         console.log("rendering popovers for member " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
-
+        var newColor = "'"+member.color+"'";
+        
+        
         var category1 = member.category1;
         var category2 = member.category2;
         
-
         var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
                 +'<div class="mForm_' + member_id + '">'
                 +'<div class="input-append" > ' 
@@ -79,22 +81,43 @@ function renderMemberPopovers(members) {
         for (var key in oDeskCategories) {
             var option = document.createElement("option");
             if(key == category1){
-                alert("here");
-                content += '<option value="' + key + '" selected>' + key + '</option>';
+                 content += '<option value="' + key + '" selected>' + key + '</option>';
             }
             else
                 content += '<option value="' + key + '">' + key + '</option>';
         }
 
+        //reload or build category2 based on previously selected category 1
         content += '</select>';
-        content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
-                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
+        
+
+        if (category1 == "--oDesk Category--" || category1 == ""){
+            content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>';
+        } else{
+          
+            content += '<br><br><select class="category2Input" id="member' + member_id + '_category2">'
+            for (var i=0; i<oDeskCategories[category1].length; i++) {
+              
+                var key2 = oDeskCategories[category1][i];
+             
+                var option = document.createElement("option");
+                if(key2 == category2){
+                    content += '<option value="' + key2 + '" selected>' + key2 + '</option>';
+                }
+                else
+                    content += '<option value="' + key2 + '">' + key2 + '</option>';
+            }
+            content += '</select>';
+            //alert(content);
+        }
+
+        content += '<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
                 +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + member_id + '" onclick="addSkill(' + member_id + ');">+</button>'
                 +'</div>'
                 +'Skills:'  
                 +'<ul class="nav nav-pills" id="skillPills_' + member_id + '"> </ul>'
                 +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
-                +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
+                +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
                 +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
                 +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
                 + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
@@ -129,12 +152,14 @@ function renderMemberPopovers(members) {
 
                     var category1Select = document.getElementById("member" + mem_id + "_category1");
                     var category1Name = category1Select.options[category1Select.selectedIndex].value;
+                   
                     for (var i = 0; i < oDeskCategories[category1Name].length; i++) {
                         var option = document.createElement("option");
                         $("#member" + mem_id + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
                     }
                 }
             });
+
         });
 
         // append oDesk Skills input to popover
@@ -271,9 +296,7 @@ function deleteMember(pillId) {
                 }
 
                 removeAllMemberLines(flashTeamsJSON["events"][i]);
-                
                 flashTeamsJSON["events"][i].members.splice(member_event_index,1);
-                
                 drawEvent(flashTeamsJSON["events"][i],0);
         }
     }
@@ -322,11 +345,12 @@ function updateMemberPopover(idNum) {
 };
 
 //Draws the color picker on a member popover
-function initializeColorPicker() {
+function initializeColorPicker(newColor) {
+    
     $(".full-spectrum").spectrum({
         showPaletteOnly: true,
         showPalette: true,
-        color: "#08c",
+        color: newColor,
         palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
