@@ -66,6 +66,10 @@ function renderMemberPopovers(members) {
         var member_name = member.role;
         var invitation_link = member.invitation_link;
 
+        var category1 = member.category1;
+        var category2 = member.category2;
+        
+
         var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
                 +'<div class="mForm_' + member_id + '">'
                 +'<div class="input-append" > ' 
@@ -74,7 +78,12 @@ function renderMemberPopovers(members) {
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
             var option = document.createElement("option");
-            content += '<option value="' + key + '">' + key + '</option>';
+            if(key == category1){
+                alert("here");
+                content += '<option value="' + key + '" selected>' + key + '</option>';
+            }
+            else
+                content += '<option value="' + key + '">' + key + '</option>';
         }
 
         content += '</select>';
@@ -217,10 +226,14 @@ function deleteSkill(memberId, pillId, skillName) {
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
     var indexOfJSON = getMemberJSONIndex(popId);
-    flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
-    flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
+    //flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
+    //flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
 
+    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
+   
     var newColor = $("#color_" + popId).spectrum("get").toHexString();
+ 
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
     //updateMemberPopover(popId);
@@ -229,6 +242,7 @@ function saveMemberInfo(popId) {
     $("#mPill_" + popId).popover("hide");
 
     renderAllMemberLines();
+    renderMemberPopovers(flashTeamsJSON["members"]);
 };
 
 //Delete team member from team list, JSON, diagram, and events
