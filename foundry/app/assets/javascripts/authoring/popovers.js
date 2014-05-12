@@ -5,6 +5,15 @@
  * when new information added including: duration, event members, etc.
  */
 
+// Quick hack that allows popovers to take callback functions
+var tmp = $.fn.popover.Constructor.prototype.show; 
+$.fn.popover.Constructor.prototype.show = function () { 
+    tmp.call(this); 
+    if (this.options.callback) { 
+        this.options.callback(); 
+    } 
+};
+
 /*
  * Input(s): 
  * eventObj - event object taken from the events array within the flashTeamsJSON object
@@ -19,6 +28,10 @@ function editablePopoverObj(eventObj) {
     var startHr = eventObj["startHr"];
     var startMin = eventObj["startMin"];
     var notes = eventObj["notes"];
+    var inputs = eventObj["inputs"];
+    if(!inputs) inputs = "";
+    var outputs = eventObj["outputs"];
+    if(!outputs) outputs = "";
     var numHours = Math.floor(totalMinutes/60);
     var minutesLeft = totalMinutes%60;
     var dri_id = eventObj.dri;
@@ -49,11 +62,17 @@ function editablePopoverObj(eventObj) {
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '">' + notes + '</textarea>'
-        +'</td></tr><tr><td><p><button type="button" id="delete"'
-            +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
+        +'</td></tr>'
+        +'<div><input type="text" data-role="tagsinput" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
+        +'<div><input type="text" data-role="tagsinput" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
+        +'<tr><td><p><button type="button" id="delete"'
+        +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>'  
         +'</form></td></tr>',
-        container: $("#timeline-container")
+        container: $("#timeline-container"),
+        callback: function() {
+            $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
+        }
     };
 
     return obj;
@@ -77,6 +96,20 @@ function readOnlyPopoverObj(ev) {
         +'<b>Total Runtime: </b><br>' 
         + hrs + ' hrs ' + mins + ' mins<br>';
 
+    content += '<b>Inputs:</b><br>';
+    var inputs = ev.inputs.split(",");
+    for(var i=0;i<inputs.length;i++){
+        content += inputs[i];
+        content += "<br>";
+    }
+    
+    content += '<b>Outputs:</b><br>';
+    var outputs = ev.outputs.split(",");
+    for(var i=0;i<outputs.length;i++){
+        content += outputs[i];
+        content += "<br>";
+    }
+
     var num_members = ev.members.length;
     if(num_members > 0){
         content += '<b>Members:</b><br>';
@@ -86,12 +119,11 @@ function readOnlyPopoverObj(ev) {
         }
     }
 
-    //console.log("EV.DRI: " + ev.dri);
      if (ev.dri != "" && ev.dri != undefined){
         var dri_id = parseInt (ev.dri);
         var mem = null;
 
-        for (i = 0; i<flashTeamsJSON["members"].length; i++){
+        for (var i = 0; i<flashTeamsJSON["members"].length; i++){
            
             if(flashTeamsJSON["members"][i].id == dri_id){
                 mem = flashTeamsJSON["members"][i].role;
@@ -270,6 +302,9 @@ function saveEventInfo (popId) {
     ev.startTime = ev.startHr*60 + ev.startMin;
     ev.duration = durationForWidth(newWidth);
     ev.x = newX;
+    ev.inputs = $('#inputs_' + popId).val();
+    ev.outputs = $('#outputs_' + popId).val();
+    console.log(ev.inputs);
 
     drawEvent(ev, 0);
     drawPopover(ev, true, false);
