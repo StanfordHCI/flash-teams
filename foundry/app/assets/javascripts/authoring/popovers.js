@@ -246,7 +246,6 @@ var getPopoverDataFromGroupNum = function(groupNum){
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics
 function saveEventInfo (popId) {
-    console.log("Event saving");
     //Update title
     var newTitle = $("#eventName_" + popId).val();
     if (!newTitle == "") $("#title_text_" + popId).text(newTitle);
@@ -273,16 +272,19 @@ function saveEventInfo (popId) {
     //Update members of event
     flashTeamsJSON["events"][indexOfJSON].members = [];
     for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        console.log("checking member", i);
         var member = flashTeamsJSON["members"][i];
         var memberId = member.id;
         var checkbox = $("#event" + popId + "member" + i + "checkbox")[0];
+        //SOMETHING IS WRONG WITH POPID ABOVE
         if (checkbox == undefined) continue;
         if (checkbox.checked == true) {
             console.log("found you", i);
             ev.members.push(memberId); //Update JSON
+        } else {
+            console.log("sorry, didn't find", i);
         }
     }
-    console.log("all the members", ev.members);
 
     //Update width
     var newHours = $("#hours_" + popId).val();
@@ -362,14 +364,14 @@ function writeEventMembers(eventObj) {
         var found = false;
         for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
             if (flashTeamsJSON["events"][indexOfJSON].members[j].uniq === memberUniq) {
-                memberString += '<input type="checkbox" id="event' + memberId + 'member' 
+                memberString += '<input type="checkbox" id="event' + eventObj["id"] + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
                 break;
             }
         }
         if (!found) {
-            memberString +=  '<input type="checkbox" id="event' + memberId 
+            memberString +=  '<input type="checkbox" id="event' + eventObj["id"] 
                 + 'member' + i + 'checkbox">' + memberName + "   <br>"; 
         }      
     }
