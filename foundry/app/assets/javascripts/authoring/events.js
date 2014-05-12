@@ -152,14 +152,14 @@ var drag = d3.behavior.drag()
         if (d3.event.dy + d.y < 20) d.y = 17;
         else d.y = newY;
 
-        //Check for interactions, delete
-        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+        //Check for interactions, delete OLD, REDRAWING NOW
+        /*for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var interaction = flashTeamsJSON["interactions"][i];
             if (interaction.event1 == groupNum || interaction.event2 == groupNum) {
                 deleteInteraction(interaction.id);
                 //ADD WARNING THAT THEY DELETED B/C THEY MOVED
             }
-        }
+        }*/
         
         //Redraw event
         redraw(group, rectWidth, groupNum);
@@ -547,12 +547,15 @@ function  drawEvent(eventObj) {
 //Redraw a single task rectangle after it is dragged
 function redraw(group, newWidth, gNum) {
     var d3Group = d3.select(group);
+    var x;
+    var y;
+
     d3Group.selectAll(".task_rectangle")
-        .attr("x", function(d) {return d.x})
+        .attr("x", function(d) {x = d.x; return d.x})
         .attr("y", function(d) {return d.y});
     d3Group.selectAll(".rt_rect")
         .attr("x", function(d) {return d.x + newWidth})
-        .attr("y", function(d) {return d.y});
+        .attr("y", function(d) {y = d.y; return d.y});
     d3Group.selectAll(".lt_rect")
         .attr("x", function(d) {return d.x}) 
         .attr("y", function(d) {return d.y});
@@ -569,8 +572,6 @@ function redraw(group, newWidth, gNum) {
         .attr("x", function(d) {return d.x + newWidth - 38})
         .attr("y", function(d) {return d.y + 23});
 
-    //console.log("REDRAWING GRDIVE LINK: ");
-    //console.log(d3Group.selectAll(".gdrive_link"));
     d3Group.selectAll(".gdrive_link")
         .attr("x", function(d) {return d.x + 10})
         .attr("y", function(d) {return d.y + 38});
@@ -582,7 +583,94 @@ function redraw(group, newWidth, gNum) {
             .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); })
             .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))});
     }
+
+    var eventObj = {"id":gNum, "x":x, "y":y, "width":newWidth};
+    //Redraw Handoffs
+    drawEachHandoff(eventObj);
+    //Redraw Collaborations
+    drawEachCollab(eventObj);
 };
+
+function drawEachHandoff(eventObj){
+    var interactions = flashTeamsJSON["interactions"];
+    for (var i = 0; i < interactions.length; i++){
+        var inter = interactions[i];
+        var draw;
+        if (inter["type"] == "handoff"){
+            if (inter["event1"] == eventObj["id"]){
+                console.log("found interaction");
+                draw = true;
+                var ev1 = eventObj;
+                var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
+            }
+            else if (inter["event2"] == eventObj["id"]){
+                draw = true;
+                var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
+                var ev2 = eventObj;
+            }
+            if (draw){
+                var x1 = ev1.x + 3 + eventObj["width"];
+                var y1 = ev1.y + 50;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y + 50;
+                $("#interaction_" + inter["id"])
+                    .attr("x1", x1)
+                    .attr("y1", y1)
+                    .attr("x2", x2)
+                    .attr("y2", y2)
+                    .attr("d", function(d) {
+                        var dx = x1 - x2,
+                        dy = y1 - y2,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                        //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+                        return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr
+                        + " 0 0,0 " + x2 + "," + (y2+15);
+                    });
+            }
+        }
+    }
+}
+
+function drawEachCollab(eventObj){
+    var interactions = flashTeamsJSON["interactions"];
+    for (var i = 0; i < interactions.length; i++){
+        var inter = interactions[i];
+        var draw;
+        if (inter["type"] == "collaboration"){
+            if (inter["event1"] == eventObj["id"]){
+                draw = true;
+                var ev1 = eventObj;
+                var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
+            }
+            else if (inter["event2"] == eventObj["id"]){
+                draw = true;
+                var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
+                var ev2 = eventObj;
+            }
+            if (draw){
+                var y1 = ev1.y + 17;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y + 17;
+                var firstTaskY = 0;
+                var taskDistance = 0;
+                var overlap = eventsOverlap(ev1.x, ev1["width"], ev2.x, ev2["width"]);
+                if (y1 < y2) {
+                    firstTaskY = y1 + 90;
+                    taskDistance = y2 - firstTaskY;
+                } else {
+                    firstTaskY = y2 + 90;
+                    taskDistance = y1 - firstTaskY;
+                }
+                $("#interaction_" + inter["id"])
+                    .attr("x", x2)
+                    .attr("y", firstTaskY)
+                    .attr("height", taskDistance)
+                    .attr("width", overlap);
+            }
+        }
+    }
+
+}
 
 //Delete a task rectangle, all of its relevant components, and remove the event from the JSON
 function deleteRect (rectId) {
