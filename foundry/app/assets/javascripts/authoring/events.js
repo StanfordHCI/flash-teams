@@ -67,6 +67,12 @@ function leftResize(d) {
     flashTeamsJSON["events"][indexOfJSON] = ev;
     console.log("runtime: " + flashTeamsJSON["events"][indexOfJSON].duration);
 
+     //Update JSON
+    var numEventMembers = flashTeamsJSON["events"][indexOfJSON].members.length;
+    for (i = 1; i <= numEventMembers; i++) {
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("x", newX + 8);
+        $("#event_" + d.groupNum + "_eventMemLine_" + i).attr("width", (rightX-newX-8));          
+    }
     //drawEvent(ev);
 }
 
@@ -583,7 +589,7 @@ function redraw(group, newWidth, gNum) {
             .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); })
             .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))});
     }
-
+    console.log("REDRAW CALLED." + x + ", " + y);
     var eventObj = {"id":gNum, "x":x, "y":y, "width":newWidth};
     //Redraw Handoffs
     drawEachHandoff(eventObj);
