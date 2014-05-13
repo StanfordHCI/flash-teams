@@ -23,6 +23,7 @@ timeline_svg.append("defs").append("marker")
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
 function eventMousedown(task2idNum) {
+    overlayOn();
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     
     //Close all open popovers
