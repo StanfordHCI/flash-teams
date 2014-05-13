@@ -181,6 +181,10 @@ function renderMemberPopovers(members) {
                     $('#mPill_' + id).popover('hide');
                 }
             }
+            $(flashTeamsJSON['events']).each(function() {
+                 $('g#g_' + this.id).popover('hide');
+            });
+            overlayOff();
             $("#member" + mem_id + "_category1").on('change', function(){
                 if ($("#member" + mem_id + "_category1").value === "--oDesk Category--") {
                     $("#member" + mem_id + "_category2").value = "--oDesk Sub-Category--";
