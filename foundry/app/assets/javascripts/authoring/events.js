@@ -418,7 +418,7 @@ function  drawEvent(eventObj) {
         .attr('pointer-events', 'all')
         .on("click", function(d) {
             if(d3.event.defaultPrevented) return;
-            eventMousedown(d.groupNum); })
+            eventMousedown(d.groupNum, d3.mouse(this)); })
         .call(drag);
 
     //Right Dragbar

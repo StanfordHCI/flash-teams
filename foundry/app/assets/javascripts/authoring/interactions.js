@@ -22,18 +22,19 @@ timeline_svg.append("defs").append("marker")
 
 //Called when a user clicks a task rectangle (aka event)
 //Determines if the user is trying to draw an interaction and if so, what type
-function eventMousedown(task2idNum) {
+function eventMousedown(task2idNum, coord) {
     overlayOn();
+
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
-    
     //Close all open popovers
-    for (i = 0; i<flashTeamsJSON["events"].length; i++) {
-        var idNum = flashTeamsJSON["events"][i].id;
-        if (idNum != task1idNum && idNum != task2idNum) {
-            $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
-        }
+    clearPopovers();
+    // for (i = 0; i<flashTeamsJSON["events"].length; i++) {
+    //     var idNum = flashTeamsJSON["events"][i].id;
+    //     if (idNum != task1idNum && idNum != task2idNum) {
+    //         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
+    //     }
         
-    }
+    // }
 
     if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
     if (DRAWING_COLLAB == true) $("#collab_btn_" + task1idNum).popover("hide");
@@ -116,6 +117,10 @@ function eventMousedown(task2idNum) {
         }
     //There is no interation being drawn
     } else {
+        //shift popover to click position
+        setTimeout(function(){
+            $('.popover')[0].style.left = (coord[0] + 25) + "px";
+        }, 10);
         return;
     }
 }
