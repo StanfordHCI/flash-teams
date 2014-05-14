@@ -126,6 +126,12 @@ $(document).ready(function(){
                 pillCounter = this.id;
             }
         });
+        event_counter = 0;
+        $(flashTeamsJSON['events']).each(function(i){
+            if (this.id > event_counter){
+                event_counter = this.id;
+            }
+        });
         //console.log('TEAM LOADED.');
         renderMembersRequester();
         colorBox();
@@ -309,7 +315,7 @@ var loadData = function(in_progress){
     }
     cursor_details = positionCursor(flashTeamsJSON, latest_time);
 
-    event_counter = flashTeamsJSON["events"].length;
+    //event_counter = flashTeamsJSON["events"].length;
     
     drawEvents(!in_progress);
     drawBlueBoxes();

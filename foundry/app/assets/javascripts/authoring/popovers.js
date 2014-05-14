@@ -210,18 +210,19 @@ var setPopoverOnTask = function(groupNum, obj){
 function hidePopover(popId){
     console.log("hiding popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('hide');
-    //overlayOff();
+    overlayOff();
 };
 
 function showPopover(popId){
     console.log("showing popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('show');
-    //overlayOn();
+    overlayOn();
 };
 
 function destroyPopover(popId){
     console.log("destroying popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('destroy');
+    overlayOff();
 };
 
 var getPopoverDataFromGroupNum = function(groupNum){

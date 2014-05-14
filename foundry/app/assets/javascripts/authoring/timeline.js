@@ -108,17 +108,25 @@ var task_g = timeline_svg.selectAll(".task_g");
     timeline_svg.on("mousemove", null);
 }*/
 
+$("#overlay").on('click', function(e){
+    console.log("overlay clicked");
+    clearPopovers();
+    overlayOff();
+});
+
 //Turn on the overlay so a user cannot continue to draw events when focus is on a popover
 function overlayOn() {
     console.log("overlay on");
-    //$("#overlay").css("display", "block");
+    $("#overlay").css("display", "block");
+    overlayIsOn = true;
 };
 
 //Remove the overlay so a user can draw events again
 function overlayOff() {
     console.log("overlay off");
     $(".task_rectangle").popover("hide");
-    //$("#overlay").css("display", "none");
+    $("#overlay").css("display", "none");
+    overlayIsOn = false;
 };
 
 //Access a particular "event" in the JSON by its id number and return its index in the JSON array of events
@@ -144,8 +152,9 @@ function addTime() {
     document.getElementById("overlay").style.width = SVG_WIDTH + 50 + "px";
     timeline_svg.attr("width", SVG_WIDTH);
     
-    //Remove all exising grid lines
+    //Remove all exising grid lines & background
     timeline_svg.selectAll("line").remove();
+    timeline_svg.selectAll("rect.background").remove();
     
     //Redraw all x-axis grid lines
     timeline_svg.selectAll("line.x")
@@ -213,8 +222,13 @@ function addTime() {
     .attr("height", SVG_HEIGHT)
     .attr("fill", "white")
     .attr("fill-opacity", 0)
+    .attr("z-index", -1)
     .on("mousedown", mousedown);
     
+    //move all existing events back on top of timeline
+    $(timeline_svg.selectAll('g')).each(function() {
+        $('.chart').append(this);
+    });
 }
 
 //VCom Calculates how many hours to add when user expands timeline
