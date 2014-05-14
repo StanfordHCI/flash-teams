@@ -276,14 +276,10 @@ function saveEventInfo (popId) {
         var member = flashTeamsJSON["members"][i];
         var memberId = member.id;
         var checkbox = $("#event" + popId + "member" + i + "checkbox")[0];
-        //SOMETHING IS WRONG WITH POPID ABOVE
         if (checkbox == undefined) continue;
         if (checkbox.checked == true) {
-            console.log("found you", i);
             ev.members.push(memberId); //Update JSON
-        } else {
-            console.log("sorry, didn't find", i);
-        }
+        } 
     }
 
     //Update width
@@ -306,8 +302,8 @@ function saveEventInfo (popId) {
     ev.x = newX;
     ev.inputs = $('#inputs_' + popId).val();
     ev.outputs = $('#outputs_' + popId).val();
-    console.log(ev.inputs);
 
+    removeAllMemberLines(ev);
     drawEvent(ev, 0);
     drawPopover(ev, true, false);
     
