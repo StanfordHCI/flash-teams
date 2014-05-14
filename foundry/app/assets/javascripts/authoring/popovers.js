@@ -181,7 +181,8 @@ function readOnlyPopoverObj(ev) {
 function drawPopover(eventObj, editable, show) {
    var groupNum = eventObj.id;
      // draw it
-    var data = getPopoverDataFromGroupNum(groupNum);
+    var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG
+    console.log("data value in drawPopover", data);
     if(!data){ // popover not set yet
         if(editable){
             setPopoverOnTask(groupNum, editablePopoverObj(eventObj));
