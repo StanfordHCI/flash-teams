@@ -181,8 +181,7 @@ function readOnlyPopoverObj(ev) {
 function drawPopover(eventObj, editable, show) {
    var groupNum = eventObj.id;
      // draw it
-    var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG
-    console.log("data value in drawPopover", data);
+    var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG, RETURNS UNDEFINED
     if(!data){ // popover not set yet
         if(editable){
             setPopoverOnTask(groupNum, editablePopoverObj(eventObj));
@@ -273,7 +272,6 @@ function saveEventInfo (popId) {
     //Update members of event
     flashTeamsJSON["events"][indexOfJSON].members = [];
     for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
-        console.log("checking member", i);
         var member = flashTeamsJSON["members"][i];
         var memberId = member.id;
         var checkbox = $("#event" + popId + "member" + i + "checkbox")[0];
@@ -290,7 +288,6 @@ function saveEventInfo (popId) {
     if (newMin == "") newMin = parseInt($("#minutes_" + popId)[0].placeholder);
     newMin = Math.round(parseInt(newMin)/15) * 15;
     var newWidth = (newHours * 100) + (newMin/15*25);
-    console.log("HI ALEXANDRA");
   
     //Update JSON
     var indexOfJSON = getEventJSONIndex(popId);
