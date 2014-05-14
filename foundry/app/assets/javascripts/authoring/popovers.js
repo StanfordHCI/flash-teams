@@ -57,7 +57,7 @@ function editablePopoverObj(eventObj) {
         +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
             +'" style="width:35px" min="0" step="15" max="45"/><br>'
         +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
-            + writeEventMembers(groupNum) +'</div>'
+            + writeEventMembers(eventObj) +'</div>'
         +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
@@ -181,7 +181,7 @@ function readOnlyPopoverObj(ev) {
 function drawPopover(eventObj, editable, show) {
    var groupNum = eventObj.id;
      // draw it
-    var data = getPopoverDataFromGroupNum(groupNum);
+    var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG, RETURNS UNDEFINED
     if(!data){ // popover not set yet
         if(editable){
             setPopoverOnTask(groupNum, editablePopoverObj(eventObj));
@@ -265,40 +265,20 @@ function saveEventInfo (popId) {
     var eventNotes = $("#notes_" + popId).val();
     var driId = getDRI(popId);
    
-    //Add Event Members, see checkboxes
     var indexOfJSON = getEventJSONIndex(popId);
-    //old version of code to update members 
-    /*for (i = 0; i<flashTeamsJSON["members"].length; i++) {
-        //START HERE
-        var memberName = flashTeamsJSON["members"][i].role;
-        if ($("#event" + popId + "member" + i + "checkbox")[0] == undefined) return; //No members?
-        if ( $("#event" + popId + "member" + i + "checkbox")[0].checked == true) {
-            if (flashTeamsJSON["events"][indexOfJSON].members.indexOf(memberName) == -1) {
-                addEventMember(popId, i);
-            }
-        } else {
-            for (j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
-                if (flashTeamsJSON["events"][indexOfJSON].members[j] == flashTeamsJSON["members"][i].role) {
-                    var memId = flashTeamsJSON["members"][i].id;
-                    flashTeamsJSON["events"][indexOfJSON].members.splice(j, 1);
-                    $("#event_" + popId + "_eventMemLine_" + memId).remove(); //THIS IS THE PROBLEM, j
-                }
-            }
-        }
-    }*/
-
     var ev = flashTeamsJSON["events"][indexOfJSON];
 
-    //update members of event
-    flashTeamsJSON["events"][indexOfJSON].members =[];
+
+    //Update members of event
+    flashTeamsJSON["events"][indexOfJSON].members = [];
     for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
         var member = flashTeamsJSON["members"][i];
         var memberId = member.id;
         var checkbox = $("#event" + popId + "member" + i + "checkbox")[0];
-        if (checkbox == undefined) return;
+        if (checkbox == undefined) continue;
         if (checkbox.checked == true) {
-            ev.members.push(memberId);
-        }
+            ev.members.push(memberId); //Update JSON
+        } 
     }
 
     //Update width
@@ -321,8 +301,8 @@ function saveEventInfo (popId) {
     ev.x = newX;
     ev.inputs = $('#inputs_' + popId).val();
     ev.outputs = $('#outputs_' + popId).val();
-    console.log(ev.inputs);
 
+    removeAllMemberLines(ev);
     drawEvent(ev, 0);
     drawPopover(ev, true, false);
     
@@ -357,42 +337,34 @@ function getDRI(groupNum) {
     var driId;
    
     if (dri == null){
-	     //console.log("dri ID is null");
 	     driId = 0;       
     }
     else{
-	    //console.log("The dri ID is:" + driId);
 	    var driId = dri.value;    
     }
     return driId;
 }
 
 //Adds member checkboxes onto the popover of an event, checks if a member is involved in event
-function writeEventMembers(idNum) {
-    var indexOfJSON = getEventJSONIndex(idNum);
+function writeEventMembers(eventObj) {
     var memberString = "";
-    
+    var evMembers = eventObj.members;
+
     if (flashTeamsJSON["members"].length == 0) return "No Team Members";
-    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+    for (i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var memberSearchId = flashTeamsJSON["members"][i].id;
         var memberName = flashTeamsJSON["members"][i].role;
-
         var found = false;
-
-        for (var j = 0; j<flashTeamsJSON["events"][indexOfJSON].members.length; j++) {
-            var member = getMemberById(flashTeamsJSON["events"][indexOfJSON].members[j]);
-            //console.log("first: " + member.role);
-            //console.log("second: " + memberName);
-            if (member.role == memberName) {
-                //OLD CODE: onclick="if(this.checked){addEventMember(' + event_counter + ', ' +  i + ')}"
-                memberString += '<input type="checkbox" id="event' + idNum + 'member' 
+        for (j = 0; j<evMembers.length; j++) {
+            if (evMembers[j] == memberSearchId) {
+                memberString += '<input type="checkbox" id="event' + eventObj["id"] + 'member' 
                     + i + 'checkbox" checked="true">' + memberName + "   <br>";
                 found = true;
                 break;
             }
         }
-
         if (!found) {
-            memberString +=  '<input type="checkbox" id="event' + idNum 
+            memberString +=  '<input type="checkbox" id="event' + eventObj["id"] 
                 + 'member' + i + 'checkbox">' + memberName + "   <br>"; 
         }      
     }

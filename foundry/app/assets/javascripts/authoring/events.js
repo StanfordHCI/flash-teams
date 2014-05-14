@@ -611,6 +611,7 @@ function drawCollabBtn(eventObj, firstTime) {
 }
 
 function drawMemberLines(eventObj) {
+    console.log("drawing member lines for ", eventObj);
     var x_offset = 8; // unique for member lines
     var width = getWidth(eventObj) - 8;
 
@@ -621,6 +622,7 @@ function drawMemberLines(eventObj) {
     // figure out if first time or not for each member line
     for(var i=0;i<members.length;i++){
         var existingLine = task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1));
+        console.log("EXISTING LINE", existingLine);
         var y_offset = 60 + (i*8); // unique for member lines
         if(existingLine[0].length == 0){ // first time
             var member = getMemberById(members[i]);
@@ -765,7 +767,8 @@ function drawEachCollab(eventObj, firstTime){
 }
 
 //Creates graphical elements from array of data (task_rectangles)
-function drawEvent(eventObj, firstTime) {    
+function drawEvent(eventObj, firstTime) { 
+    console.log("redrawing event");   
     drawG(eventObj, firstTime);
     drawMainRect(eventObj, firstTime);
     drawRightDragBar(eventObj, firstTime);
@@ -826,6 +829,17 @@ function deleteEventMember(eventId, memberNum, memberName) {
         }
     }
 }
+
+//Remove all the lines from a given event
+function removeAllMemberLines(eventObj){
+    var groupNum = eventObj["id"];
+    var members = eventObj["members"];
+    var task_g = getTaskGFromGroupNum(groupNum);
+
+    for(var i=0;i<members.length;i++){
+        task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1)).remove();
+    }
+};
 
 //Updates the physical task rectangle representation of start and duration, also update JSON
 function updateTime(idNum) {
