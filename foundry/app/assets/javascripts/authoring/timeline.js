@@ -211,7 +211,7 @@ function addTime() {
     .attr("height", SVG_HEIGHT)
     .attr("fill", "white")
     .attr("fill-opacity", 0)
-    .on("mousedown", addEvent);
+    .on("mousedown", addEvent); //FIX THIS
     
 }
 
