@@ -66,7 +66,7 @@ function renderMemberPopovers(members) {
         var member_name = member.role;
         var invitation_link = member.invitation_link;
 
-        var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
+        var content = '<form name="memberForm_' + member_id + '>'
                 +'<div class="mForm_' + member_id + '">'
                 +'<div class="input-append" > ' 
                 +'<select class="category1Input" id="member' + member_id + '_category1">';
@@ -79,7 +79,7 @@ function renderMemberPopovers(members) {
 
         content += '</select>';
         content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
-                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
+                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" data-provide="typeahead" onclick="autocompleteSkills()" data-items="4" placeholder="New oDesk Skill" />'
                 +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + member_id + '" onclick="addSkill(' + member_id + ');">+</button>'
                 +'</div>'
                 +'Skills:'  
@@ -104,7 +104,13 @@ function renderMemberPopovers(members) {
             trigger: "click",
             title: '<b>' + member_name + '</b>',
             content:  content,
-            container: $("#member-container")
+            container: $("#member-container"),
+            callback: function(){
+               $(".skillInput").each(function () {
+        alert("here");
+        $(this).typeahead({source: oSkills})
+             });  
+            }
         });
 
         var mem_id = member_id;
@@ -131,6 +137,7 @@ function renderMemberPopovers(members) {
         // append oDesk Skills input to popover
         $(document).ready(function() {
             pressEnterKeyToSubmit("#addSkillInput_" + member_id, "#addSkillButton_" + member_id);
+            autocompleteSkills();
         });
     }
 };
@@ -175,13 +182,12 @@ function addMember() {
     inviteMember(member_obj.id);
 };
 
-function autocompleteSkills() {
+/*function autocompleteSkills() {
     $(".skillInput").each(function () {
-        $(this).autocomplete({
-            source: oSkills
-        });
+        $(this).typeahead({source: subjects})
     });
 };
+*/
 
 //Adds a needed skill to a member and updates JSON
 function addSkill(memberId) {
@@ -353,4 +359,79 @@ function addMemAuto() {
             source: memberArray
         });
     })
+};
+
+
+var substringMatcher = function(strs) {
+  return function findMatches(q, cb) {
+    alert("here");
+    var matches, substringRegex;
+ 
+    // an array that will be populated with substring matches
+    matches = [];
+ 
+    // regex used to determine if a string contains the substring `q`
+    substrRegex = new RegExp(q, 'i');
+ 
+    // iterate through the pool of strings and for any string that
+    // contains the substring `q`, add it to the `matches` array
+    $.each(strs, function(i, str) {
+      if (substrRegex.test(str)) {
+        // the typeahead jQuery plugin expects suggestions to a
+        // JavaScript object, refer to typeahead docs for more info
+        matches.push({ value: str });
+      }
+    });
+ 
+    cb(matches);
+  };
+};
+ 
+var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+  'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+];
+ 
+$('.typeahead').typeahead({
+  minLength: 1,
+  highlight: true,
+},
+{
+  name: 'my-dataset',
+  source: states
+});
+
+/*
+$('#the-basics.typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 1
+},
+{
+  name: 'states',
+  displayKey: 'value',
+  source: substringMatcher(states)
+});*/
+
+var subjects = ['PHP', 'MySQL', 'SQL', 'PostgreSQL', 'HTML', 'CSS', 'HTML5', 'CSS3', 'JSON']; 
+$('#search').typeahead({source: subjects});
+
+$('#addSkillInput_1.skillInput').typeahead({source: subjects});
+
+$('#addSkillInput_2.skillInput').typeahead({source: subjects});
+function source(query, process) {
+  return ['123','234'];
+}
+
+function autocompleteSkills() {
+    $(".skillInput").each(function () {
+        alert("here");
+        $(this).typeahead({source: subjects})
+    });
 };
