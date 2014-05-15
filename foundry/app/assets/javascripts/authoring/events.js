@@ -706,7 +706,7 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var x1 = ev1.x + 3 + getWidth(eventObj);
+                var x1 = ev1.x + 3 + getWidth(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
@@ -746,6 +746,7 @@ function drawEachCollab(eventObj, firstTime){
             }
             if (draw){
                 var y1 = ev1.y + 17;
+                var x1 = ev1.x + 3;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 17;
                 var firstTaskY = 0;
@@ -758,8 +759,10 @@ function drawEachCollab(eventObj, firstTime){
                     firstTaskY = y2 + 90;
                     taskDistance = y1 - firstTaskY;
                 }
+                if (x1 <= x2) var startX = x2;
+                else var startX = x1;
                 $("#interaction_" + inter["id"])
-                    .attr("x", x2)
+                    .attr("x", startX)
                     .attr("y", firstTaskY)
                     .attr("height", taskDistance)
                     .attr("width", overlap);
