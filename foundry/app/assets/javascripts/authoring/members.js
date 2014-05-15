@@ -59,7 +59,7 @@ function renderPills(members) {
 };
 
 function renderMemberPopovers(members) {
-    for (var i=0;i<members.length;i++){
+   for (var i=0;i<members.length;i++){
         var member = members[i];
         var member_id = member.id;
         console.log("rendering popovers for member " + member_id);
@@ -79,11 +79,20 @@ function renderMemberPopovers(members) {
 
         content += '</select>';
         content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
-                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" data-provide="typeahead" onclick="autocompleteSkills()" data-items="4" placeholder="New oDesk Skill" />'
+                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" data-provide="typeahead" placeholder="New oDesk Skill" />'
                 +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + member_id + '" onclick="addSkill(' + member_id + ');">+</button>'
                 +'</div>'
                 +'Skills:'  
-                +'<ul class="nav nav-pills" id="skillPills_' + member_id + '"> </ul>'
+                +'<ul class="nav nav-pills" id="skillPills_' + member_id + '">';
+
+            for(var i=0;i<member.skills.length;i++){
+                var memberSkillNumber = i+1;
+                var skillName = member.skills[i];
+                content+='<li class="active" id="sPill_mem' + member_id + '_skill' + memberSkillNumber + '"><a>' + skillName 
+                + '<div class="close" onclick="deleteSkill(' + member_id + ', ' + memberSkillNumber + ', &#39' + skillName + '&#39)">  X</div></a></li>';
+                }
+
+        content +='</ul>'
                 +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
                 +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
                 +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
@@ -107,9 +116,8 @@ function renderMemberPopovers(members) {
             container: $("#member-container"),
             callback: function(){
                $(".skillInput").each(function () {
-        alert("here");
-        $(this).typeahead({source: oSkills})
-             });  
+                    $(this).typeahead({source: oSkills})
+                });  
             }
         });
 
@@ -137,7 +145,6 @@ function renderMemberPopovers(members) {
         // append oDesk Skills input to popover
         $(document).ready(function() {
             pressEnterKeyToSubmit("#addSkillInput_" + member_id, "#addSkillButton_" + member_id);
-            autocompleteSkills();
         });
     }
 };
@@ -182,12 +189,6 @@ function addMember() {
     inviteMember(member_obj.id);
 };
 
-/*function autocompleteSkills() {
-    $(".skillInput").each(function () {
-        $(this).typeahead({source: subjects})
-    });
-};
-*/
 
 //Adds a needed skill to a member and updates JSON
 function addSkill(memberId) {
@@ -230,6 +231,7 @@ function saveMemberInfo(popId) {
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
     //updateMemberPopover(popId);
+    renderMemberPopovers(flashTeamsJSON["members"]);
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
@@ -361,77 +363,3 @@ function addMemAuto() {
     })
 };
 
-
-var substringMatcher = function(strs) {
-  return function findMatches(q, cb) {
-    alert("here");
-    var matches, substringRegex;
- 
-    // an array that will be populated with substring matches
-    matches = [];
- 
-    // regex used to determine if a string contains the substring `q`
-    substrRegex = new RegExp(q, 'i');
- 
-    // iterate through the pool of strings and for any string that
-    // contains the substring `q`, add it to the `matches` array
-    $.each(strs, function(i, str) {
-      if (substrRegex.test(str)) {
-        // the typeahead jQuery plugin expects suggestions to a
-        // JavaScript object, refer to typeahead docs for more info
-        matches.push({ value: str });
-      }
-    });
- 
-    cb(matches);
-  };
-};
- 
-var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-  'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-  'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-  'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-];
- 
-$('.typeahead').typeahead({
-  minLength: 1,
-  highlight: true,
-},
-{
-  name: 'my-dataset',
-  source: states
-});
-
-/*
-$('#the-basics.typeahead').typeahead({
-  hint: true,
-  highlight: true,
-  minLength: 1
-},
-{
-  name: 'states',
-  displayKey: 'value',
-  source: substringMatcher(states)
-});*/
-
-var subjects = ['PHP', 'MySQL', 'SQL', 'PostgreSQL', 'HTML', 'CSS', 'HTML5', 'CSS3', 'JSON']; 
-$('#search').typeahead({source: subjects});
-
-$('#addSkillInput_1.skillInput').typeahead({source: subjects});
-
-$('#addSkillInput_2.skillInput').typeahead({source: subjects});
-function source(query, process) {
-  return ['123','234'];
-}
-
-function autocompleteSkills() {
-    $(".skillInput").each(function () {
-        alert("here");
-        $(this).typeahead({source: subjects})
-    });
-};
