@@ -231,10 +231,10 @@ function saveMemberInfo(popId) {
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
     //updateMemberPopover(popId);
-    renderMemberPopovers(flashTeamsJSON["members"]);
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
+    renderMemberPopovers(flashTeamsJSON["members"]);
 };
 
 //Delete team member from team list, JSON, diagram, and events
