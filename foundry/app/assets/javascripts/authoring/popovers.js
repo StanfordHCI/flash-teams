@@ -268,7 +268,7 @@ function saveEventInfo (popId) {
     var indexOfJSON = getEventJSONIndex(popId);
     var ev = flashTeamsJSON["events"][indexOfJSON];
 
-
+    removeAllMemberLines(ev);
     //Update members of event
     flashTeamsJSON["events"][indexOfJSON].members = [];
     for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
@@ -302,7 +302,6 @@ function saveEventInfo (popId) {
     ev.inputs = $('#inputs_' + popId).val();
     ev.outputs = $('#outputs_' + popId).val();
 
-    removeAllMemberLines(ev);
     drawEvent(ev, 0);
     drawPopover(ev, true, false);
     
