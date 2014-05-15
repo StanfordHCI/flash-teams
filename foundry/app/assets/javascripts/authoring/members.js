@@ -10,7 +10,6 @@ var isUser = false;
 
 function renderMembersRequester() {
     var members = flashTeamsJSON.members;
-    console.log("rendering members: " + members);
     renderPills(members);
     renderMemberPopovers(members);
     renderDiagram(members);
@@ -51,9 +50,8 @@ function renderPills(members) {
         var member_id = member.id;
         var member_name = member.role;
         var member_color = member.color;
-        console.log("RENDERING PILL...COLOR IS: " + member_color);
         $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
-        + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+        + '<div class="close" onclick="deleteMember(' + member_id + ');">  X</div></a></li>');
         renderMemberPillColor(member_id);
     }
 };
@@ -62,10 +60,13 @@ function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
         var member = members[i];
         var member_id = member.id;
-        console.log("rendering popovers for member " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
-
+        var newColor = "'"+member.color+"'";
+        
+        var category1 = member.category1;
+        var category2 = member.category2;
+        
         var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
                 +'<div class="mForm_' + member_id + '">'
                 +'<div class="input-append" > ' 
@@ -74,19 +75,44 @@ function renderMemberPopovers(members) {
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
             var option = document.createElement("option");
-            content += '<option value="' + key + '">' + key + '</option>';
+            if(key == category1){
+                 content += '<option value="' + key + '" selected>' + key + '</option>';
+            }
+            else
+                content += '<option value="' + key + '">' + key + '</option>';
         }
 
+        //reload or build category2 based on previously selected category 1
         content += '</select>';
-        content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>'
-                +'<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
+        
+
+        if (category1 == "--oDesk Category--" || category1 == ""){
+            content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>';
+        } else{
+          
+            content += '<br><br><select class="category2Input" id="member' + member_id + '_category2">'
+            for (var i=0; i<oDeskCategories[category1].length; i++) {
+              
+                var key2 = oDeskCategories[category1][i];
+             
+                var option = document.createElement("option");
+                if(key2 == category2){
+                    content += '<option value="' + key2 + '" selected>' + key2 + '</option>';
+                }
+                else
+                    content += '<option value="' + key2 + '">' + key2 + '</option>';
+            }
+            content += '</select>';
+        }
+
+        content += '<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
                 +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + member_id + '" onclick="addSkill(' + member_id + ');">+</button>'
                 +'</div>'
                 +'Skills:'  
                 +'<ul class="nav nav-pills" id="skillPills_' + member_id + '"> </ul>'
                 +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
-                +'<p><script type="text/javascript"> initializeColorPicker(); </script></p>'
-                +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
+                +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
+                +'<p><button type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
                 +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
                 + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
                 + invitation_link
@@ -94,6 +120,7 @@ function renderMemberPopovers(members) {
             +'</p></form>' 
             +'</div>';
 
+        console.log("destroying popover: " + member_id);
         $("#mPill_" + member_id).popover('destroy');
 
         $("#mPill_" + member_id).popover({
@@ -110,7 +137,6 @@ function renderMemberPopovers(members) {
         var mem_id = member_id;
         console.log("attaching click handler to " + member_id);
         $("#mPill_" + member_id).on('click', function() {
-            console.log("clicked on " + mem_id);
             $("#member" + mem_id + "_category1").on('change', function(){
                 if ($("#member" + mem_id + "_category1").value === "--oDesk Category--") {
                     $("#member" + mem_id + "_category2").attr("disabled", "disabled");
@@ -120,12 +146,14 @@ function renderMemberPopovers(members) {
 
                     var category1Select = document.getElementById("member" + mem_id + "_category1");
                     var category1Name = category1Select.options[category1Select.selectedIndex].value;
+                   
                     for (var i = 0; i < oDeskCategories[category1Name].length; i++) {
                         var option = document.createElement("option");
                         $("#member" + mem_id + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
                     }
                 }
             });
+
         });
 
         // append oDesk Skills input to popover
@@ -160,8 +188,9 @@ function addMember() {
     $("#addMemberInput").val(this.placeholder);
 
     // add member to json
+    var members = flashTeamsJSON.members;
     var member_obj = newMemberObject(member_name);
-    flashTeamsJSON.members.push(member_obj);
+    members.push(member_obj);
 
     //update event popovers to show the new member
     var events = flashTeamsJSON.events;
@@ -169,9 +198,11 @@ function addMember() {
          drawPopover(events[i], true, false);
     }
 
+    renderPills(members);
+    renderMemberPopovers(members);
+
     updateStatus(false);
 
-    console.log("member_obj.id: " + member_obj.id);
     inviteMember(member_obj.id);
 };
 
@@ -217,45 +248,76 @@ function deleteSkill(memberId, pillId, skillName) {
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
     var indexOfJSON = getMemberJSONIndex(popId);
-    flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
-    flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
+    //flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
+    //flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
 
+    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
+   
     var newColor = $("#color_" + popId).spectrum("get").toHexString();
+ 
     updateMemberPillColor(newColor, popId);
     renderMemberPillColor(popId);
     //updateMemberPopover(popId);
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
+
+    renderAllMemberLines();
+    renderMemberPopovers(flashTeamsJSON["members"]);
 };
 
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
-    //Remove Member from JSON
+    // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
-    var memberName = flashTeamsJSON["members"][indexOfJSON].role;
-    flashTeamsJSON["members"].splice(indexOfJSON, 1);
+    var members = flashTeamsJSON["members"];
+    var memberId = members[indexOfJSON].id;
+    console.log("deleting member " + memberId);
+    console.log($("#mPill_" + memberId));
+    $("#mPill_" + memberId).popover('destroy');
 
-    $("#mPill_" + pillId).popover("destroy");
-    $("#mPill_" + pillId).remove();
+    members.splice(indexOfJSON, 1);
+    renderPills(members);
+    renderMemberPopovers(members);
 
-    //REMOVE THE CIRCLES
-    removeMemberNode(pillId);
+    // remove from members array with event object
+    for(var i=0; i<flashTeamsJSON["events"].length; i++){
+        var ev = flashTeamsJSON["events"][i];
+        var member_event_index = ev.members.indexOf(memberId);
+        
+        // remove member
+        if(member_event_index != -1){ // found member in the event
+            removeAllMemberLines(ev);
+            ev.members.splice(member_event_index,1);
+            drawEvent(ev,false);
+        }
 
-    //REMOVE THE MEMBER FROM EVENTS
+        //remove dri if the member was a dri
+        if (ev.dri == String(memberId)){
+            ev.dri = "";
+        }
+    }
+
+    // update event popovers
+    drawAllPopovers();
+
+    updateStatus(false);
 };
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/invite';
-    var data = {uniq: flashTeamsJSON["members"][pillId-1].uniq};
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq};
     $.get(url, data, function(data){
-        flashTeamsJSON["members"][pillId-1].uniq = data["uniq"];
-        flashTeamsJSON["members"][pillId-1].invitation_link = data["url"];
-        updateStatus(false);
+        console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
+        var members = flashTeamsJSON["members"];
+        members[indexOfJSON].uniq = data["uniq"];
+        members[indexOfJSON].invitation_link = data["url"];
 
-        // display pills, popovers, and diagram
-        renderMembersRequester();
+        renderMemberPopovers(members);
+        updateStatus(false);
     });
 };
 
@@ -285,11 +347,12 @@ function updateMemberPopover(idNum) {
 };
 
 //Draws the color picker on a member popover
-function initializeColorPicker() {
+function initializeColorPicker(newColor) {
+    
     $(".full-spectrum").spectrum({
         showPaletteOnly: true,
         showPalette: true,
-        color: "#08c",
+        color: newColor,
         palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
