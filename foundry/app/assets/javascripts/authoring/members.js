@@ -10,7 +10,6 @@ var isUser = false;
 
 function renderMembersRequester() {
     var members = flashTeamsJSON.members;
-    console.log("rendering members: " + members);
     renderPills(members);
     renderMemberPopovers(members);
     renderDiagram(members);
@@ -51,23 +50,19 @@ function renderPills(members) {
         var member_id = member.id;
         var member_name = member.role;
         var member_color = member.color;
-        console.log("RENDERING PILL...COLOR IS: " + member_color);
         $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
-        + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+        + '<div class="close" onclick="deleteMember(' + member_id + ');">  X</div></a></li>');
         renderMemberPillColor(member_id);
     }
 };
 
 function renderMemberPopovers(members) {
     for (var i=0;i<members.length;i++){
-
         var member = members[i];
         var member_id = member.id;
-        console.log("rendering popovers for member " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
         var newColor = "'"+member.color+"'";
-        
         
         var category1 = member.category1;
         var category2 = member.category2;
@@ -108,7 +103,6 @@ function renderMemberPopovers(members) {
                     content += '<option value="' + key2 + '">' + key2 + '</option>';
             }
             content += '</select>';
-            //alert(content);
         }
 
         content += '<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
@@ -118,7 +112,7 @@ function renderMemberPopovers(members) {
                 +'<ul class="nav nav-pills" id="skillPills_' + member_id + '"> </ul>'
                 +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
                 +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
-                +'<p><button type="button" onclick="deleteMember(' + member_id + '); updateStatus();">Delete</button>     '
+                +'<p><button type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
                 +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
                 + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
                 + invitation_link
@@ -126,6 +120,7 @@ function renderMemberPopovers(members) {
             +'</p></form>' 
             +'</div>';
 
+        console.log("destroying popover: " + member_id);
         $("#mPill_" + member_id).popover('destroy');
 
         $("#mPill_" + member_id).popover({
@@ -142,7 +137,6 @@ function renderMemberPopovers(members) {
         var mem_id = member_id;
         console.log("attaching click handler to " + member_id);
         $("#mPill_" + member_id).on('click', function() {
-            console.log("clicked on " + mem_id);
             $("#member" + mem_id + "_category1").on('change', function(){
                 if ($("#member" + mem_id + "_category1").value === "--oDesk Category--") {
                     $("#member" + mem_id + "_category2").attr("disabled", "disabled");
@@ -194,8 +188,9 @@ function addMember() {
     $("#addMemberInput").val(this.placeholder);
 
     // add member to json
+    var members = flashTeamsJSON.members;
     var member_obj = newMemberObject(member_name);
-    flashTeamsJSON.members.push(member_obj);
+    members.push(member_obj);
 
     //update event popovers to show the new member
     var events = flashTeamsJSON.events;
@@ -203,9 +198,11 @@ function addMember() {
          drawPopover(events[i], true, false);
     }
 
+    renderPills(members);
+    renderMemberPopovers(members);
+
     updateStatus(false);
 
-    console.log("member_obj.id: " + member_obj.id);
     inviteMember(member_obj.id);
 };
 
@@ -272,50 +269,55 @@ function saveMemberInfo(popId) {
 
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
-    //Remove Member from JSON
+    // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
-    var memberName = flashTeamsJSON["members"][indexOfJSON].role;
-    var memberId = flashTeamsJSON["members"][indexOfJSON].id;
-    
-    flashTeamsJSON["members"].splice(indexOfJSON, 1);
+    var members = flashTeamsJSON["members"];
+    var memberId = members[indexOfJSON].id;
+    console.log("deleting member " + memberId);
+    console.log($("#mPill_" + memberId));
+    $("#mPill_" + memberId).popover('destroy');
 
-    $("#mPill_" + pillId).popover("destroy");
-    $("#mPill_" + pillId).remove();
+    members.splice(indexOfJSON, 1);
+    renderPills(members);
+    renderMemberPopovers(members);
 
-    //REMOVE THE CIRCLES
-    removeMemberNode(pillId);
-
-    //REMOVE THE MEMBER FROM EVENTS
-     //redraw events
+    // remove from members array with event object
     for(var i=0; i<flashTeamsJSON["events"].length; i++){
-        var member_event_index = flashTeamsJSON["events"][i].members.indexOf(memberId);
-        if(member_event_index != -1){
-                //remove dri if the member was a dri
-                if (flashTeamsJSON["events"][i].dri == String(memberId)){
-                    flashTeamsJSON["events"][i].dri = "";
-                }
+        var ev = flashTeamsJSON["events"][i];
+        var member_event_index = ev.members.indexOf(memberId);
+        
+        // remove member
+        if(member_event_index != -1){ // found member in the event
+            removeAllMemberLines(ev);
+            ev.members.splice(member_event_index,1);
+            drawEvent(ev,false);
+        }
 
-                removeAllMemberLines(flashTeamsJSON["events"][i]);
-                flashTeamsJSON["events"][i].members.splice(member_event_index,1);
-                drawEvent(flashTeamsJSON["events"][i],0);
+        //remove dri if the member was a dri
+        if (ev.dri == String(memberId)){
+            ev.dri = "";
         }
     }
-    //renderAllMemberLines();
-    //REMOVE THE MEMBER FROM EVENTS' POPOVERS
-    drawAllPopovers();      
+
+    // update event popovers
+    drawAllPopovers();
+
+    updateStatus(false);
 };
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/invite';
-    var data = {uniq: flashTeamsJSON["members"][pillId-1].uniq};
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq};
     $.get(url, data, function(data){
-        flashTeamsJSON["members"][pillId-1].uniq = data["uniq"];
-        flashTeamsJSON["members"][pillId-1].invitation_link = data["url"];
-        updateStatus(false);
+        console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
+        var members = flashTeamsJSON["members"];
+        members[indexOfJSON].uniq = data["uniq"];
+        members[indexOfJSON].invitation_link = data["url"];
 
-        // display pills, popovers, and diagram
-        renderMembersRequester();
+        renderMemberPopovers(members);
+        updateStatus(false);
     });
 };
 
