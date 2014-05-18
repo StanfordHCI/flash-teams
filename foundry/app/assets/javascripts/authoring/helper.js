@@ -35,17 +35,21 @@ function clearPopovers() {
         var form = $(this).children()[0];
 
         // Extract the corresponding number
-        var formName = $(form).attr('name').split('_');
+        if ($(form).attr('name')) {
 
-        // Split the name into the data we want
-        var popoverType = formName[0];
-        var popoverId = formName[1];
+            var formName = $(form).attr('name').split('_');
 
-        // Find the popover type dependent on the type
-        if (popoverType == 'eventForm') {
-            $('#g_' + popoverId).popover('hide');
-        } else if (popoverType == 'memberForm') {
-            $('#mPill_' + popoverId).popover('hide');
+            // Split the name into the data we want
+            var popoverType = formName[0];
+            var popoverId = formName[1];
+
+            // Find the popover type dependent on the type
+            if (popoverType == 'eventForm') {
+                $('#g_' + popoverId).popover('hide');
+            } else if (popoverType == 'memberForm') {
+                $('#mPill_' + popoverId).popover('hide');
+            }
+
         }
 
     });
