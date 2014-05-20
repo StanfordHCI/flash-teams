@@ -45,6 +45,7 @@ var drag = d3.behavior.drag()
             .origin(Object)
             .on("drag", dragEvent)
             .on("dragend", function(d){
+                console.log("!!!!!!!!!!!!!!!DRAGEND!!!!!!!!!!!!!");
                 var ev = getEventFromId(d.groupNum);
                 drawPopover(ev, true, false);
                 updateStatus(false);
@@ -373,6 +374,7 @@ function drawMainRect(eventObj, firstTime) {
             .attr('pointer-events', 'all')
             .on("click", function(d) {
                 if(d3.event.defaultPrevented) return;
+                d3.event.stopPropagation();
                 eventMousedown(d.groupNum); })
             .call(drag);
     } else {

@@ -96,18 +96,22 @@ function readOnlyPopoverObj(ev) {
         +'<b>Total Runtime: </b><br>' 
         + hrs + ' hrs ' + mins + ' mins<br>';
 
-    content += '<b>Inputs:</b><br>';
-    var inputs = ev.inputs.split(",");
-    for(var i=0;i<inputs.length;i++){
-        content += inputs[i];
-        content += "<br>";
+    if(ev.inputs) {
+        content += '<b>Inputs:</b><br>';
+        var inputs = ev.inputs.split(",");
+        for(var i=0;i<inputs.length;i++){
+            content += inputs[i];
+            content += "<br>";
+        }
     }
     
-    content += '<b>Outputs:</b><br>';
-    var outputs = ev.outputs.split(",");
-    for(var i=0;i<outputs.length;i++){
-        content += outputs[i];
-        content += "<br>";
+    if(ev.outputs) {
+        content += '<b>Outputs:</b><br>';
+        var outputs = ev.outputs.split(",");
+        for(var i=0;i<outputs.length;i++){
+            content += outputs[i];
+            content += "<br>";
+        }
     }
 
     var num_members = ev.members.length;
@@ -197,6 +201,7 @@ function drawPopover(eventObj, editable, show) {
         }
         data.options.title = obj["title"];
         data.options.content = obj["content"];
+        console.log("changed content to: " + data.options.content);
     }
     // show/hide it
     if(show){
@@ -228,9 +233,14 @@ function hidePopover(popId){
 };
 
 function showPopover(popId){
-
     //console.log("showing popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('show');
+    //overlayOn();
+};
+
+function togglePopover(popId){
+    //console.log("showing popover " + popId);
+    $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('toggle');
     //overlayOn();
 };
 
