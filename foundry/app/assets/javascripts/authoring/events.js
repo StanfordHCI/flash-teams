@@ -591,7 +591,6 @@ function redraw(group, newWidth, gNum) {
             .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); })
             .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))});
     }
-    console.log("REDRAW CALLED." + x + ", " + y);
     var eventObj = {"id":gNum, "x":x, "y":y, "width":newWidth};
     //Redraw Handoffs
     drawEachHandoff(eventObj);
@@ -606,7 +605,6 @@ function drawEachHandoff(eventObj){
         var draw;
         if (inter["type"] == "handoff"){
             if (inter["event1"] == eventObj["id"]){
-                console.log("found interaction");
                 draw = true;
                 var ev1 = eventObj;
                 var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
@@ -646,11 +644,13 @@ function drawEachCollab(eventObj){
         var draw;
         if (inter["type"] == "collaboration"){
             if (inter["event1"] == eventObj["id"]){
+                console.log("found interaction");
                 draw = true;
                 var ev1 = eventObj;
                 var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
             }
             else if (inter["event2"] == eventObj["id"]){
+                console.log("found interaction");
                 draw = true;
                 var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
                 var ev2 = eventObj;
@@ -662,6 +662,7 @@ function drawEachCollab(eventObj){
                 var firstTaskY = 0;
                 var taskDistance = 0;
                 var overlap = eventsOverlap(ev1.x, ev1["width"], ev2.x, ev2["width"]);
+                console.log("overlap", overlap);
                 if (y1 < y2) {
                     firstTaskY = y1 + 90;
                     taskDistance = y2 - firstTaskY;
