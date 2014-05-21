@@ -512,7 +512,8 @@ function  drawEvent(eventObj) {
             .attr("x", function(d) {return d.x+(getWidth(eventObj))-18})
             .attr("y", function(d) {return d.y+23})
             .on("click", startWriteHandoff);
-        $("#handoff_btn_" + groupNum).popover({
+        //TURNED OFF, WAS IRRITATING USERS
+        /*$("#handoff_btn_" + groupNum).popover({ 
             trigger: "click",
             html: true,
             class: "interactionPopover",
@@ -520,7 +521,7 @@ function  drawEvent(eventObj) {
             placement: "right",
             content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
             container: $("#timeline-container")
-        });
+        });*/ 
         $("#handoff_btn_" + groupNum).popover("show");
         $("#handoff_btn_" + groupNum).popover("hide");        
         var collab_btn = task_g.append("image")
@@ -533,7 +534,8 @@ function  drawEvent(eventObj) {
             .attr("x", function(d) {return d.x+(getWidth(eventObj))-38; })
             .attr("y", function(d) {return d.y+23})
             .on("click", startWriteCollaboration);
-        $("#collab_btn_" + groupNum).popover({
+        //TURNED OFF, WAS IRRITATING USERS
+        /*$("#collab_btn_" + groupNum).popover({
             trigger: "click",
             html: true,
             class: "interactionPopover",
@@ -541,7 +543,7 @@ function  drawEvent(eventObj) {
             placement: "right",
             content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
             container: $("#timeline-container")
-        });
+        });*/
         $("#collab_btn_" + groupNum).popover("show");
         $("#collab_btn_" + groupNum).popover("hide");
     }
