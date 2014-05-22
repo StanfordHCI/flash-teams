@@ -201,6 +201,7 @@ function drawPopover(eventObj, editable, show) {
         }
         data.options.title = obj["title"];
         data.options.content = obj["content"];
+        console.log("changed content to: " + data.options.content);
     }
     // show/hide it
     if(show){
@@ -232,9 +233,14 @@ function hidePopover(popId){
 };
 
 function showPopover(popId){
-
     //console.log("showing popover " + popId);
     $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('show');
+    //overlayOn();
+};
+
+function togglePopover(popId){
+    //console.log("showing popover " + popId);
+    $(timeline_svg.selectAll("g#g_"+popId)[0][0]).popover('toggle');
     //overlayOn();
 };
 
