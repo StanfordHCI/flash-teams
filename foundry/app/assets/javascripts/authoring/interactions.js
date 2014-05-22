@@ -30,8 +30,7 @@ function eventMousedown(task2idNum) {
         var idNum = flashTeamsJSON["events"][i].id;
         if (idNum != task1idNum && idNum != task2idNum) {
             $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
-        }
-        
+        }   
     }
 
     if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
@@ -115,6 +114,8 @@ function eventMousedown(task2idNum) {
         }
     //There is no interation being drawn
     } else {
+        console.log("TOGGLING POPOVER");
+        $(timeline_svg.selectAll("g#g_"+task2idNum)[0][0]).popover('toggle');
         return;
     }
 }
@@ -357,11 +358,13 @@ function eventsOverlap(task1X, task1Width, task2X, task2Width) {
     var task2End = task2X + task2Width;
 
     //Task2 starts after the end of Task1
-    if (task1End <= task2X) {
+    if ((task1End <= task2X) || (task2End <= task1X)) {
         return 0;
     } else {
-        var overlapStart = task2X;
-        var overlapEnd = 0;
+        var overlapStart;
+        if (task1X <= task2X) overlapStart = task2X;
+        else overlapStart = task1X;
+            var overlapEnd = 0;
         //Task 1 Ends first or they end simultaneously
         if (task1End <= task2End) overlapEnd = task1End;
         //Task 2 Ends first

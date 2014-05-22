@@ -14,7 +14,8 @@
 //= require jquery_ujs
 //= require_tree ./d3
 //= require turbolinks
-//= require_tree ./bootstrap
+//= require ./bootstrap/bootstrap
+//= require ./bootstrap/bootstrap.min
 //= require ./authoring/load
 //= require ./authoring/timeline
 //= require ./authoring/events
@@ -31,4 +32,5 @@
 //= require ./authoring/eventslibrary
 //= require ./authoring/flash_team_update
 //= require ./authoring/notification_email
-// require ./authoring/gdrive
+//= require ./authoring/gdrive
+//= require ./authoring/bootstrap-tagsinput
