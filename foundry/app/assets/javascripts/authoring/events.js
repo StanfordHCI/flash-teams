@@ -644,16 +644,18 @@ function drawEachCollab(eventObj){
         var draw;
         if (inter["type"] == "collaboration"){
             if (inter["event1"] == eventObj["id"]){
-                console.log("found interaction");
                 draw = true;
                 var ev1 = eventObj;
+                var ev1Wdith = ev1["width"];
                 var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
+                var ev2Width = ev2.duration/15*25;
             }
             else if (inter["event2"] == eventObj["id"]){
-                console.log("found interaction");
                 draw = true;
                 var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
+                var ev1Wdith = ev1.duration/15*25;
                 var ev2 = eventObj;
+                var ev2Width = ev2["width"];
             }
             if (draw){
                 var y1 = ev1.y + 17;
@@ -662,7 +664,8 @@ function drawEachCollab(eventObj){
                 var y2 = ev2.y;
                 var firstTaskY = 0;
                 var taskDistance = 0;
-                var overlap = eventsOverlap(ev1.x, ev1["width"], ev2.x, ev2["width"]);
+
+                var overlap = eventsOverlap(ev1.x, ev1Wdith, ev2.x, ev2Width);
                 if (y1 < y2) {
                     firstTaskY = y1 + 90;
                     taskDistance = y2 - firstTaskY;
