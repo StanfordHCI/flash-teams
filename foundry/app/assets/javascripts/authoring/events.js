@@ -657,12 +657,12 @@ function drawEachCollab(eventObj){
             }
             if (draw){
                 var y1 = ev1.y + 17;
+                var x1 = ev1.x + 3;
                 var x2 = ev2.x + 3;
-                var y2 = ev2.y + 17;
+                var y2 = ev2.y;
                 var firstTaskY = 0;
                 var taskDistance = 0;
                 var overlap = eventsOverlap(ev1.x, ev1["width"], ev2.x, ev2["width"]);
-                console.log("overlap", overlap);
                 if (y1 < y2) {
                     firstTaskY = y1 + 90;
                     taskDistance = y2 - firstTaskY;
@@ -670,8 +670,10 @@ function drawEachCollab(eventObj){
                     firstTaskY = y2 + 90;
                     taskDistance = y1 - firstTaskY;
                 }
+                if (x1 <= x2) var startX = x2;
+                else var startX = x1;
                 $("#interaction_" + inter["id"])
-                    .attr("x", x2)
+                    .attr("x", startX)
                     .attr("y", firstTaskY)
                     .attr("height", taskDistance)
                     .attr("width", overlap);
