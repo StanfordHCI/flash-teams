@@ -22,6 +22,8 @@ $(document).ready(function(){
     });
 });
 
+var dragged = false;
+
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
                 .on("drag", rightResize)
@@ -45,9 +47,16 @@ var drag = d3.behavior.drag()
             .origin(Object)
             .on("drag", dragEvent)
             .on("dragend", function(d){
-                var ev = getEventFromId(d.groupNum);
-                drawPopover(ev, true, false);
-                updateStatus(false);
+                if(dragged){
+                    dragged = false;
+                    var ev = getEventFromId(d.groupNum);
+                    drawPopover(ev, true, false);
+                    updateStatus(false);
+                } else {
+                    // click
+                    console.log("CLICKED");
+                    eventMousedown(d.groupNum);
+                }
             });
 
 // leftResize: resize the rectangle by dragging the left handle
@@ -111,6 +120,8 @@ function dragEvent(d) {
     if(isUser) { // user page
         return;
     }
+
+    dragged = true;
 
     // get event id
     var groupNum = d.groupNum;
@@ -371,9 +382,6 @@ function drawMainRect(eventObj, firstTime) {
             .attr("fill-opacity", .6)
             .attr("stroke", "#5F5A5A")
             .attr('pointer-events', 'all')
-            .on("click", function(d) {
-                if(d3.event.defaultPrevented) return;
-                eventMousedown(d.groupNum); })
             .call(drag);
     } else {
         task_g.selectAll(".task_rectangle")

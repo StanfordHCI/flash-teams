@@ -26,10 +26,10 @@ function eventMousedown(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
     
     //Close all open popovers
-    for (i = 0; i<flashTeamsJSON["events"].length; i++) {
+    for (var i = 0; i<flashTeamsJSON["events"].length; i++) {
         var idNum = flashTeamsJSON["events"][i].id;
         if (idNum != task1idNum && idNum != task2idNum) {
-            $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
+            hidePopover(idNum);
         }   
     }
 
@@ -115,7 +115,9 @@ function eventMousedown(task2idNum) {
     //There is no interation being drawn
     } else {
         console.log("TOGGLING POPOVER");
-        $(timeline_svg.selectAll("g#g_"+task2idNum)[0][0]).popover('toggle');
+        var data = getPopoverDataFromGroupNum(task2idNum);
+        console.log("popover content here: " + data.options.content);
+        togglePopover(task2idNum);
         return;
     }
 }
