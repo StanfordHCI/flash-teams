@@ -592,7 +592,6 @@ function redraw(group, newWidth, gNum) {
             .attr("x", function(d) {return ($("#rect_" + gNum)[0].x.animVal.value + 8); })
             .attr("y", function(d) {return ($("#rect_" + gNum)[0].y.animVal.value + 40 + ((i-1)*8))});
     }
-    console.log("REDRAW CALLED." + x + ", " + y);
     var eventObj = {"id":gNum, "x":x, "y":y, "width":newWidth};
     //Redraw Handoffs
     drawEachHandoff(eventObj);
@@ -607,7 +606,6 @@ function drawEachHandoff(eventObj){
         var draw;
         if (inter["type"] == "handoff"){
             if (inter["event1"] == eventObj["id"]){
-                console.log("found interaction");
                 draw = true;
                 var ev1 = eventObj;
                 var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
@@ -646,23 +644,33 @@ function drawEachCollab(eventObj){
         var inter = interactions[i];
         var draw;
         if (inter["type"] == "collaboration"){
-            if (inter["event1"] == eventObj["id"]){
+            if (inter["event1"] == eventObj["id"]){ //ONLY THIS IS BUGGY
                 draw = true;
                 var ev1 = eventObj;
+                var ev1Width = ev1["width"];
                 var ev2 = flashTeamsJSON["events"][getEventJSONIndex(inter["event2"])];
+                var ev2Width = ev2.duration/15*25;
+                var y1 = ev1.y;
+                var x1 = ev1.x;
+                var y2 = ev2.y + 17;
+                var x2 = ev2.x;
             }
             else if (inter["event2"] == eventObj["id"]){
                 draw = true;
                 var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
+                var ev1Width = ev1.duration/15*25;
                 var ev2 = eventObj;
+                var ev2Width = ev2["width"];
+                var y1 = ev1.y + 17;
+                var x1 = ev1.x + 3;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y;
             }
             if (draw){
-                var y1 = ev1.y + 17;
-                var x2 = ev2.x + 3;
-                var y2 = ev2.y + 17;
                 var firstTaskY = 0;
                 var taskDistance = 0;
-                var overlap = eventsOverlap(ev1.x, ev1["width"], ev2.x, ev2["width"]);
+                var overlap = eventsOverlap(ev1.x, ev1Width, ev2.x, ev2Width);
+                if (overlap < 0) overlap = 0;
                 if (y1 < y2) {
                     firstTaskY = y1 + 90;
                     taskDistance = y2 - firstTaskY;
@@ -670,8 +678,11 @@ function drawEachCollab(eventObj){
                     firstTaskY = y2 + 90;
                     taskDistance = y1 - firstTaskY;
                 }
+                if (taskDistance < 0) taskDistance = 0;
+                if (x1 <= x2) var startX = x2;
+                else var startX = x1;
                 $("#interaction_" + inter["id"])
-                    .attr("x", x2)
+                    .attr("x", startX)
                     .attr("y", firstTaskY)
                     .attr("height", taskDistance)
                     .attr("width", overlap);

@@ -364,12 +364,15 @@ function eventsOverlap(task1X, task1Width, task2X, task2Width) {
     if (task1End <= task2X) {
         return 0;
     } else {
-        var overlapStart = task2X;
+        var overlapStart;
+        if (task1X <= task2X) overlapStart = task2X;
+        else overlapStart = task1X;
         var overlapEnd = 0;
         //Task 1 Ends first or they end simultaneously
         if (task1End <= task2End) overlapEnd = task1End;
         //Task 2 Ends first
         else overlapEnd = task2End;
+        console.log("overlapStart", overlapStart, "overlapEnd", overlapEnd);
         return overlapEnd-overlapStart;
     }
 }
