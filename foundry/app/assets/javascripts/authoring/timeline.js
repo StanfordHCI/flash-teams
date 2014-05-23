@@ -222,7 +222,6 @@ function addTime() {
     .attr("height", SVG_HEIGHT)
     .attr("fill", "white")
     .attr("fill-opacity", 0)
-    .attr("z-index", -1)
     .on("mousedown", mousedown);
     
     //move all existing events back on top of timeline

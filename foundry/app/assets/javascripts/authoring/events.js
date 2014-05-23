@@ -216,7 +216,7 @@ function mousedown() {
         alert("Please click on another event or the same event to cancel");
         return;
     }
-
+    console.log(d3.event.button);
     if (d3.event.button != 0) { //don't do anything if not left click
         return;
     }
@@ -246,6 +246,7 @@ function mousedown() {
 
     // create event
     var eventObj = createEvent(snapPoint);
+    console.log(eventObj);
     
     // render event
     drawEvent(eventObj);
@@ -258,7 +259,7 @@ function mousedown() {
 };
 
 function checkWithinTimelineBounds(snapPoint) {
-    return ((snapPoint[1] < 505) && (snapPoint[0] < 2396));
+    return ((snapPoint[1] < 505) && (snapPoint[0] < (SVG_WIDTH-150)));
 };
 
 function getStartTime(mouseX) {
