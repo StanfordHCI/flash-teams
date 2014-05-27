@@ -808,7 +808,29 @@ var moveRemainingTasksRight = function(amount){
 };
 
 var moveRemainingTasksLeft = function(amount){
-    moveTasksLeft(remaining_tasks, amount);
+    // console.log("THESE ARE THE REMAINING TASKS", remaining_tasks);
+    lastEndTime = 0;
+    for (var i=0;i<live_tasks.length;i++){
+        var ev = flashTeamsJSON["events"][getEventJSONIndex(live_tasks[i])]
+        var start_x = ev.x;
+        var width = getWidth(ev);
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        if (end_x > lastEndTime){
+            lastEndTime = end_x;
+        }
+    }
+    to_move = [];
+    for (var i=0;i<remaining_tasks.length;i++){
+        var evNum = remaining_tasks[i];
+        var ev = flashTeamsJSON["events"][getEventJSONIndex(evNum)]
+        var start_x = ev.x;
+        var width = getWidth(ev);
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        if (start_x > lastEndTime + 15){
+            to_move.push(evNum);
+        }
+    }
+    moveTasksLeft(to_move, amount);
 }
 
 /*
