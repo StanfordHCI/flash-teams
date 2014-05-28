@@ -542,7 +542,9 @@ function drawGdriveLink(eventObj, firstTime) {
 }
 
 function drawHandoffBtn(eventObj, firstTime) {
-    if(isUser || in_progress){ return; }
+     if(isUser || in_progress){
+        return;
+    }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
     var y_offset = 23; // unique for handoff btn
