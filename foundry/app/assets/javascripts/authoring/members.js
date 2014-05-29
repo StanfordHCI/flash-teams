@@ -51,26 +51,26 @@ function renderPills(members) {
         var member_name = member.role;
         var member_color = member.color;
         $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
-        + '<div class="close" onclick="deleteMember(' + member_id + ');">  X</div></a></li>');
+        + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
         renderMemberPillColor(member_id);
     }
 };
 
 function renderMemberPopovers(members) {
-    for (var i=0;i<members.length;i++){
+   for (var i=0;i<members.length;i++){
         var member = members[i];
         var member_id = member.id;
         var member_name = member.role;
         var invitation_link = member.invitation_link;
+        var content = '<form name="memberForm_' + member_id + '>'
+                +'<div class="mForm_' + member_id + '">'
+                +'<div class="input-append" > ' 
+                +'<select class="category1Input" id="member' + member_id + '_category1">';
+
         var newColor = "'"+member.color+"'";
         
         var category1 = member.category1;
         var category2 = member.category2;
-        
-        var content = '<form name="memberForm_' + member_id + '" autocomplete="on">'
-                +'<div class="mForm_' + member_id + '">'
-                +'<div class="input-append" > ' 
-                +'<select class="category1Input" id="member' + member_id + '_category1">';
 
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
@@ -84,7 +84,6 @@ function renderMemberPopovers(members) {
 
         //reload or build category2 based on previously selected category 1
         content += '</select>';
-        
 
         if (category1 == "--oDesk Category--" || category1 == ""){
             content += '<br><br><select class="category2Input" id="member' + member_id + '_category2" disabled="disabled">--oDesk Sub-Category--</select>';
@@ -105,11 +104,20 @@ function renderMemberPopovers(members) {
             content += '</select>';
         }
 
-        content += '<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" onclick="autocompleteSkills()" placeholder="New oDesk Skill" autocomplete="on">'
+        content += '<br><br><input class="skillInput" id="addSkillInput_' + member_id + '" type="text" data-provide="typeahead" placeholder="New oDesk Skill" />'
                 +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + member_id + '" onclick="addSkill(' + member_id + ');">+</button>'
                 +'</div>'
                 +'Skills:'  
-                +'<ul class="nav nav-pills" id="skillPills_' + member_id + '"> </ul>'
+                +'<ul class="nav nav-pills" id="skillPills_' + member_id + '">';
+
+            for(var i=0;i<member.skills.length;i++){
+                var memberSkillNumber = i+1;
+                var skillName = member.skills[i];
+                content+='<li class="active" id="sPill_mem' + member_id + '_skill' + memberSkillNumber + '"><a>' + skillName 
+                + '<div class="close" onclick="deleteSkill(' + member_id + ', ' + memberSkillNumber + ', &#39' + skillName + '&#39)">  X</div></a></li>';
+                }
+
+        content +='</ul>'
                 +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
                 +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
                 +'<p><button type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
@@ -131,7 +139,12 @@ function renderMemberPopovers(members) {
             trigger: "click",
             title: '<b>' + member_name + '</b>',
             content:  content,
-            container: $("#member-container")
+            container: $("#member-container"),
+            callback: function(){
+               $(".skillInput").each(function () {
+                    $(this).typeahead({source: oSkills})
+                });  
+            }
         });
 
         var mem_id = member_id;
@@ -206,13 +219,6 @@ function addMember() {
     inviteMember(member_obj.id);
 };
 
-function autocompleteSkills() {
-    $(".skillInput").each(function () {
-        $(this).autocomplete({
-            source: oSkills
-        });
-    });
-};
 
 //Adds a needed skill to a member and updates JSON
 function addSkill(memberId) {
@@ -262,7 +268,6 @@ function saveMemberInfo(popId) {
 
     console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
-
     renderAllMemberLines();
     renderMemberPopovers(flashTeamsJSON["members"]);
 };
@@ -417,3 +422,4 @@ function addMemAuto() {
         });
     })
 };
+
