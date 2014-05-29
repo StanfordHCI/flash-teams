@@ -61,7 +61,7 @@ var drag = d3.behavior.drag()
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -95,7 +95,7 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -117,7 +117,8 @@ function rightResize(d) {
 }
 
 function dragEvent(d) {
-    if(isUser) { // user page
+    
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -166,6 +167,8 @@ function calcSnap(mouseX, mouseY) {
 
 // mousedown on timeline => creates new event and draws it
 function newEvent(point) {
+    
+
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
@@ -183,7 +186,7 @@ function newEvent(point) {
         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
     }
 
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
     
@@ -539,7 +542,9 @@ function drawGdriveLink(eventObj, firstTime) {
 }
 
 function drawHandoffBtn(eventObj, firstTime) {
-    if(isUser){ return; }
+     if(isUser || in_progress){
+        return;
+    }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
     var y_offset = 23; // unique for handoff btn
@@ -579,7 +584,7 @@ function drawHandoffBtn(eventObj, firstTime) {
 }
 
 function drawCollabBtn(eventObj, firstTime) {
-    if(isUser){ return; }
+    if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
     var y_offset = 23; // unique for collab btn
