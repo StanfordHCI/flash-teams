@@ -118,7 +118,8 @@ function readOnlyPopoverObj(ev) {
     if(num_members > 0){
         content += '<b>Members:</b><br>';
         for (var j=0;j<num_members;j++){
-            content += ev.members[j].name;
+            var member = getMemberById(ev.members[j]);
+            content += member.role;
             content += '<br>';
         }
     }
