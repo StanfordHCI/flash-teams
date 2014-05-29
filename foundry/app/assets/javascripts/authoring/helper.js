@@ -13,9 +13,10 @@ var flashTeamsJSON = {
 };
 
 function pressEnterKeyToSubmit(inputId, buttonId) {
-	$(inputId).keyup(function(event){
+	$(inputId).keydown(function(event){
 		if(event.keyCode == 13){
 			$(buttonId).click();
+            return false;
 		}
 	});
 }

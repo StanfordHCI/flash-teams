@@ -22,6 +22,8 @@ $(document).ready(function(){
     });
 });
 
+var dragged = false;
+
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
                 .on("drag", rightResize)
@@ -45,14 +47,21 @@ var drag = d3.behavior.drag()
             .origin(Object)
             .on("drag", dragEvent)
             .on("dragend", function(d){
-                var ev = getEventFromId(d.groupNum);
-                drawPopover(ev, true, false);
-                updateStatus(false);
+                if(dragged){
+                    dragged = false;
+                    var ev = getEventFromId(d.groupNum);
+                    drawPopover(ev, true, false);
+                    updateStatus(false);
+                } else {
+                    // click
+                    console.log("CLICKED");
+                    eventMousedown(d.groupNum);
+                }
             });
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -86,7 +95,7 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -108,9 +117,12 @@ function rightResize(d) {
 }
 
 function dragEvent(d) {
-    if(isUser) { // user page
+    
+    if(isUser || in_progress) { // user page
         return;
     }
+
+    dragged = true;
 
     // get event id
     var groupNum = d.groupNum;
@@ -155,6 +167,8 @@ function calcSnap(mouseX, mouseY) {
 
 // mousedown on timeline => creates new event and draws it
 function newEvent(point) {
+    
+
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
@@ -172,7 +186,7 @@ function newEvent(point) {
         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
     }
 
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
     
@@ -371,9 +385,6 @@ function drawMainRect(eventObj, firstTime) {
             .attr("fill-opacity", .6)
             .attr("stroke", "#5F5A5A")
             .attr('pointer-events', 'all')
-            .on("click", function(d) {
-                if(d3.event.defaultPrevented) return;
-                eventMousedown(d.groupNum); })
             .call(drag);
     } else {
         task_g.selectAll(".task_rectangle")
@@ -531,7 +542,9 @@ function drawGdriveLink(eventObj, firstTime) {
 }
 
 function drawHandoffBtn(eventObj, firstTime) {
-    if(isUser){ return; }
+     if(isUser || in_progress){
+        return;
+    }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
     var y_offset = 23; // unique for handoff btn
@@ -571,7 +584,7 @@ function drawHandoffBtn(eventObj, firstTime) {
 }
 
 function drawCollabBtn(eventObj, firstTime) {
-    if(isUser){ return; }
+    if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
     var y_offset = 23; // unique for collab btn
@@ -611,6 +624,7 @@ function drawCollabBtn(eventObj, firstTime) {
 }
 
 function drawMemberLines(eventObj) {
+    console.log("drawing member lines for ", eventObj);
     var x_offset = 8; // unique for member lines
     var width = getWidth(eventObj) - 8;
 
@@ -621,6 +635,7 @@ function drawMemberLines(eventObj) {
     // figure out if first time or not for each member line
     for(var i=0;i<members.length;i++){
         var existingLine = task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1));
+        console.log("EXISTING LINE", existingLine);
         var y_offset = 60 + (i*8); // unique for member lines
         if(existingLine[0].length == 0){ // first time
             var member = getMemberById(members[i]);
@@ -642,9 +657,14 @@ function drawMemberLines(eventObj) {
                 .attr("fill", color)
                 .attr("fill-opacity", .9);
         } else { // line already exists, just need to redraw
+            var members = eventObj["members"];
+            var member = getMemberById(members[i]);
+            var color = member.color;
+
             existingLine
                 .attr("x", function(d) {return d.x + x_offset})
                 .attr("y", function(d) {return d.y + y_offset})
+                .attr("fill", color)
                 .attr("width", width);
         }
     }
@@ -701,7 +721,7 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var x1 = ev1.x + 3 + getWidth(eventObj);
+                var x1 = ev1.x + 3 + getWidth(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
@@ -741,6 +761,7 @@ function drawEachCollab(eventObj, firstTime){
             }
             if (draw){
                 var y1 = ev1.y + 17;
+                var x1 = ev1.x + 3;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 17;
                 var firstTaskY = 0;
@@ -753,8 +774,10 @@ function drawEachCollab(eventObj, firstTime){
                     firstTaskY = y2 + 90;
                     taskDistance = y1 - firstTaskY;
                 }
+                if (x1 <= x2) var startX = x2;
+                else var startX = x1;
                 $("#interaction_" + inter["id"])
-                    .attr("x", x2)
+                    .attr("x", startX)
                     .attr("y", firstTaskY)
                     .attr("height", taskDistance)
                     .attr("width", overlap);
@@ -765,7 +788,8 @@ function drawEachCollab(eventObj, firstTime){
 }
 
 //Creates graphical elements from array of data (task_rectangles)
-function drawEvent(eventObj, firstTime) {    
+function drawEvent(eventObj, firstTime) { 
+    console.log("redrawing event");   
     drawG(eventObj, firstTime);
     drawMainRect(eventObj, firstTime);
     drawRightDragBar(eventObj, firstTime);
@@ -779,6 +803,24 @@ function drawEvent(eventObj, firstTime) {
     drawShade(eventObj, firstTime);
     drawEachHandoff(eventObj, firstTime);
     drawEachCollab(eventObj, firstTime);
+};
+function drawAllPopovers() {
+    var events = flashTeamsJSON["events"];
+    for (var i = 0; i < events.length; i++){
+        var ev = events[i];
+        drawPopover(ev, true, false);
+    }
+};
+
+
+function removeAllMemberLines(eventObj){
+    var groupNum = eventObj["id"];
+    var members = eventObj["members"];
+    var task_g = getTaskGFromGroupNum(groupNum);
+
+    for(var i=0;i<members.length;i++){
+        task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1)).remove();
+    }
 };
 
 function renderAllMemberLines() {
@@ -826,6 +868,17 @@ function deleteEventMember(eventId, memberNum, memberName) {
         }
     }
 }
+
+//Remove all the lines from a given event
+function removeAllMemberLines(eventObj){
+    var groupNum = eventObj["id"];
+    var members = eventObj["members"];
+    var task_g = getTaskGFromGroupNum(groupNum);
+
+    for(var i=0;i<members.length;i++){
+        task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1)).remove();
+    }
+};
 
 //Updates the physical task rectangle representation of start and duration, also update JSON
 function updateTime(idNum) {
