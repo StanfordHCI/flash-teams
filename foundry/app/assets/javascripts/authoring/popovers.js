@@ -66,7 +66,7 @@ function editablePopoverObj(eventObj) {
         +'<div><input type="text" data-role="tagsinput" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
         +'<div><input type="text" data-role="tagsinput" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
         +'<tr><td><p><button type="button" id="delete"'
-        +' onclick="removeTask(' + groupNum +');">Delete</button>       ' 
+        +' onclick="deleteEvent(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>'  
         +'</form></td></tr>',
         container: $("#timeline-container"),

@@ -341,6 +341,12 @@ function deleteInteraction(intId) {
 
     //Delete Rectangle
     $("#interaction_" + intId).remove();
+    
+    //DR added
+    //Delete from JSON
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    console.log("REMOVED INTERACTION FROM JSON");
 }
 
 //Returns the event that begins first

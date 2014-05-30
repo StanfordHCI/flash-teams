@@ -719,9 +719,16 @@ var removeTask = function(groupNum){
     if(idx != null){
         task_groups.splice(idx, 1);
     }
-
+    
     // remove from screen
     timeline_svg.selectAll("g").data(task_groups, function(d){ return d.groupNum; }).exit().remove();
+    
+    //DR added this
+    //By doing this, I'm assuming we need to update the status after the task is deleted from the timeline in order to save the deletion?
+    updateStatus(false);
+
+       
+   
 };
 
 var extendDelayedBoxes = function(){
