@@ -703,6 +703,9 @@ var getDataIndexFromGroupNum = function(groupNum){
     return null;
 };
 
+// only removes task from timeline, does not update the event array
+// if you need to delete an event from the timeline, should call deleteEvent
+// in events.js, which in turn calls this function
 var removeTask = function(groupNum){
     // destroy popover
     destroyPopover(groupNum);
@@ -719,7 +722,7 @@ var removeTask = function(groupNum){
     if(idx != null){
         task_groups.splice(idx, 1);
     }
-
+    
     // remove from screen
     timeline_svg.selectAll("g").data(task_groups, function(d){ return d.groupNum; }).exit().remove();
 };

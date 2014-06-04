@@ -880,6 +880,37 @@ function removeAllMemberLines(eventObj){
     }
 };
 
+// first updates the event object array and interactions array
+// then, calls removeTask to remove the task from the timeline
+function deleteEvent(eventId){
+	var indexOfJSON = getEventJSONIndex(eventId);
+	var events = flashTeamsJSON["events"];
+		
+	events.splice(indexOfJSON, 1);
+    console.log("event deleted from json");
+    
+    //stores the ids of all of the interactions to erase
+    var intersToDel = [];
+    
+    for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            var inter = flashTeamsJSON["interactions"][i];
+            if (inter.event1 == eventId || inter.event2 == eventId) {
+                console.log("THERE IS A DELETION MATCH");
+                intersToDel.push(inter.id);
+                console.log("# of intersToDel: " + intersToDel.length);
+            }
+        }
+      
+    for (var i = 0; i < intersToDel.length; i++) {
+    	deleteInteraction(intersToDel[i]);
+        console.log("interaction deleted");
+    }
+
+    removeTask(groupNum);
+    
+    updateStatus(false);
+}
+
 //Updates the physical task rectangle representation of start and duration, also update JSON
 function updateTime(idNum) {
     var eventLength = $("#rect_" + idNum)[0].width.animVal.value;
