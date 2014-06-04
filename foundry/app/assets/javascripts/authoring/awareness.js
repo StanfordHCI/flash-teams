@@ -703,6 +703,9 @@ var getDataIndexFromGroupNum = function(groupNum){
     return null;
 };
 
+// only removes task from timeline, does not update the event array
+// if you need to delete an event from the timeline, should call deleteEvent
+// in events.js, which in turn calls this function
 var removeTask = function(groupNum){
     // destroy popover
     destroyPopover(groupNum);
@@ -722,13 +725,6 @@ var removeTask = function(groupNum){
     
     // remove from screen
     timeline_svg.selectAll("g").data(task_groups, function(d){ return d.groupNum; }).exit().remove();
-    
-    //DR added this
-    //By doing this, I'm assuming we need to update the status after the task is deleted from the timeline in order to save the deletion?
-    updateStatus(false);
-
-       
-   
 };
 
 var extendDelayedBoxes = function(){
