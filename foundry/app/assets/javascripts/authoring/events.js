@@ -906,7 +906,7 @@ function deleteEvent(eventId){
         console.log("interaction deleted");
     }
 
-    removeTask(groupNum);
+    removeTask(eventId);
     
     updateStatus(false);
 }
