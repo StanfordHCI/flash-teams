@@ -721,7 +721,14 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var x1 = ev1.x + 3 + getWidth(ev1);
+                if (drawn_blue_tasks.indexOf(ev1["id"]) != -1){
+                    taskEnd = getWidth(ev1);
+                    var x1 = ev1.completed_x;
+                }
+                else{
+                    var x1 = ev1.x + 3 + getWidth(ev1);
+                }
+                // var x1 = ev1.x + 3 + getWidth(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
