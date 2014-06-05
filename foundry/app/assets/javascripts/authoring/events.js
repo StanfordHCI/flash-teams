@@ -205,9 +205,11 @@ function createEvent(point) {
     // render event on timeline
     drawEvent(eventObj, true);
     
+    console.log("yo5");
     // render event popover
     drawPopover(eventObj, true, true);
 
+    console.log("yo6");
     // save
     updateStatus(false);
 };
