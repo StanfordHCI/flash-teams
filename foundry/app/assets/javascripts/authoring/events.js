@@ -800,9 +800,13 @@ function drawEvent(eventObj, firstTime) {
     drawHandoffBtn(eventObj, firstTime);
     drawCollabBtn(eventObj, firstTime);
     drawMemberLines(eventObj);
+    console.log("yo1");
     drawShade(eventObj, firstTime);
+    console.log("yo2");
     drawEachHandoff(eventObj, firstTime);
+    console.log("yo3");
     drawEachCollab(eventObj, firstTime);
+    console.log("yo4");
 };
 function drawAllPopovers() {
     var events = flashTeamsJSON["events"];
