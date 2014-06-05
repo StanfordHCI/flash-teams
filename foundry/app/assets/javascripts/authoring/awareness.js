@@ -90,8 +90,6 @@ $("#flashTeamStartBtn").click(function(){
     googleDriveLink();
 });
 
-
-
 $("#flashTeamEndBtn").click(function(){
     updateStatus(false);
     stopCursor();
@@ -162,7 +160,7 @@ $(document).ready(function(){
 
                 // render view
                 loadData(false);
-                updateAllPopoversToReadOnly();
+                //updateAllPopoversToReadOnly();
                 if(!isUser) {
                     renderMembersRequester();
                 }
@@ -364,7 +362,7 @@ var startTeam = function(team_in_progress){
 var drawEvents = function(editable){
     for(var i=0;i<flashTeamsJSON.events.length;i++){
         var ev = flashTeamsJSON.events[i];
-        console.log("DRAWING EVENT " + i);
+        console.log("DRAWING EVENT " + i + ", with editable: " + editable);
         drawEvent(ev, true);
         drawPopover(ev, editable, false);
     }
