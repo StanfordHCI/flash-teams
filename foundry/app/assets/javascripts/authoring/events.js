@@ -908,7 +908,13 @@ function deleteEvent(eventId){
         }
       
     for (var i = 0; i < intersToDel.length; i++) {
-    	deleteInteraction(intersToDel[i]);
+        // take it out of interactions array
+        var intId = intersToDel[i];
+        var indexOfJSON = getIntJSONIndex(intId);
+        flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+
+        // remove from timeline
+    	deleteInteraction(intId);
         console.log("interaction deleted");
     }
 
