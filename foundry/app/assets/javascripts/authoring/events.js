@@ -721,33 +721,12 @@ function drawEachHandoff(eventObj, firstTime){
                 draw = true;
                 var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
                 var ev2 = eventObj;
-            }
+            }  
             if (draw){
-                if (drawn_blue_tasks.indexOf(ev1["id"]) != -1){
-                    var x1 = ev1.completed_x;
-                    console.log(ev1.x + 3 + parseFloat(getWidth(ev1)));
-                }
-                else if (completed_red_tasks.indexOf(ev1["id"]) != -1){
-                    var x1 = ev1.completed_x;
-                }
-                else if(delayed_tasks.indexOf(ev1["id"]) != -1){
-                    console.log("THIS DOES HAPPEN");
-                    var cursor_x = parseFloat(cursor.attr("x1"));
-                    console.log(cursor_x);
-                    var widthRect = parseFloat(getWidth(ev1));
-                    console.log(widthRect);
-                    var red_width = cursor_x - widthRect;
-                    var x1 = ev1.x + widthRect + red_width;
-                    console.log(x1);
-                }
-                else{
-                    console.log("THIS IS NOT EARLY", ev1.completed_x)
-                    var x1 = ev1.x + 3 + parseFloat(getWidth(ev1));
-                }
+                var x1 = handoffStart(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
-                console.log("THIS IS THE X1", x1);
                 $("#interaction_" + inter["id"])
                     .attr("x1", x1)
                     .attr("y1", y1)

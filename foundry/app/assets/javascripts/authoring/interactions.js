@@ -147,6 +147,26 @@ function startWriteHandoff() {
     timeline_svg.on("mousemove", interMouseMove);
 };
 
+function handoffStart(firstEvent){
+    var x1;
+     if (drawn_blue_tasks.indexOf(firstEvent["id"]) != -1){
+        x1 = firstEvent.completed_x;
+    } 
+    else if (completed_red_tasks.indexOf(firstEvent["id"]) != -1){
+        x1 = firstEvent.completed_x;
+    }
+    else if(delayed_tasks.indexOf(firstEvent["id"]) != -1){
+        var cursor_x = parseFloat(cursor.attr("x1"));
+        var widthRect = parseFloat(getWidth(firstEvent));
+        var red_width = cursor_x - (firstEvent.x + widthRect);
+        x1 = firstEvent.x + widthRect + red_width;
+    }
+    else { 
+        x1 = firstEvent.x + 3 + getWidth(firstEvent);
+    }
+    return x1;
+}
+
 //Redraw the position of the interaction line
 function drawHandoff(handoffData) {
     var task1Id = handoffData["event1"];
@@ -155,21 +175,7 @@ function drawHandoff(handoffData) {
 
     //Find end of task 1
     var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1Id)];
-    if (drawn_blue_tasks.indexOf(ev1["id"]) != -1){
-        var x1 = ev1.completed_x;
-    } 
-    else if (completed_red_tasks.indexOf(ev1["id"]) != -1){
-        var x1 = ev1.completed_x;
-    }
-    else if(delayed_tasks.indexOf(ev1["id"]) != -1){
-        var cursor_x = parseFloat(cursor.attr("x1"));
-        var widthRect = parseFloat(getWidth(ev1));
-        var red_width = cursor_x - widthRect;
-        var x1 = ev1.x + widthRect + red_width;
-    }
-    else { 
-        var x1 = ev1.x + 3 + getWidth(ev1);
-    }
+    var x1 = handoffStart(ev1);
     var y1 = ev1.y + 50;
     
     //Find beginning of task 2
