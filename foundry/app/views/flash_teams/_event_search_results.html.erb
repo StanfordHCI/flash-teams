@@ -7,12 +7,13 @@
 				<b><span id="title-<%= @eventHashes[index] %>"><%= event['title'] %></span></b>
 			</div>
 			<div class="span3">
-				<b><span id="duration-<%= @eventHashes[index] %>"><%= event['duration']/60 %></span></b> hours
+				<% durationHrs = event['duration'].to_i/60 %>
+				<b><span id="duration-<%= @eventHashes[index] %>"><%= durationHrs %></span></b> hours
 			</div>
 		</div>
 				
 		<div class="event-block-data event-block-inputs"> Inputs: 
-		<% if event['inputs'].empty? %>
+		<% if !event['inputs'] %>
 			No inputs
 		<% else %>
 			<% event['inputs'].split(',').each do |input| %> 
@@ -22,7 +23,7 @@
 		</div>
 
 		<div class="event-block-data event-block-outputs"> Outputs: 
-		<% if event['outputs'].empty? %>
+		<% if !event['outputs'] %>
 			No outputs
 		<% else %>
 			<% event['outputs'].split(',').each do |output| %>
