@@ -244,7 +244,7 @@ function createEventObj(snapPoint) {
     var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], 
         "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], 
         "dri":"", "notes":"", "startHr": startTimeObj["startHr"], 
-        "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null};
+        "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null, "inputs":null, "outputs":null};
       //add new event to flashTeams database
     if (flashTeamsJSON.events.length == 0){
         createNewFolder($("#flash_team_name").val());
@@ -262,52 +262,6 @@ function getEventFromId(id) {
         }
     }
     return null;
-};
-
-function updateEvent(id, dataObj) {
-    var ev = getEventFromId(id);
-    if(!ev){
-        return;
-    }
-
-    if(dataObj["title"]){
-        ev["title"] = dataObj["title"];
-    }
-    if(dataObj["x"]){
-        ev["x"] = dataObj["x"];
-    }
-    if(dataObj["y"]){
-        ev["y"] = dataObj["y"];
-    }
-    if(dataObj["startTime"]){
-        ev["startTime"] = dataObj["startTime"];
-    }
-    if(dataObj["duration"]){
-        ev["duration"] = dataObj["duration"];
-    }
-    if(dataObj["members"]){
-        ev["members"] = dataObj["members"];
-    }
-    if(dataObj["dri"]){
-        ev["dri"] = dataObj["dri"];
-    }
-    if(dataObj["notes"]){
-        ev["notes"] = dataObj["notes"];
-    }
-    if(dataObj["startHr"]){
-        ev["startHr"] = dataObj["startHr"];
-    }
-    if(dataObj["startMin"]){
-        ev["startMin"] = dataObj["startMin"];
-    }
-    if(dataObj["gdrive"]){
-        ev["gdrive"] = dataObj["gdrive"];
-    }
-    if(dataObj["completed"]){
-        ev["completed"] = dataObj["completed"];
-    }
-
-    updateStatus();
 };
 
 function getWidth(ev) {

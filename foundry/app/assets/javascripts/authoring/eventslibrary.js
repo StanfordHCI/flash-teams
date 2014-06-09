@@ -4,6 +4,35 @@
 *
 */
 
+// Reusable AJAX function, which takes 4 arguments, including: the ID of the input element (i.e. text field), the type of AJAX request (i.e. GET or POST), the 				URL for the AJAX request and the id for the container where the results will appear 
+
+function callajaxreq(inputid, type, url, resultsid){
+  
+  // Setup AJAX request onclick
+  var query_input = document.getElementById(inputid);
+
+  query_input.onkeyup = function(event){
+    
+    var query_value = document.getElementById(inputid).value;
+    var request = $.ajax({
+      url: url,
+      type: "GET",
+      data: { params : query_value },
+      dataType: "html"
+    }); //end var request
+   
+    request.done(function( msg ) {
+      $( "#" + resultsid ).html( msg );
+    }); //end request.done
+
+  }// end query_input.onkeyup
+
+} //end callajaxreq
+
+callajaxreq("searchEventsInput", "GET", "/flash_teams/event_search", "search-results");
+
+
+/*
 //Array of sample Event JSONs used for testing
 var EventJSONArray= [
 {
@@ -84,14 +113,18 @@ var MembersJSONArray= [
 "category2":"cat4"
 }
 ]
+*/
 
+//DR: I have no idea what the following three lines do
 /* Dialog prompt code. Prevents dialogs from automatically opening upon initialization */
-$( "#teamRolesPrompt" ).dialog({ autoOpen: false });
-$( "#teamRolesPrompt" ).dialog({ height: "auto" },{ width: "450px" });
-$( "#teamRolesPrompt" ).dialog({ modal: true }); //creates overlay between dialog and rest of the web page in order to disables interactions with other page elements
+//$( "#teamRolesPrompt" ).dialog({ autoOpen: false });
+//$( "#teamRolesPrompt" ).dialog({ height: "auto" },{ width: "450px" });
+//$( "#teamRolesPrompt" ).dialog({ modal: true }); //creates overlay between dialog and rest of the web page in order to disables interactions with other page elements
 
+// DR: I got commented out the search button since I use live search instead
 /* Called when user clicks on 'Go' button next to search bar in the 'Add Events' container in side menu and returns search results.
 Currently is a dummy function that each Event JSON in EventJSONArray into an Event div and displays them as search results. */
+/*
 function searchEvents() {
 alert($('meta[name=events_json]').attr('content'));
 for (var i = 0; i < EventJSONArray.length; i++) {
@@ -106,6 +139,7 @@ str += "<b>Output: </b>"+listOutputs(EventJSONArray[i])+"</div>"; //Event output
 $("#search-results").append(str); //appends each Event div to search results container
 }
 }
+*/
 
 /* Called when a user drags an event over the overlay div covering the timeline svg element, allowing overlay to catch and handle the drop */
 function allowDrop(ev) {
@@ -114,6 +148,8 @@ ev.preventDefault();
 
 /* Called when an Event div is being dragged. */
 function dragEvent(ev) {
+  console.log(ev);
+ev.dataTransfer.setData('eventHash', ev.target.getAttribute('data-hash'));
 ev.dataTransfer.setData("Text",ev.target.id); //saves id of dragged Event div into 'data'
 document.getElementById("overlay").style.display = "block"; //turns overlay on
 }
@@ -121,7 +157,10 @@ document.getElementById("overlay").style.display = "block"; //turns overlay on
 /* Called when a user drops an event in a div that allows drop, in this case, overlay. Mouse coordinates at the point of drop are detected and members belonging to the dragged event and members belonging to the existing flash-team are compared */
 function drop(ev) {
 ev.preventDefault();
-var data = ev.dataTransfer.getData("Text");
+
+console.log(ev);
+
+var targetHash = ev.dataTransfer.getData('eventHash');
 
 //calculates mouse coordinates relative to timeline svg to draw dragged event in corresponding location
 var mouseCoords = calcMouseCoords(ev);
@@ -129,12 +168,11 @@ var mouseCoords = calcMouseCoords(ev);
 //turn overlay off so event blocks can be drawn on timeline svg
 document.getElementById("overlay").style.display = "none";  
 
-//maps Event div id back to corresponding Event JSON from database. Currently, maps back to an Event JSON in EventJSONArray
-var eventBlockDivId = data.split("_"); //returns array of strings before and after '_'
-var eventJSONindex = eventBlockDivId[1]; // gets the latter half of the array which is the div id
+//added createdragevent (and changed eventJSONId to eventJSONindex) here instead of compMember to test:
+createDragEvent(mouseCoords[0], mouseCoords[1], targetHash);
 
 //compares two members. Currently both are sample Member JSONs from MembersJSONArray, but should compared a team member from dragged Event and an existing team member in flash-team
-compMember(MembersJSONArray[0], MembersJSONArray[2], mouseCoords, eventJSONindex); //TO BE CHANGED
+//compMember(MembersJSONArray[0], MembersJSONArray[2], mouseCoords, eventJSONindex); //TO BE CHANGED
 }
 
 /* Calculates mouse coordinates relative to timeline svg so Event block can be drawn in correct spot*/
@@ -161,7 +199,7 @@ return svgpoint;
 }
 
 /* Creates event block on timeline with according pop up information*/
-function createDragEvent(mouseX, mouseY, EventJSONID) {
+function createDragEvent(mouseX, mouseY, targetHash) {
    //WRITE IF CASE, IF INTERACTION DRAWING, STOP
    if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
        alert("Please click on another event or the same event to cancel");
@@ -170,10 +208,47 @@ function createDragEvent(mouseX, mouseY, EventJSONID) {
 
    event_counter++; //To generate id
 
+    /*
+var matchblock = document.getElementById("matchblock");
+console.log("matchblock: " + matchblock.innerHTML);
+*/
+
+var title = document.getElementById("title-" + targetHash).innerHTML;
+var duration = document.getElementById("duration-" + targetHash).innerHTML * 60;
+var inputs = document.getElementById("inputs-" + targetHash).innerHTML;
+var outputs = document.getElementById("outputs-" + targetHash).innerHTML;
+
 var snapPoint = calcSnap(mouseX, mouseY);
-var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, eventTitle, duration);
-fillPopover(snapPoint[0], groupNum, eventTitle, duration);
+
+//DRAWEVENT HAS DIFFERENT PARAMETERS NOW
+//var groupNum = drawEvent(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+//var groupNum = drawEvents(snapPoint[0], snapPoint[1], null, eventTitle, duration);
+
+//FILLPOPOVER NO LONGER EXISTS
+//fillPopover(snapPoint[0], groupNum, eventTitle, duration);
+//fillPopover(snapPoint[0], groupNum, false, eventTitle, duration);
+
+//var crev = createEvent(snapPoint);
+var crev = newEventFromLib(snapPoint, title, duration, inputs, outputs); //add DRI, members, other attributes to the arguments (and method params)
+
+drawEvents(crev);
+
+//editablePopoverObj(crev);
+
+//drawPopover(crev, true, true);
 };
+
+//I added this
+function newEventFromLib(snapPoint, eventTitle, duration, inputs, outputs) {
+    event_counter++;
+    var startTimeObj = getStartTime(snapPoint[0]);
+    var newEvent = {"title": eventTitle, "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], "startTime": startTimeObj["startTimeinMinutes"], "duration": duration, "members":[], "dri":"", "notes":"", "startHr": startTimeObj["startHr"], "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x": null, "inputs": inputs, "outputs": outputs };
+    flashTeamsJSON.events.push(newEvent);
+    return newEvent;
+};
+
+
+//DR: I didn't touch any of the code below 
 
 /* Compares the skills and second level category of two members. Depending on the comparison, may pop up dialog. Depending on dialog button chosen, may draw Event block onto timeline*/
 function compMember(member1, member2, mouseCoords, eventJSONId) {

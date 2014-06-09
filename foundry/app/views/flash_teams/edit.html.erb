@@ -143,16 +143,14 @@
              <div id="search-events-container" class="well" style="overflow-y:scroll;">
                <!--<div class="btn btn-primary btn-large" id="promptbtn" style="margin:5px;">Prompt</div>
                <div id="dialog" title="Dialog Title">PROMPT</div>-->
-                <div class="btn btn-primary btn-large" style="margin:5px;" onclick="newEvent([0, 0]);">Add Event</div>  
+                <!--<div class="btn btn-primary btn-large" style="margin:5px;" onclick="addEvent()">Add Event</div>-->
                 <div class="input-append">
-                    <input class="span9" id="searchEventsInput" type="text" placeholder="Search...">
-                    <button class="btn" type="button" onclick="searchEvents()" id="searchEventsBtn">Go</button>
+                    <input class="span9" id="searchEventsInput" type="text" style="width: 100%;" placeholder="Search...">
+                    <!-- <button class="btn" type="button" onclick="searchEvents()" id="searchEventsBtn">Go</button> -->
                 </div>
-                <div id="search-results"></div>
+                <div id="search-results"></div>	
             </div>
-            
-            
-            
+
            <% end %>
             
             <div id="diagram-container" class="well" style="display:none;" >

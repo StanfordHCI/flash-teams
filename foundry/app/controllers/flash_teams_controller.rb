@@ -254,6 +254,46 @@ class FlashTeamsController < ApplicationController
       format.json {render json: {:user_name => user_name, :user_role => user_role, :uniq => uniq}.to_json, status: :ok}
     end
   end
+  
+
+  def event_search
+
+    # Get the parameter that corresponds to the search query
+    query = params[:params].downcase
+
+    # Get all the flash teams
+    flash_teams = FlashTeam.all
+
+    # Create an array for storing event matches
+    @events = Array.new
+    @eventHashes = Array.new
+
+    # Iterate through them to pick up on events
+    flash_teams.each do |flash_team|
+
+      # If the team is not blank, then attempt to parse events out
+      if !flash_team.status.blank?
+
+        # Extract data from the JSON
+        flash_team_status = JSON.parse(flash_team.status)
+        flash_team_events = flash_team_status['flash_teams_json']['events']
+        
+        # Loop through all the events
+        flash_team_events.each do |flash_team_event|
+
+          # Case insensitive search match
+          if flash_team_event['title'].downcase.include? query
+            @events << flash_team_event
+            @eventHashes << Digest::MD5.hexdigest(flash_team_event.to_s)
+          end
+
+        end
+      end
+    end
+
+    render :partial => "event_search_results"
+
+   end
 
   def flash_team_params params
     params.permit(:name)

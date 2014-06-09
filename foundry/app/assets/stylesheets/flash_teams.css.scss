@@ -1,3 +1,47 @@
 // Place all the styles related to the flash_teams controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.event-block {
+
+	border: none;
+	background-color: white;
+	padding: 10px;
+	margin-bottom: 10px;
+	border: 2px solid #FFF;
+
+	&:hover {
+		border: 2px solid #CCC;
+	}
+
+	&:active {
+		border: 2px solid #228CE3;
+	}
+
+	.event-block-data {
+		margin-bottom: 5px;
+		span {
+			color: white;
+			padding: 1px 4px;
+		}
+	}
+
+	.event-block-inputs {
+		span {
+			background-color: #19A86F;
+			border: 1px solid #1DDB8F;
+		}
+	}
+
+	.event-block-outputs {
+		span {
+			background-color: #1AA8B0;
+			border: 1px solid #1DD2DB;
+		}
+	}
+
+	.event-metadata {
+		display: none;
+	}
+
+}

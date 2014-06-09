@@ -59,6 +59,8 @@ Foundry::Application.routes.draw do
   root 'welcome#index'
 
   get 'oauth2callback' => 'welcome#index'
+  get '/flash_teams/event_library' => 'flash_teams#event_library'
+  get '/flash_teams/event_search' => 'flash_teams#event_search'
   
   resources :flash_teams do
     member do 
