@@ -56,6 +56,27 @@ var getXCoordForTime = function(t){
     return {"finalX": finalX, "numInt": numInt};
 };
 
+function removeColabBtns(){
+   var events = flashTeamsJSON["events"];
+   for (var i = 0; i < events.length; i++){
+        var eventObj = events[i];
+        var groupNum = eventObj["id"];
+        var task_g = getTaskGFromGroupNum(groupNum);
+        task_g.selectAll(".collab_btn").attr("display","none");
+    }
+};
+
+function removeHandoffBtns(){
+    var events = flashTeamsJSON["events"];
+   for (var i = 0; i < events.length; i++){
+        var eventObj = events[i];
+        var groupNum = eventObj["id"];
+        var task_g = getTaskGFromGroupNum(groupNum);
+        task_g.selectAll(".handoff_btn").attr("display","none");
+    }
+
+};
+
 $("#flashTeamStartBtn").click(function(){
     // view changes
     $("#flashTeamStartBtn").attr("disabled", "disabled");
@@ -63,6 +84,8 @@ $("#flashTeamStartBtn").click(function(){
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
     $("#flashTeamTitle").css('display','none');
+    removeColabBtns();
+    removeHandoffBtns();
     startTeam(false);
     googleDriveLink();
 });
@@ -106,7 +129,6 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
-        console.log("HELLO");
         renderChatbox();
 
         //get user name and user role for the chat
@@ -138,7 +160,7 @@ $(document).ready(function(){
 
                 // render view
                 loadData(false);
-                updateAllPopoversToReadOnly();
+                //updateAllPopoversToReadOnly();
                 if(!isUser) {
                     renderMembersRequester();
                 }
@@ -317,6 +339,7 @@ var googleDriveLink = function(){
 var startTeam = function(team_in_progress){
     console.log("STARTING TEAM");
     updateAllPopoversToReadOnly();
+
     if(team_in_progress){
         startCursor(cursor_details);
     } else {
@@ -339,7 +362,7 @@ var startTeam = function(team_in_progress){
 var drawEvents = function(editable){
     for(var i=0;i<flashTeamsJSON.events.length;i++){
         var ev = flashTeamsJSON.events[i];
-        console.log("DRAWING EVENT " + i);
+        console.log("DRAWING EVENT " + i + ", with editable: " + editable);
         drawEvent(ev, true);
         drawPopover(ev, editable, false);
     }
@@ -678,6 +701,9 @@ var getDataIndexFromGroupNum = function(groupNum){
     return null;
 };
 
+// only removes task from timeline, does not update the event array
+// if you need to delete an event from the timeline, should call deleteEvent
+// in events.js, which in turn calls this function
 var removeTask = function(groupNum){
     // destroy popover
     destroyPopover(groupNum);
@@ -694,7 +720,7 @@ var removeTask = function(groupNum){
     if(idx != null){
         task_groups.splice(idx, 1);
     }
-
+    
     // remove from screen
     timeline_svg.selectAll("g").data(task_groups, function(d){ return d.groupNum; }).exit().remove();
 };
@@ -724,7 +750,6 @@ var extendDelayedBoxes = function(){
 
 var drawInteractions = function(tasks){
     console.log("DRAWING INTERACTIONS FOR TASKS: " + tasks);
-
     //Find Remaining Interactions and Draw
     var remainingHandoffs = getHandoffs(tasks);
     var numHandoffs = remainingHandoffs.length;
@@ -808,7 +833,29 @@ var moveRemainingTasksRight = function(amount){
 };
 
 var moveRemainingTasksLeft = function(amount){
-    moveTasksLeft(remaining_tasks, amount);
+    // console.log("THESE ARE THE REMAINING TASKS", remaining_tasks);
+    lastEndTime = 0;
+    for (var i=0;i<live_tasks.length;i++){
+        var ev = flashTeamsJSON["events"][getEventJSONIndex(live_tasks[i])]
+        var start_x = ev.x;
+        var width = getWidth(ev);
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        if (end_x > lastEndTime){
+            lastEndTime = end_x;
+        }
+    }
+    to_move = [];
+    for (var i=0;i<remaining_tasks.length;i++){
+        var evNum = remaining_tasks[i];
+        var ev = flashTeamsJSON["events"][getEventJSONIndex(evNum)]
+        var start_x = ev.x;
+        var width = getWidth(ev);
+        var end_x = parseFloat(start_x) + parseFloat(width);
+        if (start_x > lastEndTime + 15){
+            to_move.push(evNum);
+        }
+    }
+    moveTasksLeft(to_move, amount);
 }
 
 /*

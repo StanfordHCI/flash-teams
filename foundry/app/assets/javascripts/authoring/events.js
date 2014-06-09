@@ -61,7 +61,7 @@ var drag = d3.behavior.drag()
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -95,7 +95,7 @@ function leftResize(d) {
 
 // rightResize: resize the rectangle by dragging the right handle
 function rightResize(d) {
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -117,7 +117,8 @@ function rightResize(d) {
 }
 
 function dragEvent(d) {
-    if(isUser) { // user page
+    
+    if(isUser || in_progress) { // user page
         return;
     }
 
@@ -166,6 +167,8 @@ function calcSnap(mouseX, mouseY) {
 
 // mousedown on timeline => creates new event and draws it
 function newEvent(point) {
+    
+
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
@@ -183,7 +186,7 @@ function newEvent(point) {
         $(timeline_svg.selectAll("g#g_"+idNum)[0][0]).popover('hide');
     }
 
-    if(isUser) { // user page
+    if(isUser || in_progress) { // user page
         return;
     }
     
@@ -202,9 +205,11 @@ function createEvent(point) {
     // render event on timeline
     drawEvent(eventObj, true);
     
+    console.log("yo5");
     // render event popover
     drawPopover(eventObj, true, true);
 
+    console.log("yo6");
     // save
     updateStatus(false);
 };
@@ -539,7 +544,9 @@ function drawGdriveLink(eventObj, firstTime) {
 }
 
 function drawHandoffBtn(eventObj, firstTime) {
-    if(isUser){ return; }
+     if(isUser || in_progress){
+        return;
+    }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
     var y_offset = 23; // unique for handoff btn
@@ -579,7 +586,7 @@ function drawHandoffBtn(eventObj, firstTime) {
 }
 
 function drawCollabBtn(eventObj, firstTime) {
-    if(isUser){ return; }
+    if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
     var y_offset = 23; // unique for collab btn
@@ -714,9 +721,9 @@ function drawEachHandoff(eventObj, firstTime){
                 draw = true;
                 var ev1 = flashTeamsJSON["events"][getEventJSONIndex(inter["event1"])];
                 var ev2 = eventObj;
-            }
+            }  
             if (draw){
-                var x1 = ev1.x + 3 + getWidth(ev1);
+                var x1 = handoffStart(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
@@ -795,9 +802,13 @@ function drawEvent(eventObj, firstTime) {
     drawHandoffBtn(eventObj, firstTime);
     drawCollabBtn(eventObj, firstTime);
     drawMemberLines(eventObj);
+    console.log("yo1");
     drawShade(eventObj, firstTime);
+    console.log("yo2");
     drawEachHandoff(eventObj, firstTime);
+    console.log("yo3");
     drawEachCollab(eventObj, firstTime);
+    console.log("yo4");
 };
 function drawAllPopovers() {
     var events = flashTeamsJSON["events"];
@@ -874,6 +885,43 @@ function removeAllMemberLines(eventObj){
         task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1)).remove();
     }
 };
+
+// first updates the event object array and interactions array
+// then, calls removeTask to remove the task from the timeline
+function deleteEvent(eventId){
+	var indexOfJSON = getEventJSONIndex(eventId);
+	var events = flashTeamsJSON["events"];
+		
+	events.splice(indexOfJSON, 1);
+    console.log("event deleted from json");
+    
+    //stores the ids of all of the interactions to erase
+    var intersToDel = [];
+    
+    for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            var inter = flashTeamsJSON["interactions"][i];
+            if (inter.event1 == eventId || inter.event2 == eventId) {
+                console.log("THERE IS A DELETION MATCH");
+                intersToDel.push(inter.id);
+                console.log("# of intersToDel: " + intersToDel.length);
+            }
+        }
+      
+    for (var i = 0; i < intersToDel.length; i++) {
+        // take it out of interactions array
+        var intId = intersToDel[i];
+        var indexOfJSON = getIntJSONIndex(intId);
+        flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+
+        // remove from timeline
+    	deleteInteraction(intId);
+        console.log("interaction deleted");
+    }
+
+    removeTask(eventId);
+    
+    updateStatus(false);
+}
 
 //Updates the physical task rectangle representation of start and duration, also update JSON
 function updateTime(idNum) {

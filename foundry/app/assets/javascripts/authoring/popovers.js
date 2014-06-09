@@ -63,15 +63,17 @@ function editablePopoverObj(eventObj) {
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '">' + notes + '</textarea>'
         +'</td></tr>'
-        +'<div><input type="text" data-role="tagsinput" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
-        +'<div><input type="text" data-role="tagsinput" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
+        +'<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
+        +'<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
         +'<tr><td><p><button type="button" id="delete"'
-        +' onclick="deleteRect(' + groupNum +');">Delete</button>       ' 
+        +' onclick="deleteEvent(' + groupNum +');">Delete</button>       ' 
         +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>'  
         +'</form></td></tr>',
         container: $("#timeline-container"),
         callback: function() {
-            $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
+            //$("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
+            $("#inputs_" + groupNum).tagsinput();
+            $("#outputs_" + groupNum).tagsinput();
         }
     };
 
@@ -118,7 +120,8 @@ function readOnlyPopoverObj(ev) {
     if(num_members > 0){
         content += '<b>Members:</b><br>';
         for (var j=0;j<num_members;j++){
-            content += ev.members[j].name;
+            var member = getMemberById(ev.members[j]);
+            content += member.role;
             content += '<br>';
         }
     }
@@ -184,6 +187,7 @@ function readOnlyPopoverObj(ev) {
 
 function drawPopover(eventObj, editable, show) {
    var groupNum = eventObj.id;
+   console.log("groupNum: " + groupNum);
      // draw it
     var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG, RETURNS UNDEFINED
     if(!data){ // popover not set yet
@@ -251,7 +255,7 @@ function destroyPopover(popId){
 
 var getPopoverDataFromGroupNum = function(groupNum){
    //console.log($(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data);
-   return $(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data('bs.popover');
+   return $(timeline_svg.selectAll("g#g_"+groupNum)[0][0]).data('popover');
 };
 //Called when the user clicks save on an event popover, grabs new info from user and updates 
 //both the info in the popover and the event rectangle graphics

@@ -24,7 +24,6 @@ timeline_svg.append("defs").append("marker")
 //Determines if the user is trying to draw an interaction and if so, what type
 function eventMousedown(task2idNum) {
     var task1idNum = INTERACTION_TASK_ONE_IDNUM;
-    
     //Close all open popovers
     for (var i = 0; i<flashTeamsJSON["events"].length; i++) {
         var idNum = flashTeamsJSON["events"][i].id;
@@ -35,7 +34,6 @@ function eventMousedown(task2idNum) {
 
     if (DRAWING_HANDOFF == true) $("#handoff_btn_" + task1idNum).popover("hide");
     if (DRAWING_COLLAB == true) $("#collab_btn_" + task1idNum).popover("hide");
-
     //Check if interaction already exists
     if (DRAWING_COLLAB == true || DRAWING_HANDOFF == true) {
         timeline_svg.on("mousemove", null);
@@ -61,7 +59,7 @@ function eventMousedown(task2idNum) {
     }
 
     //The user has cancelled the drawing
-    if (task1idNum == task2idNum) { 
+    if (task1idNum == task2idNum) {
         DRAWING_COLLAB = false;
         DRAWING_HANDOFF = false;
     //Draw a handoff from task one to task two
@@ -81,7 +79,8 @@ function eventMousedown(task2idNum) {
             drawHandoff(handoffData);
             DRAWING_HANDOFF = false;
             $(".task_rectangle").popover("hide");
-            d3.event.stopPropagation();
+            //d3.event.stopPropagation();
+            INTERACTION_TASK_ONE_IDNUM = 0; // back to 0
         } else {
             alert("Sorry, the second task must begin after the first task ends.");
             DRAWING_COLLAB = false;
@@ -106,7 +105,8 @@ function eventMousedown(task2idNum) {
             drawCollaboration(collabData, overlap);
             DRAWING_COLLAB = false;
             $(".task_rectangle").popover("hide");
-            d3.event.stopPropagation();
+            //d3.event.stopPropagation();
+            INTERACTION_TASK_ONE_IDNUM = 0; // back to 0
         } else {
             alert("These events do not overlap, so they cannot collaborate.");
             DRAWING_COLLAB = false;
@@ -147,6 +147,26 @@ function startWriteHandoff() {
     timeline_svg.on("mousemove", interMouseMove);
 };
 
+function handoffStart(firstEvent){
+    var x1;
+     if (drawn_blue_tasks.indexOf(firstEvent["id"]) != -1){
+        x1 = firstEvent.completed_x;
+    } 
+    else if (completed_red_tasks.indexOf(firstEvent["id"]) != -1){
+        x1 = firstEvent.completed_x;
+    }
+    else if(delayed_tasks.indexOf(firstEvent["id"]) != -1){
+        var cursor_x = parseFloat(cursor.attr("x1"));
+        var widthRect = parseFloat(getWidth(firstEvent));
+        var red_width = cursor_x - (firstEvent.x + widthRect);
+        x1 = firstEvent.x + widthRect + red_width;
+    }
+    else { 
+        x1 = firstEvent.x + 3 + getWidth(firstEvent);
+    }
+    return x1;
+}
+
 //Redraw the position of the interaction line
 function drawHandoff(handoffData) {
     var task1Id = handoffData["event1"];
@@ -155,7 +175,7 @@ function drawHandoff(handoffData) {
 
     //Find end of task 1
     var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1Id)];
-    var x1 = ev1.x + 3 + getWidth(ev1);
+    var x1 = handoffStart(ev1);
     var y1 = ev1.y + 50;
     
     //Find beginning of task 2
