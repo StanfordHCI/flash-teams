@@ -34,3 +34,5 @@
 //= require ./authoring/notification_email
 //= require ./authoring/gdrive
 //= require ./authoring/bootstrap-tagsinput
+//= require ./authoring/notifications
+//= require ./authoring/idle

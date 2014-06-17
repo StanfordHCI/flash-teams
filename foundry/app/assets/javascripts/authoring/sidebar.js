@@ -1,23 +1,17 @@
 /***chat****/
 
-var myDataRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+ flash_team_id);
+var myDataRef = new Firebase('https://foundry-ft.firebaseio.com/'+ flash_team_id +'/chats');
 
 var currentdate = new Date(); 
-var datetime = (currentdate.getUTCMonth()+1) + "/"
-+ currentdate.getUTCDate()  + "/" 
-+ currentdate.getFullYear() + " @ "  
-+ currentdate.getUTCHours() + ":"  
-+ currentdate.getUTCMinutes();
 
 var name;
+
 $('#messageInput').keypress(function(e){
-    name =  chat_name+" ("+chat_role+")";
     if (e.keyCode == 13) {
         console.log("PRESSED RETURN KEY!");
-        //name = $('#nameInput').val();
         var text = $('#messageInput').val();
-        myDataRef.push({name: name+" ["+datetime+" GMT]", text: text});
-        $('#messageInput').val('');
+        myDataRef.push({name: chat_name, role: chat_role, date: currentdate.toUTCString(), text: text});
+        $('#messageInput').attr("placeholder", "Type your message here...").val("").blur();
     }
 });
 
@@ -26,36 +20,58 @@ myDataRef.on('child_added', function(snapshot) {
     console.log(snapshot);
     console.log(message);
     console.log("MESSAGE NAME: " + message["name"]);
-    displayChatMessage(message.name, message.text);
+
+    displayChatMessage(message.name, message.role, message.date, message.text);
+    
+    name = message.name;
 });
 
 var lastMessage=0;
 var lastWriter;
-function displayChatMessage(name, text) {
+
+function displayChatMessage(name, role, date, text) {
+    
     if(name == undefined){
         return;
     }
     
-    name_split = name.split(" ");
-    name = name_split[0]+" "+name_split[1];
-    var date_message =(name_split[2]+" "+name_split[3]+" "+name_split[4]+name_split[5]);
-    //name = name[0] + name[1];
-    //date = name[2];
-    //alert(date);
+    message_date = new Date(date);
+    dateform = message_date.toLocaleString();
+    
+    // diff in milliseconds 
+    var diff = Math.abs(new Date() - message_date);
+    
+    //diff in minutes
+    console.log("minutes ago: " + diff/(1000*60)); 
+    
+    //notification text   
+    //notification title
+    var notif_title = name+': '+ text;
+    //notification body
+    var notif_body = dateform;
+    
+    // checks if last notification was less than 5 seconds ago
+    // this is used to only create notifications for messages that were sent from the time you logged in and forward 
+    // (e.g., no notifications for messages in the past)
+    if (diff <= 50000){
+	    notifyMe(notif_title, notif_body);
+    }
+
+	//revise condition to include OR if timestamp of last message (e.g., lastDate) was over 10 minutes ago
     if(lastWriter!=name){
         lastMessage=(lastMessage+1)%2;
-        var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend('<br>').prepend($('<strong/>').text(name+': '+date_message));
+        var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text).prepend($('<strong/>').text(name+ ' (' + role + ')' + ': ' )).prepend('<br>').prepend($('<em/>').text(dateform));
+
         div1.css('padding-left','5%');
-        //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
         div1.appendTo($('#messageList'));
         
     }else{
         var div1 = $('<div/>',{"id":"m"+lastMessage}).text(text);
-        //div1.append($('<div/>' , {"id":"message-date"}).text(datetime));
         div1.css('padding-left','5%');
         div1.appendTo($('#messageList'));
     }
     lastWriter=name;
+    lastDate = message_date;
     $('#messageList')[0].scrollTop = $('#messageList')[0].scrollHeight;
 };
 
@@ -63,10 +79,16 @@ function displayChatMessage(name, text) {
 //*** online users
 // since I can connect from multiple devices or browser tabs, we store each connection instance separately
 // any time that connectionsRef's value is null (i.e. has no children) I am offline
-var myConnectionsRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
+var myConnectionsRef = new Firebase('https://foundry-ft.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
 // stores the timestamp of my last disconnect (the last time I was seen online)
-var lastOnlineRef = new Firebase('https://intense-fire-1391.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
-var connectedRef = new Firebase('https://intense-fire-1391.firebaseio.com/.info/connected');
+var lastOnlineRef = new Firebase('https://foundry-ft.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
+var connectedRef = new Firebase('https://foundry-ft.firebaseio.com/.info/connected');
+
+// Get a reference to the presence data in Firebase.
+var userListRef = new Firebase('https://foundry-ft.firebaseio.com/' + flash_team_id + '/presence');
+
+// Generate a reference to a new location for my user with push.
+var myUserRef = userListRef.push();
 
 connectedRef.on('value', function(snap) {
     if (snap.val() === true) {
@@ -80,11 +102,89 @@ connectedRef.on('value', function(snap) {
         con.onDisconnect().remove();
 
         // when I disconnect, update the last time I was seen online
-        lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);       
+        lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
+    
+		// If we lose our internet connection, we want ourselves removed from the list.
+		myUserRef.onDisconnect().remove();
 
+		// Set our initial online status.
+		setUserStatus("★ online");
+      
+    } else {
+
+      // We need to catch anytime we are marked as offline and then set the correct status. We
+      // could be marked as offline 1) on page load or 2) when we lose our internet connection
+      // temporarily.
+      setUserStatus(currentStatus);
     }
 });
 
+
+// A helper function to let us set our own status
+function setUserStatus(status) {
+	// Set our status in the list of online users.
+	currentStatus = status;
+	if (presname != undefined && status != undefined){
+		myUserRef.set({ name: presname, status: status });
+	}
+}
+
+function getMessageId(snapshot) {
+    return snapshot.name().replace(/[^a-z0-9\-\_]/gi,'');
+}
+
+// Update our GUI to show someone"s online status.
+userListRef.on("child_added", function(snapshot) {
+	var user = snapshot.val();
+	
+	$("<div/>")
+	  .attr("id", getMessageId(snapshot))
+	  .text(user.name + " is currently " + user.status)
+	  .appendTo("#presenceDiv");
+});
+
+// Update our GUI to remove the status of a user who has left.
+userListRef.on("child_removed", function(snapshot) {
+	$("#presenceDiv").children("#" + getMessageId(snapshot))
+	  .remove();
+});
+
+// Update our GUI to change a user"s status.
+userListRef.on("child_changed", function(snapshot) {
+	var user = snapshot.val();
+	$("#presenceDiv").children("#" + getMessageId(snapshot))
+	  .text(user.name + " is currently " + user.status);
+});
+  
+
+// Use idle/away/back events created by idle.js to update our status information.
+$(function() { 
+
+	var awayCallback = function() {
+		setUserStatus("☄ away");
+	};
+	
+	var awayBackCallback = function() {
+		setUserStatus("★ online");
+	};
+	
+	var hiddenCallback = function() {
+		//☆ idle
+		setUserStatus("not looking at page");
+	};
+	
+	var visibleCallback = function(){
+		setUserStatus("looking at page again")
+	};
+
+	var idle = new Idle({
+		onHidden: hiddenCallback,
+		onVisible: visibleCallback,
+		onAway: awayCallback,
+		onAwayBack: awayBackCallback,
+		awayTimeout: 5000 //away with 5 seconds of inactivity
+	}).start();				
+});
 /***chat end****/
 
 

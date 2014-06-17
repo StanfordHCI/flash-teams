@@ -122,6 +122,9 @@ $("#uniq").value = uniq;
 var chat_role;
 var chat_name;
 
+var presname; // name of user shown in the presence box
+var currentStatus; //the status of the user shown in the presence box
+
 $(document).ready(function(){
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
@@ -211,6 +214,10 @@ var renderChatbox = function(){
     }).done(function(data){
        chat_name = data["user_name"];
        chat_role = data["user_role"];
+       
+       presname = chat_name;
+	   currentStatus = "★ online";
+
        if (chat_role == "" || chat_role == null){
          uniq_u2 = data["uniq"];
          
