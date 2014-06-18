@@ -1,4 +1,7 @@
-function notifyMe(notif_title, notif_body) {
+ var last_notification = null;
+
+function notifyMe(notif_title, notif_body, notif_tag) {
+   
   // Let's check if the browser supports notifications
   if (!("Notification" in window)) {
     alert("This browser does not support desktop notification");
@@ -7,17 +10,8 @@ function notifyMe(notif_title, notif_body) {
   // Let's check if the user is okay to get some notification
   else if (Notification.permission === "granted") {
     // If it's okay let's create a notification
-    var notification = new Notification(notif_title, {body: notif_body })
-    /*
-		notification.onshow = function() { 
-    		console.log("ONSHOW");
-			setTimeout(notification.close(), 5000);
-     }
-*/
-    playSound("/assets/notify");
     
-    
-    
+	showNotif(notif_title, notif_body, notif_tag);
   }
 
   // Otherwise, we need to ask the user for permission
@@ -33,22 +27,39 @@ function notifyMe(notif_title, notif_body) {
 
       // If the user is okay, let's create a notification
       if (permission === "granted") {
-		 var notification = new Notification(notif_title, { body: notif_body })
-        
-        playSound("/assets/notify");
-        
-       //notification.onshow = function() { setTimeout(notification.close, 2000) }
-              
+		showNotif(notif_title, notif_body, notif_tag);
+                      
       }
     });
    
-	
-
-
   }
 
   // At last, if the user already denied any notification, and you 
   // want to be respectful there is no need to bother him any more.
+}
+
+function showNotif(notif_title, notif_body, notif_tag){
+	
+	closeNotif(last_notification); //close any notifications that might exist from previous sessions
+	
+	var notification = new Notification(notif_title, {body: notif_body, tag: notif_tag});
+        
+    notification.addEventListener('click', closeNotif(last_notification));
+    
+    notification.addEventListener('close', closeNotif(last_notification));
+    
+    playSound("/assets/notify");
+    
+    last_notification = notification; 
+    
+}
+	
+function closeNotif(notif){
+  if (last_notification == null)
+    return;
+    
+  last_notification.close();
+  last_notification = null;
 }
 
 

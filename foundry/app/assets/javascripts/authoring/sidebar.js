@@ -6,12 +6,19 @@ var currentdate = new Date();
 
 var name;
 
-$('#messageInput').keypress(function(e){
+
+$('#messageInput').keydown(function(e){
     if (e.keyCode == 13) {
         console.log("PRESSED RETURN KEY!");
         var text = $('#messageInput').val();
-        myDataRef.push({name: chat_name, role: chat_role, date: currentdate.toUTCString(), text: text});
-        $('#messageInput').attr("placeholder", "Type your message here...").val("").blur();
+        var uniq_u=getParameterByName('uniq');
+        
+        if(uniq_u == undefined || uniq_u == ""){
+	        uniq_u = 'Author';
+        }
+        
+        myDataRef.push({name: chat_name, role: chat_role, uniq: uniq_u, date: currentdate.toUTCString(), text: text});
+        $('#messageInput').attr("placeholder", "Type your message here...").val('').blur();
     }
 });
 
@@ -21,7 +28,7 @@ myDataRef.on('child_added', function(snapshot) {
     console.log(message);
     console.log("MESSAGE NAME: " + message["name"]);
 
-    displayChatMessage(message.name, message.role, message.date, message.text);
+    displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
     
     name = message.name;
 });
@@ -29,7 +36,7 @@ myDataRef.on('child_added', function(snapshot) {
 var lastMessage=0;
 var lastWriter;
 
-function displayChatMessage(name, role, date, text) {
+function displayChatMessage(name, uniq, role, date, text) {
     
     if(name == undefined){
         return;
@@ -50,11 +57,20 @@ function displayChatMessage(name, role, date, text) {
     //notification body
     var notif_body = dateform;
     
+    var showchat; // true if notifications should be shown
+        
+    if ((current_user == 'Author' && role == 'Author') || (current_user.uniq == uniq)){
+    	showchat = false;
+    }
+    else{
+	    showchat = true;
+    }
+    
     // checks if last notification was less than 5 seconds ago
     // this is used to only create notifications for messages that were sent from the time you logged in and forward 
     // (e.g., no notifications for messages in the past)
-    if (diff <= 50000){
-	    notifyMe(notif_title, notif_body);
+    if (diff <= 50000 && showchat == true){
+	    notifyMe(notif_title, notif_body, 'chat');
     }
 
 	//revise condition to include OR if timestamp of last message (e.g., lastDate) was over 10 minutes ago
@@ -182,7 +198,7 @@ $(function() {
 		onVisible: visibleCallback,
 		onAway: awayCallback,
 		onAwayBack: awayBackCallback,
-		awayTimeout: 5000 //away with 5 seconds of inactivity
+		awayTimeout: 60000 //away with 1 minute (e.g., 60 seconds) of inactivity
 	}).start();				
 });
 /***chat end****/

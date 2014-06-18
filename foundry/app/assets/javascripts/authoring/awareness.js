@@ -202,6 +202,9 @@ function listenForVisibilityChange(){
     }, false);
 };  
 
+// saves member object for current_user (undefined for author so we will set it to 'Author')
+var current_user;
+
 //finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
     var uniq_u=getParameterByName('uniq');
@@ -217,6 +220,14 @@ var renderChatbox = function(){
        
        presname = chat_name;
 	   currentStatus = "★ online";
+	   
+	   // current_user is undefined for author so just set it to 'Author' 
+	   // when current_user is the author it won't have a uniq id so need to check for current_user == 'Author' instead
+	   if(chat_role == 'Author'){
+		   current_user = 'Author';
+		   console.log ("CURRENT USER AUTHOR: " + current_user);
+		   
+	   }
 
        if (chat_role == "" || chat_role == null){
          uniq_u2 = data["uniq"];
@@ -229,6 +240,7 @@ var renderChatbox = function(){
             if (flash_team_members[i].uniq == uniq_u2){
               chat_role = flash_team_members[i].role; 
               current = i;
+              current_user = flash_team_members[i];
 
               // here there once existed a call to boldEvents
               trackUpcomingEvent();
