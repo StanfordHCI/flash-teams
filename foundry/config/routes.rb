@@ -64,6 +64,7 @@ Foundry::Application.routes.draw do
   
   resources :flash_teams do
     member do 
+      delete :destroy
       get :get_status
       post :update_status
       post :update_json
