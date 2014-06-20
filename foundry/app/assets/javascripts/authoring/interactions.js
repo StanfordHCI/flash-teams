@@ -354,8 +354,8 @@ function deleteInteraction(intId) {
     $("#interaction_" + intId).popover("destroy");
 
     //Delete from JSON
-    //var indexOfJSON = getIntJSONIndex(intId);
-    //flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
 
     console.log("REMOVING INTERACTION ID: " + intId);
 
