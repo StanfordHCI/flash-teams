@@ -1,3 +1,7 @@
+body{
+	background: #e3e3e3;
+}
+
 #memberPills li {
     float: none!important;
     padding: 5px 0;
@@ -40,8 +44,41 @@
 	float: right;
 }
 
+.well{
+	padding-top: 5px;
+	border: 1px solid white;
+}
+
+#foundry-header{
+	/* background: #dbdbdb; */
+	/* background: #979797; */
+	background-color: #434343;
+	color: white;
+	position: fixed;
+	z-index: 1999;
+	top: 0;
+	left: 0;
+}
+
+.ft-buttons{
+	margin-top: 5px;
+}
+
+#ft-buttons-left{
+	padding-left: 7px;
+}
+
+#ft-buttons-right{
+	padding-right: 7px;
+}
+
 #member-container {
 	height: 200px;
+}
+
+#newMemberForm{
+	margin-bottom: 5px;
+	margin-top: 15px;
 }
 
 #search-events-container {
@@ -52,6 +89,10 @@
 	border: 1px solid;
 	margin: 5px;
 	padding: 5px;
+}
+
+.eventPopover{
+	background: pink;
 }
 
 .messages {
