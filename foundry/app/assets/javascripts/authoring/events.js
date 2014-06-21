@@ -661,6 +661,7 @@ function drawShade(eventObj, firstTime) {
 }
 
 function drawEachHandoff(eventObj, firstTime){
+    console.log("WRITING ALL THE HANDOFFS", flashTeamsJSON["interactions"]);
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];

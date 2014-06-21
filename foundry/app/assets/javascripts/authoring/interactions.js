@@ -351,13 +351,15 @@ function saveCollab(intId) {
 //Deletes the interaction from the timeline and the JSON
 function deleteInteraction(intId) {
     //Destroy Popover
+    console.log("THIS FUNCTION IS BEING CALLED");
     $("#interaction_" + intId).popover("destroy");
 
     //Delete from JSON
     var indexOfJSON = getIntJSONIndex(intId);
     flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    updateStatus();
 
-    console.log("REMOVING INTERACTION ID: " + intId);
+    console.log("UPDATED INVOLVEMENT: " + flashTeamsJSON["interactions"]);
 
     //Delete Rectangle
     $("#interaction_" + intId).remove();
