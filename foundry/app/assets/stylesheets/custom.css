@@ -12,14 +12,24 @@ body{
 	line-height: 15px;
 }
 
+/*
 .popover-content {
     overflow-y: scroll;
-    max-height: 225px;
+    max-height: 160px;
+}
+
+.popover-title {
+	padding-bottom: 0px;
 }
 
 .popover {
     max-width: 400px;
+*/
+   /* overflow-y: scroll; */
+/*
+    max-height: 225px;
 }
+*/
 
 .task_rectangle {
     cursor:pointer;
