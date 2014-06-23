@@ -163,21 +163,15 @@ var moveProjectStatus = function(status_bar_timeline_interval){
     var current_perc = 0;
 
     var progress = setInterval(function() {
-                //current_perc +=1;
-                if(curr_status_width<status_width && delayed_tasks.length==0){
-                    curr_status_width += project_status_interval_width;
+        if(curr_status_width<status_width && delayed_tasks.length==0){
+            curr_status_width += project_status_interval_width;
 
-                }
-                if(curr_status_width>status_width){
-                    curr_status_width = status_width;
-                }
-                me.css('width', (curr_status_width)+'%');
-                
-
-                //me.text(curr_status_width+'%');
-
-           // var int_width=Math.round(curr_status_width);      
-       },status_bar_timeline_interval);
+        }
+        if(curr_status_width>status_width){
+            curr_status_width = status_width;
+        }
+        me.css('width', (curr_status_width)+'%');
+    },status_bar_timeline_interval);
 
     return progress;
 };
@@ -235,7 +229,7 @@ function load_statusBar(status_bar_timeline_interval){
             var groupNum = data.groupNum;
             
             
-            if ( groupNum == delayed_tasks[0]){
+            if (groupNum == delayed_tasks[0]){
 
                 start_delayed_x = data.x+4;  //CHECK with Jay
                 var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
@@ -266,7 +260,6 @@ function load_statusBar(status_bar_timeline_interval){
             
         }
         
-
         // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
         console.log("last_end",last_end_x);
         var cursor_x = cursor.attr("x1");
@@ -281,10 +274,6 @@ function load_statusBar(status_bar_timeline_interval){
 
         return;    
     }
-    
-
-
-
 
     if (flashTeamsJSON["startTime"] == null ){
         return;
@@ -311,8 +300,7 @@ function load_statusBar(status_bar_timeline_interval){
         
         if(last_end_x<end_x){
             last_end_x=end_x;
-        }
-        
+        }        
     }
 
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
@@ -326,13 +314,9 @@ function load_statusBar(status_bar_timeline_interval){
    curr_status_width = project_status_interval_width * diff_sec;
 }
 var status_interval_id;
+
 var setProjectStatusMoving = function(){
-
     return moveProjectStatus(status_bar_timeline_interval);
-/*    status_interval_id = setInterval(function(){
-        moveProjectStatus(status_bar_timeline_interval);
-    }, status_bar_timeline_interval); // every 10 seconds currently*/
-
 };
-/* --------------- PROJECT STATUS BAR END ------------ */
+
 /* --------------- PROJECT STATUS BAR END ------------ */

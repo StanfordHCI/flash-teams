@@ -8,6 +8,10 @@
  var current = undefined;
  var isUser = false;
 
+ $(document).ready(function() {
+    pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
+ });
+
  function renderMembersRequester() {
     var members = flashTeamsJSON.members;
     renderPills(members);
@@ -379,15 +383,6 @@ function updateMemberPillColor(color, memberId) {
     flashTeamsJSON["members"][indexOfJSON].color = color;
 
     updateStatus(false);
-
-    // Update JSON for team diagram
-    //workers.nodes[searchById(workers.nodes, memberId)].color = color;
-    //updateNodeColor();
-};
-
-//Necessary to save member popover information
-function updateMemberPopover(idNum) {
-    $("#mPill_" + idNum).data('popover').options.content = "";
 };
 
 //Draws the color picker on a member popover
@@ -422,14 +417,12 @@ function getMemberJSONIndex(idNum) {
     for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (parseInt(flashTeamsJSON["members"][i].id) == parseInt(idNum)) return i; 
     }
-    //console.log("NOT FOUND MEMBER WITH ID: " + idNum);
     return -1;
 };
 
 function getMemberById(id) {
     var idx = getMemberJSONIndex(id);
     if(idx != -1){
-        //console.log("FOUND MEMBER WITH ID: " + id);
         return flashTeamsJSON["members"][idx];
     }
     return null;
@@ -442,23 +435,3 @@ function searchById (arr, id) {
         }
     }
 };
-
-$(document).ready(function() {
-    pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
-});
-
-//Populate the autocomplete function for the event members
-//TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
-function addMemAuto() {
-    var memberArray = new Array(flashTeamsJSON["members"].length);
-    for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-        memberArray[i] = flashTeamsJSON["members"][i].role;
-    }
-
-    $(".eventMemberInput").each(function() {
-        $(this).autocomplete({
-            source: memberArray
-        });
-    })
-};
-

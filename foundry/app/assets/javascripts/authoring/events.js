@@ -82,6 +82,7 @@ function leftResize(d) {
 
     // update x and draw event
     ev.x = newX;
+    ev.orig_x = newX;
     ev.duration = durationForWidth(newWidth);
     
     var startHr = startHrForX(newX);
@@ -138,6 +139,7 @@ function dragEvent(d) {
     if (d3.event.dx + d.x < 0) newX = (0 - (DRAGBAR_WIDTH/2));
     
     ev.x = newX;
+    ev.orig_x = newX;
 
     //update start time, start hour, start minute
     var startHr = startHrForX(newX);
@@ -241,7 +243,7 @@ function getDuration(leftX, rightX) {
 function createEventObj(snapPoint) {
     event_counter++;
     var startTimeObj = getStartTime(snapPoint[0]);
-    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "y": snapPoint[1], 
+    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "orig_x": snapPoint[0], "y": snapPoint[1], 
         "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], 
         "dri":"", "notes":"", "startHr": startTimeObj["startHr"], 
         "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null, "inputs":null, "outputs":null};
@@ -745,7 +747,7 @@ function drawEachCollab(eventObj, firstTime){
 
 //Creates graphical elements from array of data (task_rectangles)
 function drawEvent(eventObj, firstTime) { 
-    console.log("redrawing event");   
+    console.log("redrawing event");
     drawG(eventObj, firstTime);
     drawMainRect(eventObj, firstTime);
     drawRightDragBar(eventObj, firstTime);
@@ -756,14 +758,11 @@ function drawEvent(eventObj, firstTime) {
     drawHandoffBtn(eventObj, firstTime);
     drawCollabBtn(eventObj, firstTime);
     drawMemberLines(eventObj);
-    console.log("yo1");
     drawShade(eventObj, firstTime);
-    console.log("yo2");
     drawEachHandoff(eventObj, firstTime);
-    console.log("yo3");
     drawEachCollab(eventObj, firstTime);
-    console.log("yo4");
 };
+
 function drawAllPopovers() {
     var events = flashTeamsJSON["events"];
     for (var i = 0; i < events.length; i++){
@@ -875,64 +874,4 @@ function deleteEvent(eventId){
     removeTask(eventId);
     
     updateStatus(false);
-}
-
-//Updates the physical task rectangle representation of start and duration, also update JSON
-function updateTime(idNum) {
-    var eventLength = $("#rect_" + idNum)[0].width.animVal.value;
-    var hours = Math.floor(eventLength/100);
-    if (hours == 0) var minutes = (eventLength)/25*15;
-    else var minutes = (eventLength%(hours*100))/25*15;
-    
-    $("#time_text_" + idNum).text(hours + "hrs " + minutes + "min");
-
-    $("#rect_" + idNum).popover("show");
-    var title = $("#eventName_" + idNum).attr("placeholder");
-    var startHr = $("#startHr_" + idNum).attr("placeholder");
-    var startMin = $("#startMin_" + idNum).attr("placeholder");
-    var eventNotes = flashTeamsJSON["events"][getEventJSONIndex(idNum)].notes;
-    //updateEventPopover(idNum, title, startHr, startMin, hours, minutes, eventNotes);
-    $("#rect_" + idNum).popover("hide");
-
-    //Update JSON
-    var indexOfJSON = getEventJSONIndex(idNum);
-    flashTeamsJSON["events"][indexOfJSON].duration = (hours*60) + minutes;
-    flashTeamsJSON["events"][indexOfJSON].startTime = parseInt((startHr*60)) + parseInt(startMin);
-    
-}
-
-
-//Change the starting location of a task rectangle and its relevant components when the user changes info in the popover
-function updateStartPlace(idNum, startHr, startMin, width) {
-    var newX = (startHr*100) + (startMin/15*25) - 4;
-    $("#rect_" + idNum).attr("x", newX);
-    $("#rt_rect_" + idNum).attr("x", newX + width);
-    $("#lt_rect_" + idNum).attr("x", newX);
-    $("#title_text_" + idNum).attr("x", newX + 10);
-    $("#time_text_" + idNum).attr("x", newX + 10);
-    $("#handoff_btn_" + idNum).attr("x", newX + width - 18);
-    $("#collab_btn_" + idNum).attr("x", newX + width - 38);
-
-    var indexOfJSON = getEventJSONIndex(idNum);
-    for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
-        $("#event_" + idNum + "_eventMemLine_" + i).attr("x", newX+8);
-    }
-}
-
-//Update the width and total runtime of an event when a user changes the info in the popover
-function updateWidth(idNum, hrs, min) {
-    var newWidth = (hrs * 100) + (min/15*25);
-    var newX = $("#rect_" + idNum).get(0).x.animVal.value + newWidth;
-
-    $("#rt_rect_" + idNum).attr("x", newX);
-    $("#handoff_btn_" + idNum).attr("x", newX-18);
-    $("#collab_btn_" + idNum).attr("x", newX-38);
-
-    var indexOfJSON = getEventJSONIndex(idNum);
-    for (i = 1; i <= flashTeamsJSON["events"][indexOfJSON].members.length; i++) {
-        $("#event_" + idNum + "_eventMemLine_" + i).attr("width", newWidth-8);
-    }
-
-    $("#rect_" + idNum).attr("width", newWidth);
-    updateTime(idNum);
 }
