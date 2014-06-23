@@ -8,6 +8,34 @@
  var current = undefined;
  var isUser = false;
 
+//WARNING: This has to be called once, and before any of the other colorBox functions!
+function colorBox() {
+    colorBox.colors = ["#00ffff","#f0ffff","#f5f5dc","#000000","#0000ff","#a52a2a","#00ffff",
+    "#00008b","#008b8b","#a9a9a9","#006400","#bdb76b","#8b008b","#556b2f","#ff8c00","#9932cc",
+    "#8b0000","#e9967a","#9400d3","#ff00ff","#ffd700","#008000","#4b0082","#f0e68c","#add8e6",
+    "#e0ffff","#90ee90","#d3d3d3","#ffb6c1","#ffffe0","#00ff00","#ff00ff","#800000","#000080",
+    "#808000","#ffa500","#ffc0cb","#800080","#800080","#ff0000","#c0c0c0","#ffff00"];
+    for (var i = 0; i < flashTeamsJSON.members.length; i++){
+        var ind = $.inArray(flashTeamsJSON.members[i].color, colorBox.colors);
+        if (ind != 0) { //if found, remove from possible colors array
+            colorBox.colors.splice(ind,1);
+        }
+    }
+}
+
+//grabColor returns a hex code not currently used by any member
+colorBox.grabColor = function() {
+    var ind = Math.floor(Math.random()*colorBox.colors.length);
+    var color = colorBox.colors[ind];
+    colorBox.colors.splice(ind,1);
+    return color;
+};
+
+//replaceColor adds a color back into possible space
+colorBox.replaceColor = function(color) {
+    colorBox.colors.push(color);
+};
+
  function renderMembersRequester() {
     var members = flashTeamsJSON.members;
     renderPills(members);
@@ -75,8 +103,6 @@ function renderMemberPopovers(members) {
         var category1 = member.category1;
         var category2 = member.category2;
 
-        //alert("render1");
-
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
             console.log("category1");
@@ -87,8 +113,6 @@ function renderMemberPopovers(members) {
                 content += '<option value="' + key + '">' + key + '</option>';
             }
         }
-
-        //alert("render2");
 
         //reload or build category2 based on previously selected category 1
         content += '</select>';
@@ -118,8 +142,6 @@ function renderMemberPopovers(members) {
         +'<br>Skills:'  
         +'<ul class="nav nav-pills" id="skillPills_' + member_id + '">';
 
-        //alert("render3");
-
         var skills_len = member.skills.length;
         for(var j=0;j<skills_len;j++){
             var memberSkillNumber = j+1;
@@ -127,8 +149,6 @@ function renderMemberPopovers(members) {
             content+='<li class="active" id="sPill_mem' + member_id + '_skill' + memberSkillNumber + '"><a>' + skillName 
             + '<div class="close" onclick="deleteSkill(' + member_id + ', ' + memberSkillNumber + ', &#39' + skillName + '&#39)">  X</div></a></li>';
         }
-
-        //alert("render4");
 
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
@@ -141,7 +161,6 @@ function renderMemberPopovers(members) {
         +'</p></form>' 
         +'</div>';
 
-        //console.log("destroying popover: " + member_id);
         $("#mPill_" + member_id).popover('destroy');
 
         $("#mPill_" + member_id).popover({
@@ -214,7 +233,8 @@ function renderDiagram(members) {
 
 function newMemberObject(memberName) {
     pillCounter++;
-    return {"role":memberName, "id": pillCounter, "color":"#08c", "skills":[], "category1":"", "category2":""};
+    var color = colorBox.grabColor();
+    return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
 };
 
 function addMember() {
@@ -225,19 +245,13 @@ function addMember() {
         return;
     }
 
-    //alert("yo2");
-
     // clear input
     $("#addMemberInput").val(this.placeholder);
-
-    //alert("yo3");
 
     // add member to json
     var members = flashTeamsJSON.members;
     var member_obj = newMemberObject(member_name);
     members.push(member_obj);
-
-    //alert("yo4");
 
     //update event popovers to show the new member
     var events = flashTeamsJSON.events;
@@ -245,17 +259,12 @@ function addMember() {
        drawPopover(events[i], true, false);
     }
 
-   //alert("a");
    renderPills(members);
-   //alert("b");
    renderMemberPopovers(members);
-   //alert("c");
 
    updateStatus(false);
 
-   //alert("d");
    inviteMember(member_obj.id);
-   //alert("e");
 };
 
 
@@ -293,8 +302,6 @@ function deleteSkill(memberId, pillId, skillName) {
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
     var indexOfJSON = getMemberJSONIndex(popId);
-    //flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
-    //flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
 
     flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
     flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
@@ -379,10 +386,6 @@ function updateMemberPillColor(color, memberId) {
     flashTeamsJSON["members"][indexOfJSON].color = color;
 
     updateStatus(false);
-
-    // Update JSON for team diagram
-    //workers.nodes[searchById(workers.nodes, memberId)].color = color;
-    //updateNodeColor();
 };
 
 //Necessary to save member popover information
@@ -422,14 +425,12 @@ function getMemberJSONIndex(idNum) {
     for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (parseInt(flashTeamsJSON["members"][i].id) == parseInt(idNum)) return i; 
     }
-    //console.log("NOT FOUND MEMBER WITH ID: " + idNum);
     return -1;
 };
 
 function getMemberById(id) {
     var idx = getMemberJSONIndex(id);
     if(idx != -1){
-        //console.log("FOUND MEMBER WITH ID: " + id);
         return flashTeamsJSON["members"][idx];
     }
     return null;

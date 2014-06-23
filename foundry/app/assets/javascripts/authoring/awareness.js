@@ -42,17 +42,13 @@ var window_visibility_state = null;
 var window_visibility_change = null;
 
 var getXCoordForTime = function(t){
-   // console.log("time t: " + t);
     var numInt = parseInt(t / timeline_interval);
     var remainder = t % timeline_interval;
-   // console.log("numInt: " + numInt + " | remainder: " + remainder);
 
     var xCoordForRemainder = (remainder / timeline_interval) * 50;
     var xCoordForMainIntervals = 50*numInt;
-   // console.log("xCoordForRemainder: " + xCoordForRemainder + " | xCoordForMainIntervals: " + xCoordForMainIntervals);
 
     var finalX = parseFloat(xCoordForRemainder) + parseFloat(xCoordForMainIntervals);
-   // console.log("finalX: " + finalX);
     return {"finalX": finalX, "numInt": numInt};
 };
 
@@ -126,6 +122,7 @@ var presname; // name of user shown in the presence box
 var currentStatus; //the status of the user shown in the presence box
 
 $(document).ready(function(){
+    colorBox();
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
     $.ajax({
@@ -148,7 +145,7 @@ $(document).ready(function(){
 
         if(in_progress){
             console.log("flash team in progress");
-            //renderChatbox();
+            colorBox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             loadData(true);
             renderMembersUser();
