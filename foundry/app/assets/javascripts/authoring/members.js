@@ -61,7 +61,6 @@ function renderMemberPopovers(members) {
     for (var i=0;i<len;i++){
         var member = members[i];
         var member_id = member.id;
-        console.log("RENDERING POPOVER FOR MEMBER " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
 
@@ -75,8 +74,6 @@ function renderMemberPopovers(members) {
         var category1 = member.category1;
         var category2 = member.category2;
 
-        //alert("render1");
-
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
             console.log("category1");
@@ -87,8 +84,6 @@ function renderMemberPopovers(members) {
                 content += '<option value="' + key + '">' + key + '</option>';
             }
         }
-
-        //alert("render2");
 
         //reload or build category2 based on previously selected category 1
         content += '</select>';
@@ -118,8 +113,6 @@ function renderMemberPopovers(members) {
         +'<br>Skills:'  
         +'<ul class="nav nav-pills" id="skillPills_' + member_id + '">';
 
-        //alert("render3");
-
         var skills_len = member.skills.length;
         for(var j=0;j<skills_len;j++){
             var memberSkillNumber = j+1;
@@ -127,8 +120,6 @@ function renderMemberPopovers(members) {
             content+='<li class="active" id="sPill_mem' + member_id + '_skill' + memberSkillNumber + '"><a>' + skillName 
             + '<div class="close" onclick="deleteSkill(' + member_id + ', ' + memberSkillNumber + ', &#39' + skillName + '&#39)">  X</div></a></li>';
         }
-
-        //alert("render4");
 
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
@@ -141,7 +132,6 @@ function renderMemberPopovers(members) {
         +'</p></form>' 
         +'</div>';
 
-        //console.log("destroying popover: " + member_id);
         $("#mPill_" + member_id).popover('destroy');
 
         $("#mPill_" + member_id).popover({
@@ -183,6 +173,12 @@ function generateMemberCategoryChangeFunction(mem_id) {
 }
 
 function memberPillClick(mem_id) {
+    //Close all open popovers
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var idNum = flashTeamsJSON["members"][i].id;
+        if (idNum == mem_id) continue;
+        $("#mPill_"+idNum).popover('hide');
+    }
     $("#member" + mem_id + "_category1").off('change', generateMemberCategoryChangeFunction(mem_id));
     $("#member" + mem_id + "_category1").on('change', generateMemberCategoryChangeFunction(mem_id));
 }
@@ -225,19 +221,13 @@ function addMember() {
         return;
     }
 
-    //alert("yo2");
-
     // clear input
     $("#addMemberInput").val(this.placeholder);
-
-    //alert("yo3");
 
     // add member to json
     var members = flashTeamsJSON.members;
     var member_obj = newMemberObject(member_name);
     members.push(member_obj);
-
-    //alert("yo4");
 
     //update event popovers to show the new member
     var events = flashTeamsJSON.events;
@@ -245,7 +235,6 @@ function addMember() {
        drawPopover(events[i], true, false);
     }
 
-   //alert("a");
    renderPills(members);
    //alert("b");
    renderMemberPopovers(members);

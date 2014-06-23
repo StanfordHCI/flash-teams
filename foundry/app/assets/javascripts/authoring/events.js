@@ -26,38 +26,38 @@ var dragged = false;
 
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
-                .on("drag", rightResize)
-                .on("dragend", function(d){
-                    var ev = getEventFromId(d.groupNum);
-                    drawPopover(ev, true, false);
-                    updateStatus(false);
-                });
+    .on("drag", rightResize)
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
+        updateStatus(false);
+    });
 
 //Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
-                .on("drag", leftResize)
-                .on("dragend", function(d){
-                    var ev = getEventFromId(d.groupNum);
-                    drawPopover(ev, true, false);
-                    updateStatus(false);
-                });
+    .on("drag", leftResize)
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
+        updateStatus(false);
+    });
 
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
-            .origin(Object)
-            .on("drag", dragEvent)
-            .on("dragend", function(d){
-                if(dragged){
-                    dragged = false;
-                    var ev = getEventFromId(d.groupNum);
-                    drawPopover(ev, true, false);
-                    updateStatus(false);
-                } else {
-                    // click
-                    console.log("CLICKED");
-                    eventMousedown(d.groupNum);
-                }
-            });
+    .origin(Object)
+    .on("drag", dragEvent)
+    .on("dragend", function(d){
+        if(dragged){
+            dragged = false;
+            var ev = getEventFromId(d.groupNum);
+            drawPopover(ev, true, false);
+            updateStatus(false);
+        } else {
+            // click
+            console.log("CLICKED");
+            eventMousedown(d.groupNum);
+        }
+    });
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
@@ -167,8 +167,6 @@ function calcSnap(mouseX, mouseY) {
 
 // mousedown on timeline => creates new event and draws it
 function newEvent(point) {
-    
-
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
