@@ -73,6 +73,12 @@ body{
 	padding-left: 19px;
 	/* padding-left: 38px; */
 }
+/*
+
+#ft-buttons-left input{
+	padding-left: 5px;
+}
+*/
 
 #ft-buttons-right{
 	float: right;
@@ -80,7 +86,7 @@ body{
 }
 
 #ft-name{
-	/* padding-left: 19px; */
+	padding-left: 19px;
 }
 #member-container {
 	height: 200px;
@@ -99,10 +105,6 @@ body{
 	border: 1px solid;
 	margin: 5px;
 	padding: 5px;
-}
-
-.eventPopover{
-	background: pink;
 }
 
 .messages {

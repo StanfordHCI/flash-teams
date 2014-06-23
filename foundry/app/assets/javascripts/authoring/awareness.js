@@ -80,6 +80,8 @@ function removeHandoffBtns(){
 $("#flashTeamStartBtn").click(function(){
     // view changes
     $("#flashTeamStartBtn").attr("disabled", "disabled");
+    $("#flashTeamStartBtn").css('display','none');
+    $("#flashTeamEndBtn").css('display','');
     $("div#search-events-container").css('display','none');
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
