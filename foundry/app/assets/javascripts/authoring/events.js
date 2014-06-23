@@ -215,7 +215,7 @@ function createEvent(point) {
 };
 
 function checkWithinTimelineBounds(snapPoint) {
-    return ((snapPoint[1] < 505) && (snapPoint[0] < 2396));
+    return ((snapPoint[1] < 505) && (snapPoint[0] < (SVG_WIDTH-150)));
 };
 
 function getStartTime(mouseX) {

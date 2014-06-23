@@ -212,7 +212,6 @@ function addTime() {
     .attr("height", SVG_HEIGHT)
     .attr("fill", "white")
     .attr("fill-opacity", 0)
-    .attr("z-index", -1)
     .on("mousedown", function() {
         var point = d3.mouse(this);
         newEvent(point);
