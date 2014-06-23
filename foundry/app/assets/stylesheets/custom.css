@@ -7,6 +7,11 @@ body{
     padding: 5px 0;
 }
 
+/* The X's in the member pills */
+.close{
+	line-height: 15px;
+}
+
 .popover-content {
     overflow-y: scroll;
     max-height: 225px;
@@ -65,13 +70,18 @@ body{
 }
 
 #ft-buttons-left{
-	padding-left: 7px;
+	padding-left: 19px;
+	/* padding-left: 38px; */
 }
 
 #ft-buttons-right{
-	padding-right: 7px;
+	float: right;
+	padding-left: 79px;
 }
 
+#ft-name{
+	/* padding-left: 19px; */
+}
 #member-container {
 	height: 200px;
 }
@@ -106,6 +116,7 @@ body{
 #m1 {
     background-color: #f5f5f5;
 }
+
 #message-date {
     font-size: 8px;
     color: rgba(0,0,0,0.5);
