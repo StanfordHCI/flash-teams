@@ -33,7 +33,7 @@ class FlashTeamsController < ApplicationController
   end
 
   def index
-    @flash_teams = FlashTeam.all
+    @flash_teams = FlashTeam.all.order(:id).reverse_order
   end
 
  
