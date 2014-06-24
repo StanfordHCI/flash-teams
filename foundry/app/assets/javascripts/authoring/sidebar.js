@@ -209,7 +209,8 @@ $(function() {
 //var status_width=302; --> negar's
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
-.attr("width", SVG_WIDTH)
+/* .attr("width", SVG_WIDTH) */
+.attr("width", 300)
 .attr("height", 100);
 
 var statusText = project_status_svg.append("text").text("You currently have no tasks")
