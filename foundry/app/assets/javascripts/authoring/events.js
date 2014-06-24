@@ -518,18 +518,19 @@ function drawHandoffBtn(eventObj, firstTime) {
             .attr("y", function(d) {return d.y+y_offset})
             .on("click", startWriteHandoff);
 
-        $("#handoff_btn_" + groupNum).popover({
-            trigger: "click",
-            html: true,
-            class: "interactionPopover",
-            style: "font-size: 8px",
-            placement: "right",
-            content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
-            container: $("#timeline-container")
-        });
-
-        $("#handoff_btn_" + groupNum).popover("show");
-        $("#handoff_btn_" + groupNum).popover("hide");
+    /*$("#handoff_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
+    
+    $("#handoff_btn_" + groupNum).popover("show");
+    $("#handoff_btn_" + groupNum).popover("hide");*/
+    
     } else {
         task_g.selectAll(".handoff_btn")
             .attr("x", function(d) {return d.x + x_offset})
@@ -558,18 +559,19 @@ function drawCollabBtn(eventObj, firstTime) {
             .attr("y", function(d) {return d.y+y_offset})
             .on("click", startWriteCollaboration);
 
-        $("#collab_btn_" + groupNum).popover({
-            trigger: "click",
-            html: true,
-            class: "interactionPopover",
-            style: "font-size: 8px",
-            placement: "right",
-            content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
-            container: $("#timeline-container")
-        });
+    /*$("#collab_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
 
-        $("#collab_btn_" + groupNum).popover("show");
-        $("#collab_btn_" + groupNum).popover("hide");
+    $("#collab_btn_" + groupNum).popover("show");
+    $("#collab_btn_" + groupNum).popover("hide");*/
+    
     } else {
         task_g.selectAll(".collab_btn")
             .attr("x", function(d) {return d.x + x_offset})
