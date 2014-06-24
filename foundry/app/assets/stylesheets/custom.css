@@ -1,6 +1,8 @@
+/*
 body{
 	background: #e3e3e3;
 }
+*/
 
 #memberPills li {
     float: none!important;
@@ -10,6 +12,21 @@ body{
 /* The X's in the member pills */
 .close{
 	line-height: 15px;
+}
+
+.popover-content {
+    overflow-y: scroll;
+    max-height: 180px;
+/*     padding-top: 0px; */
+    padding-bottom: 4px;
+}
+
+.popover {
+    max-width: 400px;
+}
+
+.popover-title{
+	max-height: 25px;
 }
 
 /*

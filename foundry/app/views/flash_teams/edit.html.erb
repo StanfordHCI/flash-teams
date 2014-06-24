@@ -3,7 +3,7 @@
 <input type="hidden" id="flash_team_name" value="<%= @flash_team.name%>"/>
 <input type="hidden" id="uniq" value=""/>
 
-
+<div style="background: #e3e3e3;">
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
 
        
@@ -179,7 +179,7 @@
 </div> <!-- end of div class="container-fluid" -->
 
 <% end %> <!--end if in expert view conditional--> 
-
+</div>
 
 <%= javascript_include_tag "authoring/gdrive" %>
 <%= javascript_include_tag "application" %>

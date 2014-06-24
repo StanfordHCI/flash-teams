@@ -44,12 +44,9 @@ function editablePopoverObj(eventObj) {
         trigger: "manual",
         title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
             + '" placeholder="'+title+'" >',
-        content: '<form name="eventForm_' + groupNum + '">' 
-        + '<div class="event-popover-table">' 
+        content: '<div class="event-popover-table">' 
+        + '<form name="eventForm_' + groupNum + '">' 
         + '<div class="event-table-wrapper">'
-        + '<div class="event-table-row">' 
-        + '<div class="event-table-cell">'
-       
         +'<b>Event Start:</b> <br>' 
         +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
             + '" min="0" style="width:35px">         ' 
@@ -59,14 +56,13 @@ function editablePopoverObj(eventObj) {
         +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
             +numHours+'" min="2" style="width:35px"/>         ' 
         +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
-            +'" style="width:35px" min="0" step="15" max="45"/><br>'
+            +'" style="width:35px" min="0" step="15" max="45"/> <br />'
         +'<b>Members</b><br> <div id="event' + groupNum + 'memberList">'
-            + writeEventMembers(eventObj) +'</div>'
+            + writeEventMembers(eventObj)  +'</div>'
         +'<b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
         + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
         +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '">' + notes + '</textarea>'
-         +'</div></div>'
          +'<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
         +'<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div></div>'
         + '<div class="event-table-row event-table-footer">' 
@@ -75,8 +71,8 @@ function editablePopoverObj(eventObj) {
         +'<button class="btn btn-success" type="button" id="save"'
         +' onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>       '  
         +'<button class="btn btn-default" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button>' 
-        +'</div></div>'
-        +'</form>',
+        +'</div>'
+        +'</form></div>',
         container: $("#timeline-container"),
         callback: function() {
             //$("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
