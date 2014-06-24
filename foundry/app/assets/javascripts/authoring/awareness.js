@@ -152,6 +152,9 @@ $(document).ready(function(){
             console.log("flash team in progress");
             //renderChatbox();
             $("#flashTeamStartBtn").attr("disabled", "disabled");
+			
+			$("#flashTeamStartBtn").css('display','none'); //not sure if this is necessary since it's above 
+			$("#flashTeamEndBtn").css('display',''); //not sure if this is necessary since it's above 
             loadData(true);
             renderMembersUser();
             startTeam(true);

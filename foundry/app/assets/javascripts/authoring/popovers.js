@@ -155,8 +155,9 @@ function readOnlyPopoverObj(ev) {
         content += '<br>';
     }
 
-    content += '<br><form><button type="button" id="complete_' + groupNum 
-        + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok"'
+    content += '<br><form><button type="button" class="btn btn-success" id="complete_' + groupNum 
+        + '" onclick="completeTask(' + groupNum + ');">Complete</button>'
+        + ' <button type="button" class="btn btn-default" id="ok"'
         +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     
     /*content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
