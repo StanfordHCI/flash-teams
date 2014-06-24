@@ -3,14 +3,13 @@
 <input type="hidden" id="flash_team_name" value="<%= @flash_team.name%>"/>
 <input type="hidden" id="uniq" value=""/>
 
-<div style="background: #e3e3e3;">
 <%= tag :meta, :name=> 'events_json', :content=> @events_json %>
 
        
 	<% if @in_author_view %>
 	
 	<!--Main Layout-->
-	<div class="container-fluid" style="min-width: 1300px">
+	<div class="container-fluid" style="min-width: 1300px; background: #e3e3e3;">
     
      <div class="row-fluid" id="foundry-header" >
 	     <div class="span2 ft-buttons" id="ft-buttons-left">
@@ -102,7 +101,7 @@
     <% if  @in_expert_view %>
     
     <!--Main Layout-->
-	<div class="container-fluid" style="min-width: 1300px">
+	<div class="container-fluid" style="min-width: 1300px; background: #e3e3e3;">
     
      <div class="row-fluid" id="foundry-header" >   	     
 		 <h4 class="text-center">FOUNDRY</h4>  
@@ -163,7 +162,6 @@
 </div> <!-- end of div class="container-fluid" -->
 
 <% end %> <!--end if in expert view conditional--> 
-</div>
 
 <%= javascript_include_tag "authoring/gdrive" %>
 <%= javascript_include_tag "application" %>
