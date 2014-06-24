@@ -3,16 +3,16 @@
  * Code that manages the workflow timeline in Foundry.
  */
 
-var XTicks = 50,
+var XTicks = 100,
     YTicks = 5;
 
-var SVG_WIDTH = 2450,
+var SVG_WIDTH = 4850,
     SVG_HEIGHT = 570;
 
 var STEP_WIDTH = 25,
     HOUR_WIDTH = 100;
 
-var timelineHours = 25;
+var timelineHours = 48;
 var hours = timelineHours*HOUR_WIDTH;
 
 var x = d3.scale.linear()
