@@ -3,7 +3,7 @@
  *
  */
 
- var pillCounter = 0;
+ var pillCounter = undefined;
  var colorToChange = "#ff0000";
  var current = undefined;
  var isUser = false;
@@ -51,16 +51,16 @@ function renderMembersUser() {
 
 function setCurrentMember() {
     var uniq = getParameterByName('uniq');
-    console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
+    //console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
     
     if (uniq){
         $("#uniq").value = uniq;
         flash_team_members = flashTeamsJSON["members"];
-        console.log(flash_team_members[0].uniq);
+        //console.log(flash_team_members[0].uniq);
         for(var i=0;i<flash_team_members.length;i++){            
             if (flash_team_members[i].uniq == uniq){
-                console.log("uniq1: " + flash_team_members[i].uniq);
-                console.log("uniq2: " + uniq);
+                //console.log("uniq1: " + flash_team_members[i].uniq);
+                //console.log("uniq2: " + uniq);
                 current = i;
                 isUser = true;
             }
@@ -104,7 +104,7 @@ function renderMemberPopovers(members) {
 
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
-            console.log("category1");
+            //console.log("category1");
             var option = document.createElement("option");
             if(key == category1){
                 content += '<option value="' + key + '" selected>' + key + '</option>';
@@ -122,7 +122,7 @@ function renderMemberPopovers(members) {
 
             content += '<br><br><select class="category2Input" id="member' + member_id + '_category2">'
             for (var j=0; j<oDeskCategories[category1].length; j++) {
-                console.log("category2");
+                //console.log("category2");
                 var key2 = oDeskCategories[category1][j];
 
                 var option = document.createElement("option");
@@ -168,7 +168,7 @@ function renderMemberPopovers(members) {
             class: "member",
             id: '"memberPopover' + member_id + '"',
             trigger: "click",
-            title: '<b>' + member_name + '</b>',
+            title: '<span class = "glyphicon glyphicon-pencil"></span><b>' + member_name + '</b>',
             content:  content,
             container: $("#member-container"),
             callback: function(){
@@ -237,6 +237,9 @@ function renderDiagram(members) {
 };
 
 function newMemberObject(memberName) {
+    if (pillCounter == undefined) {
+        pillCounter = initializeMemberCounter();
+    }
     pillCounter++;
     var color = colorBox.grabColor();
     return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
@@ -317,7 +320,6 @@ function saveMemberInfo(popId) {
     renderMemberPillColor(popId);
     //updateMemberPopover(popId);
 
-    console.log($("#mPill_"+popId).popover("show"));
     $("#mPill_" + popId).popover("hide");
     renderAllMemberLines();
     renderMemberPopovers(flashTeamsJSON["members"]);
@@ -329,8 +331,8 @@ function deleteMember(pillId) {
     var indexOfJSON = getMemberJSONIndex(pillId);
     var members = flashTeamsJSON["members"];
     var memberId = members[indexOfJSON].id;
-    console.log("deleting member " + memberId);
-    console.log($("#mPill_" + memberId));
+    //console.log("deleting member " + memberId);
+    //console.log("clicked #mPill_", pillId);
     $("#mPill_" + memberId).popover('destroy');
 
     members.splice(indexOfJSON, 1);
@@ -367,7 +369,7 @@ function inviteMember(pillId) {
     var indexOfJSON = getMemberJSONIndex(pillId);
     var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq};
     $.get(url, data, function(data){
-        console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
+        //console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
         var members = flashTeamsJSON["members"];
         members[indexOfJSON].uniq = data["uniq"];
         members[indexOfJSON].invitation_link = data["url"];
@@ -423,6 +425,19 @@ function initializeColorPicker(newColor) {
             colorToChange = color.toHexString();
         }
     });
+}
+
+function initializeMemberCounter() {
+    if (flashTeamsJSON["members"].length == 0) return 0; 
+    else {
+        var highestId = 0;
+        for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+            if (flashTeamsJSON["members"][i].id > highestId) {
+                highestId = flashTeamsJSON["members"][i].id;
+            }
+        }
+        return highestId;
+    }
 }
 
 //Find the index of a member in the JSON object "members" array by using unique id
