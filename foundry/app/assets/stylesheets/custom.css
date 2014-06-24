@@ -3,13 +3,25 @@
     padding: 5px 0;
 }
 
+/* The X's next to the role names in the member pills */
+.close{
+	line-height: 15px;
+}
+
 .popover-content {
     overflow-y: scroll;
-    max-height: 225px;
+    max-height: 175px;
+    padding-bottom: 2px;
 }
 
 .popover {
     max-width: 400px;
+    max-height: 225px;
+}
+
+.popover-title{
+	max-height: 25px;
+	padding-top: 5px;
 }
 
 .task_rectangle {
@@ -40,14 +52,54 @@
 	float: right;
 }
 
+.well{
+	padding-top: 5px;
+	border: 1px solid white;
+}
+
+#foundry-header{
+	background-color: #434343;
+	color: white;
+	position: fixed;
+	z-index: 1999;
+	top: 0;
+	left: 0;
+}
+
+.ft-buttons{
+	margin-top: 5px;
+}
+
+#ft-buttons-left{
+	padding-left: 19px;
+	/* padding-left: 38px; */
+}
+
+#ft-buttons-right{
+	float: right;
+	padding-left: 79px;
+}
+
+#ft-name{
+	padding-left: 19px;
+}
+
 #member-container {
 	height: 200px;
+}
+
+#newMemberForm{
+	margin-bottom: 5px;
+	margin-top: 15px;
 }
 
 #search-events-container {
 	height: 385px;
 }
 
+/*NOTE/QUESTION: should this be with the 
+rest of the event-block style information
+in flash_teams.css.scss? */
 .event-block {
 	border: 1px solid;
 	margin: 5px;
@@ -59,12 +111,15 @@
     overflow-y: scroll;
     max-height: 150px;
 }
+
 #m0 {
     background-color: #ffffff;
 }
+
 #m1 {
     background-color: #f5f5f5;
 }
+
 #message-date {
     font-size: 8px;
     color: rgba(0,0,0,0.5);

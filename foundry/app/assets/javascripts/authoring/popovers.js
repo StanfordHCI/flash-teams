@@ -44,31 +44,35 @@ function editablePopoverObj(eventObj) {
         trigger: "manual",
         title: '<input type ="text" name="eventName" id="eventName_' + groupNum 
             + '" placeholder="'+title+'" >',
-        content: '<table><tr><td >'
-        + '<form name="eventForm_' + groupNum + '">'
-        +'<b>Event Start:          </b><br>' 
-        +'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
-            + '" min="0" style="width:35px">'
-        +'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
-            + '" min="0" step="15" max="45" style="width:35px">'
-        +'</td><td><b>Total Runtime: </b><br>' 
-        +'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
-            +numHours+'" min="2" style="width:35px"/><br>          ' 
-        +'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
-            +'" style="width:35px" min="0" step="15" max="45"/><br>'
-        +'</td></tr><tr><td><b>Members</b><br> <div id="event' + groupNum + 'memberList">'
-            + writeEventMembers(eventObj) +'</div>'
-        +'</td><td><b>Directly-Responsible Individual</b><br><select class="driInput"' 
+        content: '<div class="event-popover-table">' 
+        + '<form name="eventForm_' + groupNum + '">' 
+        + '<div class="event-table-wrapper">'
+        + '<b>Event Start:</b> <br>' 
+        + 'Hours: <input type="number" id="startHr_' + groupNum + '" placeholder="' + startHr 
+            + '" min="0" style="width:35px">         ' 
+        + 'Minutes: <input type="number" id="startMin_' + groupNum + '" placeholder="' + startMin 
+            + '" min="0" step="15" max="45" style="width:35px"><br />'
+        + '<b>Total Runtime: </b> <br />' 
+        + 'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
+            +numHours+'" min="2" style="width:35px"/>         ' 
+        + 'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
+            +'" style="width:35px" min="0" step="15" max="45"/> <br />'
+        + '<b>Members</b><br /> <div id="event' + groupNum + 'memberList">'
+            + writeEventMembers(eventObj)  +'</div>'
+        + '<b>Directly-Responsible Individual</b><br><select class="driInput"' 
             +' name="driName" id="driEvent_' + groupNum + '"' 
-        + 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
-        +'<br><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '">' + notes + '</textarea>'
-        +'</td></tr>'
-        +'<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
-        +'<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div>'
-        +'<tr><td><p><button type="button" id="delete"'
-        +' onclick="deleteEvent(' + groupNum +');">Delete</button>       ' 
-        +'<button type="button" id="save" onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button> </p>'  
-        +'</form></td></tr>',
+			+ 'onchange="getDRI('+groupNum + ')">'+ writeDRIMembers(groupNum,dri_id) +'</select>'
+        + '<br /><b>Notes: </br></b><textarea rows="3" id="notes_' + groupNum + '">' + notes + '</textarea>'
+        + '<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
+        + '<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div></div>'
+        + '<div class="event-table-row event-table-footer">' 
+        + '<button type="button" class="btn btn-danger" id="delete"'
+        	+' onclick="deleteEvent(' + groupNum +');">Delete</button>       ' 
+        + '<button class="btn btn-success" type="button" id="save"'
+        	+' onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>       '  
+        + '<button class="btn btn-default" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button>' 
+        + '</div>'
+        + '</form></div>',
         container: $("#timeline-container"),
         callback: function() {
             //$("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
@@ -151,8 +155,9 @@ function readOnlyPopoverObj(ev) {
         content += '<br>';
     }
 
-    content += '<br><form><button type="button" id="complete_' + groupNum 
-        + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok"'
+    content += '<br><form><button type="button" class="btn btn-success" id="complete_' + groupNum 
+        + '" onclick="completeTask(' + groupNum + ');">Complete</button>'
+        + ' <button type="button" class="btn btn-default" id="ok"'
         +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     
     /*content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
