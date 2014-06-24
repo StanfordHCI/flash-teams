@@ -30,12 +30,11 @@ function checkAuth() {
  * @param {Object} authResult Authorization result.
  */
 function handleAuthResult2(authResult) {
-  console.log("I get called");
   if (authResult) {
-    console.log("Authorized!");
+    //console.log("Authorized!");
     // Access token has been successfully retrieved, requests can be sent to the API
   } else {
-    console.log("we need to authorize");
+    //console.log("we need to authorize");
     // No access token could be retrieved, force the authorization flow.
     gapi.auth.authorize(
         {'client_id': CLIENT_ID, 'scope': SCOPES, 'immediate': false},
@@ -84,7 +83,7 @@ function createNewFolder(eventName, JSONId){
   //console.log(eventName);
   //console.log(folderIds);
    
-  console.log("CREATING NEW FOLDER!");
+  //console.log("CREATING NEW FOLDER!");
 
   gapi.client.load('drive', 'v2', function() {
     var req;
@@ -117,12 +116,10 @@ function createNewFolder(eventName, JSONId){
       if (!flashTeamsJSON.folder) {
         insertPermission(folderArray[0], "me", "anyone", "writer");
         flashTeamsJSON.folder = folderArray;
-        console.log("HERE");
       } else {
         flashTeamsJSON["events"][JSONId].gdrive = folderArray;
         insertPermission(folderArray[0], "me", "anyone", "writer");
         folderIds.push(folderArray);
-        console.log("THERE");
       }
 
       updateStatus(); // don't put true or false here
@@ -134,7 +131,7 @@ function addAllFolders(){
   for (var i = 0; i<flashTeamsJSON["events"].length; i++){
     createNewFolder(flashTeamsJSON["events"][i].title, i);
   }
-  console.log("isAddingFolders");
+  //console.log("isAddingFolders");
 };
 
 function createNewFile(eventName) {
@@ -152,7 +149,7 @@ function createNewFile(eventName) {
          }
      });
 
-      request.execute(function(resp) { console.log(resp); });
+      request.execute(function(resp) { /*console.log(resp);*/ });
    });
 };
 

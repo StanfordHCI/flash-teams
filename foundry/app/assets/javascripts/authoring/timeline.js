@@ -36,7 +36,7 @@ var timeline_svg = d3.select("#timeline-container").append("svg")
     .attr("height", SVG_HEIGHT)
     .attr("class", "chart");
 
-console.log("APPENDED TIMELINE TO DOM!");
+//console.log("APPENDED TIMELINE TO DOM!");
 
 //CHART CODE (http://synthesis.sbecker.net/articles/2012/07/11/learning-d3-part-4-intro-to-svg-gr_hics)
 //Draw x grid lines

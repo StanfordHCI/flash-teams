@@ -54,7 +54,6 @@ var drag = d3.behavior.drag()
             updateStatus(false);
         } else {
             // click
-            console.log("CLICKED");
             eventMousedown(d.groupNum);
         }
     });
@@ -202,12 +201,10 @@ function createEvent(point) {
     
     // render event on timeline
     drawEvent(eventObj, true);
-    
-    console.log("yo5");
+
     // render event popover
     drawPopover(eventObj, true, true);
 
-    console.log("yo6");
     // save
     updateStatus(false);
 };
@@ -580,7 +577,7 @@ function drawCollabBtn(eventObj, firstTime) {
 }
 
 function drawMemberLines(eventObj) {
-    console.log("drawing member lines for ", eventObj);
+    //console.log("drawing member lines for ", eventObj);
     var x_offset = 8; // unique for member lines
     var width = getWidth(eventObj) - 8;
 
@@ -591,7 +588,7 @@ function drawMemberLines(eventObj) {
     // figure out if first time or not for each member line
     for(var i=0;i<members.length;i++){
         var existingLine = task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1));
-        console.log("EXISTING LINE", existingLine);
+        //console.log("EXISTING LINE", existingLine);
         var y_offset = 60 + (i*8); // unique for member lines
         if(existingLine[0].length == 0){ // first time
             var member = getMemberById(members[i]);
@@ -745,7 +742,7 @@ function drawEachCollab(eventObj, firstTime){
 
 //Creates graphical elements from array of data (task_rectangles)
 function drawEvent(eventObj, firstTime) { 
-    console.log("redrawing event");   
+    //console.log("redrawing event");   
     drawG(eventObj, firstTime);
     drawMainRect(eventObj, firstTime);
     drawRightDragBar(eventObj, firstTime);
@@ -756,13 +753,9 @@ function drawEvent(eventObj, firstTime) {
     drawHandoffBtn(eventObj, firstTime);
     drawCollabBtn(eventObj, firstTime);
     drawMemberLines(eventObj);
-    console.log("yo1");
     drawShade(eventObj, firstTime);
-    console.log("yo2");
     drawEachHandoff(eventObj, firstTime);
-    console.log("yo3");
     drawEachCollab(eventObj, firstTime);
-    console.log("yo4");
 };
 function drawAllPopovers() {
     var events = flashTeamsJSON["events"];
@@ -847,7 +840,7 @@ function deleteEvent(eventId){
 	var events = flashTeamsJSON["events"];
 		
 	events.splice(indexOfJSON, 1);
-    console.log("event deleted from json");
+    //console.log("event deleted from json");
     
     //stores the ids of all of the interactions to erase
     var intersToDel = [];
@@ -855,9 +848,8 @@ function deleteEvent(eventId){
     for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var inter = flashTeamsJSON["interactions"][i];
             if (inter.event1 == eventId || inter.event2 == eventId) {
-                console.log("THERE IS A DELETION MATCH");
                 intersToDel.push(inter.id);
-                console.log("# of intersToDel: " + intersToDel.length);
+                //console.log("# of intersToDel: " + intersToDel.length);
             }
         }
       
@@ -869,7 +861,6 @@ function deleteEvent(eventId){
 
         // remove from timeline
     	deleteInteraction(intId);
-        console.log("interaction deleted");
     }
 
     removeTask(eventId);

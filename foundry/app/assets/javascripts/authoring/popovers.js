@@ -191,9 +191,8 @@ function readOnlyPopoverObj(ev) {
  */
 
 function drawPopover(eventObj, editable, show) {
-   var groupNum = eventObj.id;
-   console.log("groupNum: " + groupNum);
-     // draw it
+    var groupNum = eventObj.id;
+    // draw it
     var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG, RETURNS UNDEFINED
     if(!data){ // popover not set yet
         if(editable){
@@ -210,7 +209,7 @@ function drawPopover(eventObj, editable, show) {
         }
         data.options.title = obj["title"];
         data.options.content = obj["content"];
-        console.log("changed content to: " + data.options.content);
+        //console.log("changed content to: " + data.options.content);
     }
     // show/hide it
     if(show){
