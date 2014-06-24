@@ -115,7 +115,7 @@ function eventMousedown(task2idNum) {
     //There is no interation being drawn
     } else {
         console.log("TOGGLING POPOVER");
-        var data = getPopoverDataFromGroupNum(task2idNum);        
+        var data = getPopoverDataFromGroupNum(task2idNum);
         console.log("popover content here: " + data.options.content);
         togglePopover(task2idNum);
         return;
