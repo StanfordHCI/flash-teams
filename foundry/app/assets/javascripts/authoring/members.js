@@ -3,7 +3,7 @@
  *
  */
 
- var memberCounter = undefined;
+ var pillCounter = undefined;
  var colorToChange = "#ff0000";
  var current = undefined;
  var isUser = false;
@@ -237,8 +237,8 @@ function renderDiagram(members) {
 };
 
 function newMemberObject(memberName) {
-    if (memberCounter == undefined) {
-        if (flashTeamsJSON["members"].length == 0) memberCounter = 0; 
+    if (pillCounter == undefined) {
+        if (flashTeamsJSON["members"].length == 0) pillCounter = 0; 
         else {
             var highestId = 0;
             for (i = 0; i < flashTeamsJSON["members"].length; i++) {
@@ -246,12 +246,12 @@ function newMemberObject(memberName) {
                     highestId = flashTeamsJSON["members"][i].id;
                 }
             }
-            memberCounter = highestId;
+            pillCounter = highestId;
         }
     }
-    memberCounter++;
+    pillCounter++;
     var color = colorBox.grabColor();
-    return {"role":memberName, "id": memberCounter, "color":color, "skills":[], "category1":"", "category2":""};
+    return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
 };
 
 function addMember() {
