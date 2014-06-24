@@ -48,7 +48,7 @@ timeline_svg.selectAll("line.x")
     .attr("x2", x)
     .attr("y1", 15)
     .attr("y2", SVG_HEIGHT-50)
-    .style("stroke", "#000");
+    .style("stroke", "rgba(100, 100, 100, .5)");
 
 var yLines = y.ticks(YTicks);
 for (i = 0; i<yLines.length; i++) {
@@ -156,7 +156,7 @@ function addTime() {
     .attr("x2", x)
     .attr("y1", 15)
     .attr("y2", SVG_HEIGHT-50)
-    .style("stroke", "#000");
+    .style("stroke", "rgba(100, 100, 100, .5)");
     
     //Redraw all y-axis grid lines
     timeline_svg.selectAll("line.y")
