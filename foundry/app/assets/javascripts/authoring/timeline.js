@@ -155,7 +155,7 @@ function addTime() {
     .attr("x2", x)
     .attr("y1", 15)
     .attr("y2", SVG_HEIGHT-50)
-    .style("stroke", "#000");
+    .style("stroke", "rgba(100, 100, 100, .5)");
     
     //Redraw all y-axis grid lines
     timeline_svg.selectAll("line.y")
