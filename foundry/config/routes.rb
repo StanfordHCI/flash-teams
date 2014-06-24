@@ -61,7 +61,8 @@ Foundry::Application.routes.draw do
   get 'oauth2callback' => 'welcome#index'
   get '/flash_teams/event_library' => 'flash_teams#event_library'
   get '/flash_teams/event_search' => 'flash_teams#event_search'
-  
+  post '/flash_teams/rename' => 'flash_teams#rename'
+
   resources :flash_teams do
     member do 
       delete :destroy
