@@ -89,7 +89,6 @@ function renderMemberPopovers(members) {
     for (var i=0;i<len;i++){
         var member = members[i];
         var member_id = member.id;
-        console.log("RENDERING POPOVER FOR MEMBER " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
 
@@ -202,6 +201,12 @@ function generateMemberCategoryChangeFunction(mem_id) {
 }
 
 function memberPillClick(mem_id) {
+    //Close all open popovers
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var idNum = flashTeamsJSON["members"][i].id;
+        if (idNum == mem_id) continue;
+        $("#mPill_"+idNum).popover('hide');
+    }
     $("#member" + mem_id + "_category1").off('change', generateMemberCategoryChangeFunction(mem_id));
     $("#member" + mem_id + "_category1").on('change', generateMemberCategoryChangeFunction(mem_id));
 }
