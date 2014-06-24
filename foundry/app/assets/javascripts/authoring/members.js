@@ -238,16 +238,7 @@ function renderDiagram(members) {
 
 function newMemberObject(memberName) {
     if (pillCounter == undefined) {
-        if (flashTeamsJSON["members"].length == 0) pillCounter = 0; 
-        else {
-            var highestId = 0;
-            for (i = 0; i < flashTeamsJSON["members"].length; i++) {
-                if (flashTeamsJSON["members"][i].id > highestId) {
-                    highestId = flashTeamsJSON["members"][i].id;
-                }
-            }
-            pillCounter = highestId;
-        }
+        pillCounter = initializeMemberCounter();
     }
     pillCounter++;
     var color = colorBox.grabColor();
@@ -434,6 +425,19 @@ function initializeColorPicker(newColor) {
             colorToChange = color.toHexString();
         }
     });
+}
+
+function initializeMemberCounter() {
+    if (flashTeamsJSON["members"].length == 0) return 0; 
+    else {
+        var highestId = 0;
+        for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+            if (flashTeamsJSON["members"][i].id > highestId) {
+                highestId = flashTeamsJSON["members"][i].id;
+            }
+        }
+        return highestId;
+    }
 }
 
 //Find the index of a member in the JSON object "members" array by using unique id
