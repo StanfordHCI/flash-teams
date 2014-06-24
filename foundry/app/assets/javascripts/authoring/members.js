@@ -133,8 +133,8 @@ function renderMemberPopovers(members) {
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
-        +'<p><button type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
-        +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
+        +'<p><button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
+        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
         + '</a>'
