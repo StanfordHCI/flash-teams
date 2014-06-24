@@ -3,7 +3,7 @@
     padding: 5px 0;
 }
 
-/* The X's in the member pills */
+/* The X's next to the role names in the member pills */
 .close{
 	line-height: 15px;
 }
@@ -58,8 +58,6 @@
 }
 
 #foundry-header{
-	/* background: #dbdbdb; */
-	/* background: #979797; */
 	background-color: #434343;
 	color: white;
 	position: fixed;
@@ -76,12 +74,6 @@
 	padding-left: 19px;
 	/* padding-left: 38px; */
 }
-/*
-
-#ft-buttons-left input{
-	padding-left: 5px;
-}
-*/
 
 #ft-buttons-right{
 	float: right;
@@ -91,6 +83,7 @@
 #ft-name{
 	padding-left: 19px;
 }
+
 #member-container {
 	height: 200px;
 }
@@ -104,6 +97,9 @@
 	height: 385px;
 }
 
+/*NOTE/QUESTION: should this be with the 
+rest of the event-block style information
+in flash_teams.css.scss? */
 .event-block {
 	border: 1px solid;
 	margin: 5px;
@@ -115,9 +111,11 @@
     overflow-y: scroll;
     max-height: 150px;
 }
+
 #m0 {
     background-color: #ffffff;
 }
+
 #m1 {
     background-color: #f5f5f5;
 }
