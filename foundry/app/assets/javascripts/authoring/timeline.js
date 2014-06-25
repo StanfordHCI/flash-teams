@@ -97,7 +97,20 @@ timeline_svg.append("line")
     .attr("y1", 15)
     .attr("y2", SVG_HEIGHT-50)
     .style("stroke", "#000")
-    .style("stroke-width", "4")
+    .style("stroke-width", "4");
+
+//Extend the timeline the necessary amount for the project
+function initializeTimelineDuration() {
+    var totalHours = findTotalHours();
+    if (totalHours > 48) {
+        TIMELINE_HOURS = totalHours;
+        TOTAL_HOUR_PIXELS = TIMELINE_HOURS * HOUR_WIDTH;
+        SVG_WIDTH = TIMELINE_HOURS * 100 + 50;
+        XTicks = TIMELINE_HOURS * 2;
+        redrawTimeline();
+    }
+}
+
 
 var task_g = timeline_svg.selectAll(".task_g");
 
@@ -127,29 +140,14 @@ function getEventJSONIndex(idNum) {
     }
 };
 
-//Find the total hours (duration) of the entire team
-function findTotalHours() {
-    var totalHours = 48; 
-    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
-        var eventObj = flashTeamsJSON["events"][i];
-        var eventStart = eventObj.startTime;
-        var eventDuration = eventObj.duration;
-        var eventEnd = eventStart + eventDuration;
-        var hours = (eventEnd - (eventEnd%60))/60; 
-        if (hours > totalHours) totalHours = hours;
-    }
-    //NOTE: the above cut off minutes past the hour, must add at least 1 extra hour to return val
-    totalHours++; 
-    return totalHours + 2; //THE 2 IS ARBITRARY FOR PADDING
-}
-
-
 //VCom Time expansion button trial 
 function addTime() {
     calcAddHours(TIMELINE_HOURS);
     redrawTimeline();
 }
 
+//Should have updated the variables: TIMELINE_HOURS, TOTAL_HOUR_PIXELS, SVG_WIDTH, XTicks
+//Redraws timeline based on those numbers
 function redrawTimeline() {
     //Recalculate 'x' based on added hours
     var x = d3.scale.linear()
@@ -247,7 +245,6 @@ function redrawTimeline() {
 function calcAddHours(currentHours) {
     TIMELINE_HOURS = currentHours + Math.floor(currentHours/3);
     TOTAL_HOUR_PIXELS = TIMELINE_HOURS * HOUR_WIDTH;
-    
     SVG_WIDTH = TIMELINE_HOURS * 100 + 50;
     XTicks = TIMELINE_HOURS * 2;
 }
