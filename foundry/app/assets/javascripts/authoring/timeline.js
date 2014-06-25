@@ -101,6 +101,9 @@ timeline_svg.append("line")
 
 var task_g = timeline_svg.selectAll(".task_g");
 
+//Set the width of the timeline header row so add time button is all the way to the right
+document.getElementById("timeline-header").style.width = SVG_WIDTH - 50 + "px";
+    
 //OLD CODE: Stop following the position of the mouse
 /*function handoffMouseClick() {
     //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
@@ -183,6 +186,10 @@ function addTime() {
     .attr("y2", SVG_HEIGHT-50)
     .style("stroke", "#000")
     .style("stroke-width", "4")
+    
+    //Redraw Add Time Button
+    document.getElementById("timeline-header").style.width = SVG_WIDTH - 50 + "px";
+    
     
     //Remove existing X-axis labels -- can't get this to work
     //timeline_svg.selectAll(".rule").remove();
