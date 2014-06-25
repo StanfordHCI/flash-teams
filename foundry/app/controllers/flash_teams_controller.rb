@@ -36,6 +36,10 @@ class FlashTeamsController < ApplicationController
     @flash_teams = FlashTeam.all.order(:id).reverse_order
   end
 
+rescue_from ActiveRecord::RecordNotFound do
+  #flash[:notice] = 'The object you tried to access does not exist'
+  render 'member_doesnt_exist'   # or e.g. redirect_to :action => :index
+end
  
   def edit
     @flash_team = FlashTeam.find(params[:id])
@@ -58,6 +62,12 @@ class FlashTeamsController < ApplicationController
      @in_author_view = false
 
      uniq = params[:uniq]
+    
+     Member.find_by! uniq: uniq
+     #if !(Member.exist(:uniq => uniq))  #role has been reinvited and doesn't exist anymore
+     #   render 'member_doesnt_exist'
+     #end 
+
      member = Member.where(:uniq => uniq)[0]
      @user_name = member.name
 
