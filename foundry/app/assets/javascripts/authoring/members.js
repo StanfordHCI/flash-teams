@@ -153,7 +153,8 @@ function renderMemberPopovers(members) {
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
         +'<p><button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
-        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
+        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>     '
+        +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
         + '</a>'
@@ -307,24 +308,6 @@ function deleteSkill(memberId, pillId, skillName) {
     }
 };
 
-//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
-function saveMemberInfo(popId) {
-    var indexOfJSON = getMemberJSONIndex(popId);
-
-    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
-    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
-
-    var newColor = $("#color_" + popId).spectrum("get").toHexString();
-
-    updateMemberPillColor(newColor, popId);
-    renderMemberPillColor(popId);
-    //updateMemberPopover(popId);
-
-    $("#mPill_" + popId).popover("hide");
-    renderAllMemberLines();
-    renderMemberPopovers(flashTeamsJSON["members"]);
-};
-
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
     // remove from members array
@@ -362,6 +345,29 @@ function deleteMember(pillId) {
 
     updateStatus(false);
 };
+
+//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
+function saveMemberInfo(popId) {
+    var indexOfJSON = getMemberJSONIndex(popId);
+
+    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
+
+    var newColor = $("#color_" + popId).spectrum("get").toHexString();
+
+    updateMemberPillColor(newColor, popId);
+    renderMemberPillColor(popId);
+    //updateMemberPopover(popId);
+
+    $("#mPill_" + popId).popover("hide");
+    renderAllMemberLines();
+    renderMemberPopovers(flashTeamsJSON["members"]);
+};
+
+//Close the popover on a member to "cancel" the edit
+function hideMemberPopover(memberId) {
+    $("#mPill_" + memberId).popover("hide");
+}
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
