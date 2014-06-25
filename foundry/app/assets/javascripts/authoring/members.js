@@ -71,6 +71,7 @@ function setCurrentMember() {
     }
 };
 
+
 function renderPills(members) {
     $("#memberPills").html("");
     for (var i=0;i<members.length;i++){
@@ -79,10 +80,11 @@ function renderPills(members) {
         var member_name = member.role;
         var member_color = member.color;
         $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
-            + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+            + '<div class="close" onclick="confirmDeleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
         renderMemberPillColor(member_id);
     }
 };
+
 
 function renderMemberPopovers(members) {
     var len = members.length;
@@ -325,8 +327,47 @@ function saveMemberInfo(popId) {
     renderMemberPopovers(flashTeamsJSON["members"]);
 };
 
+
+
+//Shows an alert asking to confirm delete member role
+//If user confirms, deleteMember function is called
+function confirmDeleteMember(pillId) {
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var members = flashTeamsJSON["members"];
+    var memberRole = members[indexOfJSON].role;
+    console.log("Member role: " + memberRole);
+
+    var deleteButton = document.getElementById("deleteButton");
+    deleteButton.innerHTML = "Delete " + memberRole;
+
+
+
+    // var memberRoleText = document.getElementById("memberToDelete");
+    // memberRoleText.innerHTML = memberRole;
+
+    // var teamName = document.getElementById("ft-name").innerHTML;
+    // console.log(teamName);
+
+    console.log(flashTeamsJSON["title"]);
+
+
+    var alertText = document.getElementById("confirmDeleteMemberText");
+    alertText.innerHTML = "Are you sure you want to remove " + memberRole + " from " + flashTeamsJSON["title"]+ "? <br><br>" 
+                + memberRole + " will be removed from all events on the timeline.";
+
+
+
+
+    $('#confirmDeleteMember').modal('show');
+    //deleteMember(pillId);
+}
+
+
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
+    console.log("got to delete function");
+    //maggie
+
     // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
     var members = flashTeamsJSON["members"];

@@ -84,6 +84,8 @@ function editablePopoverObj(eventObj) {
     return obj;
 };
 
+//maggie -> delete event is called here
+
 /*
  * Input(s): 
  * eventObj - event object taken from the events array within the flashTeamsJSON object

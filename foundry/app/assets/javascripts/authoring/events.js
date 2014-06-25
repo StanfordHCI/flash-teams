@@ -836,6 +836,9 @@ function removeAllMemberLines(eventObj){
 // first updates the event object array and interactions array
 // then, calls removeTask to remove the task from the timeline
 function deleteEvent(eventId){
+
+    //Maggie
+    
 	var indexOfJSON = getEventJSONIndex(eventId);
 	var events = flashTeamsJSON["events"];
 		

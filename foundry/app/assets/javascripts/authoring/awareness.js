@@ -1089,7 +1089,8 @@ var getAllTasks = function(){
 var constructStatusObj = function(){
     var flash_team_id = $("#flash_team_id").val();
     flashTeamsJSON["id"] = flash_team_id;
-
+    flashTeamsJSON["title"] = document.getElementById("ft-name").innerHTML;
+   
     var localStatus = {};
 
     localStatus.live_tasks = live_tasks;
