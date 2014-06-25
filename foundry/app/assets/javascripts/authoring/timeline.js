@@ -103,12 +103,6 @@ var task_g = timeline_svg.selectAll(".task_g");
 
 //Set the width of the timeline header row so add time button is all the way to the right
 document.getElementById("timeline-header").style.width = SVG_WIDTH - 50 + "px";
-    
-//OLD CODE: Stop following the position of the mouse
-/*function handoffMouseClick() {
-    //SET INDICATOR TO FALSE, WHEN CLICKED ANYWHERE
-    timeline_svg.on("mousemove", null);
-}*/
 
 //Turn on the overlay so a user cannot continue to draw events when focus is on a popover
 function overlayOn() {
@@ -132,6 +126,23 @@ function getEventJSONIndex(idNum) {
         }
     }
 };
+
+//Find the total hours (duration) of the entire team
+function findTotalHours() {
+    var totalHours = 48; 
+    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        var eventObj = flashTeamsJSON["events"][i];
+        var eventStart = eventObj.startTime;
+        var eventDuration = eventObj.duration;
+        var eventEnd = eventStart + eventDuration;
+        var hours = (eventEnd - (eventEnd%60))/60; 
+        if (hours > totalHours) totalHours = hours;
+    }
+    //NOTE: the above cut off minutes past the hour, must add at least 1 extra hour to return val
+    totalHours++; 
+
+    return totalHours; //THE 4 IS ARBITRARY FOR PADDING
+}
 
 //VCom Time expansion button trial 
 function addTime() {
@@ -231,7 +242,7 @@ function addTime() {
     
 }
 
-//VCom Calculates how many hours to add when user expands timeline
+//VCom Calculates how many hours to add when user expands timeline manually 
 function calcAddHours(currentHours) {
     timelineHours = currentHours + Math.floor(currentHours/3);
     hours = timelineHours * HOUR_WIDTH;

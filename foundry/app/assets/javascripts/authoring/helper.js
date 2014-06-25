@@ -9,7 +9,8 @@ var flashTeamsJSON = {
     "id" : 1,
     "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", inputs”:[], “outputs”:[]}
     "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
-    "interactions" : []  //{"event1", "event2", "type", "description", "id"}
+    "interactions" : [],  //{"event1", "event2", "type", "description", "id"}
+    "TOTAL_HOURS": 48
 };
 
 function pressEnterKeyToSubmit(inputId, buttonId) {
