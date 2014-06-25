@@ -21,7 +21,7 @@ function pressEnterKeyToSubmit(inputId, buttonId) {
 	});
 }
 
-//FOR TESTING, DELETE LATER
+/*//FOR TESTING, DELETE LATER
 fakeJSON = {
 	"title" : "New Flash Team",
     "id" : 1,
@@ -33,10 +33,10 @@ fakeJSON = {
     "members": [{"id":1, "role":"Illustrator", "category1":"Web Development", "category2":"UI Design", "skills":["shopify"], "color":"BLUE"}, 
     	{"id":2, "role":"Author", "category1":"Writing & Translation", "category2":"Creative Writing", "skills":["ebooks"], "color":"RED"}],       
     "interactions" : []  //{"event1", "event2", "type", "description"}       
-};
+};*/
 
 
-//Takes a Flash Teams JSON Object and Draws a Flash Team
+/*//Takes a Flash Teams JSON Object and Draws a Flash Team
 function drawFlashTeamFromJSON(ftJSON) {
     //Populate members
     //console.log("ftJSON: ");
@@ -92,6 +92,22 @@ function drawFlashTeamFromJSON(ftJSON) {
     }
     
     //DRAW INTERACTIONS
+}*/
+
+//Find the total hours (duration) of the entire team
+function findTotalHours() {
+    var totalHours = 48; 
+    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
+        var eventObj = flashTeamsJSON["events"][i];
+        var eventStart = eventObj.startTime;
+        var eventDuration = eventObj.duration;
+        var eventEnd = eventStart + eventDuration;
+        var hours = (eventEnd - (eventEnd%60))/60; 
+        if (hours > totalHours) totalHours = hours;
+    }
+    //NOTE: the above cut off minutes past the hour, must add at least 1 extra hour to return val
+    totalHours++; 
+    return totalHours + 2; //THE 2 IS ARBITRARY FOR PADDING
 }
 
 //CALL IN CONSOLE TO HIDE THE CHAT BOX AND PROJECT STATUS
