@@ -405,7 +405,7 @@ function reInviteMember(pillId) {
 
 
         renderMemberPopovers(members);
-        updateStatus(false);
+        //updateStatus(false);
     });
 };
 

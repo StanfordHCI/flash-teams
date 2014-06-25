@@ -153,7 +153,13 @@ $(document).ready(function(){
 			$("#flashTeamStartBtn").css('display','none'); //not sure if this is necessary since it's above 
 			$("#flashTeamEndBtn").css('display',''); //not sure if this is necessary since it's above 
             loadData(true);
-            renderMembersUser();
+             if(!isUser) {
+                    renderMembersRequester();
+                }
+             else{
+                    renderMembersUser();
+                }
+
             startTeam(true);
         } else {
             //console.log("flash team not in progress");
@@ -1111,6 +1117,7 @@ var updateStatus = function(flash_team_in_progress){
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
     } else {
+      //  alert(in_progress);
         localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
