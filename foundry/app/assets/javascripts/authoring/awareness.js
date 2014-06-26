@@ -88,8 +88,21 @@ $("#flashTeamStartBtn").click(function(){
     googleDriveLink();
 });
 
+
 //Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
+
+    var currTime = (new Date).getTime();
+    var startTime = flashTeamsJSON["startTime"];
+    var diff = currTime - startTime;
+
+    //console.log("start time: " + startTime);
+    //console.log("current time: " + currTime);
+    //console.log("diff in seconds: " + diff/1000);
+
+    var totalMinutes = findExactMinutes();
+    console.log("total minutes:" + totalMinutes);
+
     $('#confirmEnd').modal('show');
 });
 
