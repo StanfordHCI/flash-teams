@@ -16,6 +16,7 @@
 //= require turbolinks
 // require ./bootstrap/bootstrap
 //= require ./bootstrap/bootstrap.min
+//= require ./bootstrap-editable.min
 //= require ./authoring/load
 //= require ./authoring/timeline
 //= require ./authoring/events
