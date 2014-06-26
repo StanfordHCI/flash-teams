@@ -78,8 +78,8 @@ function renderPills(members) {
         var member_id = member.id;
         var member_name = member.role;
         var member_color = member.color;
-        $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
-            + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+        $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a><span class="memberPillName" data-pk="' + member_id + '">' + member_name 
+            + '</span><div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
         renderMemberPillColor(member_id);
     }
 };
@@ -169,7 +169,7 @@ function renderMemberPopovers(members) {
             class: "member",
             id: '"memberPopover' + member_id + '"',
             trigger: "click",
-            title: '<span class = "glyphicon glyphicon-pencil"></span><b>' + member_name + '</b>',
+            title: '<div data-pk="' + member_id + '" class="popover-mname">' + member_name + '</div><a href="#" class="edit-mname"><i class="icon-pencil"></i></a>',
             content:  content,
             container: $("#member-container"),
             callback: function(){
@@ -473,6 +473,41 @@ function searchById (arr, id) {
 $(document).ready(function() {
     pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
 });
+
+$(document).on('click', '.edit-mname', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var target = $(this).parent().find('.popover-mname')[0];
+    $(target).editable({
+        mode: 'inline',
+        success: function(response, newValue) { //Value has changed, check clicked
+            updateRoleName($(target).attr('data-pk'), newValue);
+
+            $(target).editable('destroy');
+            renderMemberPopovers(flashTeamsJSON["members"]);
+        }
+    });
+    //Remove the editable-click attribute so no underline when you don't change the name
+    $(target).removeClass("editable-click");
+    $(target).editable('toggle');
+});
+
+function updateRoleName(id, newValue) {
+    $.each(flashTeamsJSON['members'], function(index, value) {
+        if (value['id'] == id) {
+            flashTeamsJSON['members'][index]['role'] = newValue;
+            updateStatus(false);
+            drawAllPopovers();
+            return false;
+        }
+    });
+    $('.memberPillName').each(function() {
+        if ($(this).attr('data-pk') == id) {
+            $(this).html(newValue);
+            return false;
+        }
+    });
+}
 
 //Populate the autocomplete function for the event members
 //TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM
