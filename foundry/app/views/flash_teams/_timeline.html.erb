@@ -8,6 +8,10 @@
 		<% if @in_author_view %>
 		<input type="button" class="btn btn-primary ft-buttons" id="addTimeBtn" value="Add Time" onclick="addTime()" style="float: right; 
 		margin-right: 15px;"/>
+
+		<!-- render partial with confirm delete event alert --> 
+		<%= render :partial => "confirm_delete" %>
+
 		<% end %>
 	</div>
 

@@ -154,7 +154,7 @@ function renderMemberPopovers(members) {
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
-        +'<p><button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
+        +'<p><button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
         +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
@@ -330,43 +330,31 @@ function saveMemberInfo(popId) {
 
 
 //Shows an alert asking to confirm delete member role
-//If user confirms, deleteMember function is called
 function confirmDeleteMember(pillId) {
     var indexOfJSON = getMemberJSONIndex(pillId);
     var members = flashTeamsJSON["members"];
-    var memberRole = members[indexOfJSON].role;
-    console.log("Member role: " + memberRole);
+    var memberToDelete = members[indexOfJSON].role;
+
+    var label = document.getElementById("confirmDeleteLabel");
+    label.innerHTML = "Remove Member?";
+
+    var alertText = document.getElementById("confirmDeleteText");
+    alertText.innerHTML = "<b>Are you sure you want to remove " + memberToDelete + " from " + flashTeamsJSON["title"]+ "? </b><br><font size = '2'>" 
+                + memberToDelete + " will be removed from all events on the timeline. </font>";
 
     var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Delete " + memberRole;
+    deleteButton.innerHTML = "Delete " + memberToDelete;
 
+    $('#confirmDelete').modal('show');
 
-
-    // var memberRoleText = document.getElementById("memberToDelete");
-    // memberRoleText.innerHTML = memberRole;
-
-    // var teamName = document.getElementById("ft-name").innerHTML;
-    // console.log(teamName);
-
-    console.log(flashTeamsJSON["title"]);
-
-
-    var alertText = document.getElementById("confirmDeleteMemberText");
-    alertText.innerHTML = "Are you sure you want to remove " + memberRole + " from " + flashTeamsJSON["title"]+ "? <br><br>" 
-                + memberRole + " will be removed from all events on the timeline.";
-
-
-
-
-    $('#confirmDeleteMember').modal('show');
-    //deleteMember(pillId);
+    //Calls deleteMember function if user confirms the delete
+    document.getElementById("deleteButton").onclick=function(){deleteMember(pillId)};
 }
 
 
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
-    console.log("got to delete function");
-    //maggie
+    $('#confirmDelete').modal('hide');
 
     // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);

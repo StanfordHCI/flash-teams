@@ -25,25 +25,8 @@
 	     </div>
      </div>
 
-     <!-- Confirm delete member modal (pops up when user tries to delete a member) -->
-		<div id="confirmDeleteMember" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Confirm Delete Member	" aria-hidden="true">
-  			<div class="modal-header">
-    			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    			<h3 id="myModalLabel">Remove Member?</h3>
-  			</div>
-  			<div id = "confirmDeleteMemberText" class="modal-body">
-
-    			<!-- <p>Are you sure you want to remove <span id="memberToDelete"></span> from <%= @flash_team.name %>? <br> 
-    			
-    			<%= @user_name %> will be removed from all events on the timeline.</p> -->
-  			</div>
-  			<div class="modal-footer">
-    			<button class="btn" data-dismiss="modal" aria-hidden="true" >Cancel</button>
-    			<button id= "deleteButton" class="btn btn-primary" onclick="deleteMember()">Delete [member name]</button>
-  			</div>
-		</div>
-	<!-- End of confirm delete member modal div -->
-
+     	<!-- render partial with confirm delete member alert --> 
+		<%= render :partial => "confirm_delete" %>
      
      <div class="row-fluid" style="margin-top: 40px; margin-bottom: 5px;">
      
