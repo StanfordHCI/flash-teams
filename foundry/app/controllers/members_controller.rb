@@ -21,20 +21,20 @@ class MembersController < ApplicationController
   def reInvite
 
     prev_uniq = params[:uniq]
-    
-
     uniq = SecureRandom.uuid
     
 
     member = Member.where(:uniq => prev_uniq)[0]
-    member.name = nil
-    member.color = nil
-    member.email = nil
-    member.confirm_email_uniq = nil
-    member.email_confirmed = nil
-    member.uniq = nil
-    member.save
-
+    if member  != nil
+      member.name = nil
+      member.color = nil
+      member.email = nil
+      member.confirm_email_uniq = nil
+      member.email_confirmed = nil
+      member.uniq = nil
+      member.save
+    end
+    
     # generate unique id and add to url below
     url = url_for :action => 'invited', :id => params[:id], :uniq => uniq
     

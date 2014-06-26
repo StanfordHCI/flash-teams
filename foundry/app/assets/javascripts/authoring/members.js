@@ -392,12 +392,14 @@ function reInviteMember(pillId) {
     var url = '/members/' + flash_team_id + '/reInvite';
     var indexOfJSON = getMemberJSONIndex(pillId);
     var uniq;
+  
     var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq };
     $.get(url, data, function(data){
         //console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
         var members = flashTeamsJSON["members"];
         members[indexOfJSON].uniq = data["uniq"];
         members[indexOfJSON].invitation_link = data["url"];
+        flashTeamsJSON["members"] = members;
         //members[indexOfJSON].category1 = "";
         //members[indexOfJSON].category2 = "";
         //members[indexOfJSON].skills = [];
@@ -405,7 +407,7 @@ function reInviteMember(pillId) {
 
 
         renderMemberPopovers(members);
-        //updateStatus(false);
+        updateStatus();
     });
 };
 

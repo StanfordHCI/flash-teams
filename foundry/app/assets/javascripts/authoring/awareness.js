@@ -252,7 +252,6 @@ var renderChatbox = function(){
 
               // here there once existed a call to boldEvents
               trackUpcomingEvent();
-
             }
          }
         
