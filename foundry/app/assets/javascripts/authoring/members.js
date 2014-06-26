@@ -493,6 +493,8 @@ function updateRoleName(id, newValue) {
     $.each(flashTeamsJSON['members'], function(index, value) {
         if (value['id'] == id) {
             flashTeamsJSON['members'][index]['role'] = newValue;
+            updateStatus(false); //ALEXANDRA
+            drawAllPopovers();
             return false;
         }
     });
