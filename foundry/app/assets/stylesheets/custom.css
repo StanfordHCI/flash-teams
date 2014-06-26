@@ -1,3 +1,8 @@
+#confirmEnd {
+	color: black;
+	width: 350px;
+}
+
 #memberPills li {
     float: none!important;
     padding: 5px 0;

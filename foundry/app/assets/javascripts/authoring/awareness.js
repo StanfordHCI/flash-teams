@@ -88,7 +88,15 @@ $("#flashTeamStartBtn").click(function(){
     googleDriveLink();
 });
 
+//Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
+    $('#confirmEnd').modal('show');
+});
+
+
+//If user confirms they want to end the team, ends the flash team
+$("#confirmEndTeamBtn").click(function() {
+    $('#confirmEnd').modal('hide');
     updateStatus(false);
     stopCursor();
     stopProjectStatus();
