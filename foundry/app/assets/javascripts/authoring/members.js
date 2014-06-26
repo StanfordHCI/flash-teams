@@ -480,12 +480,15 @@ $(document).on('click', '.edit-mname', function(e) {
     var target = $(this).parent().find('.popover-mname')[0];
     $(target).editable({
         mode: 'inline',
-        success: function(response, newValue) {
+        success: function(response, newValue) { //Value has changed, check clicked
             updateRoleName($(target).attr('data-pk'), newValue);
+
             $(target).editable('destroy');
             renderMemberPopovers(flashTeamsJSON["members"]);
         }
     });
+    //Remove the editable-click attribute so no underline when you don't change the name
+    $(target).removeClass("editable-click");
     $(target).editable('toggle');
 });
 
@@ -493,7 +496,7 @@ function updateRoleName(id, newValue) {
     $.each(flashTeamsJSON['members'], function(index, value) {
         if (value['id'] == id) {
             flashTeamsJSON['members'][index]['role'] = newValue;
-            updateStatus(false); //ALEXANDRA
+            updateStatus(false);
             drawAllPopovers();
             return false;
         }
