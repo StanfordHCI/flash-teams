@@ -155,10 +155,6 @@ function readOnlyPopoverObj(ev) {
         + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button" id="ok"'
         +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     
-    /*content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
-            + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button"' 
-            +' id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';*/
-    
     var obj = {
         title: ev.title,
         content: content,
@@ -187,7 +183,6 @@ function readOnlyPopoverObj(ev) {
 
 function drawPopover(eventObj, editable, show) {
    var groupNum = eventObj.id;
-   console.log("groupNum: " + groupNum);
      // draw it
     var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG, RETURNS UNDEFINED
     if(!data){ // popover not set yet
@@ -205,7 +200,6 @@ function drawPopover(eventObj, editable, show) {
         }
         data.options.title = obj["title"];
         data.options.content = obj["content"];
-        console.log("changed content to: " + data.options.content);
     }
     // show/hide it
     if(show){
@@ -223,7 +217,6 @@ function updateAllPopoversToReadOnly() {
         var ev = flashTeamsJSON.events[i];
         drawPopover(ev, false, false);
     }
-    //console.log("UPDATED ALL POPOVERS TO BE READONLY");
 };
 
 var setPopoverOnTask = function(groupNum, obj){

@@ -307,15 +307,15 @@ function drawG(eventObj, firstTime) {
     var groupNum = eventObj["id"];
     var y_offset = 17;
 
-    if(!firstTime){ // update existing data object
-        var idx = getDataIndexFromGroupNum(groupNum);
-        task_groups[idx].x = x;
-        task_groups[idx].y = y+y_offset;
-    } else { // create data object
+    var idx = getDataIndexFromGroupNum(groupNum);
+    if(idx == null) {
         var new_data = {id: "task_g_" + groupNum, class: "task_g", groupNum: groupNum, x: x, y: y+y_offset};
         task_groups.push(new_data);
+    } else {
+        task_groups[idx].x = x;
+        task_groups[idx].y = y+y_offset;
     }
-    
+
     // add group to timeline, based on the data object
     timeline_svg.selectAll("g")
         .data(task_groups, function(d){ return d.groupNum; })
@@ -329,7 +329,8 @@ function drawMainRect(eventObj, firstTime) {
     var task_g = getTaskGFromGroupNum(groupNum);
     var width = getWidth(eventObj);
 
-    if(firstTime){
+    var existingMainRect = task_g.selectAll("#rect_" + groupNum);
+    if(existingMainRect[0].length == 0){ // first time
         task_g.append("rect")
             .attr("class", "task_rectangle")
             .attr("x", function(d) {return d.x;})
@@ -357,7 +358,8 @@ function drawRightDragBar(eventObj, firstTime) {
     var task_g = getTaskGFromGroupNum(groupNum);
     var width = getWidth(eventObj);
 
-    if(firstTime){
+    var existingRightDragBar = task_g.selectAll("#rt_rect_" + groupNum);
+    if(existingRightDragBar[0].length == 0){ // first time
         task_g.append("rect")
             .attr("class", "rt_rect")
             .attr("x", function(d) { 
@@ -383,7 +385,8 @@ function drawLeftDragBar(eventObj, firstTime) {
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    if(firstTime) {
+    var existingLeftDragBar = task_g.selectAll("#lt_rect_" + groupNum);
+    if(existingLeftDragBar[0].length == 0){ // first time
         task_g.append("rect")
             .attr("class", "lt_rect")
             .attr("x", function(d) { return d.x})
@@ -412,7 +415,8 @@ function drawTitleText(eventObj, firstTime) {
     var title = eventObj["title"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    if(firstTime) {
+    var existingTitleText = task_g.selectAll("#title_text_" + groupNum);
+    if(existingTitleText[0].length == 0){ // first time
         task_g.append("text")
             .text(title)
             .attr("class", "title_text")
@@ -441,7 +445,8 @@ function drawDurationText(eventObj, firstTime) {
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    if(firstTime) {
+    var existingDurationText = task_g.selectAll("#time_text_" + groupNum);
+    if(existingDurationText[0].length == 0){ // first time
         task_g.append("text")
             .text(function (d) {
                 return numHoursInt+"hrs "+minutesLeft+"min";
@@ -469,7 +474,8 @@ function drawGdriveLink(eventObj, firstTime) {
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    if(firstTime) {
+    var existingGdriveLink = task_g.selectAll("#gdrive_" + groupNum);
+    if(existingGdriveLink[0].length == 0){ // first time
         task_g.append("text")
             .text("Upload")
             .attr("style", "cursor:pointer; text-decoration:underline; text-decoration:bold;")
@@ -510,7 +516,8 @@ function drawHandoffBtn(eventObj, firstTime) {
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    if(firstTime) {
+    var existingHandoffBtn = task_g.selectAll("#handoff_btn_" + groupNum);
+    if(existingHandoffBtn[0].length == 0){ // first time
         task_g.append("image")
             .attr("xlink:href", "/assets/rightArrow.png")
             .attr("class", "handoff_btn")
@@ -550,7 +557,8 @@ function drawCollabBtn(eventObj, firstTime) {
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
-    if(firstTime) {
+    var existingCollabBtn = task_g.selectAll("#collab_btn_" + groupNum);
+    if(existingCollabBtn[0].length == 0){ // first time
         task_g.append("image")
             .attr("xlink:href", "/assets/doubleArrow.png")
             .attr("class", "collab_btn")
@@ -628,8 +636,9 @@ function drawMemberLines(eventObj) {
     }
 };
 
+// TODO: might have issues with redrawing
 function drawShade(eventObj, firstTime) {
-    if(!current || !firstTime) {return;}
+    if(current == undefined) {return;}
 
     var groupNum = eventObj["id"];
     var members = eventObj["members"];
@@ -666,7 +675,7 @@ function drawEachHandoff(eventObj, firstTime){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
-        var draw;
+        var draw = false;
         if (inter["type"] == "handoff"){
             if (inter["event1"] == eventObj["id"]){
                 draw = true;
@@ -679,23 +688,31 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }  
             if (draw){
-                var x1 = handoffStart(ev1);
-                var y1 = ev1.y + 50;
-                var x2 = ev2.x + 3;
-                var y2 = ev2.y + 50;
-                $("#interaction_" + inter["id"])
-                    .attr("x1", x1)
-                    .attr("y1", y1)
-                    .attr("x2", x2)
-                    .attr("y2", y2)
-                    .attr("d", function(d) {
-                        var dx = x1 - x2,
-                        dy = y1 - y2,
-                        dr = Math.sqrt(dx * dx + dy * dy);
-                        //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
-                        return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
-                        + " 0 0,0 " + x2 + "," + (y2+15); 
-                    });
+                var existingHandoff = timeline_svg.selectAll("#interaction_" + inter["id"]);
+                if(existingHandoff[0].length == 0){ // first time
+                    var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
+                        "type":"handoff", "description":"", "id":inter["id"]};
+                    drawHandoff(handoffData);
+                } else {
+                    var x1 = handoffStart(ev1);
+                    var y1 = ev1.y + 50;
+                    var x2 = ev2.x + 3;
+                    var y2 = ev2.y + 50;
+
+                    $("#interaction_" + inter["id"])
+                        .attr("x1", x1)
+                        .attr("y1", y1)
+                        .attr("x2", x2)
+                        .attr("y2", y2)
+                        .attr("d", function(d) {
+                            var dx = x1 - x2,
+                            dy = y1 - y2,
+                            dr = Math.sqrt(dx * dx + dy * dy);
+                            //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+                            return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
+                            + " 0 0,0 " + x2 + "," + (y2+15); 
+                        });
+                }
             }
         }
     }
@@ -718,27 +735,34 @@ function drawEachCollab(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var y1 = ev1.y + 17;
-                var x1 = ev1.x + 3;
-                var x2 = ev2.x + 3;
-                var y2 = ev2.y + 17;
-                var firstTaskY = 0;
-                var taskDistance = 0;
-                var overlap = eventsOverlap(ev1.x, getWidth(ev1), ev2.x, getWidth(ev2));
-                if (y1 < y2) {
-                    firstTaskY = y1 + 90;
-                    taskDistance = y2 - firstTaskY;
+                var existingCollab = timeline_svg.selectAll("#interaction_" + inter["id"]);
+                if(existingCollab[0].length == 0){ // first time
+                    var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
+                        "type":"handoff", "description":"", "id":inter["id"]};
+                    drawHandoff(handoffData);
                 } else {
-                    firstTaskY = y2 + 90;
-                    taskDistance = y1 - firstTaskY;
+                    var y1 = ev1.y + 17;
+                    var x1 = ev1.x + 3;
+                    var x2 = ev2.x + 3;
+                    var y2 = ev2.y + 17;
+                    var firstTaskY = 0;
+                    var taskDistance = 0;
+                    var overlap = eventsOverlap(ev1.x, getWidth(ev1), ev2.x, getWidth(ev2));
+                    if (y1 < y2) {
+                        firstTaskY = y1 + 90;
+                        taskDistance = y2 - firstTaskY;
+                    } else {
+                        firstTaskY = y2 + 90;
+                        taskDistance = y1 - firstTaskY;
+                    }
+                    if (x1 <= x2) var startX = x2;
+                    else var startX = x1;
+                    $("#interaction_" + inter["id"])
+                        .attr("x", startX)
+                        .attr("y", firstTaskY)
+                        .attr("height", taskDistance)
+                        .attr("width", overlap);
                 }
-                if (x1 <= x2) var startX = x2;
-                else var startX = x1;
-                $("#interaction_" + inter["id"])
-                    .attr("x", startX)
-                    .attr("y", firstTaskY)
-                    .attr("height", taskDistance)
-                    .attr("width", overlap);
             }
         }
     }
@@ -746,21 +770,21 @@ function drawEachCollab(eventObj, firstTime){
 }
 
 //Creates graphical elements from array of data (task_rectangles)
-function drawEvent(eventObj, firstTime) { 
+function drawEvent(eventObj) { 
     console.log("redrawing event");
-    drawG(eventObj, firstTime);
-    drawMainRect(eventObj, firstTime);
-    drawRightDragBar(eventObj, firstTime);
-    drawLeftDragBar(eventObj, firstTime);
-    drawTitleText(eventObj, firstTime);
-    drawDurationText(eventObj, firstTime);
-    drawGdriveLink(eventObj, firstTime);
-    drawHandoffBtn(eventObj, firstTime);
-    drawCollabBtn(eventObj, firstTime);
+    drawG(eventObj);
+    drawMainRect(eventObj);
+    drawRightDragBar(eventObj);
+    drawLeftDragBar(eventObj);
+    drawTitleText(eventObj);
+    drawDurationText(eventObj);
+    drawGdriveLink(eventObj);
+    drawHandoffBtn(eventObj);
+    drawCollabBtn(eventObj);
     drawMemberLines(eventObj);
-    drawShade(eventObj, firstTime);
-    drawEachHandoff(eventObj, firstTime);
-    drawEachCollab(eventObj, firstTime);
+    drawShade(eventObj);
+    drawEachHandoff(eventObj);
+    drawEachCollab(eventObj);
 };
 
 function drawAllPopovers() {

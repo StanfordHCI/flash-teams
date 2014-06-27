@@ -21,6 +21,7 @@ var dri_responded = [];
 var project_status_handler;
 var cursor_details;
 var tracking_tasks_interval_id;
+var user_poll = false;
 
 var window_visibility_state = null;
 var window_visibility_change = null;
@@ -131,7 +132,10 @@ function renderEverything(firstTime) {
         url: url,
         type: 'get'
     }).done(function(data){
-        if(firstTime)
+        // firstTime will also be true in the case that flashTeamEndedorStarted, so
+        // we make sure that it is false (i.e. true firstTime, upon page reload for user
+        // before the team starts)
+        if(firstTime && !user_poll) // TODO: find better way to capture the case of user_poll
             renderChatbox();
         
         //get user name and user role for the chat
@@ -152,7 +156,7 @@ function renderEverything(firstTime) {
             console.log("flash team in progress");
             $("#flashTeamStartBtn").attr("disabled", "disabled");
             //alert("flash team in progress");
-            loadData(true, firstTime);
+            loadData(true);
             renderMembersUser();
             startTeam(true, firstTime);
         } else {
@@ -168,7 +172,7 @@ function renderEverything(firstTime) {
                 createNewFolder(flashTeamsJSON["title"]); // gdrive
             }
 
-            loadData(false, firstTime);
+            loadData(false);
             
             if(!isUser) {
                 renderMembersRequester();
@@ -176,7 +180,7 @@ function renderEverything(firstTime) {
         }
     });
 
-    if(firstTime) {
+    if(firstTime && !user_poll) {
         poll_interval_id = poll();
         listenForVisibilityChange();
     }
@@ -201,7 +205,6 @@ function listenForVisibilityChange(){
     document.addEventListener(window_visibility_change, function() {
         var state = document[window_visibility_state];
         if(state == "visible" && in_progress){
-            //location.reload();
             renderEverything(false);
         }
     }, false);
@@ -294,9 +297,14 @@ var poll = function(){
             if(data == null) return;
             loadedStatus = data;
 
-            if(flashTeamEndedorStarted() || flashTeamUpdated()) {
+            if(flashTeamEndedorStarted()) {
                 stopPolling();
-                //location.reload();
+                if(isUser) {
+                    user_poll = true;
+                }
+                renderEverything(true);
+            } else if (flashTeamUpdated()) {
+                stopPolling();
                 renderEverything(false);
             } else {
                 console.log("Flash team not updated and not ended");
@@ -325,7 +333,7 @@ var loadStatus = function(id){
     return JSON.parse(loadedStatusJSON);
 };
 
-var loadData = function(in_progress, firstTime){
+var loadData = function(in_progress){
     live_tasks = loadedStatus.live_tasks;
     remaining_tasks = loadedStatus.remaining_tasks;
     delayed_tasks = loadedStatus.delayed_tasks;
@@ -337,7 +345,6 @@ var loadData = function(in_progress, firstTime){
     var latest_time;
     if (in_progress){
         latest_time = (new Date).getTime();
-        console.log(" $$$$$$$$$$$$$$$$$$$$$ GOT NEW TIME JUST AFTER REOPEN TAB");
     } else {
         latest_time = loadedStatus.latest_time;
     }
@@ -345,7 +352,7 @@ var loadData = function(in_progress, firstTime){
 
     event_counter = flashTeamsJSON["events"].length;
     
-    drawEvents(!in_progress, firstTime);
+    drawEvents(!in_progress);
     drawBlueBoxes();
     drawRedBoxes();
     drawDelayedTasks();
@@ -353,27 +360,25 @@ var loadData = function(in_progress, firstTime){
     googleDriveLink();
 };
 
+// user must call this startTeam(true, )
 var startTeam = function(team_in_progress, firstTime){
     console.log("STARTING TEAM");
 
-    if(team_in_progress){
-        startCursor(cursor_details);
-    } else {
+    if(!team_in_progress) {
         recordStartTime();
-        console.log("recorded Start time");
         addAllFolders();
-        setCursorMoving();
+        in_progress = true;
     }
 
+    setCursorMoving();
+
     if(firstTime){ // true means the page was just reloaded
+        //alert("starting trackLiveAndRemainingTasks");
         updateAllPopoversToReadOnly();
         project_status_handler = setProjectStatusMoving();
         trackLiveAndRemainingTasks();
         trackUpcomingEvent();
     }
-
-    if (!team_in_progress)
-        in_progress = true;
 
     load_statusBar(status_bar_timeline_interval);
 };
@@ -386,11 +391,11 @@ var googleDriveLink = function(){
     }
 };
 
-var drawEvents = function(editable, firstTime){
+var drawEvents = function(editable){
     for(var i=0;i<flashTeamsJSON.events.length;i++){
         var ev = flashTeamsJSON.events[i];
         console.log("DRAWING EVENT " + i + ", with editable: " + editable);
-        drawEvent(ev, firstTime);
+        drawEvent(ev);
         drawPopover(ev, editable, false);
     }
 };
@@ -504,11 +509,11 @@ var drawDelayedTasks = function(){
         var red_width = drawRedBox(ev, task_g, true);
         var idx = live_tasks.indexOf(groupNum);
         if(idx != -1) {
-            //alert("found task " + groupNum + " in live_tasks");
+            console.log(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% found task " + groupNum + " in live_tasks");
             live_tasks.splice(idx, 1);
             delayed_tasks.push(groupNum);
         } else {
-            //alert("not even in live_tasks");
+            console.log(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% not even in live_tasks");
         }
 
         var groupNum = ev.id;
@@ -516,14 +521,16 @@ var drawDelayedTasks = function(){
         var task_rect_curr_width = parseFloat(getWidth(ev));
         var task_end = task_start + task_rect_curr_width;
         var red_end = task_end + red_width;
-        tasks_after = computeTasksAfterCurrent(task_end); // TODO: right-most task or left-most task?
-
+        var new_tasks_after = computeTasksAfterCurrent(task_end); // TODO: right-most task or left-most task?
+        if(tasks_after == null || new_tasks_after.length > tasks_after.length){
+            tasks_after = new_tasks_after;
+        }
+     
         allRanges.push([task_end, red_end]);
     }
 
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
-        console.log("MOVING TASKS RIGHT BY: " + actual_offset);
         moveTasksRight(tasks_after, actual_offset, true);
     }
 };
@@ -766,10 +773,8 @@ var extendDelayedBoxes = function(){
     // go through delayed tasks and increase width of red box
     var cursor_x = parseFloat(cursor.attr("x1"));
     var diff = 0;
-    //console.log("NUM DELAYED TASKS: " + delayed_tasks.length);
     for (var i=0;i<delayed_tasks.length;i++){
         var groupNum = delayed_tasks[i];
-        //console.log("DELAYED TASK: " + groupNum + " | index: " + i);
         var delayed_rect = timeline_svg.selectAll("#delayed_rect_" + groupNum);
         
         // new width is diff b/w current cursor position and starting of delayed rect
@@ -778,7 +783,6 @@ var extendDelayedBoxes = function(){
         delayed_rect.attr("width", new_width);
         
         diff = new_width - curr_width;
-        //console.log("DIFF IS: " + diff);
     }
     if(diff > 0){
         moveRemainingTasksRight(diff);
@@ -834,13 +838,15 @@ var moveTasksRight = function(tasks, amount, from_initial){
         ev.startHr = startTimeObj["startHr"];
         ev.startMin = startTimeObj["startMin"];
 
-        drawEvent(ev, false);
+        drawEvent(ev);
         drawPopover(ev, false, false);
     }
 
     var tasks_with_current = tasks.slice(0);
     tasks_with_current = tasks_with_current.concat(delayed_tasks);
     drawInteractions(tasks_with_current);
+
+    updateStatus(true);
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -862,13 +868,15 @@ var moveTasksLeft = function(tasks, amount){
         ev.startHr = startTimeObj["startHr"];
         ev.startMin = startTimeObj["startMin"];
 
-        drawEvent(ev, false);
+        drawEvent(ev);
         drawPopover(ev, false, false);
     }
 
     var tasks_with_current = tasks.slice(0);
     tasks_with_current = tasks_with_current.concat(delayed_tasks);
     drawInteractions(tasks_with_current);
+
+    updateStatus(true);
 };
 
 var moveRemainingTasksRight = function(amount){
@@ -907,6 +915,8 @@ update popover when automatically shift the tasks left or right
 shorten width when finish early (?)
 offset of half of drag bar width when drawing red and blue boxes
 */
+// not being called for user's side
+// trying to fix issue of user's page not extending delayed box (and moving remaining tasks to the right)
 var trackLiveAndRemainingTasks = function() {
     tracking_tasks_interval_id = setInterval(function(){
         var tasks = computeLiveAndRemainingTasks();
@@ -916,6 +926,7 @@ var trackLiveAndRemainingTasks = function() {
         // extend already delayed boxes
         extendDelayedBoxes();
 
+        var at_least_one_task_started = false;
         var at_least_one_task_delayed = false;
 
         // detect any live task is now delayed or completed early
@@ -941,13 +952,21 @@ var trackLiveAndRemainingTasks = function() {
             }
         }
 
+        for (var j=0;j<remaining_tasks.length;j++){
+            var groupNum = parseInt(remaining_tasks[j]);
+            if (new_live_tasks.indexOf(groupNum) != -1) { // groupNum is now live
+                at_least_one_task_started = true;
+            }
+        }
+
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
-        if(at_least_one_task_delayed){
+        if(at_least_one_task_delayed || at_least_one_task_started){
             updateStatus(true);
-            at_least_one_task_delayed = false;
-        } else {
-            updateStatus(true);
+            if(at_least_one_task_delayed)
+                at_least_one_task_delayed = false;
+            if(at_least_one_task_started)
+                at_least_one_task_started = false;
         }
     }, fire_interval);
 };
@@ -1019,7 +1038,7 @@ function isDelayed(element) {
 
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
-     if (current == null){
+     if (current == undefined){
         return;
     }
     setInterval(function(){
