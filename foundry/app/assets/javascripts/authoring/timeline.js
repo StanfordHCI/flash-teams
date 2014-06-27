@@ -151,6 +151,7 @@ function addTime() {
 //Should have updated the variables: TIMELINE_HOURS, TOTAL_HOUR_PIXELS, SVG_WIDTH, XTicks
 //Redraws timeline based on those numbers
 function redrawTimeline() {
+    //debugger;
     //Recalculate 'x' based on added hours
     var x = d3.scale.linear()
     .domain([0, TOTAL_HOUR_PIXELS])
@@ -238,10 +239,23 @@ function redrawTimeline() {
             newEvent(point);
         }); 
 
+     //START HERE
+    /* Time cursor in red */
+    timeline_svg.append("line")
+        .attr("y1", 15)
+        .attr("y2", SVG_HEIGHT-50)
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("class", "cursor")
+        .style("stroke", "red")
+        .style("stroke-width", "2")
+
     //move all existing events back on top of timeline
     $(timeline_svg.selectAll('g')).each(function() {
         $('.chart').append(this);
     });
+   
+
 }
 
 //VCom Calculates how many hours to add when user expands timeline manually 
