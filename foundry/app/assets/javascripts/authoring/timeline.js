@@ -239,8 +239,7 @@ function redrawTimeline() {
             newEvent(point);
         }); 
 
-     //START HERE
-    /* Time cursor in red */
+    //Redraw the cursor
     timeline_svg.append("line")
         .attr("y1", 15)
         .attr("y2", SVG_HEIGHT-50)
@@ -250,6 +249,7 @@ function redrawTimeline() {
         .style("stroke", "red")
         .style("stroke-width", "2")
 
+    //Get the latest time and team status, update x position of cursor
     var latest_time;
     if (in_progress){
         latest_time = (new Date).getTime();
@@ -257,8 +257,9 @@ function redrawTimeline() {
         latest_time = loadedStatus.latest_time;
     }
     cursor_details = positionCursor(flashTeamsJSON, latest_time);
-    //loadData(in_progress);
 
+    //TODO: REMOVE
+    //Debugging the cursor redrawing
     cursorDebug();
     function cursorDebug() {
         console.log("CURSOR DEBUG INFO!!!!!");
