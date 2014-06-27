@@ -110,20 +110,6 @@ function findTotalHours() {
     return totalHours + 2; //THE 2 IS ARBITRARY FOR PADDING
 }
 
-//Find the exact number of minutes from time 0 to the end of the last event
-function findExactMinutes() {
-    var totalMinutes = 0; 
-    for (i = 0; i < flashTeamsJSON["events"].length; i++) {
-        var eventObj = flashTeamsJSON["events"][i];
-        var eventStart = eventObj.startTime;
-        var eventDuration = eventObj.duration;
-        var eventEnd = eventStart + eventDuration;
-        
-        if (eventEnd > totalMinutes) totalMinutes = eventEnd;
-    }
-     
-    return totalMinutes; 
-}
 
 //CALL IN CONSOLE TO HIDE THE CHAT BOX AND PROJECT STATUS
 function hideAwareness() {

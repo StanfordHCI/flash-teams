@@ -3,11 +3,11 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel" align = "center" >End Team?</h3>
   </div>
-  <div class="modal-body">
-    <p align = "center">Are you sure you want to end <%= @flash_team.name %>?</p>
+  <div class="modal-body" id = "confirmEndText">
+    <p align = "center"></p>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <button class="btn btn-danger" id = "confirmEndTeamBtn">End <%= @flash_team.name %></button>
+    <button class="btn btn-danger" id = "confirmEndTeamBtn">End the team</button>
   </div>
 </div>
