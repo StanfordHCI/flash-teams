@@ -283,7 +283,7 @@ var flashTeamUpdated = function(){
 var poll = function(){
     //console.log("POLLING");
     return setInterval(function(){
-        console.log("MAKING POLL NOW...");
+        //console.log("MAKING POLL NOW...");
         var flash_team_id = $("#flash_team_id").val();
         var url = '/flash_teams/' + flash_team_id + '/get_status';
         $.ajax({
@@ -319,8 +319,6 @@ var loadStatus = function(id){
         loadedStatusJSON = data;
         //console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
- 
-    
     return JSON.parse(loadedStatusJSON);
 };
 
