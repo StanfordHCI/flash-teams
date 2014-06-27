@@ -343,7 +343,7 @@ function confirmDeleteMember(pillId) {
                 + memberToDelete + " will be removed from all events on the timeline. </font>";
 
     var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Delete " + memberToDelete;
+    deleteButton.innerHTML = "Remove " + memberToDelete;
 
     $('#confirmDelete').modal('show');
 
