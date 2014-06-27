@@ -250,6 +250,7 @@ function redrawTimeline() {
         .style("stroke-width", "2")
 
     //Get the latest time and team status, update x position of cursor
+    cursor = timeline_svg.select(".cursor");
     var latest_time;
     if (in_progress){
         latest_time = (new Date).getTime();
@@ -258,23 +259,10 @@ function redrawTimeline() {
     }
     cursor_details = positionCursor(flashTeamsJSON, latest_time);
 
-    //TODO: REMOVE
-    //Debugging the cursor redrawing
-    cursorDebug();
-    function cursorDebug() {
-        console.log("CURSOR DEBUG INFO!!!!!");
-        console.log("is the team in progress?", in_progress);
-        console.log("cursor_details", cursor_details);
-        console.log("latest_time", latest_time);
-        console.log("END CURSOR DEBUG");
-    }
-
     //move all existing events back on top of timeline
     $(timeline_svg.selectAll('g')).each(function() {
         $('.chart').append(this);
     });
-   
-
 }
 
 //VCom Calculates how many hours to add when user expands timeline manually 
