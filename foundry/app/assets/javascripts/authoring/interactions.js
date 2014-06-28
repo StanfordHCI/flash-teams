@@ -358,7 +358,7 @@ function deleteInteraction(intId) {
     //var indexOfJSON = getIntJSONIndex(intId);
     //flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
 
-    console.log("REMOVING INTERACTION ID: " + intId);
+    //console.log("REMOVING INTERACTION ID: " + intId);
 
     //Delete Rectangle
     $("#interaction_" + intId).remove();

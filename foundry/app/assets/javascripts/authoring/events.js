@@ -82,7 +82,7 @@ function leftResize(d) {
 
     // update x and draw event
     ev.x = newX;
-    ev.orig_x = newX;
+    ev.min_x = newX;
     ev.duration = durationForWidth(newWidth);
     
     var startHr = startHrForX(newX);
@@ -139,7 +139,7 @@ function dragEvent(d) {
     if (d3.event.dx + d.x < 0) newX = (0 - (DRAGBAR_WIDTH/2));
     
     ev.x = newX;
-    ev.orig_x = newX;
+    ev.min_x = newX;
 
     //update start time, start hour, start minute
     var startHr = startHrForX(newX);
@@ -243,7 +243,7 @@ function getDuration(leftX, rightX) {
 function createEventObj(snapPoint) {
     event_counter++;
     var startTimeObj = getStartTime(snapPoint[0]);
-    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "orig_x": snapPoint[0], "y": snapPoint[1], 
+    var newEvent = {"title":"New Event", "id":event_counter, "x": snapPoint[0], "min_x": snapPoint[0], "y": snapPoint[1], 
         "startTime": startTimeObj["startTimeinMinutes"], "duration":60, "members":[], 
         "dri":"", "notes":"", "startHr": startTimeObj["startHr"], 
         "startMin": startTimeObj["startMin"], "gdrive":[], "completed_x":null, "inputs":null, "outputs":null};
@@ -590,7 +590,7 @@ function drawCollabBtn(eventObj, firstTime) {
 }
 
 function drawMemberLines(eventObj) {
-    console.log("drawing member lines for ", eventObj);
+    //console.log("drawing member lines for ", eventObj);
     var x_offset = 8; // unique for member lines
     var width = getWidth(eventObj) - 8;
 
@@ -771,7 +771,7 @@ function drawEachCollab(eventObj, firstTime){
 
 //Creates graphical elements from array of data (task_rectangles)
 function drawEvent(eventObj) { 
-    console.log("redrawing event");
+    //console.log("redrawing event");
     drawG(eventObj);
     drawMainRect(eventObj);
     drawRightDragBar(eventObj);

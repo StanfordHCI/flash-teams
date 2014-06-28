@@ -22,6 +22,7 @@ var project_status_handler;
 var cursor_details;
 var tracking_tasks_interval_id;
 var user_poll = false;
+var user_loaded_before_team_start = false;
 
 var window_visibility_state = null;
 var window_visibility_change = null;
@@ -85,7 +86,7 @@ $("#flashTeamStartBtn").click(function(){
     $("#flashTeamTitle").css('display','none');
     removeColabBtns();
     removeHandoffBtns();
-    startTeam(false, true);
+    startTeam(true);
     googleDriveLink();
 });
 
@@ -135,7 +136,9 @@ function renderEverything(firstTime) {
         // firstTime will also be true in the case that flashTeamEndedorStarted, so
         // we make sure that it is false (i.e. true firstTime, upon page reload for user
         // before the team starts)
-        if(firstTime && !user_poll) // TODO: find better way to capture the case of user_poll
+        // !user_poll means a poll wasn't the one the generated this call to renderEverything
+        //if(firstTime && !user_poll) // TODO: find better way to capture the case of user_poll
+        if(firstTime)
             renderChatbox();
         
         //get user name and user role for the chat
@@ -152,16 +155,25 @@ function renderEverything(firstTime) {
         if(firstTime)
             setCurrentMember();
 
+        // is this the user, and has he/she loaded the page
+        // before the team started
+        // is_user && firstTime && in_progress would be the case
+        // where the user loads the page for the first time after
+        // the team has started
+        if(isUser) {
+            // user loaded page before team started
+            if (firstTime && !in_progress)
+                user_loaded_before_team_start = true;
+        }
+
         if(in_progress){
             console.log("flash team in progress");
             $("#flashTeamStartBtn").attr("disabled", "disabled");
-            //alert("flash team in progress");
-            loadData(true);
+            loadData();
             renderMembersUser();
-            startTeam(true, firstTime);
+            startTeam(firstTime);
         } else {
             console.log("flash team not in progress");
-            //alert("flash team not in progress");
             if(!flashTeamsJSON)
                 return;
             
@@ -172,7 +184,7 @@ function renderEverything(firstTime) {
                 createNewFolder(flashTeamsJSON["title"]); // gdrive
             }
 
-            loadData(false);
+            loadData();
             
             if(!isUser) {
                 renderMembersRequester();
@@ -180,7 +192,7 @@ function renderEverything(firstTime) {
         }
     });
 
-    if(firstTime && !user_poll) {
+    if(firstTime) {
         poll_interval_id = poll();
         listenForVisibilityChange();
     }
@@ -271,14 +283,32 @@ var flashTeamUpdated = function(){
     var updated_drawn_blue_tasks = loadedStatus.drawn_blue_tasks;
     var updated_completed_red_tasks = loadedStatus.completed_red_tasks;
 
-    if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) return true;
-    if (updated_completed_red_tasks.length != completed_red_tasks.length) return true;
+    if (updated_drawn_blue_tasks.length != drawn_blue_tasks.length) {
+        console.log("drawn_blue_tasks not same length");
+        console.log(drawn_blue_tasks);
+        console.log(updated_drawn_blue_tasks);
+        return true;
+    }
+    if (updated_completed_red_tasks.length != completed_red_tasks.length) {
+        console.log("completed_red_tasks not same length");
+        console.log(completed_red_tasks);
+        console.log(updated_completed_red_tasks);
+        console.log(loadedStatus.live_tasks);
+        console.log(loadedStatus.delayed_tasks);
+        return true;
+    }
 
     if(updated_drawn_blue_tasks.sort().join(',') !== drawn_blue_tasks.sort().join(',')){
+        console.log("drawn_blue_tasks not same content");
+        console.log(drawn_blue_tasks);
+        console.log(updated_drawn_blue_tasks);
         return true;
     }
 
     if(updated_completed_red_tasks.sort().join(',') !== completed_red_tasks.sort().join(',')){
+        console.log("completed_red_tasks not same content");
+        console.log(completed_red_tasks);
+        console.log(updated_completed_red_tasks);
         return true;
     }
     return false;
@@ -298,13 +328,18 @@ var poll = function(){
             loadedStatus = data;
 
             if(flashTeamEndedorStarted()) {
-                stopPolling();
-                if(isUser) {
+                //stopPolling();
+                /*if(isUser) {
+                    // to solve the case where the user already loaded the page
+                    // and so already has the chatbox and has already started polling
                     user_poll = true;
                 }
                 renderEverything(true);
+                */
+                renderEverything(false);
             } else if (flashTeamUpdated()) {
-                stopPolling();
+                //stopPolling();
+                console.log("FLASH TEAM UPDATED..CALLING renderEverything(FALSE)");
                 renderEverything(false);
             } else {
                 console.log("Flash team not updated and not ended");
@@ -333,7 +368,20 @@ var loadStatus = function(id){
     return JSON.parse(loadedStatusJSON);
 };
 
-var loadData = function(in_progress){
+var loadData = function(){
+    // position cursor before getting the new task arrays
+    // because once the new task arrays are updated,
+    // trackLiveAndRemainingTasks is immediately going to
+    // operate on them, while the current cursor here is
+    // not yet where it should be in time (its behind)
+    var latest_time;
+    if (in_progress){
+        latest_time = (new Date()).getTime();
+    } else {
+        latest_time = loadedStatus.latest_time; // really only useful at end
+    }
+    cursor_details = positionCursor(flashTeamsJSON, latest_time);
+
     live_tasks = loadedStatus.live_tasks;
     remaining_tasks = loadedStatus.remaining_tasks;
     delayed_tasks = loadedStatus.delayed_tasks;
@@ -341,14 +389,6 @@ var loadData = function(in_progress){
     completed_red_tasks = loadedStatus.completed_red_tasks;
 
     load_statusBar(status_bar_timeline_interval);
-    
-    var latest_time;
-    if (in_progress){
-        latest_time = (new Date).getTime();
-    } else {
-        latest_time = loadedStatus.latest_time;
-    }
-    cursor_details = positionCursor(flashTeamsJSON, latest_time);
 
     event_counter = flashTeamsJSON["events"].length;
     
@@ -361,19 +401,28 @@ var loadData = function(in_progress){
 };
 
 // user must call this startTeam(true, )
-var startTeam = function(team_in_progress, firstTime){
+var startTeam = function(firstTime){
     console.log("STARTING TEAM");
 
-    if(!team_in_progress) {
+    if(!in_progress) {
         recordStartTime();
         addAllFolders();
-        in_progress = true;
+        in_progress = true; // TODO: set before this?
     }
 
     setCursorMoving();
 
-    if(firstTime){ // true means the page was just reloaded
-        //alert("starting trackLiveAndRemainingTasks");
+    // page was loaded after team started
+    // OR 
+    // page was loaded before team started && this call to startTeam is as a result of 
+    // team now starting (received through poll)
+    
+    var page_loaded_after_start = firstTime && in_progress;
+    var page_loaded_before_start_and_now_started = user_loaded_before_team_start && in_progress;
+    
+    if(page_loaded_after_start || page_loaded_before_start_and_now_started){
+        if(page_loaded_before_start_and_now_started)
+            user_loaded_before_team_start = false;
         updateAllPopoversToReadOnly();
         project_status_handler = setProjectStatusMoving();
         trackLiveAndRemainingTasks();
@@ -507,6 +556,7 @@ var drawDelayedTasks = function(){
         if (completed) continue;
 
         var red_width = drawRedBox(ev, task_g, true);
+        console.log(" ^^^^^^^^^^^^^^^^^^^^^^ RED_WIDTH: " + red_width);
         var idx = live_tasks.indexOf(groupNum);
         if(idx != -1) {
             console.log(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% found task " + groupNum + " in live_tasks");
@@ -531,6 +581,7 @@ var drawDelayedTasks = function(){
 
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
+        console.log("DRAWING DELAYED TASKS AFTER UPDATE");
         moveTasksRight(tasks_after, actual_offset, true);
     }
 };
@@ -588,10 +639,10 @@ var positionCursor = function(team, latest_time){
     var diff = currTime - startTime;
 
     var cursor_details = getXCoordForTime(diff);
-    console.log("DIFF: " + diff);
-    console.log("CURSOR_DETAILS: " + cursor_details);
+    //console.log("DIFF: " + diff);
+    //console.log("CURSOR_DETAILS: " + cursor_details);
     var x = parseFloat(cursor_details["finalX"]);
-    console.log("POSITIONING CURSOR AT: " + x);
+    //console.log("POSITIONING CURSOR AT: " + x);
     cursor.attr("x1", x);
     cursor.attr("x2", x);
     curr_x_standard = x;
@@ -638,9 +689,9 @@ var setCursorMoving = function(){
 
 var moveCursor = function(length_of_time){
     var curr_x = parseFloat(cursor.attr("x1"));
-    console.log("STARTING TO MOVE CURSOR. STARTING X IS: " + curr_x);
+    //console.log("STARTING TO MOVE CURSOR. STARTING X IS: " + curr_x);
     curr_x_standard = curr_x + parseFloat(50);
-    console.log("MOVING IT TO NEW X: " + curr_x_standard);
+    //console.log("MOVING IT TO NEW X: " + curr_x_standard);
 
     cursor.transition()
         .duration(length_of_time)
@@ -790,7 +841,7 @@ var extendDelayedBoxes = function(){
 };
 
 var drawInteractions = function(tasks){
-    console.log("DRAWING INTERACTIONS FOR TASKS: " + tasks);
+    //console.log("DRAWING INTERACTIONS FOR TASKS: " + tasks);
     //Find Remaining Interactions and Draw
     var remainingHandoffs = getHandoffs(tasks);
     var numHandoffs = remainingHandoffs.length;
@@ -811,7 +862,7 @@ var drawInteractions = function(tasks){
         drawCollaboration(remainingCollabs[k], overlap);
     }
 
-    console.log("DONE DRAWING INTERACTIONS");
+    //console.log("DONE DRAWING INTERACTIONS");
 };
 
 var moveTasksRight = function(tasks, amount, from_initial){
@@ -825,10 +876,11 @@ var moveTasksRight = function(tasks, amount, from_initial){
 
         // change the start x
         if (from_initial) {
-            console.log("BEFORE MOVING RIGHT, ORIG_X: " + parseFloat(ev.orig_x));
-            ev.x = parseFloat(ev.orig_x) + parseFloat(amount);
-            console.log("AFTER MOVING RIGHT, EV.X: " + ev.x);
+            //console.log(groupNum + " | BEFORE MOVING RIGHT, MIN_X: " + parseFloat(ev.min_x));
+            ev.x = parseFloat(ev.min_x) + parseFloat(amount);
+            //console.log(groupNum + " | AFTER MOVING RIGHT, EV.X: " + ev.x);
         } else {
+            //console.log(groupNum + " | NOT FROM INITIAL.");
             ev.x += parseFloat(amount);
         }
 
@@ -846,7 +898,7 @@ var moveTasksRight = function(tasks, amount, from_initial){
     tasks_with_current = tasks_with_current.concat(delayed_tasks);
     drawInteractions(tasks_with_current);
 
-    updateStatus(true);
+    //updateStatus(true);
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -861,6 +913,8 @@ var moveTasksLeft = function(tasks, amount){
         
         // change the start x
         ev.x -= parseFloat(amount);
+        if (ev.x < ev.min_x)
+            ev.min_x = ev.x;
         
         // change the time corresponding to the new start x
         var startTimeObj = getStartTime(ev.x);
@@ -1194,6 +1248,7 @@ var sendEmailOnEarlyCompletion = function(blue_width){
 };
 
 var completeTask = function(groupNum){
+    console.log("COMPLETED TASK");
     var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
 
     var cursor_x = cursor.attr("x1");
@@ -1204,6 +1259,7 @@ var completeTask = function(groupNum){
     if (idx != -1) { // delayed task
         delayed_tasks.splice(idx, 1);
         completed_red_tasks.push(groupNum);
+        console.log("removed task from delayed and added to completed_red");
         sendEmailOnCompletionOfDelayedTask(groupNum);
     } else {
         idx = live_tasks.indexOf(groupNum);
