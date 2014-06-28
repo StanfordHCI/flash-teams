@@ -781,12 +781,15 @@ var drawInteractions = function(tasks){
     var numCollabs = remainingCollabs.length;
 
     for (var j = 0; j < numHandoffs; j++) {
-        deleteInteraction(remainingHandoffs[j].id);
+        intId = remainingHandoffs[j].id
+        $("#interaction_" + intId).popover("destroy");
+        $("#interaction_" + intId).remove();
         drawHandoff(remainingHandoffs[j]);
     }
 
     for (var k = 0; k < numCollabs; k++) {
-        deleteInteraction(remainingCollabs[k].id);
+        $("#interaction_" + intId).popover("destroy");
+        $("#interaction_" + intId).remove();
         var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event1)];
         var event2 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event2)];
         var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
