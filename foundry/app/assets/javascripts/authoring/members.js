@@ -3,10 +3,38 @@
  *
  */
 
- var pillCounter = 0;
+ var pillCounter = undefined;
  var colorToChange = "#ff0000";
  var current = undefined;
  var isUser = false;
+
+//WARNING: This has to be called once, and before any of the other colorBox functions!
+function colorBox() {
+    colorBox.colors = ["#00ffff","#f0ffff","#f5f5dc","#000000","#0000ff","#a52a2a","#00ffff",
+    "#00008b","#008b8b","#a9a9a9","#006400","#bdb76b","#8b008b","#556b2f","#ff8c00","#9932cc",
+    "#8b0000","#e9967a","#9400d3","#ff00ff","#ffd700","#008000","#4b0082","#f0e68c","#add8e6",
+    "#e0ffff","#90ee90","#d3d3d3","#ffb6c1","#ffffe0","#00ff00","#ff00ff","#800000","#000080",
+    "#808000","#ffa500","#ffc0cb","#800080","#800080","#ff0000","#c0c0c0","#ffff00"];
+    for (var i = 0; i < flashTeamsJSON.members.length; i++){
+        var ind = $.inArray(flashTeamsJSON.members[i].color, colorBox.colors);
+        if (ind != 0) { //if found, remove from possible colors array
+            colorBox.colors.splice(ind,1);
+        }
+    }
+}
+
+//grabColor returns a hex code not currently used by any member
+colorBox.grabColor = function() {
+    var ind = Math.floor(Math.random()*colorBox.colors.length);
+    var color = colorBox.colors[ind];
+    colorBox.colors.splice(ind,1);
+    return color;
+};
+
+//replaceColor adds a color back into possible space
+colorBox.replaceColor = function(color) {
+    colorBox.colors.push(color);
+};
 
  function renderMembersRequester() {
     var members = flashTeamsJSON.members;
@@ -23,16 +51,16 @@ function renderMembersUser() {
 
 function setCurrentMember() {
     var uniq = getParameterByName('uniq');
-    console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
+    //console.log("THIS IS THE CURRENT UNIQ VALUE", uniq);
     
     if (uniq){
         $("#uniq").value = uniq;
         flash_team_members = flashTeamsJSON["members"];
-        console.log(flash_team_members[0].uniq);
+        //console.log(flash_team_members[0].uniq);
         for(var i=0;i<flash_team_members.length;i++){            
             if (flash_team_members[i].uniq == uniq){
-                console.log("uniq1: " + flash_team_members[i].uniq);
-                console.log("uniq2: " + uniq);
+                //console.log("uniq1: " + flash_team_members[i].uniq);
+                //console.log("uniq2: " + uniq);
                 current = i;
                 isUser = true;
             }
@@ -50,8 +78,8 @@ function renderPills(members) {
         var member_id = member.id;
         var member_name = member.role;
         var member_color = member.color;
-        $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
-            + '<div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+        $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a><span class="memberPillName" data-pk="' + member_id + '">' + member_name 
+            + '</span><div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
         renderMemberPillColor(member_id);
     }
 };
@@ -61,7 +89,6 @@ function renderMemberPopovers(members) {
     for (var i=0;i<len;i++){
         var member = members[i];
         var member_id = member.id;
-        console.log("RENDERING POPOVER FOR MEMBER " + member_id);
         var member_name = member.role;
         var invitation_link = member.invitation_link;
 
@@ -75,11 +102,9 @@ function renderMemberPopovers(members) {
         var category1 = member.category1;
         var category2 = member.category2;
 
-        //alert("render1");
-
         // add the drop-down for two-tiered oDesk job posting categories on popover
         for (var key in oDeskCategories) {
-            console.log("category1");
+            //console.log("category1");
             var option = document.createElement("option");
             if(key == category1){
                 content += '<option value="' + key + '" selected>' + key + '</option>';
@@ -87,8 +112,6 @@ function renderMemberPopovers(members) {
                 content += '<option value="' + key + '">' + key + '</option>';
             }
         }
-
-        //alert("render2");
 
         //reload or build category2 based on previously selected category 1
         content += '</select>';
@@ -99,7 +122,7 @@ function renderMemberPopovers(members) {
 
             content += '<br><br><select class="category2Input" id="member' + member_id + '_category2">'
             for (var j=0; j<oDeskCategories[category1].length; j++) {
-                console.log("category2");
+                //console.log("category2");
                 var key2 = oDeskCategories[category1][j];
 
                 var option = document.createElement("option");
@@ -118,8 +141,6 @@ function renderMemberPopovers(members) {
         +'<br>Skills:'  
         +'<ul class="nav nav-pills" id="skillPills_' + member_id + '">';
 
-        //alert("render3");
-
         var skills_len = member.skills.length;
         for(var j=0;j<skills_len;j++){
             var memberSkillNumber = j+1;
@@ -128,20 +149,18 @@ function renderMemberPopovers(members) {
             + '<div class="close" onclick="deleteSkill(' + member_id + ', ' + memberSkillNumber + ', &#39' + skillName + '&#39)">  X</div></a></li>';
         }
 
-        //alert("render4");
-
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
-        +'<p><button type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
-        +'<button type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
+        +'<p><button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
+        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>     '
+        +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
         + '</a>'
         +'</p></form>' 
         +'</div>';
 
-        //console.log("destroying popover: " + member_id);
         $("#mPill_" + member_id).popover('destroy');
 
         $("#mPill_" + member_id).popover({
@@ -150,7 +169,7 @@ function renderMemberPopovers(members) {
             class: "member",
             id: '"memberPopover' + member_id + '"',
             trigger: "click",
-            title: '<b>' + member_name + '</b>',
+            title: '<div data-pk="' + member_id + '" class="popover-mname">' + member_name + '</div><a href="#" class="edit-mname"><i class="icon-pencil"></i></a>',
             content:  content,
             container: $("#member-container"),
             callback: function(){
@@ -183,6 +202,12 @@ function generateMemberCategoryChangeFunction(mem_id) {
 }
 
 function memberPillClick(mem_id) {
+    //Close all open popovers
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var idNum = flashTeamsJSON["members"][i].id;
+        if (idNum == mem_id) continue;
+        $("#mPill_"+idNum).popover('hide');
+    }
     $("#member" + mem_id + "_category1").off('change', generateMemberCategoryChangeFunction(mem_id));
     $("#member" + mem_id + "_category1").on('change', generateMemberCategoryChangeFunction(mem_id));
 }
@@ -213,8 +238,12 @@ function renderDiagram(members) {
 };
 
 function newMemberObject(memberName) {
+    if (pillCounter == undefined) {
+        pillCounter = initializeMemberCounter();
+    }
     pillCounter++;
-    return {"role":memberName, "id": pillCounter, "color":"#08c", "skills":[], "category1":"", "category2":""};
+    var color = colorBox.grabColor();
+    return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
 };
 
 function addMember() {
@@ -225,19 +254,13 @@ function addMember() {
         return;
     }
 
-    //alert("yo2");
-
     // clear input
     $("#addMemberInput").val(this.placeholder);
-
-    //alert("yo3");
 
     // add member to json
     var members = flashTeamsJSON.members;
     var member_obj = newMemberObject(member_name);
     members.push(member_obj);
-
-    //alert("yo4");
 
     //update event popovers to show the new member
     var events = flashTeamsJSON.events;
@@ -245,17 +268,12 @@ function addMember() {
        drawPopover(events[i], true, false);
     }
 
-   //alert("a");
    renderPills(members);
-   //alert("b");
    renderMemberPopovers(members);
-   //alert("c");
 
    updateStatus(false);
 
-   //alert("d");
    inviteMember(member_obj.id);
-   //alert("e");
 };
 
 
@@ -290,35 +308,14 @@ function deleteSkill(memberId, pillId, skillName) {
     }
 };
 
-//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
-function saveMemberInfo(popId) {
-    var indexOfJSON = getMemberJSONIndex(popId);
-    //flashTeamsJSON["members"][indexOfJSON].category1 = $("#member" + popId + "_category1").value;
-    //flashTeamsJSON["members"][indexOfJSON].category2 = $("#member" + popId + "_category2").value;
-
-    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
-    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
-
-    var newColor = $("#color_" + popId).spectrum("get").toHexString();
-
-    updateMemberPillColor(newColor, popId);
-    renderMemberPillColor(popId);
-    //updateMemberPopover(popId);
-
-    console.log($("#mPill_"+popId).popover("show"));
-    $("#mPill_" + popId).popover("hide");
-    renderAllMemberLines();
-    renderMemberPopovers(flashTeamsJSON["members"]);
-};
-
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
     // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
     var members = flashTeamsJSON["members"];
     var memberId = members[indexOfJSON].id;
-    console.log("deleting member " + memberId);
-    console.log($("#mPill_" + memberId));
+    //console.log("deleting member " + memberId);
+    //console.log("clicked #mPill_", pillId);
     $("#mPill_" + memberId).popover('destroy');
 
     members.splice(indexOfJSON, 1);
@@ -349,13 +346,36 @@ function deleteMember(pillId) {
     updateStatus(false);
 };
 
+//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
+function saveMemberInfo(popId) {
+    var indexOfJSON = getMemberJSONIndex(popId);
+
+    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
+
+    var newColor = $("#color_" + popId).spectrum("get").toHexString();
+
+    updateMemberPillColor(newColor, popId);
+    renderMemberPillColor(popId);
+    //updateMemberPopover(popId);
+
+    $("#mPill_" + popId).popover("hide");
+    renderAllMemberLines();
+    renderMemberPopovers(flashTeamsJSON["members"]);
+};
+
+//Close the popover on a member to "cancel" the edit
+function hideMemberPopover(memberId) {
+    $("#mPill_" + memberId).popover("hide");
+}
+
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/invite';
     var indexOfJSON = getMemberJSONIndex(pillId);
     var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq};
     $.get(url, data, function(data){
-        console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
+        //console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
         var members = flashTeamsJSON["members"];
         members[indexOfJSON].uniq = data["uniq"];
         members[indexOfJSON].invitation_link = data["url"];
@@ -379,10 +399,6 @@ function updateMemberPillColor(color, memberId) {
     flashTeamsJSON["members"][indexOfJSON].color = color;
 
     updateStatus(false);
-
-    // Update JSON for team diagram
-    //workers.nodes[searchById(workers.nodes, memberId)].color = color;
-    //updateNodeColor();
 };
 
 //Necessary to save member popover information
@@ -417,19 +433,30 @@ function initializeColorPicker(newColor) {
     });
 }
 
+function initializeMemberCounter() {
+    if (flashTeamsJSON["members"].length == 0) return 0; 
+    else {
+        var highestId = 0;
+        for (i = 0; i < flashTeamsJSON["members"].length; i++) {
+            if (flashTeamsJSON["members"][i].id > highestId) {
+                highestId = flashTeamsJSON["members"][i].id;
+            }
+        }
+        return highestId;
+    }
+}
+
 //Find the index of a member in the JSON object "members" array by using unique id
 function getMemberJSONIndex(idNum) {
     for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
         if (parseInt(flashTeamsJSON["members"][i].id) == parseInt(idNum)) return i; 
     }
-    //console.log("NOT FOUND MEMBER WITH ID: " + idNum);
     return -1;
 };
 
 function getMemberById(id) {
     var idx = getMemberJSONIndex(id);
     if(idx != -1){
-        //console.log("FOUND MEMBER WITH ID: " + id);
         return flashTeamsJSON["members"][idx];
     }
     return null;
@@ -446,6 +473,41 @@ function searchById (arr, id) {
 $(document).ready(function() {
     pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
 });
+
+$(document).on('click', '.edit-mname', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var target = $(this).parent().find('.popover-mname')[0];
+    $(target).editable({
+        mode: 'inline',
+        success: function(response, newValue) { //Value has changed, check clicked
+            updateRoleName($(target).attr('data-pk'), newValue);
+
+            $(target).editable('destroy');
+            renderMemberPopovers(flashTeamsJSON["members"]);
+        }
+    });
+    //Remove the editable-click attribute so no underline when you don't change the name
+    $(target).removeClass("editable-click");
+    $(target).editable('toggle');
+});
+
+function updateRoleName(id, newValue) {
+    $.each(flashTeamsJSON['members'], function(index, value) {
+        if (value['id'] == id) {
+            flashTeamsJSON['members'][index]['role'] = newValue;
+            updateStatus(false);
+            drawAllPopovers();
+            return false;
+        }
+    });
+    $('.memberPillName').each(function() {
+        if ($(this).attr('data-pk') == id) {
+            $(this).html(newValue);
+            return false;
+        }
+    });
+}
 
 //Populate the autocomplete function for the event members
 //TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM

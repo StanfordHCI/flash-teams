@@ -45,3 +45,45 @@
 	}
 
 }
+
+.event-popover-table {
+	height: 175px;
+	overflow: hidden;
+
+	.event-table-wrapper {
+		height: 140px;
+		overflow-y: scroll;
+		padding: 0px;	
+	}
+
+	.event-table-row {
+	}
+	
+	.event-table-footer {
+		position: static;
+		height: 40px;
+		bottom: 0;
+	}
+
+/*
+	.event-table-cell {
+		display: inline-block;
+		max-width: 400px;
+		vertical-align: top;
+	}
+*/
+
+	.event-table-cell:first-child {
+		max-width: 400px;
+	}
+
+	.bootstrap-tagsinput {
+		width: 206px;
+	}
+
+	button {
+		/* margin: 5px 6px 5px 0px; */
+		margin-top: 2px;
+	}
+
+}
