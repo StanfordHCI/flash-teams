@@ -81,6 +81,13 @@ class FlashTeamsController < ApplicationController
 
   end
 
+  def rename
+    flash_team = FlashTeam.find(params[:pk])
+    flash_team.name = params[:value]
+    flash_team.save
+    head :ok
+  end
+
   def update
     @flash_team = FlashTeam.find(params[:id])
 
