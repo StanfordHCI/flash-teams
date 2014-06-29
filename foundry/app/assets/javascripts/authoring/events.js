@@ -664,6 +664,7 @@ function drawEachHandoff(eventObj, firstTime){
         var inter = interactions[i];
         var draw;
         if (inter["type"] == "handoff"){
+            console.log("THIS IS A HANDOFF", inter);
             if (inter["event1"] == eventObj["id"]){
                 draw = true;
                 var ev1 = eventObj;
@@ -675,10 +676,12 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }  
             if (draw){
+                console.log("IT SHOULD BE DRAWN", inter);
                 var x1 = handoffStart(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
+                console.log("THIS IS THE INTERACTION'S NAME", inter["id"]);
                 $("#interaction_" + inter["id"])
                     .attr("x1", x1)
                     .attr("y1", y1)

@@ -64,7 +64,15 @@ function eventMousedown(task2idNum) {
         DRAWING_HANDOFF = false;
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
-        interaction_counter++;
+        console.log("INTERACTIONSCOUNTER", flashTeamsJSON["interaction_counter"])
+        if (flashTeamsJSON["interaction_counter"]){
+            flashTeamsJSON["interaction_counter"]++;
+        }
+        else{
+            flashTeamsJSON["interaction_counter"] = 1;
+        }
+        interaction_counter = flashTeamsJSON["interaction_counter"];
+        updateStatus();
         var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1idNum)];
         var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2idNum)];
         var task1X = ev1.x;
@@ -97,7 +105,14 @@ function eventMousedown(task2idNum) {
 
         var overlap = eventsOverlap(task1X, task1Width, task2X, task2Width);
         if (overlap > 0) {
-            interaction_counter++;
+            if (flashTeamsJSON["interaction_counter"]){
+                flashTeamsJSON["interaction_counter"]++;
+            }
+            else{
+                flashTeamsJSON["interaction_counter"] = 1;
+            }
+            interaction_counter = flashTeamsJSON["interaction_counter"];
+            updateStatus();
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(collabData);
@@ -349,13 +364,15 @@ function saveCollab(intId) {
 //Deletes the interaction from the timeline and the JSON
 function deleteInteraction(intId) {
     //Destroy Popover
-    console.log("THIS FUNCTION IS BEING CALLED");
     $("#interaction_" + intId).popover("destroy");
 
+    console.log("THIS IS THE JSON CURRENTLY:", flashTeamsJSON["interactions"]);
     //Delete from JSON
     var indexOfJSON = getIntJSONIndex(intId);
     flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
     updateStatus();
+
+    console.log("THIS IS THE JSON NOW:", flashTeamsJSON["interactions"]);
 
     console.log("UPDATED INVOLVEMENT: " + flashTeamsJSON["interactions"]);
 
