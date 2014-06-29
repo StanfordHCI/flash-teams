@@ -81,6 +81,7 @@ function renderPills(members) {
         var member_color = member.color;
         $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
             + '<div class="close" onclick="confirmDeleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+
         renderMemberPillColor(member_id);
     }
 };
@@ -154,8 +155,14 @@ function renderMemberPopovers(members) {
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
+<<<<<<< HEAD
         +'<p><button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
         +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
+=======
+        +'<p><button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
+        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>     '
+        +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
+>>>>>>> master
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
         + '</a>'
@@ -170,7 +177,7 @@ function renderMemberPopovers(members) {
             class: "member",
             id: '"memberPopover' + member_id + '"',
             trigger: "click",
-            title: '<span class = "glyphicon glyphicon-pencil"></span><b>' + member_name + '</b>',
+            title: '<div data-pk="' + member_id + '" class="popover-mname">' + member_name + '</div><a href="#" class="edit-mname"><i class="icon-pencil"></i></a>',
             content:  content,
             container: $("#member-container"),
             callback: function(){
@@ -309,6 +316,7 @@ function deleteSkill(memberId, pillId, skillName) {
     }
 };
 
+<<<<<<< HEAD
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
     var indexOfJSON = getMemberJSONIndex(popId);
@@ -352,6 +360,8 @@ function confirmDeleteMember(pillId) {
 }
 
 
+=======
+>>>>>>> master
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
     $('#confirmDelete').modal('hide');
@@ -391,6 +401,29 @@ function deleteMember(pillId) {
 
     updateStatus(false);
 };
+
+//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
+function saveMemberInfo(popId) {
+    var indexOfJSON = getMemberJSONIndex(popId);
+
+    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
+
+    var newColor = $("#color_" + popId).spectrum("get").toHexString();
+
+    updateMemberPillColor(newColor, popId);
+    renderMemberPillColor(popId);
+    //updateMemberPopover(popId);
+
+    $("#mPill_" + popId).popover("hide");
+    renderAllMemberLines();
+    renderMemberPopovers(flashTeamsJSON["members"]);
+};
+
+//Close the popover on a member to "cancel" the edit
+function hideMemberPopover(memberId) {
+    $("#mPill_" + memberId).popover("hide");
+}
 
 function inviteMember(pillId) {
     var flash_team_id = $("#flash_team_id").val();
@@ -496,6 +529,41 @@ function searchById (arr, id) {
 $(document).ready(function() {
     pressEnterKeyToSubmit("#addMemberInput", "#addMemberButton");
 });
+
+$(document).on('click', '.edit-mname', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var target = $(this).parent().find('.popover-mname')[0];
+    $(target).editable({
+        mode: 'inline',
+        success: function(response, newValue) { //Value has changed, check clicked
+            updateRoleName($(target).attr('data-pk'), newValue);
+
+            $(target).editable('destroy');
+            renderMemberPopovers(flashTeamsJSON["members"]);
+        }
+    });
+    //Remove the editable-click attribute so no underline when you don't change the name
+    $(target).removeClass("editable-click");
+    $(target).editable('toggle');
+});
+
+function updateRoleName(id, newValue) {
+    $.each(flashTeamsJSON['members'], function(index, value) {
+        if (value['id'] == id) {
+            flashTeamsJSON['members'][index]['role'] = newValue;
+            updateStatus(false);
+            drawAllPopovers();
+            return false;
+        }
+    });
+    $('.memberPillName').each(function() {
+        if ($(this).attr('data-pk') == id) {
+            $(this).html(newValue);
+            return false;
+        }
+    });
+}
 
 //Populate the autocomplete function for the event members
 //TO BE DELETED, WILL BE CHANGING TO A CHECKBOX SYSTEM

@@ -125,6 +125,7 @@ var currentStatus; //the status of the user shown in the presence box
 
 $(document).ready(function(){
     colorBox();
+    
     var flash_team_id = $("#flash_team_id").val();
     var url = '/flash_teams/' + flash_team_id + '/get_status';
     $.ajax({
@@ -144,6 +145,7 @@ $(document).ready(function(){
         flashTeamsJSON = loadedStatus.flash_teams_json;
 
         setCurrentMember();
+        initializeTimelineDuration();
 
         if(in_progress){
             //console.log("flash team in progress");

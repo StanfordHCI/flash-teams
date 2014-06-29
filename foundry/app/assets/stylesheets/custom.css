@@ -34,6 +34,16 @@
 	padding-top: 5px;
 }
 
+.popover-title i {
+	float: right;
+	display: inline-block;
+}
+
+.popover-mname {
+	font-weight: bold;
+	display: inline-block;
+}
+
 .task_rectangle {
     cursor:pointer;
 }
