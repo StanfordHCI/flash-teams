@@ -66,10 +66,11 @@ function editablePopoverObj(eventObj) {
         + '<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
         + '<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div></div>'
         + '<div class="event-table-row event-table-footer">' 
+
         + '<button class="btn btn-success" type="button" id="save"'
         	+' onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>       '  
         + '<button type="button" class="btn btn-danger" id="delete"'
-        	+' onclick="deleteEvent(' + groupNum +');">Delete</button>       '   
+            +' onclick="confirmDeleteEvent(' + groupNum +');">Delete</button>       ' 
 		+ '<a id="cancel" style="float: right; line-height: 20px; padding-top: 4px; padding-bottom: 4px; margin-top: 2px;" onclick="hidePopover(' + groupNum + ');">Cancel</a>'       
         + '</div>'
         + '</form></div>',
@@ -83,6 +84,8 @@ function editablePopoverObj(eventObj) {
 
     return obj;
 };
+
+//maggie -> delete event is called here
 
 /*
  * Input(s): 

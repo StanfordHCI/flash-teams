@@ -71,6 +71,7 @@ function setCurrentMember() {
     }
 };
 
+
 function renderPills(members) {
     $("#memberPills").html("");
     for (var i=0;i<members.length;i++){
@@ -78,11 +79,13 @@ function renderPills(members) {
         var member_id = member.id;
         var member_name = member.role;
         var member_color = member.color;
-        $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a><span class="memberPillName" data-pk="' + member_id + '">' + member_name 
-            + '</span><div class="close" onclick="deleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+        $("#memberPills").append('<li class="active pill' + member_id + '" id="mPill_' + member_id + '""><a>' + member_name 
+            + '<div class="close" onclick="confirmDeleteMember(' + member_id + '); updateStatus(false);">  X</div></a></li>');
+
         renderMemberPillColor(member_id);
     }
 };
+
 
 function renderMemberPopovers(members) {
     var len = members.length;
@@ -152,9 +155,10 @@ function renderMemberPopovers(members) {
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
-        +'<p><button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>     '
-        +'<button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
-        +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
+
+        +'<p><button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
+        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
+
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
         + '</a>'
@@ -308,8 +312,55 @@ function deleteSkill(memberId, pillId, skillName) {
     }
 };
 
+
+//Saves info and updates popover, no need to update JSON, done by individual item elsewhere
+function saveMemberInfo(popId) {
+    var indexOfJSON = getMemberJSONIndex(popId);
+
+    flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
+    flashTeamsJSON["members"][indexOfJSON].category2 = document.getElementById("member" + popId + "_category2").value;
+
+    var newColor = $("#color_" + popId).spectrum("get").toHexString();
+
+    updateMemberPillColor(newColor, popId);
+    renderMemberPillColor(popId);
+    //updateMemberPopover(popId);
+
+    $("#mPill_" + popId).popover("hide");
+    renderAllMemberLines();
+    renderMemberPopovers(flashTeamsJSON["members"]);
+};
+
+
+
+//Shows an alert asking to confirm delete member role
+function confirmDeleteMember(pillId) {
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var members = flashTeamsJSON["members"];
+    var memberToDelete = members[indexOfJSON].role;
+
+    var label = document.getElementById("confirmDeleteLabel");
+    label.innerHTML = "Remove Member?";
+
+    var alertText = document.getElementById("confirmDeleteText");
+    alertText.innerHTML = "<b>Are you sure you want to remove " + memberToDelete + " from " + flashTeamsJSON["title"]+ "? </b><br><font size = '2'>" 
+                + memberToDelete + " will be removed from all events on the timeline. </font>";
+
+    var deleteButton = document.getElementById("deleteButton");
+    deleteButton.innerHTML = "Remove " + memberToDelete;
+
+    $('#confirmDelete').modal('show');
+
+    //Calls deleteMember function if user confirms the delete
+    document.getElementById("deleteButton").onclick=function(){deleteMember(pillId)};
+}
+
+
+
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
+    $('#confirmDelete').modal('hide');
+
     // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
     var members = flashTeamsJSON["members"];
