@@ -155,14 +155,10 @@ function renderMemberPopovers(members) {
         content +='</ul>'
         +'Member Color: <input type="text" class="full-spectrum" id="color_' + member_id + '"/>'
         +'<p><script type="text/javascript"> initializeColorPicker(' + newColor +'); </script></p>'
-<<<<<<< HEAD
+
         +'<p><button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
         +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button><br><br>'
-=======
-        +'<p><button class="btn btn-danger" type="button" onclick="deleteMember(' + member_id + ');">Delete</button>     '
-        +'<button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>     '
-        +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
->>>>>>> master
+
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
         + invitation_link
         + '</a>'
@@ -316,7 +312,7 @@ function deleteSkill(memberId, pillId, skillName) {
     }
 };
 
-<<<<<<< HEAD
+
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
     var indexOfJSON = getMemberJSONIndex(popId);
@@ -360,8 +356,7 @@ function confirmDeleteMember(pillId) {
 }
 
 
-=======
->>>>>>> master
+
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
     $('#confirmDelete').modal('hide');
