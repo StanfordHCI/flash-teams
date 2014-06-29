@@ -22,7 +22,7 @@ var fire_interval = 180; // change back to 180
 var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
 var increment = parseFloat(50)/parseFloat(numIntervals);
 var curr_x_standard = 0;
-var cursor = timeline_svg.select(".cursor");
+var cursor = timeline_svg.select(".cursor"); //Refers to the physical cursor
 var live_tasks = [];
 var remaining_tasks = [];
 var delayed_tasks = [];
@@ -34,13 +34,14 @@ var in_progress = false;
 var delayed_tasks_time = [];
 var dri_responded = [];
 var project_status_handler;
-var cursor_details;
+var cursor_details; //Stores the cursor's x position "finalX" and ? "numInt"
 var cursor_interval_id;
 var tracking_tasks_interval_id;
 
 var window_visibility_state = null;
 var window_visibility_change = null;
 
+//Takes time as input, finds the x coordinate for the cursor
 var getXCoordForTime = function(t){
     var numInt = parseInt(t / timeline_interval);
     var remainder = t % timeline_interval;
@@ -304,7 +305,7 @@ var flashTeamUpdated = function(){
 var poll = function(){
     //console.log("POLLING");
     return setInterval(function(){
-        console.log("MAKING POLL NOW...");
+        //console.log("MAKING POLL NOW...");
         var flash_team_id = $("#flash_team_id").val();
         var url = '/flash_teams/' + flash_team_id + '/get_status';
         $.ajax({
@@ -340,8 +341,6 @@ var loadStatus = function(id){
         loadedStatusJSON = data;
         //console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
- 
-    
     return JSON.parse(loadedStatusJSON);
 };
 
@@ -572,23 +571,22 @@ var computeTotalOffset = function(allRanges){
     return totalOffset;
 };
 
+//Takes the JSON and time and updates the cursor position
 var positionCursor = function(team, latest_time){
+    //Team hasn't started, initialize cursor to 0
     if(!team["startTime"]){
         cursor.attr("x1", 0);
         cursor.attr("x2", 0);
         curr_x_standard = 0;
         return;
     }
-
     var currTime = latest_time;
     var startTime = team["startTime"];
     var diff = currTime - startTime;
 
-    //console.log(startTime);
-    //console.log(currTime);
-    //console.log("diff in seconds: " + diff/1000);
-
     var cursor_details = getXCoordForTime(diff);
+
+    //Update x coordinate of the cursor
     var x = cursor_details["finalX"];
     cursor.attr("x1", x);
     cursor.attr("x2", x);
@@ -1112,7 +1110,8 @@ var getAllTasks = function(){
 var constructStatusObj = function(){
     var flash_team_id = $("#flash_team_id").val();
     flashTeamsJSON["id"] = flash_team_id;
-
+    flashTeamsJSON["title"] = document.getElementById("ft-name").innerHTML;
+   
     var localStatus = {};
 
     localStatus.live_tasks = live_tasks;

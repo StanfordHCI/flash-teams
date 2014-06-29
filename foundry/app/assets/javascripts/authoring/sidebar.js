@@ -10,7 +10,7 @@ var name;
 
 $('#messageInput').keydown(function(e){
     if (e.keyCode == 13) {
-        console.log("PRESSED RETURN KEY!");
+        //console.log("PRESSED RETURN KEY!");
         var text = $('#messageInput').val();
         var uniq_u=getParameterByName('uniq');
         
@@ -23,9 +23,6 @@ $('#messageInput').keydown(function(e){
     }
 });
 
-myDataRef.once('value', function(snapshot){
-    console.log(snapshot);
-})
 
 var lastMessage=0;
 var lastWriter;
@@ -46,6 +43,10 @@ function displayChatMessage(name, uniq, role, date, text) {
     //diff in minutes
     console.log("minutes ago: " + diff/(1000*60)); 
   /*  
+=======
+    //console.log("minutes ago: " + diff/(1000*60)); 
+    
+>>>>>>> master
     //notification text   
     //notification title
     var notif_title = name+': '+ text;
@@ -367,9 +368,9 @@ function init_statusBar(status_bar_timeline_interval){
         
     }
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-   console.log("last_end",last_end_x);
+   //console.log("last_end",last_end_x);
    project_duration=parseInt(last_end_x/50)*thirty_min;
-   console.log("project duration: ",project_duration);
+   //console.log("project duration: ",project_duration);
 
    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
@@ -423,10 +424,10 @@ function load_statusBar(status_bar_timeline_interval){
         
 
         // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-        console.log("last_end",last_end_x);
+        //console.log("last_end",last_end_x);
         var cursor_x = cursor.attr("x1");
         project_duration=parseInt((last_end_x)/50)*thirty_min;
-        console.log("project duration: ",project_duration);
+        //console.log("project duration: ",project_duration);
 
         num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
         project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
@@ -471,9 +472,9 @@ function load_statusBar(status_bar_timeline_interval){
     }
 
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-   console.log("last_end",last_end_x);
+   //console.log("last_end",last_end_x);
    project_duration=parseInt(last_end_x/50)*thirty_min;
-   console.log("project duration: ",project_duration);
+   //console.log("project duration: ",project_duration);
 
    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
