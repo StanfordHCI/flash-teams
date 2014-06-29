@@ -133,13 +133,15 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
+        
         renderChatbox();
-
+        
         //get user name and user role for the chat
         if(data == null){
             //console.log("RETURNING BEFORE LOAD"); 
             return; // status not set yet
         }
+
         loadedStatus = data;
 
         in_progress = loadedStatus.flash_team_in_progress;
@@ -156,7 +158,13 @@ $(document).ready(function(){
 			$("#flashTeamStartBtn").css('display','none'); //not sure if this is necessary since it's above 
 			$("#flashTeamEndBtn").css('display',''); //not sure if this is necessary since it's above 
             loadData(true);
-            renderMembersUser();
+             if(!isUser) {
+                    renderMembersRequester();
+                }
+             else{
+                    renderMembersUser();
+                }
+
             startTeam(true);
         } else {
             //console.log("flash team not in progress");
@@ -209,7 +217,7 @@ function listenForVisibilityChange(){
 
 // saves member object for current_user (undefined for author so we will set it to 'Author')
 var current_user;
-
+var showchatnotif;
 //finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
     var uniq_u=getParameterByName('uniq');
@@ -249,11 +257,24 @@ var renderChatbox = function(){
 
               // here there once existed a call to boldEvents
               trackUpcomingEvent();
-
             }
          }
         
        }
+
+
+    
+     // true if notifications should be shown
+       
+    if ((current_user == 'Author' && chat_role == 'Author') || (current_user.uniq == uniq)){
+        showchatnotif = false;
+    }
+    else{
+        showchatnotif = true;
+    }
+  
+
+
     });
 };
 
@@ -1112,6 +1133,7 @@ var updateStatus = function(flash_team_in_progress){
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
     } else {
+      //  alert(in_progress);
         localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
