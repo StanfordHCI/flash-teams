@@ -66,11 +66,12 @@ function editablePopoverObj(eventObj) {
         + '<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
         + '<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div></div>'
         + '<div class="event-table-row event-table-footer">' 
-        + '<button type="button" class="btn btn-danger" id="delete"'
-        	+' onclick="confirmDeleteEvent(' + groupNum +');">Delete</button>       ' 
+
         + '<button class="btn btn-success" type="button" id="save"'
         	+' onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>       '  
-        + '<button class="btn btn-default" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button>' 
+        + '<button type="button" class="btn btn-danger" id="delete"'
+            +' onclick="confirmDeleteEvent(' + groupNum +');">Delete</button>       ' 
+		+ '<a id="cancel" style="float: right; line-height: 20px; padding-top: 4px; padding-bottom: 4px; margin-top: 2px;" onclick="hidePopover(' + groupNum + ');">Cancel</a>'       
         + '</div>'
         + '</form></div>',
         container: $("#timeline-container"),
