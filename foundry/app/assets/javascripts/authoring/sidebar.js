@@ -2,7 +2,6 @@
 
 var myDataRef = new Firebase('https://foundry-ft.firebaseio.com/'+ flash_team_id +'/chats');
 
-
 var currentdate = new Date(); 
 
 var name;
@@ -23,17 +22,23 @@ $('#messageInput').keydown(function(e){
     }
 });
 
-myDataRef.once('value', function(snapshot){
+myDataRef.on('child_added', function(snapshot) {
+    var message = snapshot.val();
     console.log(snapshot);
-})
+    console.log(message);
+    console.log("MESSAGE NAME: " + message["name"]);
+
+    displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
+    
+    name = message.name;
+});
 
 var lastMessage=0;
 var lastWriter;
 
 function displayChatMessage(name, uniq, role, date, text) {
     
-    if(name == undefined ){
-       console.log("!!! chat name is undefined!")
+    if(name == undefined){
         return;
     }
     
@@ -45,7 +50,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     
     //diff in minutes
     console.log("minutes ago: " + diff/(1000*60)); 
-  /*  
+    
     //notification text   
     //notification title
     var notif_title = name+': '+ text;
@@ -53,7 +58,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     var notif_body = dateform;
     
     var showchatnotif; // true if notifications should be shown
-       
+        
     if ((current_user == 'Author' && role == 'Author') || (current_user.uniq == uniq)){
     	showchatnotif = false;
     }
@@ -67,7 +72,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     if (diff <= 50000 && showchatnotif == true){
 	    notifyMe(notif_title, notif_body, 'chat');
     }
-*/
+
 	//revise condition to include OR if timestamp of last message (e.g., lastDate) was over 10 minutes ago
     if(lastWriter!=name){
         lastMessage=(lastMessage+1)%2;
@@ -84,23 +89,6 @@ function displayChatMessage(name, uniq, role, date, text) {
     lastWriter=name;
     lastDate = message_date;
     $('#messageList')[0].scrollTop = $('#messageList')[0].scrollHeight;
-
-
-            //notification text   
-    //notification title
-    var notif_title = name+': '+ text;
-    //notification body
-    var notif_body = dateform;
-    
-
-    // checks if last notification was less than 5 seconds ago
-    // this is used to only create notifications for messages that were sent from the time you logged in and forward 
-    // (e.g., no notifications for messages in the past)
-    if (diff <= 50000 && showchatnotif == true){
-        notifyMe(notif_title, notif_body, 'chat');
-    }
-
-
 };
 
 
@@ -117,29 +105,6 @@ var userListRef = new Firebase('https://foundry-ft.firebaseio.com/' + flash_team
 
 // Generate a reference to a new location for my user with push.
 var myUserRef = userListRef.push();
-
-/*
-connectedRef.once('value', function(snapshot) {
-    var message = snapshot.val();
-    console.log(snapshot);
-    console.log(message);
-    console.log("MESSAGE NAME: " + message["name"]);
-
-    displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
-    
-    name = message.name;
-});*/
-
-myDataRef.on('child_added', function(snapshot) {
-    var message = snapshot.val();
-    console.log(snapshot);
-    console.log(message);
-    console.log("MESSAGE NAME: " + message["name"]);
-
-    displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
-    
-    name = message.name;
-});
 
 connectedRef.on('value', function(snap) {
     if (snap.val() === true) {

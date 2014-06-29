@@ -132,15 +132,13 @@ $(document).ready(function(){
         url: url,
         type: 'get'
     }).done(function(data){
-        
         renderChatbox();
-        
+
         //get user name and user role for the chat
         if(data == null){
             //console.log("RETURNING BEFORE LOAD"); 
             return; // status not set yet
         }
-
         loadedStatus = data;
 
         in_progress = loadedStatus.flash_team_in_progress;
@@ -216,7 +214,7 @@ function listenForVisibilityChange(){
 
 // saves member object for current_user (undefined for author so we will set it to 'Author')
 var current_user;
-var showchatnotif;
+
 //finds user name and sets current variable to user's index in array
 var renderChatbox = function(){
     var uniq_u=getParameterByName('uniq');
@@ -260,20 +258,6 @@ var renderChatbox = function(){
          }
         
        }
-
-
-    
-     // true if notifications should be shown
-       
-    if ((current_user == 'Author' && chat_role == 'Author') || (current_user.uniq == uniq)){
-        showchatnotif = false;
-    }
-    else{
-        showchatnotif = true;
-    }
-  
-
-
     });
 };
 
