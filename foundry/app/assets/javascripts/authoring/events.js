@@ -26,38 +26,37 @@ var dragged = false;
 
 //Called when the right dragbar of a task rectangle is dragged
 var drag_right = d3.behavior.drag()
-                .on("drag", rightResize)
-                .on("dragend", function(d){
-                    var ev = getEventFromId(d.groupNum);
-                    drawPopover(ev, true, false);
-                    updateStatus(false);
-                });
+    .on("drag", rightResize)
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
+        updateStatus(false);
+    });
 
 //Called when the left dragbar of a task rectangle is dragged
 var drag_left = d3.behavior.drag()
-                .on("drag", leftResize)
-                .on("dragend", function(d){
-                    var ev = getEventFromId(d.groupNum);
-                    drawPopover(ev, true, false);
-                    updateStatus(false);
-                });
+    .on("drag", leftResize)
+    .on("dragend", function(d){
+        var ev = getEventFromId(d.groupNum);
+        drawPopover(ev, true, false);
+        updateStatus(false);
+    });
 
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
-            .origin(Object)
-            .on("drag", dragEvent)
-            .on("dragend", function(d){
-                if(dragged){
-                    dragged = false;
-                    var ev = getEventFromId(d.groupNum);
-                    drawPopover(ev, true, false);
-                    updateStatus(false);
-                } else {
-                    // click
-                    console.log("CLICKED");
-                    eventMousedown(d.groupNum);
-                }
-            });
+    .origin(Object)
+    .on("drag", dragEvent)
+    .on("dragend", function(d){
+        if(dragged){
+            dragged = false;
+            var ev = getEventFromId(d.groupNum);
+            drawPopover(ev, true, false);
+            updateStatus(false);
+        } else {
+            // click
+            eventMousedown(d.groupNum);
+        }
+    });
 
 // leftResize: resize the rectangle by dragging the left handle
 function leftResize(d) {
@@ -169,8 +168,6 @@ function calcSnap(mouseX, mouseY) {
 
 // mousedown on timeline => creates new event and draws it
 function newEvent(point) {
-    
-
     // interactions
     if(DRAWING_HANDOFF==true || DRAWING_COLLAB==true) {
         alert("Please click on another event or the same event to cancel");
@@ -206,18 +203,16 @@ function createEvent(point) {
     
     // render event on timeline
     drawEvent(eventObj, true);
-    
-    console.log("yo5");
+
     // render event popover
     drawPopover(eventObj, true, true);
 
-    console.log("yo6");
     // save
     updateStatus(false);
 };
 
 function checkWithinTimelineBounds(snapPoint) {
-    return ((snapPoint[1] < 505) && (snapPoint[0] < 2396));
+    return ((snapPoint[1] < 505) && (snapPoint[0] < (SVG_WIDTH-150)));
 };
 
 function getStartTime(mouseX) {
@@ -529,18 +524,19 @@ function drawHandoffBtn(eventObj, firstTime) {
             .attr("y", function(d) {return d.y+y_offset})
             .on("click", startWriteHandoff);
 
-        $("#handoff_btn_" + groupNum).popover({
-            trigger: "click",
-            html: true,
-            class: "interactionPopover",
-            style: "font-size: 8px",
-            placement: "right",
-            content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
-            container: $("#timeline-container")
-        });
-
-        $("#handoff_btn_" + groupNum).popover("show");
-        $("#handoff_btn_" + groupNum).popover("hide");
+    /*$("#handoff_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a handoff. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
+    
+    $("#handoff_btn_" + groupNum).popover("show");
+    $("#handoff_btn_" + groupNum).popover("hide");*/
+    
     } else {
         task_g.selectAll(".handoff_btn")
             .attr("x", function(d) {return d.x + x_offset})
@@ -570,18 +566,19 @@ function drawCollabBtn(eventObj, firstTime) {
             .attr("y", function(d) {return d.y+y_offset})
             .on("click", startWriteCollaboration);
 
-        $("#collab_btn_" + groupNum).popover({
-            trigger: "click",
-            html: true,
-            class: "interactionPopover",
-            style: "font-size: 8px",
-            placement: "right",
-            content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
-            container: $("#timeline-container")
-        });
+    /*$("#collab_btn_" + groupNum).popover({
+        trigger: "click",
+        html: true,
+        class: "interactionPopover",
+        style: "font-size: 8px",
+        placement: "right",
+        content: "Click another event to draw a collaboration. <br>Click on this event to cancel.",
+        container: $("#timeline-container")
+    });
 
-        $("#collab_btn_" + groupNum).popover("show");
-        $("#collab_btn_" + groupNum).popover("hide");
+    $("#collab_btn_" + groupNum).popover("show");
+    $("#collab_btn_" + groupNum).popover("hide");*/
+    
     } else {
         task_g.selectAll(".collab_btn")
             .attr("x", function(d) {return d.x + x_offset})
@@ -601,7 +598,7 @@ function drawMemberLines(eventObj) {
     // figure out if first time or not for each member line
     for(var i=0;i<members.length;i++){
         var existingLine = task_g.selectAll("#event_" + groupNum + "_eventMemLine_" + (i+1));
-        console.log("EXISTING LINE", existingLine);
+        //console.log("EXISTING LINE", existingLine);
         var y_offset = 60 + (i*8); // unique for member lines
         if(existingLine[0].length == 0){ // first time
             var member = getMemberById(members[i]);
@@ -870,7 +867,7 @@ function deleteEvent(eventId){
 	var events = flashTeamsJSON["events"];
 		
 	events.splice(indexOfJSON, 1);
-    console.log("event deleted from json");
+    //console.log("event deleted from json");
     
     //stores the ids of all of the interactions to erase
     var intersToDel = [];
@@ -878,9 +875,8 @@ function deleteEvent(eventId){
     for (var i = 0; i < flashTeamsJSON["interactions"].length; i++) {
             var inter = flashTeamsJSON["interactions"][i];
             if (inter.event1 == eventId || inter.event2 == eventId) {
-                console.log("THERE IS A DELETION MATCH");
                 intersToDel.push(inter.id);
-                console.log("# of intersToDel: " + intersToDel.length);
+                //console.log("# of intersToDel: " + intersToDel.length);
             }
         }
       
@@ -892,7 +888,6 @@ function deleteEvent(eventId){
 
         // remove from timeline
     	deleteInteraction(intId);
-        console.log("interaction deleted");
     }
 
     removeTask(eventId);

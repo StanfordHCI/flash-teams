@@ -57,19 +57,19 @@ function displayChatMessage(name, uniq, role, date, text) {
     //notification body
     var notif_body = dateform;
     
-    var showchat; // true if notifications should be shown
+    var showchatnotif; // true if notifications should be shown
         
     if ((current_user == 'Author' && role == 'Author') || (current_user.uniq == uniq)){
-    	showchat = false;
+    	showchatnotif = false;
     }
     else{
-	    showchat = true;
+	    showchatnotif = true;
     }
     
     // checks if last notification was less than 5 seconds ago
     // this is used to only create notifications for messages that were sent from the time you logged in and forward 
     // (e.g., no notifications for messages in the past)
-    if (diff <= 50000 && showchat == true){
+    if (diff <= 50000 && showchatnotif == true){
 	    notifyMe(notif_title, notif_body, 'chat');
     }
 
@@ -124,7 +124,7 @@ connectedRef.on('value', function(snap) {
 		myUserRef.onDisconnect().remove();
 
 		// Set our initial online status.
-		setUserStatus("★ online");
+		setUserStatus("online ★");
       
     } else {
 
@@ -155,7 +155,7 @@ userListRef.on("child_added", function(snapshot) {
 	
 	$("<div/>")
 	  .attr("id", getMessageId(snapshot))
-	  .text(user.name + " is currently " + user.status)
+	  .text(user.name + " is " + user.status)
 	  .appendTo("#presenceDiv");
 });
 
@@ -169,28 +169,31 @@ userListRef.on("child_removed", function(snapshot) {
 userListRef.on("child_changed", function(snapshot) {
 	var user = snapshot.val();
 	$("#presenceDiv").children("#" + getMessageId(snapshot))
-	  .text(user.name + " is currently " + user.status);
+	  .text(user.name + " is " + user.status);
 });
   
 
 // Use idle/away/back events created by idle.js to update our status information.
 $(function() { 
 
+	// when user is inactive for 60 seconds
 	var awayCallback = function() {
-		setUserStatus("☄ away");
+		setUserStatus("away");
 	};
 	
 	var awayBackCallback = function() {
-		setUserStatus("★ online");
+		setUserStatus("online ★");
 	};
 	
+	//when user is looking at another tab
 	var hiddenCallback = function() {
 		//☆ idle
-		setUserStatus("not looking at page");
+		setUserStatus("idle ☆");
 	};
 	
 	var visibleCallback = function(){
-		setUserStatus("looking at page again")
+		//setUserStatus("active again");
+		setUserStatus("online ★");
 	};
 
 	var idle = new Idle({
@@ -209,7 +212,8 @@ $(function() {
 //var status_width=302; --> negar's
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
-.attr("width", SVG_WIDTH)
+/* .attr("width", SVG_WIDTH) */
+.attr("width", 300)
 .attr("height", 100);
 
 var statusText = project_status_svg.append("text").text("You currently have no tasks")

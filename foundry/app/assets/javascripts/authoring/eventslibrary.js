@@ -148,7 +148,7 @@ ev.preventDefault();
 
 /* Called when an Event div is being dragged. */
 function dragEvent(ev) {
-  console.log(ev);
+  //console.log(ev);
 ev.dataTransfer.setData('eventHash', ev.target.getAttribute('data-hash'));
 ev.dataTransfer.setData("Text",ev.target.id); //saves id of dragged Event div into 'data'
 document.getElementById("overlay").style.display = "block"; //turns overlay on
@@ -158,7 +158,7 @@ document.getElementById("overlay").style.display = "block"; //turns overlay on
 function drop(ev) {
 ev.preventDefault();
 
-console.log(ev);
+//console.log(ev);
 
 var targetHash = ev.dataTransfer.getData('eventHash');
 

@@ -1,4 +1,4 @@
-<div style="background: white; padding: 10px;">
+<div style="padding: 5px 20px;">
 <meta charset="utf-8">
 <h1>Flash Teams Library</h1>
  
@@ -19,7 +19,7 @@
   <% @flash_teams.each do |flash_team| %>
     <tr>
       <td><%= flash_team.id %></td>
-      <td><%= flash_team.name %></td>
+      <td><a href="#" class="name" data-type="text" data-pk="<%= flash_team.id %>" data-url="/flash_teams/rename" data-title="Enter name"><%= flash_team.name %></a></td>
       <!-- <td><%= flash_team.name %></td> -->
       <!-- <td><%= link_to 'Show', flash_team %></td> -->
       <td><%= link_to 'Edit', edit_flash_team_path(flash_team) %></td>
@@ -33,3 +33,11 @@
 
   <%= javascript_include_tag "/assets/jquery" %>
   <%= javascript_include_tag "/assets/jquery_ujs" %>
+  <%= javascript_include_tag "bootstrap/bootstrap.min" %>
+  <%= javascript_include_tag "bootstrap-editable.min" %>
+
+<script>
+  $(document).ready(function() {
+    $('.name').editable();
+  });
+</script>

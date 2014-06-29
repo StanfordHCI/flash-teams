@@ -1,3 +1,15 @@
-<h3>Timeline</h3>
+<div class="row-fluid" id="timeline-header">
+	<div class="span11">
+		<h5 style="padding-bottom: 5px;">TIMELINE</h5>
+	</div>
+
+	<div class="span1">
+	
+		<% if @in_author_view %>
+		<input type="button" class="btn btn-primary ft-buttons" id="addTimeBtn" value="Add Time" onclick="addTime()"/>
+		<% end %>
+	</div>
+
+</div>
 
 <div class="overlay" id="overlay" ondrop="drop(event)" ondragover="allowDrop(event)"> </div>
