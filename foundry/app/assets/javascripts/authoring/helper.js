@@ -110,6 +110,7 @@ function findTotalHours() {
     return totalHours + 2; //THE 2 IS ARBITRARY FOR PADDING
 }
 
+
 //CALL IN CONSOLE TO HIDE THE CHAT BOX AND PROJECT STATUS
 function hideAwareness() {
     var projCont = document.getElementById("project-status-container");

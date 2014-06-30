@@ -90,7 +90,24 @@ $("#flashTeamStartBtn").click(function(){
     googleDriveLink();
 });
 
+
+//Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
+    var bodyText = document.getElementById("confirmEndText");
+    if (curr_status_width < 100) {
+        //console.log("ENDED TEAM EARLY");
+        var progressRemaining = Math.round(100 - curr_status_width);
+        bodyText.innerHTML = flashTeamsJSON["title"] + " is still in progress!  Are you sure you want to end " + flashTeamsJSON["title"] + " with " + progressRemaining + "% of progress remaining?";
+    } else {
+        bodyText.innerHTML = "Are you sure you want to end [team name]?";
+    }
+    $('#confirmEnd').modal('show');
+});
+
+
+//If user confirms they want to end the team, ends the flash team
+$("#confirmEndTeamBtn").click(function() {
+    $('#confirmEnd').modal('hide');
     updateStatus(false);
     stopCursor();
     stopProjectStatus();
