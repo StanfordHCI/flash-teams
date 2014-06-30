@@ -66,12 +66,14 @@ timeline_svg.selectAll("line.y")
     .attr("y2", y)
     .style("stroke", "#d3d1d1");
 
+//Remove existing X-axis labels
 var numMins = -30;
 
 //Add X Axis Labels
-timeline_svg.selectAll(".rule")
+timeline_svg.selectAll("text.timelabel")
     .data(x.ticks(XTicks)) 
     .enter().append("text")
+    .attr("class", "timelabel")
     .attr("x", x)
     .attr("y", 15)
     .attr("dy", -3)
@@ -149,6 +151,7 @@ function addTime() {
 //Should have updated the variables: TIMELINE_HOURS, TOTAL_HOUR_PIXELS, SVG_WIDTH, XTicks
 //Redraws timeline based on those numbers
 function redrawTimeline() {
+    //debugger;
     //Recalculate 'x' based on added hours
     var x = d3.scale.linear()
     .domain([0, TOTAL_HOUR_PIXELS])
@@ -202,14 +205,15 @@ function redrawTimeline() {
     //Redraw Add Time Button
     document.getElementById("timeline-header").style.width = SVG_WIDTH - 50 + "px";
     
-    //Remove existing X-axis labels -- can't get this to work
-    //timeline_svg.selectAll(".rule").remove();
+    //Remove existing X-axis labels
+    timeline_svg.selectAll("text.timelabel").remove();
     numMins = -30;
 
     //Redraw X-axis labels
-    timeline_svg.selectAll(".rule")
+    timeline_svg.selectAll("text.timelabel")
         .data(x.ticks(XTicks))
         .enter().append("text")
+        .attr("class", "timelabel")
         .attr("x", x)
         .attr("y", 15)
         .attr("dy", -3)
@@ -235,6 +239,26 @@ function redrawTimeline() {
             newEvent(point);
         }); 
 
+    //Redraw the cursor
+    timeline_svg.append("line")
+        .attr("y1", 15)
+        .attr("y2", SVG_HEIGHT-50)
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("class", "cursor")
+        .style("stroke", "red")
+        .style("stroke-width", "2")
+
+    //Get the latest time and team status, update x position of cursor
+    cursor = timeline_svg.select(".cursor");
+    var latest_time;
+    if (in_progress){
+        latest_time = (new Date).getTime();
+    } else {
+        latest_time = loadedStatus.latest_time;
+    }
+    cursor_details = positionCursor(flashTeamsJSON, latest_time);
+
     //move all existing events back on top of timeline
     $(timeline_svg.selectAll('g')).each(function() {
         $('.chart').append(this);
@@ -242,9 +266,10 @@ function redrawTimeline() {
 }
 
 //VCom Calculates how many hours to add when user expands timeline manually 
+//Increases by 1/3 each time (130% original length)
 function calcAddHours(currentHours) {
     TIMELINE_HOURS = currentHours + Math.floor(currentHours/3);
     TOTAL_HOUR_PIXELS = TIMELINE_HOURS * HOUR_WIDTH;
-    SVG_WIDTH = TIMELINE_HOURS * 100 + 50;
+    SVG_WIDTH = TIMELINE_HOURS * HOUR_WIDTH + 50;
     XTicks = TIMELINE_HOURS * 2;
 }

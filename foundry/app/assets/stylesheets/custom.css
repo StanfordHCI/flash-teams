@@ -1,7 +1,20 @@
+
 #confirmEnd {
 	color: black;
 	width: 350px;
 }
+
+
+/* sets width of delete member confirmation alert */
+#confirmDeleteMember {
+	width: 350px;
+}
+
+/* sets width of delete button on delete member confirmation alert 
+#deleteButton {
+	width: 100%;
+}*/
+
 
 #memberPills li {
     float: none!important;

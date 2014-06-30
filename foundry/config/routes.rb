@@ -83,6 +83,7 @@ Foundry::Application.routes.draw do
   resources :members do
     member do
       get :invite
+      get :reInvite
       get :invited
       get :confirm_email
       post :register
