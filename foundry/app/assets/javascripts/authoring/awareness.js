@@ -92,12 +92,13 @@ $("#flashTeamStartBtn").click(function(){
 //Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
     var bodyText = document.getElementById("confirmEndText");
-    if (curr_status_width < 100) {
-        //console.log("ENDED TEAM EARLY");
-        var progressRemaining = Math.round(100 - curr_status_width);
-        bodyText.innerHTML = flashTeamsJSON["title"] + " is still in progress!  Are you sure you want to end " + flashTeamsJSON["title"] + " with " + progressRemaining + "% of progress remaining?";
+    updateStatus();
+    if ((live_tasks.length == 0) && (remaining_tasks.length == 0) && (delayed_tasks.length == 0)) {
+        bodyText.innerHTML = "Are you sure you want to end " + flashTeamsJSON["title"] + "?";
     } else {
-        bodyText.innerHTML = "Are you sure you want to end [team name]?";
+        //console.log("ENDED TEAM EARLY");
+        //var progressRemaining = Math.round(100 - curr_status_width);
+        bodyText.innerHTML = flashTeamsJSON["title"] + " is still in progress!  Are you sure you want to end the team?";
     }
     $('#confirmEnd').modal('show');
 });
