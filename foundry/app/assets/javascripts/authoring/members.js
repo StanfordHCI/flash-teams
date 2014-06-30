@@ -158,6 +158,7 @@ function renderMemberPopovers(members) {
 
          +'<p><button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>      '
          +'<button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
+         +'<button class="btn btn-default" type="button" onclick="reInviteMember(' + member_id + '); updateStatus();">Replace</button>     '
          +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
 
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
@@ -434,6 +435,31 @@ function inviteMember(pillId) {
 
         renderMemberPopovers(members);
         updateStatus(false);
+    });
+};
+
+function reInviteMember(pillId) {
+
+    var flash_team_id = $("#flash_team_id").val();
+    var url = '/members/' + flash_team_id + '/reInvite';
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var uniq;
+  
+    var data = {uniq: flashTeamsJSON["members"][indexOfJSON].uniq };
+    $.get(url, data, function(data){
+        //console.log("INVITED MEMBER, NOT RERENDERING MEMBER POPOVER");
+        var members = flashTeamsJSON["members"];
+        members[indexOfJSON].uniq = data["uniq"];
+        members[indexOfJSON].invitation_link = data["url"];
+        flashTeamsJSON["members"] = members;
+        //members[indexOfJSON].category1 = "";
+        //members[indexOfJSON].category2 = "";
+        //members[indexOfJSON].skills = [];
+
+
+
+        renderMemberPopovers(members);
+        updateStatus();
     });
 };
 
