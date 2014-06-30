@@ -860,9 +860,35 @@ function removeAllMemberLines(eventObj){
     }
 };
 
+//shows an alert asking the user to confirm that they want to delete an event
+function confirmDeleteEvent(eventId) {
+
+    var label = document.getElementById("confirmDeleteLabel");
+    label.innerHTML = "Delete Event?";
+
+    var indexOfJSON = getEventJSONIndex(eventId);
+    var events = flashTeamsJSON["events"];
+    var eventToDelete = events[indexOfJSON];
+
+    var alertText = document.getElementById("confirmDeleteText");
+    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + " ?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
+
+    var deleteButton = document.getElementById("deleteButton");
+    deleteButton.innerHTML = "Delete " + eventToDelete["title"];
+
+    $('#confirmDelete').modal('show');
+
+    //Calls deleteEvent function if user confirms the delete
+    document.getElementById("deleteButton").onclick=function(){deleteEvent(eventId)};
+}
+
+
 // first updates the event object array and interactions array
 // then, calls removeTask to remove the task from the timeline
 function deleteEvent(eventId){
+
+    $('#confirmDelete').modal('hide');
+
 	var indexOfJSON = getEventJSONIndex(eventId);
 	var events = flashTeamsJSON["events"];
 		

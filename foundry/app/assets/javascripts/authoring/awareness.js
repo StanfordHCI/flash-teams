@@ -5,9 +5,6 @@ var fire_interval = 180; // change back to 180
 var numIntervals = parseFloat(timeline_interval)/parseFloat(fire_interval);
 var increment = parseFloat(50)/parseFloat(numIntervals);
 var curr_x_standard = 0;
-var cursor = null;
-var cursor_interval_id = null;
-var cursor_interval_live = false;
 var live_tasks = [];
 var remaining_tasks = [];
 var delayed_tasks = [];
@@ -19,6 +16,9 @@ var in_progress = false;
 var delayed_tasks_time = [];
 var dri_responded = [];
 var project_status_handler;
+var cursor = null;
+var cursor_interval_id = null;
+var cursor_interval_live = false;
 var cursor_details;
 var tracking_tasks_interval_id;
 var user_poll = false;
@@ -176,6 +176,10 @@ function renderEverything(firstTime) {
             $("#flashTeamStartBtn").css('display','none'); //not sure if this is necessary since it's above 
             $("#flashTeamEndBtn").css('display',''); //not sure if this is necessary since it's above 
             loadData();
+            if(!isUser)
+                renderMembersRequester();
+            else
+                renderMembersUser();
             renderMembersUser();
             startTeam(firstTime);
         } else {
@@ -269,7 +273,6 @@ var renderChatbox = function(){
 
               // here there once existed a call to boldEvents
               trackUpcomingEvent();
-
             }
          }
         
@@ -322,7 +325,7 @@ var flashTeamUpdated = function(){
 var poll = function(){
     //console.log("POLLING");
     return setInterval(function(){
-        console.log("MAKING POLL NOW...");
+        //console.log("MAKING POLL NOW...");
         var flash_team_id = $("#flash_team_id").val();
         var url = '/flash_teams/' + flash_team_id + '/get_status';
         $.ajax({
@@ -368,8 +371,6 @@ var loadStatus = function(id){
         loadedStatusJSON = data;
         //console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
- 
-    
     return JSON.parse(loadedStatusJSON);
 };
 
@@ -628,7 +629,9 @@ var computeTotalOffset = function(allRanges){
     return totalOffset;
 };
 
+//Takes the JSON and time and updates the cursor position
 var positionCursor = function(team, latest_time){
+    //Team hasn't started, initialize cursor to 0
     if(!team["startTime"]){
         cursor.attr("x1", 0);
         cursor.attr("x2", 0);
@@ -638,7 +641,7 @@ var positionCursor = function(team, latest_time){
 
     cursor.transition().duration(0);
     clearInterval(cursor_interval_id);
-
+    
     var currTime = latest_time;
     var startTime = team["startTime"];
     var diff = currTime - startTime;
@@ -1189,7 +1192,8 @@ var getAllTasks = function(){
 var constructStatusObj = function(){
     var flash_team_id = $("#flash_team_id").val();
     flashTeamsJSON["id"] = flash_team_id;
-
+    flashTeamsJSON["title"] = document.getElementById("ft-name").innerHTML;
+   
     var localStatus = {};
 
     localStatus.live_tasks = live_tasks;
@@ -1211,6 +1215,7 @@ var updateStatus = function(flash_team_in_progress){
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
     } else {
+      //  alert(in_progress);
         localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
