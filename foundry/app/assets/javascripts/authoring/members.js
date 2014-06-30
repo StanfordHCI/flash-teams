@@ -59,9 +59,7 @@ function setCurrentMember() {
         //console.log(flash_team_members[0].uniq);
         for(var i=0;i<flash_team_members.length;i++){            
             if (flash_team_members[i].uniq == uniq){
-                //console.log("uniq1: " + flash_team_members[i].uniq);
-                //console.log("uniq2: " + uniq);
-                current = i;
+                current = flash_team_members[i].id;
                 isUser = true;
             }
         }
@@ -601,4 +599,3 @@ function addMemAuto() {
         });
     })
 };
-

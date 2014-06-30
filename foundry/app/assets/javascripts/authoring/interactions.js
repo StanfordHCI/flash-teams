@@ -165,7 +165,8 @@ function handoffStart(firstEvent){
     return x1;
 }
 
-//Redraw the position of the interaction line
+// Draw a handoff for the first time
+// Don't call this directly. Call 'drawEachHandoff' in events.js instead.
 function drawHandoff(handoffData) {
     var task1Id = handoffData["event1"];
     var task2Id = handoffData["event2"];
@@ -355,7 +356,7 @@ function deleteInteraction(intId) {
     //var indexOfJSON = getIntJSONIndex(intId);
     //flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
 
-    console.log("REMOVING INTERACTION ID: " + intId);
+    //console.log("REMOVING INTERACTION ID: " + intId);
 
     //Delete Rectangle
     $("#interaction_" + intId).remove();
