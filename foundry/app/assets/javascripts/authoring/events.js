@@ -877,6 +877,7 @@ function confirmDeleteEvent(eventId) {
     deleteButton.innerHTML = "Delete " + eventToDelete["title"];
 
     $('#confirmDelete').modal('show');
+    
 
     //Calls deleteEvent function if user confirms the delete
     document.getElementById("deleteButton").onclick=function(){deleteEvent(eventId)};
