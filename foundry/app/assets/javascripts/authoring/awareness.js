@@ -90,7 +90,25 @@ $("#flashTeamStartBtn").click(function(){
     googleDriveLink();
 });
 
+
+//Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
+    var bodyText = document.getElementById("confirmEndText");
+    updateStatus();
+    if ((live_tasks.length == 0) && (remaining_tasks.length == 0) && (delayed_tasks.length == 0)) {
+        bodyText.innerHTML = "Are you sure you want to end " + flashTeamsJSON["title"] + "?";
+    } else {
+        //console.log("ENDED TEAM EARLY");
+        //var progressRemaining = Math.round(100 - curr_status_width);
+        bodyText.innerHTML = flashTeamsJSON["title"] + " is still in progress!  Are you sure you want to end the team?";
+    }
+    $('#confirmEnd').modal('show');
+});
+
+
+//If user confirms they want to end the team, ends the flash team
+$("#confirmEndTeamBtn").click(function() {
+    $('#confirmEnd').modal('hide');
     updateStatus(false);
     stopCursor();
     stopProjectStatus();

@@ -23,6 +23,9 @@
 				<input type="button" class="btn btn-success" id="flashTeamStartBtn" value="Start Team"/>
 		        <input type="button" class="btn btn-danger" id="flashTeamEndBtn" value="End Team" style="display: none"/>
 	     </div>
+
+	     <!-- Render partial with end team confirmation alert -->
+	     <%= render :partial => "confirm_end" %>  
      </div>
 
      	<!-- render partial with confirm delete member alert --> 
