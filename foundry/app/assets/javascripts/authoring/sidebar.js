@@ -232,7 +232,7 @@ var project_duration=1440000;
 var status_bar_timeline_interval=1000;  //TODO back to 10 secs //start moving each second for the width of project_status_interval_width.
 var num_intervals;                      //=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
 var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(num_intervals);
-var thirty_min=10000; //TODO back to 1800000
+var thirty_min= 1800000; //TODO normal speed timer is 1800000; fast timer is 10000
 var first_move_status=1;
 
 // var gdrive_link = project_status_svg.append("text")
