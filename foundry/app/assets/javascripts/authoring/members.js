@@ -347,14 +347,14 @@ function confirmDeleteMember(pillId) {
                 + memberToDelete + " will be removed from all events on the timeline. </font>";
 
     var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Remove " + memberToDelete;
+    deleteButton.innerHTML = "Remove member";
 
     $('#confirmDelete').modal('show');
 
     //Calls deleteMember function if user confirms the delete
     document.getElementById("deleteButton").onclick=function(){deleteMember(pillId)};
-}
 
+}
 
 
 //Delete team member from team list, JSON, diagram, and events
@@ -395,6 +395,7 @@ function deleteMember(pillId) {
     drawAllPopovers();
 
     updateStatus(false);
+
 };
 
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere

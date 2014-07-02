@@ -93,9 +93,8 @@ $("#flashTeamStartBtn").click(function(){
 
 $('#confirmEnd').keypress(function(e){
 if(e.which == 13) {
-    console.log("PRESSED ENTER KEY ON CONFIRM END TEAM POPUP");
+    //console.log("PRESSED ENTER KEY ON CONFIRM END TEAM POPUP");
     endTeam();
-
  }
 });
 
