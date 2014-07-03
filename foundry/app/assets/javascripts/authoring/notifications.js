@@ -1,16 +1,14 @@
  var last_notification = null;
 
 function notifyMe(notif_title, notif_body, notif_tag) {
-   
   // Let's check if the browser supports notifications
   if (!("Notification" in window)) {
     alert("This browser does not support desktop notification");
   }
   
   // Let's check if the user is okay to get some notification
-  else if (Notification.permission === "granted") {
+  else if (Notification.permission === "granted" || Notification.permission === "default") {
     // If it's okay let's create a notification
-    
 	showNotif(notif_title, notif_body, notif_tag);
   }
 
@@ -39,7 +37,6 @@ function notifyMe(notif_title, notif_body, notif_tag) {
 }
 
 function showNotif(notif_title, notif_body, notif_tag){
-	
 	closeNotif(last_notification); //close any notifications that might exist from previous sessions
 	
 	var notification = new Notification(notif_title, {body: notif_body, tag: notif_tag});
