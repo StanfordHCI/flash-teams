@@ -15,6 +15,10 @@ function renderProjectOverview(){
 
 function showProjectOverview(){
 	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if(project_overview === undefined){
+		project_overview = "You have not entered an overview of the project yet.";
+	}
 		
 	$('#projectOverviewEditLink').show();
 	$("#projectOverviewEditLink").html('<a onclick="editProjectOverview()" style="font-weight: normal;">Edit</a>');
