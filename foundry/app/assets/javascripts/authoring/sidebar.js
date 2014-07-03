@@ -23,7 +23,7 @@ $('#messageInput').keydown(function(e){
 });
 
 //load all chats that were sent before page was reloaded
-myDataRef.once('value', function(snapshot) {
+/*myDataRef.once('value', function(snapshot) {
     var message = snapshot.val();
     
 	if(message != null){
@@ -31,9 +31,9 @@ myDataRef.once('value', function(snapshot) {
     
 		 name = message.name;
 	}
-});
+});*/
 
-myDataRef.on('child_added', function(snapshot) {
+/*myDataRef.on('child_added', function(snapshot) {
     var message = snapshot.val();
     //console.log(snapshot);
     //console.log(message);
@@ -43,7 +43,7 @@ myDataRef.on('child_added', function(snapshot) {
     
     name = message.name;
 });
-
+*/
 var lastMessage=0;
 var lastWriter;
 
