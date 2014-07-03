@@ -1,3 +1,32 @@
+/***project overview***/
+
+function renderProjectOverview(){
+	
+	//console.log("render project overview is being called");
+	
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if (project_overview != undefined){
+		$('#projectOverviewInput').html(project_overview);
+		//console.log($('#projectOverviewInput').val());
+		console.log("project_overview: " + project_overview);
+		//console.log("project overview input value: " + ("#projectOverviewInput").val());
+	}
+}
+
+function saveProjectOverview(){
+	
+	// retrieve project overview from form
+    var project_overview_input = $("#projectOverviewInput").val();
+    if (project_overview_input === "") {
+        alert("Please enter a project overview.");
+        return;
+    }
+    
+    flashTeamsJSON["projectoverview"] = project_overview_input;
+    //alert(flashTeamsJSON["projectoverview"]);
+}
+
 /***chat****/
 
 var myDataRef = new Firebase('https://foundry-ft.firebaseio.com/'+ flash_team_id +'/chats');

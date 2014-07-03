@@ -158,8 +158,7 @@ function renderEverything(firstTime) {
         // !user_poll means a poll wasn't the one the generated this call to renderEverything
         //if(firstTime && !user_poll) // TODO: find better way to capture the case of user_poll
         if(firstTime){
-            renderChatbox();
-            
+            renderChatbox();            
         }
         //get user name and user role for the chat
         if(data == null){
@@ -175,6 +174,8 @@ function renderEverything(firstTime) {
         if(firstTime) {
             setCurrentMember();
             initializeTimelineDuration();
+            renderProjectOverview(); //note: not sure if this goes here, depends on who sees the project overview (e.g., user and/or requester)
+
         }
 
         // is this the user, and has he/she loaded the page

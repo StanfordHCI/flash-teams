@@ -125,6 +125,10 @@
 	height: 385px;
 }
 
+#project-overview-container{
+	padding-bottom: 10px;
+}
+
 /*NOTE/QUESTION: should this be with the 
 rest of the event-block style information
 in flash_teams.css.scss? */
