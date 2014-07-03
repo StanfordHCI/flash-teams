@@ -157,9 +157,10 @@ function renderEverything(firstTime) {
         // before the team starts)
         // !user_poll means a poll wasn't the one the generated this call to renderEverything
         //if(firstTime && !user_poll) // TODO: find better way to capture the case of user_poll
-        if(firstTime)
+        if(firstTime){
             renderChatbox();
-        
+            
+        }
         //get user name and user role for the chat
         if(data == null){
             //console.log("RETURNING BEFORE LOAD"); 
@@ -295,6 +296,19 @@ var renderChatbox = function(){
          }
         
        }
+
+       myDataRef.on('child_added', function(snapshot) {
+                var message = snapshot.val();
+                //console.log(snapshot);
+                //console.log(message);
+                //console.log("MESSAGE NAME: " + message["name"]);
+
+                displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
+                
+                name = message.name;
+            });
+
+       
     });
 };
 
