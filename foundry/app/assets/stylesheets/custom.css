@@ -129,6 +129,16 @@
 	padding-bottom: 10px;
 }
 
+#projectOverviewInput{
+	overflow: auto; 
+  overflow-y: auto;
+  word-wrap:break-word;
+  width: 96.5%;
+  resize:none;
+  padding:5px;
+  border:solid 1px #c3c3c3;
+}
+
 /*NOTE/QUESTION: should this be with the 
 rest of the event-block style information
 in flash_teams.css.scss? */

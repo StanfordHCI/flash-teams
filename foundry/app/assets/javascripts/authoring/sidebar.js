@@ -4,9 +4,39 @@ function renderProjectOverview(){
 		
 	var project_overview = flashTeamsJSON["projectoverview"];
 	
-	if (project_overview != undefined){
-		$('#projectOverviewInput').html(project_overview);
-	}
+	console.log(flashTeamsJSON["projectoverview"]);
+	
+	console.log("renderProjectOverview is being called");
+
+
+	showProjectOverview();
+	//editProjectOverview();
+}
+
+function showProjectOverview(){
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	//$("#projectOverviewHeader").append('<span class="span1" style="font-weight: normal;"><a onclick="editProjectOverview()">Edit</a></span>');
+	
+	
+	
+	var projectOverviewContent = '<p>' + project_overview + '</p>';	
+	
+	$('#projectOverview').html(projectOverviewContent);
+}
+
+function editProjectOverview(){
+
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	
+	var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
+				+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
+				+ '<button class="btn btn-default" type="button">Cancel</button>'
+				+ '<button class="btn btn-success" type="button" onclick="saveProjectOverview()" style="float: right;">Save</button>'
+				+'</form>';
+	$('#projectOverview').html(projectOverviewForm);
+		
 }
 
 function saveProjectOverview(){
@@ -22,6 +52,12 @@ function saveProjectOverview(){
 	*/
     
     flashTeamsJSON["projectoverview"] = project_overview_input;
+    
+    console.log("saved projectoverview: " + flashTeamsJSON["projectoverview"]);
+    
+    updateStatus(false);
+    
+    showProjectOverview();
 }
 
 /***chat****/
