@@ -68,7 +68,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     //notification body
     var notif_body = dateform;
     
-    var showchatnotif; // true if notifications should be shown
+    var showchatnotif = false; // true if notifications should be shown
         
     if ((current_user == 'Author' && role == 'Author') || (current_user.uniq == uniq)){
     	showchatnotif = false;
@@ -81,6 +81,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     // this is used to only create notifications for messages that were sent from the time you logged in and forward 
     // (e.g., no notifications for messages in the past)
     if (diff <= 50000 && showchatnotif == true){
+        playSound("/assets/notify");
 	    notifyMe(notif_title, notif_body, 'chat');
     }
 
