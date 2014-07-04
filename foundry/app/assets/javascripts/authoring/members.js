@@ -258,6 +258,12 @@ function addMember() {
         return;
     }
 
+    //Close all open popovers
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var idNum = flashTeamsJSON["members"][i].id;
+        $("#mPill_"+idNum).popover('hide');
+    }
+
     // clear input
     $("#addMemberInput").val(this.placeholder);
 
