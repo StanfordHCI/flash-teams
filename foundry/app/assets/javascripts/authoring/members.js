@@ -3,7 +3,7 @@
  *
  */
 
- var pillCounter = undefined;
+ var memberCounter = undefined;
  var colorToChange = "#ff0000";
  var current = undefined;
  var isUser = false;
@@ -242,12 +242,12 @@ function renderDiagram(members) {
 };
 
 function newMemberObject(memberName) {
-    if (pillCounter == undefined) {
-        pillCounter = initializeMemberCounter();
+    if (memberCounter == undefined) {
+        memberCounter = initializeMemberCounter();
     }
-    pillCounter++;
+    memberCounter++;
     var color = colorBox.grabColor();
-    return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
+    return {"role":memberName, "id": memberCounter, "color":color, "skills":[], "category1":"", "category2":""};
 };
 
 function addMember() {
@@ -256,6 +256,12 @@ function addMember() {
     if (member_name === "") {
         alert("Please enter a member role.");
         return;
+    }
+
+    //Close all open popovers
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var idNum = flashTeamsJSON["members"][i].id;
+        $("#mPill_"+idNum).popover('hide');
     }
 
     // clear input
