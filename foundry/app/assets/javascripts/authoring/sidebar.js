@@ -22,7 +22,18 @@ $('#messageInput').keydown(function(e){
     }
 });
 
-myDataRef.on('child_added', function(snapshot) {
+//load all chats that were sent before page was reloaded
+/*myDataRef.once('value', function(snapshot) {
+    var message = snapshot.val();
+    
+	if(message != null){
+		 displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
+    
+		 name = message.name;
+	}
+});*/
+
+/*myDataRef.on('child_added', function(snapshot) {
     var message = snapshot.val();
     //console.log(snapshot);
     //console.log(message);
@@ -32,7 +43,7 @@ myDataRef.on('child_added', function(snapshot) {
     
     name = message.name;
 });
-
+*/
 var lastMessage=0;
 var lastWriter;
 
