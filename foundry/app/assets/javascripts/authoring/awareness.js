@@ -91,6 +91,23 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 
+$('#confirmEnd').keypress(function(e){
+if(e.which == 13) {
+    //console.log("PRESSED ENTER KEY ON CONFIRM END TEAM POPUP");
+    endTeam();
+ }
+});
+
+function endTeam() {
+    $('#confirmEnd').modal('hide');
+    updateStatus(false);
+    stopCursor();
+    stopProjectStatus();
+    stopPolling();
+    stopTrackingTasks();
+    $("#flashTeamEndBtn").attr("disabled", "disabled");
+}
+
 //Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
     var bodyText = document.getElementById("confirmEndText");
@@ -108,13 +125,7 @@ $("#flashTeamEndBtn").click(function(){
 
 //If user confirms they want to end the team, ends the flash team
 $("#confirmEndTeamBtn").click(function() {
-    $('#confirmEnd').modal('hide');
-    updateStatus(false);
-    stopCursor();
-    stopProjectStatus();
-    stopPolling();
-    stopTrackingTasks();
-    $("#flashTeamEndBtn").attr("disabled", "disabled");
+    endTeam();
 });
 
 function stopPolling() {

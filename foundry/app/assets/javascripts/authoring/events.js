@@ -874,9 +874,10 @@ function confirmDeleteEvent(eventId) {
     alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + " ?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
 
     var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Delete " + eventToDelete["title"];
+    deleteButton.innerHTML = "Delete event";
 
     $('#confirmDelete').modal('show');
+    
 
     //Calls deleteEvent function if user confirms the delete
     document.getElementById("deleteButton").onclick=function(){deleteEvent(eventId)};

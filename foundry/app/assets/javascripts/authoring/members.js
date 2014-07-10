@@ -156,7 +156,7 @@ function renderMemberPopovers(members) {
 
          +'<p><button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>      '
          +'<button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
-         +'<button class="btn btn-default" type="button" onclick="reInviteMember(' + member_id + '); updateStatus();">Replace</button>     '
+         +'<button class="btn btn-default" type="button" onclick="confirmReplaceMember(' + member_id + '); updateStatus();">Replace</button>     '
          +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
 
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
@@ -338,7 +338,6 @@ function saveMemberInfo(popId) {
 };
 
 
-
 //Shows an alert asking to confirm delete member role
 function confirmDeleteMember(pillId) {
     var indexOfJSON = getMemberJSONIndex(pillId);
@@ -353,14 +352,14 @@ function confirmDeleteMember(pillId) {
                 + memberToDelete + " will be removed from all events on the timeline. </font>";
 
     var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Remove " + memberToDelete;
+    deleteButton.innerHTML = "Remove member";
 
     $('#confirmDelete').modal('show');
 
     //Calls deleteMember function if user confirms the delete
     document.getElementById("deleteButton").onclick=function(){deleteMember(pillId)};
-}
 
+}
 
 
 //Delete team member from team list, JSON, diagram, and events
@@ -401,6 +400,7 @@ function deleteMember(pillId) {
     drawAllPopovers();
 
     updateStatus(false);
+
 };
 
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
@@ -443,6 +443,7 @@ function inviteMember(pillId) {
 };
 
 function reInviteMember(pillId) {
+    $('#confirmDelete').modal('hide');
 
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/reInvite';
@@ -466,6 +467,28 @@ function reInviteMember(pillId) {
         updateStatus();
     });
 };
+
+function confirmReplaceMember(pillId) {
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var members = flashTeamsJSON["members"];
+    var memberToReplace = members[indexOfJSON].role;
+
+    var label = document.getElementById("confirmDeleteLabel");
+    label.innerHTML = "Replace Member?";
+
+    var alertText = document.getElementById("confirmDeleteText");
+    alertText.innerHTML = "<b>Are you sure you want to replace " + memberToReplace + "? </b><br><font size = '2'>  The current " 
+                + memberToReplace + " will no longer have access to " + flashTeamsJSON["title"] + " and you will need to hire a new " + memberToReplace + ".</font>";
+
+    var deleteButton = document.getElementById("deleteButton");
+    deleteButton.innerHTML = "Replace member";
+
+    $('#confirmDelete').modal('show');
+
+    //Calls reInviteMember function if user confirms the replace
+    document.getElementById("deleteButton").onclick=function(){reInviteMember(pillId)};
+
+}
 
 function renderMemberPillColor(memberId) {
     var indexOfJSON = getMemberJSONIndex(memberId);
