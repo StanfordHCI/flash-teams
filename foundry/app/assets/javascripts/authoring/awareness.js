@@ -267,7 +267,7 @@ var renderChatbox = function(){
        chat_role = data["user_role"];
        
        presname = chat_name;
-	   currentStatus = "★ online";
+	   currentStatus = "online ★";
 	   
 	   // current_user is undefined for author so just set it to 'Author' 
 	   // when current_user is the author it won't have a uniq id so need to check for current_user == 'Author' instead
@@ -296,6 +296,9 @@ var renderChatbox = function(){
          }
         
        }
+       
+       // Set our initial online status.
+		setUserStatus(currentStatus);
 
        myDataRef.on('child_added', function(snapshot) {
                 var message = snapshot.val();
@@ -307,8 +310,7 @@ var renderChatbox = function(){
                 
                 name = message.name;
             });
-
-       
+                   
     });
 };
 
