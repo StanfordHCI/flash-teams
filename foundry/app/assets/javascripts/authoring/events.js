@@ -45,7 +45,7 @@ var drag_left = d3.behavior.drag()
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
     .origin(Object)
-    .on("drag", dragEvent)
+    .on("drag", dragEventBlock)
     .on("dragend", function(d){
         if(dragged){
             dragged = false;
@@ -116,7 +116,7 @@ function rightResize(d) {
     drawEvent(ev, false);
 }
 
-function dragEvent(d) {
+function dragEventBlock(d) {
     
     if(isUser || in_progress) { // user page
         return;
