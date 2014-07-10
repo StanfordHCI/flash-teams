@@ -24,6 +24,7 @@
 //= require ./authoring/members
 //= require ./authoring/popovers
 //= require ./authoring/helper
+//= require ./authoring/idle
 //= require ./authoring/awareness
 //= require ./authoring/interactions
 //= require ./authoring/sidebar
@@ -37,4 +38,3 @@
 //= require ./authoring/gdrive
 //= require ./authoring/bootstrap-tagsinput
 //= require ./authoring/notifications
-//= require ./authoring/idle
