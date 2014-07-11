@@ -23,11 +23,17 @@
 				<input type="button" class="btn btn-success" id="flashTeamStartBtn" value="Start Team"/>
 		        <input type="button" class="btn btn-danger" id="flashTeamEndBtn" value="End Team" style="display: none"/>
 	     </div>
+
+	     <!-- Render partial with end team confirmation alert -->
+	     <%= render :partial => "confirm_end" %>  
      </div>
+
+     	<!-- render partial with confirm delete member alert --> 
+		<%= render :partial => "confirm_delete" %>
      
      <div class="row-fluid" style="margin-top: 40px; margin-bottom: 5px;">
      
-     <h4 id="ft-name"><%= @flash_team.name.upcase %> </h4>
+     <h4 id="ft-name"><%= @flash_team.name.upcase%></h4>
      
      </div>
 	    
@@ -46,8 +52,10 @@
 	            </div>
 	
 	           <!--Add a file picker for the user to start the upload process -->
-	            <input type="file" id="filePicker" />
+	           <!--
+				   <input type="file" id="filePicker" />
 	            <input type="button" id="authorizeButton" style="display: none" value="Authorize" />
+				-->
 	
 	           <div id="member-container" class="well" style="overflow-y:scroll;">
 	            	<!-- Render member roles container --> 

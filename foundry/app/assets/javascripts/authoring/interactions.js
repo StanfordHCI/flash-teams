@@ -180,7 +180,8 @@ function handoffStart(firstEvent){
     return x1;
 }
 
-//Redraw the position of the interaction line
+// Draw a handoff for the first time
+// Don't call this directly. Call 'drawEachHandoff' in events.js instead.
 function drawHandoff(handoffData) {
     var task1Id = handoffData["event1"];
     var task2Id = handoffData["event2"];

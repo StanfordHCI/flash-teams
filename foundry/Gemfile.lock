@@ -165,12 +165,9 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   bootstrap-sass-rails
-  coffee-rails (~> 4.0.0)
   d3-rails
   google-api-client
   jbuilder (~> 1.2)

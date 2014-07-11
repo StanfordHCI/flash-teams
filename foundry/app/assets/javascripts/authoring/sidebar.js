@@ -9,7 +9,7 @@ var name;
 
 $('#messageInput').keydown(function(e){
     if (e.keyCode == 13) {
-        console.log("PRESSED RETURN KEY!");
+        //console.log("PRESSED RETURN KEY!");
         var text = $('#messageInput').val();
         var uniq_u=getParameterByName('uniq');
         
@@ -22,17 +22,28 @@ $('#messageInput').keydown(function(e){
     }
 });
 
-myDataRef.on('child_added', function(snapshot) {
+//load all chats that were sent before page was reloaded
+/*myDataRef.once('value', function(snapshot) {
     var message = snapshot.val();
-    console.log(snapshot);
-    console.log(message);
-    console.log("MESSAGE NAME: " + message["name"]);
+    
+	if(message != null){
+		 displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
+    
+		 name = message.name;
+	}
+});*/
+
+/*myDataRef.on('child_added', function(snapshot) {
+    var message = snapshot.val();
+    //console.log(snapshot);
+    //console.log(message);
+    //console.log("MESSAGE NAME: " + message["name"]);
 
     displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
     
     name = message.name;
 });
-
+*/
 var lastMessage=0;
 var lastWriter;
 
@@ -49,7 +60,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     var diff = Math.abs(new Date() - message_date);
     
     //diff in minutes
-    console.log("minutes ago: " + diff/(1000*60)); 
+    //console.log("minutes ago: " + diff/(1000*60)); 
     
     //notification text   
     //notification title
@@ -57,7 +68,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     //notification body
     var notif_body = dateform;
     
-    var showchatnotif; // true if notifications should be shown
+    var showchatnotif = false; // true if notifications should be shown
         
     if ((current_user == 'Author' && role == 'Author') || (current_user.uniq == uniq)){
     	showchatnotif = false;
@@ -70,6 +81,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     // this is used to only create notifications for messages that were sent from the time you logged in and forward 
     // (e.g., no notifications for messages in the past)
     if (diff <= 50000 && showchatnotif == true){
+        playSound("/assets/notify");
 	    notifyMe(notif_title, notif_body, 'chat');
     }
 
@@ -232,7 +244,7 @@ var project_duration=1440000;
 var status_bar_timeline_interval=1000;  //TODO back to 10 secs //start moving each second for the width of project_status_interval_width.
 var num_intervals;                      //=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
 var project_status_interval_width;      //=parseFloat(status_width)/parseFloat(num_intervals);
-var thirty_min=10000; //TODO back to 1800000
+var thirty_min= 10000; //TODO normal speed timer is 1800000; fast timer is 10000
 var first_move_status=1;
 
 // var gdrive_link = project_status_svg.append("text")
@@ -283,21 +295,15 @@ var moveProjectStatus = function(status_bar_timeline_interval){
     var current_perc = 0;
 
     var progress = setInterval(function() {
-                //current_perc +=1;
-                if(curr_status_width<status_width && delayed_tasks.length==0){
-                    curr_status_width += project_status_interval_width;
+        if(curr_status_width<status_width && delayed_tasks.length==0){
+            curr_status_width += project_status_interval_width;
 
-                }
-                if(curr_status_width>status_width){
-                    curr_status_width = status_width;
-                }
-                me.css('width', (curr_status_width)+'%');
-                
-
-                //me.text(curr_status_width+'%');
-
-           // var int_width=Math.round(curr_status_width);      
-       },status_bar_timeline_interval);
+        }
+        if(curr_status_width>status_width){
+            curr_status_width = status_width;
+        }
+        me.css('width', (curr_status_width)+'%');
+    },status_bar_timeline_interval);
 
     return progress;
 };
@@ -332,9 +338,9 @@ function init_statusBar(status_bar_timeline_interval){
         
     }
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-   console.log("last_end",last_end_x);
+   //console.log("last_end",last_end_x);
    project_duration=parseInt(last_end_x/50)*thirty_min;
-   console.log("project duration: ",project_duration);
+   //console.log("project duration: ",project_duration);
 
    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
@@ -355,7 +361,7 @@ function load_statusBar(status_bar_timeline_interval){
             var groupNum = data.groupNum;
             
             
-            if ( groupNum == delayed_tasks[0]){
+            if (groupNum == delayed_tasks[0]){
 
                 start_delayed_x = data.x+4;  //CHECK with Jay
                 var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
@@ -386,12 +392,11 @@ function load_statusBar(status_bar_timeline_interval){
             
         }
         
-
         // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-        console.log("last_end",last_end_x);
+        //console.log("last_end",last_end_x);
         var cursor_x = cursor.attr("x1");
         project_duration=parseInt((last_end_x)/50)*thirty_min;
-        console.log("project duration: ",project_duration);
+        //console.log("project duration: ",project_duration);
 
         num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
         project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
@@ -401,10 +406,6 @@ function load_statusBar(status_bar_timeline_interval){
 
         return;    
     }
-    
-
-
-
 
     if (flashTeamsJSON["startTime"] == null ){
         return;
@@ -431,14 +432,13 @@ function load_statusBar(status_bar_timeline_interval){
         
         if(last_end_x<end_x){
             last_end_x=end_x;
-        }
-        
+        }        
     }
 
    // last_end_x=parseFloat(last_end_x)/50*thirty_min; //TODO change to width
-   console.log("last_end",last_end_x);
+   //console.log("last_end",last_end_x);
    project_duration=parseInt(last_end_x/50)*thirty_min;
-   console.log("project duration: ",project_duration);
+   //console.log("project duration: ",project_duration);
 
    num_intervals=(parseFloat(project_duration)/parseFloat(status_bar_timeline_interval));
    project_status_interval_width=parseFloat(status_width)/parseFloat(num_intervals);
@@ -446,13 +446,9 @@ function load_statusBar(status_bar_timeline_interval){
    curr_status_width = project_status_interval_width * diff_sec;
 }
 var status_interval_id;
+
 var setProjectStatusMoving = function(){
-
     return moveProjectStatus(status_bar_timeline_interval);
-/*    status_interval_id = setInterval(function(){
-        moveProjectStatus(status_bar_timeline_interval);
-    }, status_bar_timeline_interval); // every 10 seconds currently*/
-
 };
-/* --------------- PROJECT STATUS BAR END ------------ */
+
 /* --------------- PROJECT STATUS BAR END ------------ */

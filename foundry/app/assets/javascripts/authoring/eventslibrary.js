@@ -345,82 +345,82 @@ return false;
 
 /* Called when a user chooses from the dialog to add a team member included in a dragged Event into the flash-team. Appends a pill under 'Team Roles' container and a popover to that pill populated with that member's data*/
 function addMemberFromEvent(member) {
-   pillCounter++;
+   memberCounter++;
 var memberName = member["role"];
    
 //Appends a list item pill to the memberPills ul
-   $("#memberPills").append('<li class="active pill' + pillCounter + '" id="mPill_' + pillCounter + '""><a>' + memberName
-       + '<div class="close" onclick="deleteMember(' + pillCounter + '); updateStatus(false);">  X</div>' + '</a></li>');
+   $("#memberPills").append('<li class="active pill' + memberCounter + '" id="mPill_' + memberCounter + '""><a>' + memberName
+       + '<div class="close" onclick="deleteMember(' + memberCounter + '); updateStatus(false);">  X</div>' + '</a></li>');
 
    //Clears Input
    $("#addMemberInput").val(this.placeholder);
 
    //Appends a popover to the pill
-   $("#mPill_" + pillCounter).popover({
+   $("#mPill_" + memberCounter).popover({
        placement: "right",
        html: "true",
        class: "member",
-       id: '"memberPopover' + pillCounter + '"',
+       id: '"memberPopover' + memberCounter + '"',
        trigger: "click",
        title: '<b>' + memberName + '</b>',
-       content:  '<form name="memberForm_' + pillCounter + '" autocomplete="on">'
-       +'<div class="mForm_' + pillCounter + '">'
+       content:  '<form name="memberForm_' + memberCounter + '" autocomplete="on">'
+       +'<div class="mForm_' + memberCounter + '">'
            +'<div class="ui-front" class="input-append" > '
-           +'<select class="category1Input" id="member' + pillCounter + '_category1"></select>'
-           +'<br><br><select class="category2Input" id="member' + pillCounter + '_category2">--oDesk Sub-Category--</select>'
-           +'<br><br><input class="skillInput" id="addSkillInput_' + pillCounter + '" type="text" onclick="addAuto()" placeholder="New oDesk Skill" autocomplete="on">'
-           +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + pillCounter + '" onclick="addSkill(' + pillCounter + ');">+</button>'
+           +'<select class="category1Input" id="member' + memberCounter + '_category1"></select>'
+           +'<br><br><select class="category2Input" id="member' + memberCounter + '_category2">--oDesk Sub-Category--</select>'
+           +'<br><br><input class="skillInput" id="addSkillInput_' + memberCounter + '" type="text" onclick="addAuto()" placeholder="New oDesk Skill" autocomplete="on">'
+           +'<button class="btn" type="button" class="addSkillButton" id="addSkillButton_' + memberCounter + '" onclick="addSkill(' + memberCounter + ');">+</button>'
            +'</div>'
            +'Skills:'  
-           +'<ul class="nav nav-pills" id="skillPills_' + pillCounter + '"> </ul>'
-           +'Member Color: <input type="text" class="full-spectrum" id="color_' + pillCounter + '"/>'
+           +'<ul class="nav nav-pills" id="skillPills_' + memberCounter + '"> </ul>'
+           +'Member Color: <input type="text" class="full-spectrum" id="color_' + memberCounter + '"/>'
            +'<script type="text/javascript"> initializeColorPicker(); </script>'
-           +'<p><button type="button" onclick="deleteMember(' + pillCounter + '); updateStatus(false);">Delete</button>     '
-           +'<button type="button" onclick="saveMemberInfo(' + pillCounter + '); updateStatus(false);">Save</button>'
+           +'<p><button type="button" onclick="deleteMember(' + memberCounter + '); updateStatus(false);">Delete</button>     '
+           +'<button type="button" onclick="saveMemberInfo(' + memberCounter + '); updateStatus(false);">Save</button>'
        +'</p></form>'
        +'</div>',
        container: $("#member-container")
    });
 
-   $("#mPill_"+pillCounter).popover("show");
+   $("#mPill_"+memberCounter).popover("show");
 
 //Adds new member to Flash Teams JSON Object
-   var newMember = {"role":memberName, "id": pillCounter, "color":"rgb(0, 168, 0)", "skills":[], "category1":"", "category2":""};
+   var newMember = {"role":memberName, "id": memberCounter, "color":"rgb(0, 168, 0)", "skills":[], "category1":"", "category2":""};
    flashTeamsJSON.members.push(newMember);
-   addMemberNode(memberName, pillCounter, "#808080");
+   addMemberNode(memberName, memberCounter, "#808080");
 
    //Adds the drop-down for two-tiered oDesk job posting categories on popover and populates member attribute values
 //Preset 'category1' attribute
    for (var key in oDeskCategories) {
 if (member["category1"] == key) {
-$("#member" + pillCounter + "_category1").append('<option value="' + key + '" selected>' + key + '</option>');
+$("#member" + memberCounter + "_category1").append('<option value="' + key + '" selected>' + key + '</option>');
 } else {
-$("#member" + pillCounter + "_category1").append('<option value="' + key + '">' + key + '</option>');
+$("#member" + memberCounter + "_category1").append('<option value="' + key + '">' + key + '</option>');
 }
    }
 //Presets 'category2' attribute
-var category1Select = document.getElementById("member" + pillCounter + "_category1");
+var category1Select = document.getElementById("member" + memberCounter + "_category1");
    var category1Name = category1Select.options[category1Select.selectedIndex].value;
    for (i = 0; i < oDeskCategories[category1Name].length; i++) {
 if (oDeskCategories[category1Name][i] == member["category2"]) {
-$("#member" + pillCounter + "_category2").append("<option selected>" + oDeskCategories[category1Name][i] + "</option>");
+$("#member" + memberCounter + "_category2").append("<option selected>" + oDeskCategories[category1Name][i] + "</option>");
 } else {
-$("#member" + pillCounter + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
+$("#member" + memberCounter + "_category2").append("<option>" + oDeskCategories[category1Name][i] + "</option>");
 }
    }
 //Presets 'skills' attribute and add to flashteamsJSON
    var skillName;
-var indexOfJSON = getMemberJSONIndex(pillCounter);
+var indexOfJSON = getMemberJSONIndex(memberCounter);
 for (j = 0; j < member["skills"].length; j++) {
 skillName = member["skills"][j];
 flashTeamsJSON["members"][indexOfJSON].skills.push(skillName);
-$("#skillPills_" + pillCounter).append('<li class="active" id="sPill_mem' + pillCounter + '_skill' + j + '"><a>' + skillName
-       + '<div class="close" onclick="deleteSkill(' + pillCounter + ', ' + j + ', &#39' + skillName + '&#39)">  X</div></a></li>');
-$("#addSkillInput_" + pillCounter).val(this.placeholder);
+$("#skillPills_" + memberCounter).append('<li class="active" id="sPill_mem' + memberCounter + '_skill' + j + '"><a>' + skillName
+       + '<div class="close" onclick="deleteSkill(' + memberCounter + ', ' + j + ', &#39' + skillName + '&#39)">  X</div></a></li>');
+$("#addSkillInput_" + memberCounter).val(this.placeholder);
 }
 
    //Enables skills to be submitted by Enter key
    $(document).ready(function() {
-       pressEnterKeyToSubmit("#addSkillInput_" + pillCounter, "#addSkillButton_" + pillCounter);
+       pressEnterKeyToSubmit("#addSkillInput_" + memberCounter, "#addSkillButton_" + memberCounter);
    });
 };

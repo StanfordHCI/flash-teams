@@ -66,11 +66,12 @@ function editablePopoverObj(eventObj) {
         + '<div><input type="text" value="' + inputs + '" placeholder="Add input" id="inputs_' + groupNum + '" /></div>'
         + '<div><input type="text" value="' + outputs + '" placeholder="Add output" id="outputs_' + groupNum + '" /></div></div>'
         + '<div class="event-table-row event-table-footer">' 
-        + '<button type="button" class="btn btn-danger" id="delete"'
-        	+' onclick="deleteEvent(' + groupNum +');">Delete</button>       ' 
+
         + '<button class="btn btn-success" type="button" id="save"'
         	+' onclick="saveEventInfo(' + groupNum + '); hidePopover(' + groupNum + ')">Save</button>       '  
-        + '<button class="btn btn-default" type="button" id="cancel" onclick="hidePopover(' + groupNum + ');">Cancel</button>' 
+        + '<button type="button" class="btn btn-danger" id="delete"'
+            +' onclick="confirmDeleteEvent(' + groupNum +');">Delete</button>       ' 
+		+ '<a id="cancel" style="float: right; line-height: 20px; padding-top: 4px; padding-bottom: 4px; margin-top: 2px;" onclick="hidePopover(' + groupNum + ');">Cancel</a>'       
         + '</div>'
         + '</form></div>',
         container: $("#timeline-container"),
@@ -83,6 +84,8 @@ function editablePopoverObj(eventObj) {
 
     return obj;
 };
+
+//maggie -> delete event is called here
 
 /*
  * Input(s): 
@@ -160,10 +163,6 @@ function readOnlyPopoverObj(ev) {
         + ' <button type="button" class="btn btn-default" id="ok"'
         +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     
-    /*content += '<br><form><button type="button" style="pointer-events:none;" id="complete_' + groupNum 
-            + '" onclick="completeTask(' + groupNum + ');">Complete</button><button type="button"' 
-            +' id="ok" onclick="hidePopover(' + groupNum + ');">Ok</button></form>';*/
-    
     var obj = {
         title: ev.title,
         content: content,
@@ -191,8 +190,8 @@ function readOnlyPopoverObj(ev) {
  */
 
 function drawPopover(eventObj, editable, show) {
-    var groupNum = eventObj.id;
-    // draw it
+   var groupNum = eventObj.id;
+     // draw it
     var data = getPopoverDataFromGroupNum(groupNum); //SOMETHING WRONG, RETURNS UNDEFINED
     if(!data){ // popover not set yet
         if(editable){
@@ -209,7 +208,6 @@ function drawPopover(eventObj, editable, show) {
         }
         data.options.title = obj["title"];
         data.options.content = obj["content"];
-        //console.log("changed content to: " + data.options.content);
     }
     // show/hide it
     if(show){
@@ -227,7 +225,6 @@ function updateAllPopoversToReadOnly() {
         var ev = flashTeamsJSON.events[i];
         drawPopover(ev, false, false);
     }
-    //console.log("UPDATED ALL POPOVERS TO BE READONLY");
 };
 
 var setPopoverOnTask = function(groupNum, obj){
