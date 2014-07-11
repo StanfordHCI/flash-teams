@@ -223,7 +223,8 @@ function getStartTime(mouseX) {
         startMin = 0;
     } else startMin += 2.4
     var startTimeinMinutes = parseInt((startHr*60)) + parseInt(startMin);
-
+	
+	//console.log("StartHr: " + startHr + " StartMin: " + startMin + " StartTimeinMinutes: " + startTimeinMinutes);
     return {"startHr":startHr, "startMin":startMin, "startTimeinMinutes":startTimeinMinutes};
 };
 

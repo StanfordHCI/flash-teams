@@ -613,18 +613,33 @@ var drawDelayedTasks = function(){
             console.log(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% found task " + groupNum + " in live_tasks");
             live_tasks.splice(idx, 1);
             delayed_tasks.push(groupNum);
+            console.log("pushing task with groupNum " + groupNum + "to delayed_tasks");
         } else {
             console.log(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% not even in live_tasks");
         }
 
         var groupNum = ev.id;
+        
+        console.log("groupNum: " + groupNum);
+        
         var task_start = parseFloat(ev.x);
+        
+        console.log("task_start: " + task_start);
+        
         var task_rect_curr_width = parseFloat(getWidth(ev));
         var task_end = task_start + task_rect_curr_width;
+        
+        console.log("task_end: " + task_end);
+        
         var red_end = task_end + red_width;
         var new_tasks_after = computeTasksAfterCurrent(task_end); // TODO: right-most task or left-most task?
+        
+        console.log("new_tasks_after:  " + new_tasks_after);
+        
         if(tasks_after == null || new_tasks_after.length > tasks_after.length){
             tasks_after = new_tasks_after;
+            
+            console.log("tasks_after:  " + tasks_after);
         }
      
         allRanges.push([task_end, red_end]);
@@ -633,6 +648,7 @@ var drawDelayedTasks = function(){
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
         console.log("DRAWING DELAYED TASKS AFTER UPDATE");
+        console.log("actual_offset: " + actual_offset);
         moveTasksRight(tasks_after, actual_offset, true);
     }
 };
@@ -777,7 +793,7 @@ var computeLiveAndRemainingTasks = function(){
 
         if(curr_new_x >= start_x && curr_new_x <= end_x && drawn_blue_tasks.indexOf(groupNum) == -1){
             live_tasks.push(groupNum);
-        } else if(curr_new_x < start_x){
+        } else if(curr_new_x <= start_x){
             remaining_tasks.push(groupNum);
         }
     }
@@ -786,23 +802,28 @@ var computeLiveAndRemainingTasks = function(){
 };
 
 var computeTasksAfterCurrent = function(curr_x){
+
+	console.log("computeTasksAfterCurrent curr_x: " + curr_x);
     tasks_after_curr = [];
     
     // go through all tasks
     for (var i=0;i<task_groups.length;i++){
         var data = task_groups[i];
         var groupNum = data.groupNum;
+        console.log("computeTasksAfterCurrent groupNum: " + groupNum);
 
         // get start x coordinate of task
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var start_x = ev.x;
+        console.log("computeTasksAfterCurrent start_x: " + start_x);
         
         // if the task's x coordinate is after the current x, it is "after," so add it
-        if(curr_x < start_x){
+        if(curr_x <= start_x){
+        	console.log("computeTasksAfterCurrent pushing to tasks_after_curr task with groupNum: " + groupNum);
             tasks_after_curr.push(groupNum);
         }
     }
-
+	console.log("computeTasksAfterCurrent tasks_after_curr: " + tasks_after_curr);
     return tasks_after_curr;
 };
 
@@ -887,8 +908,10 @@ var extendDelayedBoxes = function(){
         delayed_rect.attr("width", new_width);
         
         diff = new_width - curr_width;
+        console.log("diff: " + diff);
     }
     if(diff > 0){
+    	console.log("moveRemainingTasksRight: " + diff);
         moveRemainingTasksRight(diff);
     }
 };
@@ -987,7 +1010,7 @@ var moveTasksLeft = function(tasks, amount){
 };
 
 var moveRemainingTasksRight = function(amount){
-    moveTasksRight(remaining_tasks, amount, false);
+    moveTasksRight(remaining_tasks, amount, true);
 };
 
 var moveRemainingTasksLeft = function(amount){
