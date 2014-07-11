@@ -227,9 +227,9 @@ function drawHandoff(handoffData) {
         title: "Handoff",
         content: 'Description of Handoff Materials: '
         +'<textarea rows="2.5" id="interactionNotes_' + handoffId + '"></textarea>'
-        + '<button type="button" id="saveHandoff' + handoffId + '"'
+        + '<button type="button" class="btn btn-success" id="saveHandoff' + handoffId + '"'
             +' onclick="saveHandoff(' + handoffId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + handoffId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + handoffId + '"'
             +' onclick="deleteInteraction(' + handoffId +');">Delete</button>',
         container: $("#timeline-container")
     })
@@ -241,9 +241,9 @@ function saveHandoff(intId) {
     var notes = $("#interactionNotes_" + intId).val()
     $("#interaction_" + intId).data('popover').options.content = 'Description of Handoff Materials: '
         +'<textarea rows="2" id="interactionNotes_' + intId + '">' + notes + '</textarea>'
-        + '<button type="button" id="saveHandoff' + intId + '"'
+        + '<button type="button" class="btn btn-success" class="btn" id="saveHandoff' + intId + '"'
         +' onclick="saveHandoff(' + intId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + intId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + intId + '"'
         +' onclick="deleteInteraction(' + intId +');">Delete</button>';
 
     //Update JSON
@@ -328,9 +328,9 @@ function drawCollabPopover(collabId) {
         title: "Collaboration",
         content: 'Description of Collaborative Work: '
         +'<textarea rows="2.5" id="collabNotes_' + collabId + '"></textarea>'
-        + '<button type="button" id="saveCollab' + collabId + '"'
+        + '<button type="button" class="btn btn-success" id="saveCollab' + collabId + '"'
             +' onclick="saveCollab(' + collabId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + collabId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + collabId + '"'
             +' onclick="deleteInteraction(' + collabId +');">Delete</button>',
         container: $("#timeline-container")
     });
@@ -342,9 +342,9 @@ function saveCollab(intId) {
     var notes = $("#collabNotes_" + intId).val()
     $("#interaction_" + intId).data('popover').options.content =   'Description of Collaborative Work: '
         +'<textarea rows="2.5" id="collabNotes_' + intId + '">' + notes + '</textarea>'
-        + '<button type="button" id="saveCollab' + intId + '"'
+        + '<button type="button" class="btn btn-success" id="saveCollab' + intId + '"'
         +' onclick="saveCollab(' + intId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + intId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + intId + '"'
         +' onclick="deleteInteraction(' + intId +');">Delete</button>';
 
     //Update JSON
