@@ -20,7 +20,7 @@ function handleClientLoad() {
  */
 function checkAuth() {
   gapi.auth.authorize(
-      {'client_id': CLIENT_ID, 'scope': SCOPES.join(' '), 'immediate': false},
+      {'client_id': CLIENT_ID, 'scope': SCOPES.join(' '), 'immediate': true},
       handleAuthResult2);
 };
 

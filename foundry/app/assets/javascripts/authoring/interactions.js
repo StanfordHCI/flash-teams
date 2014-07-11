@@ -6,7 +6,7 @@
 var DRAWING_HANDOFF = false;
 var DRAWING_COLLAB = false;
 var INTERACTION_TASK_ONE_IDNUM = 0;
-var interaction_counter = 0;
+var interaction_counter = undefined;
 
 //For Interactions
 timeline_svg.append("defs").append("marker")
@@ -64,14 +64,10 @@ function eventMousedown(task2idNum) {
         DRAWING_HANDOFF = false;
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
-        console.log("INTERACTIONSCOUNTER", flashTeamsJSON["interaction_counter"])
-        if (flashTeamsJSON["interaction_counter"]){
-            flashTeamsJSON["interaction_counter"]++;
-        }
-        else{
-            flashTeamsJSON["interaction_counter"] = 1;
-        }
-        interaction_counter = flashTeamsJSON["interaction_counter"];
+        if (interaction_counter == undefined) {
+            interaction_counter = initializeInteractionCounter();
+        } 
+        interaction_counter++;
         updateStatus();
         var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1idNum)];
         var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2idNum)];
@@ -105,13 +101,10 @@ function eventMousedown(task2idNum) {
 
         var overlap = eventsOverlap(task1X, task1Width, task2X, task2Width);
         if (overlap > 0) {
-            if (flashTeamsJSON["interaction_counter"]){
-                flashTeamsJSON["interaction_counter"]++;
+            if (interaction_counter == undefined) {
+                interaction_counter = initializeInteractionCounter();
             }
-            else{
-                flashTeamsJSON["interaction_counter"] = 1;
-            }
-            interaction_counter = flashTeamsJSON["interaction_counter"];
+            interaction_counter++;
             updateStatus();
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
@@ -367,15 +360,10 @@ function deleteInteraction(intId) {
     //Destroy Popover
     $("#interaction_" + intId).popover("destroy");
 
-    console.log("THIS IS THE JSON CURRENTLY:", flashTeamsJSON["interactions"]);
     //Delete from JSON
     var indexOfJSON = getIntJSONIndex(intId);
     flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
     updateStatus();
-
-    console.log("THIS IS THE JSON NOW:", flashTeamsJSON["interactions"]);
-
-    console.log("UPDATED INVOLVEMENT: " + flashTeamsJSON["interactions"]);
 
     //Delete Rectangle
     $("#interaction_" + intId).remove();
@@ -426,6 +414,19 @@ function getIntJSONIndex(idNum) {
         if (flashTeamsJSON["interactions"][i].id == idNum) {
             return i;
         }
+    }
+}
+
+function initializeInteractionCounter() {
+    if (flashTeamsJSON["interactions"].length == 0) return 0; 
+    else {
+        var highestId = 0;
+        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            if (flashTeamsJSON["interactions"][i].id > highestId) {
+                highestId = flashTeamsJSON["interactions"][i].id;
+            }
+        }
+        return highestId;
     }
 }
 

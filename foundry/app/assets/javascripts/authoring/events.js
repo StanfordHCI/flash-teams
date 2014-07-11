@@ -668,14 +668,12 @@ function drawShade(eventObj, firstTime) {
     }
 }
 
-function drawEachHandoff(eventObj, firstTime){
-    console.log("WRITING ALL THE HANDOFFS", flashTeamsJSON["interactions"]);
+function drawEachHandoffForEvent(eventObj){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
         var draw = false;
         if (inter["type"] == "handoff"){
-            console.log("THIS IS A HANDOFF", inter);
             if (inter["event1"] == eventObj["id"]){
                 draw = true;
                 var ev1 = eventObj;
@@ -687,12 +685,10 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }  
             if (draw){
-                console.log("IT SHOULD BE DRAWN", inter);
                 var x1 = handoffStart(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
                 var y2 = ev2.y + 50;
-                console.log("THIS IS THE INTERACTION'S NAME", inter["id"]);
                 $("#interaction_" + inter["id"])
                     .attr("x1", x1)
                     .attr("y1", y1)
@@ -711,7 +707,7 @@ function drawEachHandoff(eventObj, firstTime){
     }
 }
 
-function drawEachCollab(eventObj, firstTime){
+function drawEachCollabForEvent(eventObj){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
@@ -728,8 +724,8 @@ function drawEachCollab(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var existingCollab = timeline_svg.selectAll("#interaction_" + inter["id"]);
-                if(existingCollab[0].length == 0){ // first time
+                var existingInter = timeline_svg.selectAll("#interaction_" + inter["id"]);
+                if(existingInter[0].length == 0){ // first time
                     var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
                         "type":"handoff", "description":"", "id":inter["id"]};
                     drawHandoff(handoffData);
@@ -776,8 +772,8 @@ function drawEvent(eventObj) {
     drawCollabBtn(eventObj);
     drawMemberLines(eventObj);
     drawShade(eventObj);
-    drawEachHandoff(eventObj);
-    drawEachCollab(eventObj);
+    drawEachHandoffForEvent(eventObj);
+    drawEachCollabForEvent(eventObj);
 };
 
 function drawAllPopovers() {
