@@ -685,6 +685,7 @@ function drawEachHandoffForEvent(eventObj){
                 var ev2 = eventObj;
             }  
             if (draw){
+                //Reposition an existing handoff
                 var x1 = handoffStart(ev1);
                 var y1 = ev1.y + 50;
                 var x2 = ev2.x + 3;
@@ -724,12 +725,14 @@ function drawEachCollabForEvent(eventObj){
                 var ev2 = eventObj;
             }
             if (draw){
-                var existingInter = timeline_svg.selectAll("#interaction_" + inter["id"]);
+                /*var existingInter = timeline_svg.selectAll("#interaction_" + inter["id"]);
                 if(existingInter[0].length == 0){ // first time
+                    //Alexandra - I'm not convinced this ever get called? 
                     var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
                         "type":"handoff", "description":"", "id":inter["id"]};
                     drawHandoff(handoffData);
-                } else {
+                } else {*/
+                    //Reposition existing collaboration
                     var y1 = ev1.y + 17;
                     var x1 = ev1.x + 3;
                     var x2 = ev2.x + 3;
@@ -751,7 +754,7 @@ function drawEachCollabForEvent(eventObj){
                         .attr("y", firstTaskY)
                         .attr("height", taskDistance)
                         .attr("width", overlap);
-                }
+                /*}*/
             }
         }
     }

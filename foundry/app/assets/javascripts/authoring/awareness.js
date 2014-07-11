@@ -447,7 +447,7 @@ var loadData = function(){
     drawBlueBoxes();
     drawRedBoxes();
     drawDelayedTasks();
-    drawInteractions();
+    drawInteractions(); //START HERE, INT DEBUG
     googleDriveLink();
 };
 
@@ -893,8 +893,9 @@ var extendDelayedBoxes = function(){
     }
 };
 
+//Draws all the interactions that involve the "tasks"
+//Note: if "tasks" is undefined, draws all interactions
 var drawInteractions = function(tasks){
-    //console.log("DRAWING INTERACTIONS FOR TASKS: " + tasks);
     //Find Remaining Interactions and Draw
     var remainingHandoffs = getHandoffs(tasks);
     var numHandoffs = remainingHandoffs.length;
@@ -903,13 +904,14 @@ var drawInteractions = function(tasks){
     var numCollabs = remainingCollabs.length;
 
     for (var j = 0; j < numHandoffs; j++) {
-        intId = remainingHandoffs[j].id
+        var intId = remainingHandoffs[j].id
         $("#interaction_" + intId).popover("destroy");
         $("#interaction_" + intId).remove();
         drawHandoff(remainingHandoffs[j]);
     }
 
     for (var k = 0; k < numCollabs; k++) {
+        var intId = remainingCollabs[k].id; 
         $("#interaction_" + intId).popover("destroy");
         $("#interaction_" + intId).remove();
         var event1 = flashTeamsJSON["events"][getEventJSONIndex(remainingCollabs[k].event1)];
@@ -917,8 +919,6 @@ var drawInteractions = function(tasks){
         var overlap = eventsOverlap(event1.x, getWidth(event1), event2.x, getWidth(event2));
         drawCollaboration(remainingCollabs[k], overlap);
     }
-
-    //console.log("DONE DRAWING INTERACTIONS");
 };
 
 var moveTasksRight = function(tasks, amount, from_initial){
@@ -1088,7 +1088,7 @@ function getHandoffs(tasks) {
         var inter = flashTeamsJSON["interactions"][i];
         if (inter.type == "collaboration") continue;
 
-        if(tasks == undefined){
+        if(tasks == undefined){ //If tasks undefined, include ALL handoffs
             handoffs.push(inter);
         } else {
             for (var j = 0; j<tasks.length; j++) {
@@ -1115,7 +1115,7 @@ function getCollabs(tasks) {
         var inter = flashTeamsJSON["interactions"][i];
         if (inter.type == "handoff") continue;
 
-        if(tasks == undefined){
+        if(tasks == undefined) { //If tasks undefined, include ALL collaborations
             collabs.push(inter);
         } else {
             for (var j = 0; j<tasks.length; j++) {
@@ -1133,7 +1133,6 @@ function getCollabs(tasks) {
             }
         }
     }
-
     return collabs;
 }
 

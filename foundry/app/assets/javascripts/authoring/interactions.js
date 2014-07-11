@@ -232,7 +232,7 @@ function drawHandoff(handoffData) {
         + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + handoffId + '"'
             +' onclick="deleteInteraction(' + handoffId +');">Delete</button>',
         container: $("#timeline-container")
-    })
+    });
 }
 
 //Save handoff notes and update popover
@@ -365,7 +365,7 @@ function deleteInteraction(intId) {
     flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
     updateStatus();
 
-    //Delete Rectangle
+    //Delete Arrow or Rectangle
     $("#interaction_" + intId).remove();
 }
 
