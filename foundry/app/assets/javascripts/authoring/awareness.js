@@ -1,3 +1,8 @@
+/* awareness.js
+ * ---------------------------------------------
+ * 
+ */
+
 var poll_interval = 5000; // 20 seconds
 var poll_interval_id;
 var timeline_interval = 10000; // "normal" speed timer is 30 minutes (1800000 milliseconds); fast timer is 10 seconds (10000 milliseconds)
