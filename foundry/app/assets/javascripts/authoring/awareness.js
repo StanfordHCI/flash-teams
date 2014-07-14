@@ -414,7 +414,7 @@ var loadStatus = function(id){
         type: 'get'
     }).done(function(data){
         loadedStatusJSON = data;
-        //console.log("loadedStatusJSON: " + loadedStatusJSON);
+        console.log("loadedStatusJSON: " + loadedStatusJSON);
     });
     return JSON.parse(loadedStatusJSON);
 };
@@ -458,6 +458,8 @@ var startTeam = function(firstTime){
     if(!in_progress) {
         recordStartTime();
         addAllFolders();
+        flashTeamsJSON["original_status"] = loadedStatus;
+        console.log("flashTeamsJSON['original_status']: " + flashTeamsJSON["original_status"]);
         in_progress = true; // TODO: set before this?
     }
 
