@@ -279,7 +279,10 @@ end
       user_name = member.name
       user_role="" 
      else
-        user_name="Daniela"
+        #it is the requester
+        flash_team = FlashTeam.find(params[:id])
+        flash_team_json = JSON.parse(flash_team.json)
+        user_name = flash_team_json["author"]
         user_role="Author"
      end
 
