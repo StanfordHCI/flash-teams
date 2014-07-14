@@ -20,7 +20,7 @@ class FlashTeamsController < ApplicationController
     id = @flash_team[:id]
 
     # store in flash team
-    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": []}'
+    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + author + '"}'
 
     if @flash_team.save
       redirect_to @flash_team
