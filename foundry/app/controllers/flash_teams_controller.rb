@@ -12,16 +12,19 @@ class FlashTeamsController < ApplicationController
   end
 
   def create
-    name = params[:flash_team][:name]
-    author = params[:flash_team][:author] 
-    @flash_team = FlashTeam.create(:name => name, :author => author)
+    name = flash_team_params(params[:flash_team])[:name]
+    #author = flash_team_params(params[:flash_team][:author])
+    #@flash_team = FlashTeam.create(:name => name, :author => author)
+    
+    @flash_team = FlashTeam.create(:name => name)
+
 
     # get id
     id = @flash_team[:id]
 
     # store in flash team
-    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [],"author": ' + author + ' }'
-
+    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [] }'
+    #@flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [],"author": ' + author + ' }'
     if @flash_team.save
       redirect_to @flash_team
     else

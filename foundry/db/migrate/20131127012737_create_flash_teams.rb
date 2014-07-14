@@ -2,7 +2,7 @@ class CreateFlashTeams < ActiveRecord::Migration
   def change
     create_table :flash_teams do |t|
       t.string :name
-      t.string :author
+      #t.string :author
       t.text :json
       t.text :status
       
