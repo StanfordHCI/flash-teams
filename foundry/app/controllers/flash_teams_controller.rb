@@ -13,7 +13,8 @@ class FlashTeamsController < ApplicationController
 
   def create
     name = flash_team_params(params[:flash_team])[:name]
-    @flash_team = FlashTeam.create(:name => name)
+    author = flash_team_params(params[:flash_team])[:author]
+    @flash_team = FlashTeam.create(:name => name, :author => author)
 
     # get id
     id = @flash_team[:id]
@@ -328,6 +329,6 @@ end
    end
 
   def flash_team_params params
-    params.permit(:name)
+    params.permit(:name, :author)
   end
 end
