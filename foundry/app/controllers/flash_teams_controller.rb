@@ -38,8 +38,8 @@ class FlashTeamsController < ApplicationController
     original = FlashTeam.find(params[:id])
 
     # Then create a copy from the original data
-    copy = FlashTeam.create(:name => original.name + " Copy")
-    copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": []}'
+    copy = FlashTeam.create(:name => original.name + " Copy", :author => original.author)
+    copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + copy.author + '"}'
     copy.status = original.status
     copy.save
 
