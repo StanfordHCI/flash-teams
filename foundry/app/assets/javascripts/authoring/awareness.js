@@ -477,6 +477,7 @@ var startTeam = function(firstTime){
         updateAllPopoversToReadOnly();
         project_status_handler = setProjectStatusMoving();
         trackLiveAndRemainingTasks();
+        
         trackUpcomingEvent();
     }
 
@@ -782,10 +783,18 @@ var computeLiveAndRemainingTasks = function(){
 
     var remaining_tasks = [];
     var live_tasks = [];
+   
+	//todo remove
+	remaining_tasks.push(2);
     for (var i=0;i<task_groups.length;i++){
         var data = task_groups[i];
         var groupNum = data.groupNum;
-
+		
+		//todo remove
+		if (groupNum == 2){
+			continue;
+		}
+		//
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var start_x = ev.x;
         var width = getWidth(ev);
@@ -793,11 +802,13 @@ var computeLiveAndRemainingTasks = function(){
 
         if(curr_new_x >= start_x && curr_new_x <= end_x && drawn_blue_tasks.indexOf(groupNum) == -1){
             live_tasks.push(groupNum);
-        } else if(curr_new_x <= start_x){
+        } else if(curr_new_x < start_x){
             remaining_tasks.push(groupNum);
         }
     }
+    
     //console.log("returning from computing live and remaining tasks");
+    console.log("live tasks: " + live_tasks + " remaining tasks: " + remaining_tasks);
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
 
@@ -908,10 +919,10 @@ var extendDelayedBoxes = function(){
         delayed_rect.attr("width", new_width);
         
         diff = new_width - curr_width;
-        console.log("diff: " + diff);
+        //console.log("diff: " + diff);
     }
     if(diff > 0){
-    	console.log("moveRemainingTasksRight: " + diff);
+    	//console.log("moveRemainingTasksRight: " + diff);
         moveRemainingTasksRight(diff);
     }
 };
