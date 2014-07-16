@@ -775,15 +775,55 @@ var computeLiveAndRemainingTasks = function(){
         var width = getWidth(ev);
         var end_x = parseFloat(start_x) + parseFloat(width);
 
+		
         if(curr_new_x >= start_x && curr_new_x <= end_x && drawn_blue_tasks.indexOf(groupNum) == -1){
-            live_tasks.push(groupNum);
+        
+/*
+        	if(isDelayed(groupNum)){
+				console.log("THIS TASK IS DELAYED BUT NOT YET COMPLETED: " + groupNum);
+				var tasks_after = computeTasksAfterCurrent(curr_new_x);
+				console.log("THIS DELAYED TASK HAS A TASKS_AFTER COUNT OF: " + tasks_after);
+			}
+*/
+			
+			if(prevTasksDelayed(curr_new_x)){
+                 //console.log("previous tasks delayed so adding to remaining_task");
+                 remaining_tasks.push(groupNum);
+                }
+               
+                else{
+                   //console.log("previous task does not appear to be delayed so adding task to live_task");
+                   live_tasks.push(groupNum);
+               }
+        
         } else if(curr_new_x < start_x){
             remaining_tasks.push(groupNum);
         }
     }
+    
+    //updateStatus(true);
     //console.log("returning from computing live and remaining tasks");
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
+
+
+var prevTasksDelayed = function(curr_x){
+     var prevTasks = computeTasksBeforeCurrent(curr_x);
+    
+     if(prevTasks.length > 0){
+     	for (var i=0;i<prevTasks.length;i++){
+          if(isDelayed(prevTasks[i])){
+               return true;
+          }
+          else{
+               return false;
+          }
+		}
+     }
+     else{
+          return false;
+     }
+}
 
 var computeTasksAfterCurrent = function(curr_x){
     tasks_after_curr = [];
@@ -798,7 +838,7 @@ var computeTasksAfterCurrent = function(curr_x){
         var start_x = ev.x;
         
         // if the task's x coordinate is after the current x, it is "after," so add it
-        if(curr_x < start_x){
+        if(curr_x <= start_x){
             tasks_after_curr.push(groupNum);
         }
     }
@@ -821,7 +861,7 @@ var computeTasksBeforeCurrent = function(curr_x){
         var end_x = parseFloat(start_x) + parseFloat(width);
         
         // if the task's end x coordinate is before the current x, it is "before," so add it
-        if(end_x < curr_x){
+        if(end_x <= curr_x){
             tasks_before_curr.push(groupNum);
         }
     }
@@ -942,6 +982,7 @@ var moveTasksRight = function(tasks, amount, from_initial){
         ev.startTime = startTimeObj["startTime"];
         ev.startHr = startTimeObj["startHr"];
         ev.startMin = startTimeObj["startMin"];
+        flashTeamsJSON["events"][getEventJSONIndex(groupNum)] = ev;
 
         drawEvent(ev);
         drawPopover(ev, false, false);
