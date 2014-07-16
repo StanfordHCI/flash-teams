@@ -6,7 +6,7 @@
 var DRAWING_HANDOFF = false;
 var DRAWING_COLLAB = false;
 var INTERACTION_TASK_ONE_IDNUM = 0;
-var interaction_counter = 0;
+var interaction_counter = undefined;
 
 //For Interactions
 timeline_svg.append("defs").append("marker")
@@ -64,7 +64,11 @@ function eventMousedown(task2idNum) {
         DRAWING_HANDOFF = false;
     //Draw a handoff from task one to task two
     } else if (DRAWING_HANDOFF == true) {
+        if (interaction_counter == undefined) {
+            interaction_counter = initializeInteractionCounter();
+        } 
         interaction_counter++;
+        updateStatus();
         var ev1 = flashTeamsJSON["events"][getEventJSONIndex(task1idNum)];
         var ev2 = flashTeamsJSON["events"][getEventJSONIndex(task2idNum)];
         var task1X = ev1.x;
@@ -97,7 +101,11 @@ function eventMousedown(task2idNum) {
 
         var overlap = eventsOverlap(task1X, task1Width, task2X, task2Width);
         if (overlap > 0) {
+            if (interaction_counter == undefined) {
+                interaction_counter = initializeInteractionCounter();
+            }
             interaction_counter++;
+            updateStatus();
             var collabData = {"event1":task1idNum, "event2":task2idNum, 
                 "type":"collaboration", "description":"", "id":interaction_counter};
             flashTeamsJSON.interactions.push(collabData);
@@ -219,12 +227,12 @@ function drawHandoff(handoffData) {
         title: "Handoff",
         content: 'Description of Handoff Materials: '
         +'<textarea rows="2.5" id="interactionNotes_' + handoffId + '"></textarea>'
-        + '<button type="button" id="saveHandoff' + handoffId + '"'
+        + '<button type="button" class="btn btn-success" id="saveHandoff' + handoffId + '"'
             +' onclick="saveHandoff(' + handoffId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + handoffId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + handoffId + '"'
             +' onclick="deleteInteraction(' + handoffId +');">Delete</button>',
         container: $("#timeline-container")
-    })
+    });
 }
 
 //Save handoff notes and update popover
@@ -233,9 +241,9 @@ function saveHandoff(intId) {
     var notes = $("#interactionNotes_" + intId).val()
     $("#interaction_" + intId).data('popover').options.content = 'Description of Handoff Materials: '
         +'<textarea rows="2" id="interactionNotes_' + intId + '">' + notes + '</textarea>'
-        + '<button type="button" id="saveHandoff' + intId + '"'
+        + '<button type="button" class="btn btn-success" class="btn" id="saveHandoff' + intId + '"'
         +' onclick="saveHandoff(' + intId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + intId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + intId + '"'
         +' onclick="deleteInteraction(' + intId +');">Delete</button>';
 
     //Update JSON
@@ -320,9 +328,9 @@ function drawCollabPopover(collabId) {
         title: "Collaboration",
         content: 'Description of Collaborative Work: '
         +'<textarea rows="2.5" id="collabNotes_' + collabId + '"></textarea>'
-        + '<button type="button" id="saveCollab' + collabId + '"'
+        + '<button type="button" class="btn btn-success" id="saveCollab' + collabId + '"'
             +' onclick="saveCollab(' + collabId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + collabId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + collabId + '"'
             +' onclick="deleteInteraction(' + collabId +');">Delete</button>',
         container: $("#timeline-container")
     });
@@ -334,9 +342,9 @@ function saveCollab(intId) {
     var notes = $("#collabNotes_" + intId).val()
     $("#interaction_" + intId).data('popover').options.content =   'Description of Collaborative Work: '
         +'<textarea rows="2.5" id="collabNotes_' + intId + '">' + notes + '</textarea>'
-        + '<button type="button" id="saveCollab' + intId + '"'
+        + '<button type="button" class="btn btn-success" id="saveCollab' + intId + '"'
         +' onclick="saveCollab(' + intId +');">Save</button>          '
-        + '<button type="button" id="deleteInteraction_' + intId + '"'
+        + '<button type="button" class="btn btn-danger" id="deleteInteraction_' + intId + '"'
         +' onclick="deleteInteraction(' + intId +');">Delete</button>';
 
     //Update JSON
@@ -353,12 +361,11 @@ function deleteInteraction(intId) {
     $("#interaction_" + intId).popover("destroy");
 
     //Delete from JSON
-    //var indexOfJSON = getIntJSONIndex(intId);
-    //flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    var indexOfJSON = getIntJSONIndex(intId);
+    flashTeamsJSON["interactions"].splice(indexOfJSON, 1);
+    updateStatus();
 
-    //console.log("REMOVING INTERACTION ID: " + intId);
-
-    //Delete Rectangle
+    //Delete Arrow or Rectangle
     $("#interaction_" + intId).remove();
 }
 
@@ -407,6 +414,19 @@ function getIntJSONIndex(idNum) {
         if (flashTeamsJSON["interactions"][i].id == idNum) {
             return i;
         }
+    }
+}
+
+function initializeInteractionCounter() {
+    if (flashTeamsJSON["interactions"].length == 0) return 0; 
+    else {
+        var highestId = 0;
+        for (i = 0; i < flashTeamsJSON["interactions"].length; i++) {
+            if (flashTeamsJSON["interactions"][i].id > highestId) {
+                highestId = flashTeamsJSON["interactions"][i].id;
+            }
+        }
+        return highestId;
     }
 }
 
