@@ -25,6 +25,10 @@ var cursor = null;
 var cursor_interval_id = null;
 var cursor_interval_live = false;
 var cursor_details;
+
+var team_was_started; // set to true when a team has started to know that this team was already started at some point
+var team_has_ended; // set to true when a team has ended to know that this team was already ended at some point
+
 var tracking_tasks_interval_id;
 var user_poll = false;
 var user_loaded_before_team_start = false;
@@ -105,6 +109,7 @@ if(e.which == 13) {
 
 function endTeam() {
     $('#confirmEnd').modal('hide');
+    team_has_ended = true;
     updateStatus(false);
     stopCursor();
     stopProjectStatus();
@@ -459,10 +464,11 @@ var loadData = function(){
 // user must call this startTeam(true, )
 var startTeam = function(firstTime){
     console.log("STARTING TEAM");
-
+	
     if(!in_progress) {
         recordStartTime();
         addAllFolders();
+        team_was_started = true;
         flashTeamsJSON["original_status"] = loadedStatus;
         console.log("flashTeamsJSON['original_status']: " + flashTeamsJSON["original_status"]);
         in_progress = true; // TODO: set before this?
@@ -1247,6 +1253,8 @@ var constructStatusObj = function(){
     var flash_team_id = $("#flash_team_id").val();
     flashTeamsJSON["id"] = flash_team_id;
     flashTeamsJSON["title"] = document.getElementById("ft-name").innerHTML;
+    flashTeamsJSON["teamstarted"] = team_was_started;
+    flashTeamsJSON["teamended"] = team_has_ended;
     //flashTeamsJSON["author"] = 
    
     var localStatus = {};
@@ -1274,6 +1282,11 @@ var updateStatus = function(flash_team_in_progress){
         localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
+    
+    if(team_was_started != true && team_has_ended != true){
+    flashTeamsJSON["original_status"] = flashTeamsJSON["status"]
+    }
+    
     var localStatusJSON = JSON.stringify(localStatus);
     //console.log("updating string: " + localStatusJSON);
 
