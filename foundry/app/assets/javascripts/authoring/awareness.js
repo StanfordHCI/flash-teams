@@ -1310,8 +1310,33 @@ var sendEmailOnEarlyCompletion = function(blue_width){
     early_completion_helper(remaining_tasks,early_minutes);
 };
 
+function confirmCompleteTask(groupNum) {
+    console.log("CLICKED COMPLETE TASK");
+ 
+    var label = document.getElementById("confirmDeleteLabel");
+    label.innerHTML = "Complete Event?";
+
+    var indexOfJSON = getEventJSONIndex(groupNum);
+    var events = flashTeamsJSON["events"];
+    var eventToComplete = events[indexOfJSON];
+
+    var alertText = document.getElementById("confirmDeleteText");
+    alertText.innerHTML = "Are you sure you want to complete " + eventToComplete["title"] + "?";
+
+    var completeButton = document.getElementById("deleteButton");
+    completeButton.innerHTML = "Complete event";
+
+    $('#confirmDelete').modal('show');
+    
+    //Calls completeTask function if user confirms the complete
+    document.getElementById("deleteButton").onclick=function(){completeTask(groupNum)};
+    hidePopover(groupNum); 
+}
+
+
 var completeTask = function(groupNum){
     console.log("COMPLETED TASK");
+    $('#confirmDelete').modal('hide');
     var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
 
     var cursor_x = cursor.attr("x1");

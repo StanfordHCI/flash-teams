@@ -13,6 +13,7 @@ class FlashTeamsController < ApplicationController
 
   def create
     name = flash_team_params(params[:flash_team])[:name]
+
     author = flash_team_params(params[:flash_team])[:author]
     @flash_team = FlashTeam.create(:name => name, :author => author)
 
@@ -20,6 +21,7 @@ class FlashTeamsController < ApplicationController
     id = @flash_team[:id]
 
     # store in flash team
+
     @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + author + '"}'
 
     if @flash_team.save
