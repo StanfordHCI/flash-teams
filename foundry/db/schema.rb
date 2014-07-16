@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20131127015448) do
 
   create_table "flash_teams", force: true do |t|
     t.string   "name"
+    t.string   "author"
     t.text     "json"
     t.text     "status"
     t.text     "notification_email_status"
