@@ -1330,6 +1330,7 @@ function confirmCompleteTask(groupNum) {
     
     //Calls completeTask function if user confirms the complete
     document.getElementById("deleteButton").onclick=function(){completeTask(groupNum)};
+    hidePopover(groupNum); 
 }
 
 

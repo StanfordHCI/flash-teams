@@ -85,7 +85,6 @@ function editablePopoverObj(eventObj) {
     return obj;
 };
 
-//maggie -> delete event is called here
 
 /*
  * Input(s): 
