@@ -13,18 +13,21 @@ class FlashTeamsController < ApplicationController
 
   def create
     name = flash_team_params(params[:flash_team])[:name]
-    #author = flash_team_params(params[:flash_team][:author])
-    #@flash_team = FlashTeam.create(:name => name, :author => author)
-    
-    @flash_team = FlashTeam.create(:name => name)
 
+    author = flash_team_params(params[:flash_team])[:author]
+    @flash_team = FlashTeam.create(:name => name, :author => author)
 
     # get id
     id = @flash_team[:id]
 
     # store in flash team
+<<<<<<< HEAD
     @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [] }'
     #@flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [],"author": ' + author + ' }'
+=======
+    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + author + '"}'
+
+>>>>>>> master
     if @flash_team.save
       redirect_to @flash_team
     else
@@ -41,8 +44,8 @@ class FlashTeamsController < ApplicationController
     original = FlashTeam.find(params[:id])
 
     # Then create a copy from the original data
-    copy = FlashTeam.create(:name => original.name + " Copy")
-    copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": []}'
+    copy = FlashTeam.create(:name => original.name + " Copy", :author => original.author)
+    copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + copy.author + '"}'
     copy.status = original.status
     copy.save
 
@@ -282,7 +285,10 @@ end
       user_name = member.name
       user_role="" 
      else
-        user_name="Daniela"
+        #it is the requester
+        flash_team = FlashTeam.find(params[:id])
+        flash_team_json = JSON.parse(flash_team.json)
+        user_name = flash_team_json["author"]
         user_role="Author"
      end
 
@@ -332,6 +338,6 @@ end
    end
 
   def flash_team_params params
-    params.permit(:name)
+    params.permit(:name, :author)
   end
 end
