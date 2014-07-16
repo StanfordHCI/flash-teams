@@ -599,6 +599,8 @@ var drawDelayedTasks = function(){
     var before_tasks = computeTasksBeforeCurrent(cursor_x);
     var tasks_after = null;
     var allRanges = [];
+    
+    console.log("before_tasks: " + before_tasks);
 
     for (var i=0;i<before_tasks.length;i++){
         var groupNum = parseInt(before_tasks[i]);
