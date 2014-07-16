@@ -1321,7 +1321,7 @@ function confirmCompleteTask(groupNum) {
     var eventToComplete = events[indexOfJSON];
 
     var alertText = document.getElementById("confirmDeleteText");
-    alertText.innerHTML = "Are you sure you want to complete " + eventToComplete["title"] + " ?";
+    alertText.innerHTML = "Are you sure you want to complete " + eventToComplete["title"] + "?";
 
     var completeButton = document.getElementById("deleteButton");
     completeButton.innerHTML = "Complete event";
