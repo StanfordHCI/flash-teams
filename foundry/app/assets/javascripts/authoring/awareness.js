@@ -780,13 +780,6 @@ var computeLiveAndRemainingTasks = function(){
 		
         if(curr_new_x >= start_x && curr_new_x <= end_x && drawn_blue_tasks.indexOf(groupNum) == -1){
         
-/*
-        	if(isDelayed(groupNum)){
-				console.log("THIS TASK IS DELAYED BUT NOT YET COMPLETED: " + groupNum);
-				var tasks_after = computeTasksAfterCurrent(curr_new_x);
-				console.log("THIS DELAYED TASK HAS A TASKS_AFTER COUNT OF: " + tasks_after);
-			}
-*/
 		         //console.log("previous task does not appear to be delayed so adding task to live_task");
                    live_tasks.push(groupNum);
         
