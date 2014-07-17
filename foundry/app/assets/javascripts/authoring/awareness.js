@@ -630,6 +630,8 @@ var drawDelayedTasks = function(){
         allRanges.push([task_end, red_end]);
     }
 
+    MoveLiveToRemaining(live_tasks,remaining_tasks);
+
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
         console.log("DRAWING DELAYED TASKS AFTER UPDATE");
@@ -785,16 +787,9 @@ var computeLiveAndRemainingTasks = function(){
 				console.log("THIS DELAYED TASK HAS A TASKS_AFTER COUNT OF: " + tasks_after);
 			}
 */
-			
-			if(prevTasksDelayed(curr_new_x)){
-                 //console.log("previous tasks delayed so adding to remaining_task");
-                 remaining_tasks.push(groupNum);
-                }
-               
-                else{
-                   //console.log("previous task does not appear to be delayed so adding task to live_task");
+		         //console.log("previous task does not appear to be delayed so adding task to live_task");
                    live_tasks.push(groupNum);
-               }
+        
         
         } else if(curr_new_x < start_x){
             remaining_tasks.push(groupNum);
@@ -1100,6 +1095,9 @@ var trackLiveAndRemainingTasks = function() {
             }
         }
 
+        
+        MoveLiveToRemaining(new_live_tasks, new_remaining_tasks);
+
         for (var j=0;j<remaining_tasks.length;j++){
             var groupNum = parseInt(remaining_tasks[j]);
             if (new_live_tasks.indexOf(groupNum) != -1) { // groupNum is now live
@@ -1118,6 +1116,29 @@ var trackLiveAndRemainingTasks = function() {
         }
     }, fire_interval);
 };
+
+//moves live task to remaining task if prev task is delayed
+function MoveLiveToRemaining(new_live_tasks,new_remaining_tasks){
+    var tmp_live_tasks = new_live_tasks;
+   
+    for (var j=0;j<tmp_live_tasks.length;j++){
+        var groupNum = parseInt(tmp_live_tasks[j]);
+
+        var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
+        var start_x = ev.x;
+        
+        if(prevTasksDelayed(start_x)){
+                 //console.log("previous tasks delayed so adding to remaining_task");
+                 new_remaining_tasks.push(groupNum);
+
+                 //remove task from live array
+                 new_live_tasks.splice(new_live_tasks.indexOf(tmp_live_tasks[j]), 1);
+
+        }
+    }
+
+}
+
 
 //Search all handoffs, return those that involve only two remaining tasks
 function getHandoffs(tasks) {
