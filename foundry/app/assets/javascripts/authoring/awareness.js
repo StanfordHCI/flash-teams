@@ -987,7 +987,7 @@ var moveTasksRight = function(tasks, amount, from_initial){
     tasks_with_current = tasks_with_current.concat(delayed_tasks);
     drawInteractions(tasks_with_current);
 
-    //updateStatus(true);
+    updateStatus();
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
