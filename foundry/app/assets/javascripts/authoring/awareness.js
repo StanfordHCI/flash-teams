@@ -1034,7 +1034,7 @@ var moveRemainingTasksLeft = function(amount){
         var start_x = ev.x;
         var width = getWidth(ev);
         var end_x = parseFloat(start_x) + parseFloat(width);
-        if (end_x > lastEndTime){
+        if (end_x >= lastEndTime){
             lastEndTime = end_x;
         }
     }
@@ -1045,7 +1045,7 @@ var moveRemainingTasksLeft = function(amount){
         var start_x = ev.x;
         var width = getWidth(ev);
         var end_x = parseFloat(start_x) + parseFloat(width);
-        if (start_x > lastEndTime + 15){
+        if (start_x >= lastEndTime){
             to_move.push(evNum);
         }
     }
