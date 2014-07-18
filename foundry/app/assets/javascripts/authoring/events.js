@@ -858,24 +858,24 @@ function removeAllMemberLines(eventObj){
 //shows an alert asking the user to confirm that they want to delete an event
 function confirmDeleteEvent(eventId) {
 
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Delete Event?";
 
     var indexOfJSON = getEventJSONIndex(eventId);
     var events = flashTeamsJSON["events"];
     var eventToDelete = events[indexOfJSON];
 
-    var alertText = document.getElementById("confirmDeleteText");
-    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + " ?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
+    var alertText = document.getElementById("confirmActionText");
+    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + "?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
 
-    var deleteButton = document.getElementById("deleteButton");
+    var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Delete event";
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
     
 
     //Calls deleteEvent function if user confirms the delete
-    document.getElementById("deleteButton").onclick=function(){deleteEvent(eventId)};
+    document.getElementById("confirmButton").onclick=function(){deleteEvent(eventId)};
 }
 
 
@@ -883,7 +883,7 @@ function confirmDeleteEvent(eventId) {
 // then, calls removeTask to remove the task from the timeline
 function deleteEvent(eventId){
 
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
 
 	var indexOfJSON = getEventJSONIndex(eventId);
 	var events = flashTeamsJSON["events"];

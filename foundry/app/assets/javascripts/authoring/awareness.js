@@ -96,15 +96,9 @@ $("#flashTeamStartBtn").click(function(){
 });
 
 
-$('#confirmEnd').keypress(function(e){
-if(e.which == 13) {
-    //console.log("PRESSED ENTER KEY ON CONFIRM END TEAM POPUP");
-    endTeam();
- }
-});
-
 function endTeam() {
-    $('#confirmEnd').modal('hide');
+    console.log("TEAM ENDED");
+    $('#confirmAction').modal('hide');
     updateStatus(false);
     stopCursor();
     stopProjectStatus();
@@ -115,7 +109,7 @@ function endTeam() {
 
 //Asks user to confirm that they want to end the team
 $("#flashTeamEndBtn").click(function(){
-    var bodyText = document.getElementById("confirmEndText");
+    var bodyText = document.getElementById("confirmActionText");
     updateStatus();
     if ((live_tasks.length == 0) && (remaining_tasks.length == 0) && (delayed_tasks.length == 0)) {
         bodyText.innerHTML = "Are you sure you want to end " + flashTeamsJSON["title"] + "?";
@@ -124,14 +118,17 @@ $("#flashTeamEndBtn").click(function(){
         //var progressRemaining = Math.round(100 - curr_status_width);
         bodyText.innerHTML = flashTeamsJSON["title"] + " is still in progress!  Are you sure you want to end the team?";
     }
-    $('#confirmEnd').modal('show');
+    var confirmEndTeamBtn = document.getElementById("confirmButton");
+    confirmEndTeamBtn.innerHTML = "End the team";
+    var label = document.getElementById("confirmActionLabel");
+    label.innerHTML = "End Team?";
+    $('#confirmAction').modal('show');
+
+    document.getElementById("confirmButton").onclick=function(){endTeam()};
+    
+
 });
 
-
-//If user confirms they want to end the team, ends the flash team
-$("#confirmEndTeamBtn").click(function() {
-    endTeam();
-});
 
 function stopPolling() {
     //console.log("STOPPED POLLING");
@@ -1313,30 +1310,30 @@ var sendEmailOnEarlyCompletion = function(blue_width){
 function confirmCompleteTask(groupNum) {
     console.log("CLICKED COMPLETE TASK");
  
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Complete Event?";
 
     var indexOfJSON = getEventJSONIndex(groupNum);
     var events = flashTeamsJSON["events"];
     var eventToComplete = events[indexOfJSON];
 
-    var alertText = document.getElementById("confirmDeleteText");
+    var alertText = document.getElementById("confirmActionText");
     alertText.innerHTML = "Are you sure you want to complete " + eventToComplete["title"] + "?";
 
-    var completeButton = document.getElementById("deleteButton");
+    var completeButton = document.getElementById("confirmButton");
     completeButton.innerHTML = "Complete event";
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
     
     //Calls completeTask function if user confirms the complete
-    document.getElementById("deleteButton").onclick=function(){completeTask(groupNum)};
+    document.getElementById("confirmButton").onclick=function(){completeTask(groupNum)};
     hidePopover(groupNum); 
 }
 
 
 var completeTask = function(groupNum){
     console.log("COMPLETED TASK");
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
     var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
 
     var cursor_x = cursor.attr("x1");
