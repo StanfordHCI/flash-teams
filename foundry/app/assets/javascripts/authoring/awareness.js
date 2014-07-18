@@ -806,7 +806,6 @@ var computeLiveAndRemainingTasks = function(){
 
 var prevTasksDelayed = function(curr_x){
      var prevTasks = computeTasksBeforeCurrent(curr_x);
-
      if(prevTasks.length > 0){
      	for (var i=0;i<prevTasks.length;i++){
 
@@ -1111,7 +1110,7 @@ var trackLiveAndRemainingTasks = function() {
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
 
-        //updateStatus();
+       
         
 
         if(at_least_one_task_delayed || at_least_one_task_started){
@@ -1126,15 +1125,19 @@ var trackLiveAndRemainingTasks = function() {
 
 //moves live task to remaining task if prev task is delayed
 function MoveLiveToRemaining(new_live_tasks,new_remaining_tasks){
-    var tmp_live_tasks = new_live_tasks;
-   
-    for (var j=0;j<tmp_live_tasks.length;j++){
-        var groupNum = parseInt(tmp_live_tasks[j]);
+    var tmp_live_tasks = [];
+    for (var i =0 ; i<new_live_tasks.length; i++){
+        tmp_live_tasks.push(new_live_tasks[i]);
+    }
 
+
+    for (var j=0;j<tmp_live_tasks.length;j++){
+       // console.log(tmp_live_tasks.length);
+        var groupNum = parseInt(tmp_live_tasks[j]);
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var start_x = ev.x;
 
-                
+
         if(prevTasksDelayed(start_x)){
                   new_remaining_tasks.push(groupNum);
 
@@ -1143,6 +1146,7 @@ function MoveLiveToRemaining(new_live_tasks,new_remaining_tasks){
 
         }
     }
+
 
     return {"live":new_live_tasks, "remaining":new_remaining_tasks};
 
