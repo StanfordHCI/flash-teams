@@ -39,3 +39,4 @@
 //= require ./authoring/gdrive
 //= require ./authoring/bootstrap-tagsinput
 //= require ./authoring/notifications
+//= require ./authoring/tour
