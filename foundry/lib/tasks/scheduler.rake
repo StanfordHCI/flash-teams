@@ -155,13 +155,13 @@ namespace :notification do
               cc_emails=[]
               #print delayed_event["members"]
               delayed_event["members"].each do |cc_member_id|
-                #cc_uniq = cc_member["uniq"]
+                 #cc_uniq = cc_member["uniq"]
                  cc_member = flash_team_members.detect{|m| m["id"].to_i == cc_member_id.to_i}
                  cc_uniq = cc_member["uniq"]
                  cc_emails.push(Member.where(:uniq => cc_uniq.to_s)[0].email)
               end
-              print "list of CCed emails: "
-              print cc_emails
+              #print "list of CCed emails: "
+              #print cc_emails
 
               #email_dri = Member.where(:uniq => dri_uniq)[0].email
               if Member.where(:uniq => dri_uniq.to_s)[0]==nil
