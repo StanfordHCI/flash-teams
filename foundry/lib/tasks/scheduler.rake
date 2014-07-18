@@ -28,7 +28,6 @@ namespace :notification do
    	flash_teams.each do |flash_team|
       next if flash_team.status == nil
       
-
       flash_team_status = JSON.parse(flash_team.status)
            	
       flash_team_json=flash_team_status["flash_teams_json"]
@@ -54,16 +53,15 @@ namespace :notification do
       else
         notification_email_status=[]
       end
-      flash_team_events=flash_team_json["events"]
-   
      
-
+      flash_team_events=flash_team_json["events"]      
       delayed_tasks_num=flash_team_status["delayed_tasks"]
       remaining_tasks = flash_team_status["remaining_tasks"]
       live_tasks = flash_team_status["live_tasks"]
-      #get members of live and remaining tasks
 
+      #get members of live and remaining tasks
       roles_remaining_live=[];
+
       remaining_tasks.each do |remaining_task|
          groupNum = remaining_task;
          flash_team_events.each do |event|
@@ -99,19 +97,18 @@ namespace :notification do
           end
         end
       end
-
       #end
      
-      /get index of delayed event in events array/
-      
+      #/get index of delayed event in events array/    
       delayed_tasks_num.each do |groupNum|
-        
         start_time= delayed_tasks_time[groupNum]
         delta_time_sec= (cur_time - start_time)/1000
 
         print "elapsed time: "
         print delta_time_sec 
 
+        #if scheduler is called before 1 call period an email is sent to the autor
+        # the author should estimate the delay and all other workers will automatically get informed of the delay
         if delta_time_sec<=call_period
           flash_team_events.each do |event|
             eventId = event["id"];
@@ -123,13 +120,16 @@ namespace :notification do
                 print "error: delayed event has no members\n"
                 break
               end
+
               dri =  delayed_event["dri"]
-              dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
+              dri_member= flash_team_members.detect{|m| m["id"].to_i == dri.to_i}
               if dri_member  == nil
                 puts "dri is not defined"
-                dri_member= flash_team_members.detect{|m| m["role"] == delayed_event["members"][0]["name"]}
+                #set the first member as the dri and email the first member
+                dri_member= flash_team_members.detect{|m| m["id"].to_i == delayed_event["members"][0].to_i}
               end
               next if dri_member  == nil
+
               dri_role=dri_member["role"]
               event_name= delayed_event["title"]
               
@@ -139,23 +139,24 @@ namespace :notification do
               #url = url_for :controller => 'flash_teams',:action => 'delay',:id =>team_id.to_s, :event_id => event_id.to_s
               url = default_url+"/flash_teams/"+team_id.to_s+"/"+event_id.to_s+"/delay"
               member_id= dri_member["id"]
-              dri_event = delayed_event["members"].detect{|m| m["name"] == dri_role}
+              #dri_event = delayed_event["members"].detect{|m| m["name"] == dri_role}
              
-             if dri_event  == nil
-                print "dri_event is nil"
-                next
-              end
+            # if dri_event  == nil
+             #   print "dri_event is nil"
+             #   next
+             # end
 
-              dri_uniq = dri_event["uniq"]
-              
+              dri_uniq = dri_member["uniq"]
               next if dri_uniq == nil
               
-              #get array of emails to be CCed
+              #get array of emails to be CCed. (All the members of the team are CCed)
               cc_emails=[]
-              print delayed_event["members"]
-              delayed_event["members"].each do |cc_member|
-                cc_uniq = cc_member["uniq"]
-                cc_emails.push(Member.where(:uniq => cc_uniq.to_s)[0].email)
+              #print delayed_event["members"]
+              delayed_event["members"].each do |cc_member_id|
+                #cc_uniq = cc_member["uniq"]
+                 cc_member= flash_team_members.detect{|m| m["id"].to_i == cc_member_id.to_i}
+                 cc_uniq == cc_member["uniq"]
+                 cc_emails.push(Member.where(:uniq => cc_uniq.to_s)[0].email)
               end
               print "list of CCed emails: "
               print cc_emails
@@ -165,6 +166,7 @@ namespace :notification do
                 puts "dri has not entered information yet"
                 next
               end
+              
               email_dri = Member.where(:uniq => dri_uniq.to_s)[0].email
               if email_dri == nil
                 puts "dri has not entered email yet"
@@ -175,6 +177,8 @@ namespace :notification do
             end
           end
         end
+        #finished sending email to dri to ask for the delay
+        
           print "******\n"
           print notification_email_status
           print groupNum
