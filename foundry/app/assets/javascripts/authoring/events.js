@@ -668,7 +668,7 @@ function drawShade(eventObj, firstTime) {
     }
 }
 
-function drawEachHandoff(eventObj, firstTime){
+function drawEachHandoffForEvent(eventObj){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
@@ -685,37 +685,30 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }  
             if (draw){
-                var existingHandoff = timeline_svg.selectAll("#interaction_" + inter["id"]);
-                if(existingHandoff[0].length == 0){ // first time
-                    var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
-                        "type":"handoff", "description":"", "id":inter["id"]};
-                    drawHandoff(handoffData);
-                } else {
-                    var x1 = handoffStart(ev1);
-                    var y1 = ev1.y + 50;
-                    var x2 = ev2.x + 3;
-                    var y2 = ev2.y + 50;
-
-                    $("#interaction_" + inter["id"])
-                        .attr("x1", x1)
-                        .attr("y1", y1)
-                        .attr("x2", x2)
-                        .attr("y2", y2)
-                        .attr("d", function(d) {
-                            var dx = x1 - x2,
-                            dy = y1 - y2,
-                            dr = Math.sqrt(dx * dx + dy * dy);
-                            //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
-                            return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
-                            + " 0 0,0 " + x2 + "," + (y2+15); 
-                        });
-                }
+                //Reposition an existing handoff
+                var x1 = handoffStart(ev1);
+                var y1 = ev1.y + 50;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y + 50;
+                $("#interaction_" + inter["id"])
+                    .attr("x1", x1)
+                    .attr("y1", y1)
+                    .attr("x2", x2)
+                    .attr("y2", y2)
+                    .attr("d", function(d) {
+                        var dx = x1 - x2,
+                        dy = y1 - y2,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                        //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+                        return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
+                        + " 0 0,0 " + x2 + "," + (y2+15); 
+                    });
             }
         }
     }
 }
 
-function drawEachCollab(eventObj, firstTime){
+function drawEachCollabForEvent(eventObj){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
@@ -732,12 +725,14 @@ function drawEachCollab(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var existingCollab = timeline_svg.selectAll("#interaction_" + inter["id"]);
-                if(existingCollab[0].length == 0){ // first time
+                /*var existingInter = timeline_svg.selectAll("#interaction_" + inter["id"]);
+                if(existingInter[0].length == 0){ // first time
+                    //Alexandra - I'm not convinced this ever get called? 
                     var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
                         "type":"handoff", "description":"", "id":inter["id"]};
                     drawHandoff(handoffData);
-                } else {
+                } else {*/
+                    //Reposition existing collaboration
                     var y1 = ev1.y + 17;
                     var x1 = ev1.x + 3;
                     var x2 = ev2.x + 3;
@@ -759,7 +754,7 @@ function drawEachCollab(eventObj, firstTime){
                         .attr("y", firstTaskY)
                         .attr("height", taskDistance)
                         .attr("width", overlap);
-                }
+                /*}*/
             }
         }
     }
@@ -780,8 +775,8 @@ function drawEvent(eventObj) {
     drawCollabBtn(eventObj);
     drawMemberLines(eventObj);
     drawShade(eventObj);
-    drawEachHandoff(eventObj);
-    drawEachCollab(eventObj);
+    drawEachHandoffForEvent(eventObj);
+    drawEachCollabForEvent(eventObj);
 };
 
 function drawAllPopovers() {
@@ -863,24 +858,24 @@ function removeAllMemberLines(eventObj){
 //shows an alert asking the user to confirm that they want to delete an event
 function confirmDeleteEvent(eventId) {
 
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Delete Event?";
 
     var indexOfJSON = getEventJSONIndex(eventId);
     var events = flashTeamsJSON["events"];
     var eventToDelete = events[indexOfJSON];
 
-    var alertText = document.getElementById("confirmDeleteText");
-    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + " ?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
+    var alertText = document.getElementById("confirmActionText");
+    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + "?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
 
-    var deleteButton = document.getElementById("deleteButton");
+    var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Delete event";
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
     
 
     //Calls deleteEvent function if user confirms the delete
-    document.getElementById("deleteButton").onclick=function(){deleteEvent(eventId)};
+    document.getElementById("confirmButton").onclick=function(){deleteEvent(eventId)};
 }
 
 
@@ -888,7 +883,7 @@ function confirmDeleteEvent(eventId) {
 // then, calls removeTask to remove the task from the timeline
 function deleteEvent(eventId){
 
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
 
 	var indexOfJSON = getEventJSONIndex(eventId);
 	var events = flashTeamsJSON["events"];

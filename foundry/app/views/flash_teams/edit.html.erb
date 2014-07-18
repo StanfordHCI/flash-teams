@@ -22,14 +22,11 @@
 	     <div class="span2 ft-buttons" id="ft-buttons-right">
 				<input type="button" class="btn btn-success" id="flashTeamStartBtn" value="Start Team"/>
 		        <input type="button" class="btn btn-danger" id="flashTeamEndBtn" value="End Team" style="display: none"/>
-	     </div>
-
-	     <!-- Render partial with end team confirmation alert -->
-	     <%= render :partial => "confirm_end" %>  
+	     </div> 
      </div>
 
-     	<!-- render partial with confirm delete member alert --> 
-		<%= render :partial => "confirm_delete" %>
+     	<!-- render partial with confirm action alert --> 
+		<%= render :partial => "confirm_action" %>
      
      <div class="row-fluid" style="margin-top: 40px; margin-bottom: 5px;">
      
@@ -156,6 +153,7 @@
            <div id="timeline-container" class="well" style="overflow-x:scroll; overflow-y:scroll;">
 	            <!-- render partial with timeline --> 
 				<%= render :partial => "timeline" %>
+				<%= render :partial => "confirm_action" %>
 	        </div>
 		</div> <!-- end of body (e.g., class="span9") -->    
 		
