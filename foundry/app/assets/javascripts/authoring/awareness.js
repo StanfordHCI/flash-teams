@@ -172,6 +172,8 @@ function renderEverything(firstTime) {
             renderChatbox();
             
         }
+
+
         //get user name and user role for the chat
         if(data == null){
             //console.log("RETURNING BEFORE LOAD"); 
@@ -630,7 +632,10 @@ var drawDelayedTasks = function(){
         allRanges.push([task_end, red_end]);
     }
 
-    MoveLiveToRemaining(live_tasks,remaining_tasks);
+    var tasks_tmp = MoveLiveToRemaining(live_tasks,remaining_tasks);
+    live_tasks = tasks_tmp["live"];
+    remaining_tasks = tasks_tmp["remaining"];
+
 
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
@@ -789,7 +794,11 @@ var computeLiveAndRemainingTasks = function(){
         }
     }
     
-    //updateStatus(true);
+/*    var tasks_tmp = MoveLiveToRemaining(live_tasks,remaining_tasks);
+    live_tasks = tasks_tmp["live"];
+    remaining_tasks = tasks_tmp["remaining"];
+    updateStatus(true);
+  */  
     //console.log("returning from computing live and remaining tasks");
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
@@ -797,20 +806,19 @@ var computeLiveAndRemainingTasks = function(){
 
 var prevTasksDelayed = function(curr_x){
      var prevTasks = computeTasksBeforeCurrent(curr_x);
-    
+
      if(prevTasks.length > 0){
      	for (var i=0;i<prevTasks.length;i++){
+
           if(isDelayed(prevTasks[i])){
                return true;
-          }
-          else{
-               return false;
           }
 		}
      }
      else{
           return false;
      }
+     return false;
 }
 
 var computeTasksAfterCurrent = function(curr_x){
@@ -853,7 +861,6 @@ var computeTasksBeforeCurrent = function(curr_x){
             tasks_before_curr.push(groupNum);
         }
     }
-
     return tasks_before_curr;
 };
 
@@ -1087,9 +1094,8 @@ var trackLiveAndRemainingTasks = function() {
                 at_least_one_task_delayed = true;
             }
         }
-
+      
         
-        MoveLiveToRemaining(new_live_tasks, new_remaining_tasks);
 
         for (var j=0;j<remaining_tasks.length;j++){
             var groupNum = parseInt(remaining_tasks[j]);
@@ -1098,8 +1104,16 @@ var trackLiveAndRemainingTasks = function() {
             }
         }
 
+        var tasks_tmp = MoveLiveToRemaining(new_live_tasks,new_remaining_tasks);
+        new_live_tasks = tasks_tmp["live"];
+        new_remaining_tasks = tasks_tmp["remaining"];
+        
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
+
+        //updateStatus();
+        
+
         if(at_least_one_task_delayed || at_least_one_task_started){
             updateStatus(true);
             if(at_least_one_task_delayed)
@@ -1119,16 +1133,18 @@ function MoveLiveToRemaining(new_live_tasks,new_remaining_tasks){
 
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var start_x = ev.x;
-        
+
+                
         if(prevTasksDelayed(start_x)){
-                 //console.log("previous tasks delayed so adding to remaining_task");
-                 new_remaining_tasks.push(groupNum);
+                  new_remaining_tasks.push(groupNum);
 
                  //remove task from live array
                  new_live_tasks.splice(new_live_tasks.indexOf(tmp_live_tasks[j]), 1);
 
         }
     }
+
+    return {"live":new_live_tasks, "remaining":new_remaining_tasks};
 
 }
 
@@ -1316,7 +1332,7 @@ var updateStatus = function(flash_team_in_progress){
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
     } else {
-      //  alert(in_progress);
+
         localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
