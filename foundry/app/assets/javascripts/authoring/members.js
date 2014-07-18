@@ -344,27 +344,27 @@ function confirmDeleteMember(pillId) {
     var members = flashTeamsJSON["members"];
     var memberToDelete = members[indexOfJSON].role;
 
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Remove Member?";
 
-    var alertText = document.getElementById("confirmDeleteText");
+    var alertText = document.getElementById("confirmActionText");
     alertText.innerHTML = "<b>Are you sure you want to remove " + memberToDelete + " from " + flashTeamsJSON["title"]+ "? </b><br><font size = '2'>" 
                 + memberToDelete + " will be removed from all events on the timeline. </font>";
 
-    var deleteButton = document.getElementById("deleteButton");
+    var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Remove member";
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
 
     //Calls deleteMember function if user confirms the delete
-    document.getElementById("deleteButton").onclick=function(){deleteMember(pillId)};
+    document.getElementById("confirmButton").onclick=function(){deleteMember(pillId)};
 
 }
 
 
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
 
     // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
@@ -443,7 +443,7 @@ function inviteMember(pillId) {
 };
 
 function reInviteMember(pillId) {
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
 
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/reInvite';
@@ -473,20 +473,20 @@ function confirmReplaceMember(pillId) {
     var members = flashTeamsJSON["members"];
     var memberToReplace = members[indexOfJSON].role;
 
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Replace Member?";
 
-    var alertText = document.getElementById("confirmDeleteText");
+    var alertText = document.getElementById("confirmActionText");
     alertText.innerHTML = "<b>Are you sure you want to replace " + memberToReplace + "? </b><br><font size = '2'>  The current " 
                 + memberToReplace + " will no longer have access to " + flashTeamsJSON["title"] + " and you will need to hire a new " + memberToReplace + ".</font>";
 
-    var deleteButton = document.getElementById("deleteButton");
+    var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Replace member";
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
 
     //Calls reInviteMember function if user confirms the replace
-    document.getElementById("deleteButton").onclick=function(){reInviteMember(pillId)};
+    document.getElementById("confirmButton").onclick=function(){reInviteMember(pillId)};
 
 }
 
