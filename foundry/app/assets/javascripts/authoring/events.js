@@ -633,6 +633,18 @@ function drawMemberLines(eventObj) {
     }
 };
 
+
+function getMemberIndexFromId(member_id) {
+    //debugger;
+    var index = -1;
+    for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
+        if (flashTeamsJSON["members"][i]["id"] == member_id) {
+            index = i;
+        }
+    }
+    return index;
+}
+
 // TODO: might have issues with redrawing
 function drawShade(eventObj, firstTime) {
     if(current == undefined) {return;}
@@ -642,10 +654,16 @@ function drawShade(eventObj, firstTime) {
     var task_g = getTaskGFromGroupNum(groupNum);
 
     // draw shade on main rect of this event
+    //for each event it draws the shade. 
+    //in doing so it takes its array of members FOR THAT EVENT
+    //for each member for that event it gets their ID
+    //if they are the CURRENT member
     for (var i=0; i<members.length; i++) {
-        var member = members[i];
-        var idx = getMemberIndexFromName(member["name"]);
-        if (current == idx){
+        var member_id = members[i];
+        //var idx = getMemberIndexFromName(member["name"]);
+        //var idx = getMemberIndexFromId(member);
+        //debugger;
+        if (current == member_id){
             if (currentUserIds.indexOf(groupNum) < 0){
                 currentUserIds.push(groupNum);
                 currentUserEvents.push(eventObj);
@@ -660,6 +678,7 @@ function drawShade(eventObj, firstTime) {
     }
 
     if (currentUserEvents.length > 0){
+        console.log("user events greater than 0");
         currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
         upcomingEvent = currentUserEvents[0].id; 
         task_g.selectAll("#rect_" + upcomingEvent)
