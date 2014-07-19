@@ -13,7 +13,8 @@ var authoringTour = new Tour({
 		content: "Add members to your team,"
 		+ " draw events on the timeline and assign members to them,"
 		+ " guide their communication and collaboration efforts,"
-		+ " and run your team and monitor their progress"
+		+ " and run your team and monitor their progress",
+		backdrop: true
 	}, 
 	{
 		element: "#member-container",
@@ -103,7 +104,8 @@ var expertTour = new Tour({
 		content: "Here you can view your upcoming tasks,"
 		+ "see where you should communicate with other members of the team "
 		+ "track the progress of the project, "
-		+ "and upload and download files from a shared Google Drive folder."
+		+ "and upload and download files from a shared Google Drive folder.",
+		backdrop: true
 	},
 	{
 		element: "#project-status-container",
@@ -121,6 +123,12 @@ var expertTour = new Tour({
 		title: "<b>Upcoming Tasks</b>", 
 		content: "You can also see the status of the entire project " 
 		+"as well as your next upcoming task."
+	},
+	{
+		element: "#chat-box-container" ,
+		title: "<b>Chat With the Team</b>", 
+		content: "You can use this chat feature to commmunicate with the " 
+		+"members of the team as well as the project requester."
 	}
 ]});
 
@@ -130,6 +138,6 @@ expertTour.init();
 
 $("#expertTourBtn").click(function(){
     expertTour.start(true);
-    expertTour.goTo(0); //Always start the tour at the first step 
+    //expertTour.goTo(0); //Always start the tour at the first step 
 });
 
