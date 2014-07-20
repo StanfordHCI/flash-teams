@@ -129,6 +129,45 @@ var expertTour = new Tour({
 		title: "<b>Chat With the Team</b>", 
 		content: "You can use this chat feature to commmunicate with the " 
 		+"members of the team as well as the project requester."
+	},
+	{
+		element: "#timeline-container" ,
+		title: "<b>Timeline</b>", 
+		content: "This is the timeline. Here you can view the entire project's " 
+		+"workflow. And its current status.",
+		placement: "left"
+	},
+	{
+		element: ".cursor" ,
+		title: "<b>Time Ticker</b>", 
+		content: "You can see the stage of the project as indicated by " 
+		+"the red time ticker."
+	},
+	{
+		orphan: true,
+		title: "<b>Complete Your Events</b>", 
+		content: "If you are the DRI, when you have completed the work for your event, uploaded " 
+		+"any relevant files, etc. you can click the event and choose 'Complete' to mark "
+		+"the task as done and auto notifiy the next workers that they can begin working."
+	},
+	{
+		orphan: true,
+		title: "<b>Delayed Events</b>", 
+		content: "If your work takes longer than the expected estimation, the event "
+		+"will extend in red and be marked as delayed. Foundry will email you to request "
+		+"a new estimated complete time so the downstream workers can be notified." 
+	},
+	{
+		orphan: true,
+		title: "<b>Early Events</b>", 
+		content: "Similarly, if you complete earlier than the expected estimation, the "
+		+"event will be marked in blue, downstream tasks will shift up, and "
+		+"downstream workers will be notified that they can/should start early." 
+	},
+	{
+		orphan: true,
+		title: "<b>Good luck! </b>", 
+		content: "Good luck with your project and please enjoy the use of Foundry!"
 	}
 ]});
 
