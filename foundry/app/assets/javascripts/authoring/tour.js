@@ -60,13 +60,13 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Handoffs</b>",
-		content: "Click on the black arrow button on an event to " 
+		content: "Click on the gray arrow button on an event to " 
 		+"start drawing a handoff, click another event to complete the interaction."
 	},
 	{
 		orphan: true,
 		title: "<b>Collaborations</b>",
-		content: "Click on the gray double-sided arrow button on an event to " 
+		content: "Click on the black double-sided arrow button on an event to " 
 		+"start drawing a collaboration between two overlapping events, "
 		+" click another event to complete the interaction."
 	},
@@ -78,11 +78,31 @@ var authoringTour = new Tour({
 		+"by clicking 'Upload' on the event."
 	},
 	{
+		orphan: true,
+		title: "<b>Open in Drive</b>",
+		content: "After clicking on 'Upload' on the event, click on the "
+		+"'Open in Drive' button on the top right side of the Google " 
+		+"drive page so that you can upload to the drive."
+	},
+	{
+		element: "#search-events-container" ,
+		title: "<b>Event Library</b>", 
+		content: "This is the event library. Here you can search over " 
+		+"all previously created events by entering in keywords, inputs, "
+		+"and outputs, and drag them to your timeline."
+	},
+	{
 		element: "#flashTeamStartBtn",
 		title: "<b>Start the Team</b>",
 		content: "When you are done creating your workflow and hiring team members "
 		+"click here to begin the team! ",
 		placement: "bottom"
+	},
+	{
+		element: "#chat-box-container" ,
+		title: "<b>Chat With the Team</b>", 
+		content: "Once the team has started working, you can chat with " 
+		+"all of the team members in this group chat box."
 	}
 ]});
 
@@ -152,6 +172,13 @@ var expertTour = new Tour({
 	},
 	{
 		orphan: true,
+		title: "<b>Open in Drive</b>",
+		content: "After clicking on 'Upload' on the event, click on the "
+		+"'Open in Drive' button on the top right side of the Google " 
+		+"drive page so that you can upload to the drive."
+	},
+	{
+		orphan: true,
 		title: "<b>Delayed Events</b>", 
 		content: "If your work takes longer than the expected estimation, the event "
 		+"will extend in red and be marked as delayed. Foundry will email you to request "
@@ -177,6 +204,6 @@ expertTour.init();
 
 $("#expertTourBtn").click(function(){
     expertTour.start(true);
-    //expertTour.goTo(0); //Always start the tour at the first step 
+    expertTour.goTo(0); //Always start the tour at the first step 
 });
 
