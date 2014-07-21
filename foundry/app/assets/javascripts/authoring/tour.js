@@ -10,45 +10,36 @@ var authoringTour = new Tour({
 	{
 		orphan: true, 
 		title: "<b>Welcome to Foundry</b>", 
-		content: "Add members to your team,"
-		+ " draw events on the timeline and assign members to them,"
-		+ " guide their communication and collaboration efforts,"
-		+ " and run your team and monitor their progress",
+		content: "Foundry is an online platform that allows you to create "
+		+"and manage teams of experts. Foundry allows you to create a team "
+		+"workflow, guide the team's communication and collaboration efforts, "
+		+"and monitor the team's progress.",
 		backdrop: true
 	}, 
 	{
 		element: "#member-container",
 		title: "<b>Team Roles</b>",
-		content: "In this panel, you can add role-based members to the team"
+		content: "In this panel, you can add role-based members to the team "
+		+"(e.g., a team for an eBook may desire an Illustrator who knows " +
+		+"character design)"
 	},
 	{
 		element: "#member-container",
 		title: "<b>Customize Each Role</b>",
-		content: "You can add categories to each roles as well as necessary "
+		content: "Once you have added a role, you assign it to a category"
+		+"and specify the necessary skills for that role" 
 		+"skills based on the oDesk platform."
 	},
 	{
 		orphan: true,
 		title: "<b>Interactive Task-Based Timeline</b>",
-		content: "This is the timeline. You can click to add an event."
+		content: "This is the timeline. You can click to add an event"
+		+"and customize it."
 	},
 	{
 		orphan: true,
 		title: "<b>Customize the Events</b>",
-		content: "Use the pop-up form to change the details of the events"
-	},
-	{
-		orphan: true,
-		title: "<b>Customize the Events</b>",
-		content: "Change the start time and duration, add members to the event " 
-		+"assign a directly-responsible individual, add notes for the workers "
-		+"and add inputs and outputs to each event to guide the work."
-	},
-	{
-		orphan: true,
-		title: "<b>Calendar Interface Interactions</b>",
-		content: "Drag the event to change the start time and " 
-		+"drag the handles to change the duration of the event"
+		content: "Use the pop-up form to change the details of the events."
 	},
 	{
 		orphan: true,
@@ -66,8 +57,8 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Google Drive Integration</b>",
-		content: "When events are drawn, Google Drive folders are automatically " 
-		+"created for each event, workers can upload their work to the folders "
+		content: "Google Drive folders are automatically created for each "
+		+"event, workers can upload their work to the folders "
 		+"by clicking 'Upload' on the event."
 	},
 	{
