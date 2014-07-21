@@ -11,9 +11,9 @@ namespace :notification do
    #change default_url_option to current host
    #default_url_options[:host] = 'flashteams.herokuapp.com'
    #default_url_options[:host] = 'localhost:3000'
-   
+   #default_url = 'foundry-app.herokuapp.com'
 
-   default_url = 'foundry-app.herokuapp.com'
+   default_url = 'foundry-mediax.herokuapp.com'
    #script should be scheduled to run every call_period seconds
    call_period= 10 * 60 #seconds
    puts "checking if a task is delayed..."
