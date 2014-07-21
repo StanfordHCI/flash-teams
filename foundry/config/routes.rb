@@ -62,6 +62,7 @@ Foundry::Application.routes.draw do
   get '/flash_teams/event_library' => 'flash_teams#event_library'
   get '/flash_teams/event_search' => 'flash_teams#event_search'
   post '/flash_teams/rename' => 'flash_teams#rename'
+  
 
   resources :flash_teams do
     member do 
@@ -92,4 +93,26 @@ Foundry::Application.routes.draw do
       post :register
     end
   end
+  
+  get '/users/logout' => 'users#logout'
+  get '/users/login' => 'users#login'
+  
+  post '/users/post_login' => 'users#post_login'
+  post '/users/post_login' => 'users#post_login'
+  
+  resources :users do
+    member do
+      post :create
+      #post :post_login
+      #get :logout
+      #delete :logout
+    end
+  end
+  
+  # controller :sessions do
+#     #get 'login' => :new
+#     #post 'login' => :create
+#     delete 'logout' => :destroy
+# end
+
 end
