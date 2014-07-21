@@ -26,7 +26,6 @@ class FlashTeamsController < ApplicationController
 
   def create
   
-  	#TODO: check for session is not null 
   	if !session[:user].nil?
     name = flash_team_params(params[:flash_team])[:name]
 
