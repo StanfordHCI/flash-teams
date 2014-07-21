@@ -23,12 +23,10 @@ class UsersController < ApplicationController
 		
 		if @user.save
 			session[:user] = @user
-			flash[:notice] = "Account created!"
-			
-			#redirect_to(:controller => :flash_teams, :action => :index)
-			#redirect_to(:controller => :flash_teams, :action => :index, :user_id => @user.id)
+			flash[:notice] = "Account created! Welcome, #{session[:user].username}!"
+
+
 			redirect_to(:controller => :flash_teams, :action => :index)
-    		#redirect_to(:action => :login)
 		else
     		render(:action => :new)
 		end	#end if user.save conditional 

@@ -61,7 +61,8 @@ class FlashTeamsController < ApplicationController
   def duplicate
   
   	if !session[:user].nil?
-  	 @user = session[:user]
+  	
+  	@user = session[:user]
   	
     # Locate data from the original
     original = FlashTeam.find(params[:id])
@@ -82,24 +83,16 @@ class FlashTeamsController < ApplicationController
   def index
   
   		# check to see if the user id exists in the database 
-		#if User.where(:id => params[:user_id]).blank? #user id does not exist 
 		if session[:user].nil?
 			@user = nil 
 			@title = "Invalid User ID"
 			@flash_teams = nil
 			redirect_to(welcome_index_path)
-		
 		else
-		
 			@user = User.find(session[:user].id)
 			
-			#if !session[:user].nil? && session[:user] == @user
-				#@user = User.find(params[:user_id])
-				#@user = session[:user]
-				#@flash_teams = FlashTeam.all.order(:id).reverse_order	
-				@flash_teams = FlashTeam.where(:user_id => @user.id)
-				#@flash_teams = FlashTeam.where(user_id: @user.id).order(:id).reverse_order	
-			#end		
+			@flash_teams = FlashTeam.where(:user_id => @user.id).order(:id).reverse_order	
+			#@flash_teams = FlashTeam.where(user_id: @user.id).order(:id).reverse_order		
 		end
   end
   
@@ -110,20 +103,18 @@ rescue_from ActiveRecord::RecordNotFound do
 end
  
   def edit
-  
   	if session[:user].nil?
 		@user = nil 
 		@title = "Invalid User ID"
 		@flash_team = nil
-		redirect_to(welcome_index_path)
-				
+		redirect_to(welcome_index_path)				
   	else
-  	
-    @flash_team = FlashTeam.find(params[:id])
+    	@flash_team = FlashTeam.find(params[:id])
     
-    if @flash_team.user_id != session[:user].id
-    	redirect_to(flash_teams_path)
-    end
+		if @flash_team.user_id != session[:user].id
+			flash[:notice] = 'You cannot access this flash team.' 
+    		redirect_to(flash_teams_path)
+		end
 
     #customize user views
     status = @flash_team.status 
