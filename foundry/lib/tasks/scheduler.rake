@@ -104,7 +104,8 @@ namespace :notification do
       #/get index of delayed event in events array/    
       delayed_tasks_num.each do |groupNum|
         start_time= delayed_tasks_time[groupNum]
-        delta_time_sec= (cur_time - start_time)/1000
+      
+        delta_time_sec= (cur_time.to_i - start_time.to_i)/1000
 
         print "elapsed time: "
         print delta_time_sec 
@@ -158,6 +159,9 @@ namespace :notification do
                  #cc_uniq = cc_member["uniq"]
                  cc_member = flash_team_members.detect{|m| m["id"].to_i == cc_member_id.to_i}
                  cc_uniq = cc_member["uniq"]
+                 
+                 next if Member.where(:uniq => cc_uniq.to_s)[0] == nil
+
                  cc_emails.push(Member.where(:uniq => cc_uniq.to_s)[0].email)
               end
               #print "list of CCed emails: "
