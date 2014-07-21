@@ -990,8 +990,8 @@ var moveTasksRight = function(tasks, amount, from_initial){
     var tasks_with_current = tasks.slice(0);
     tasks_with_current = tasks_with_current.concat(delayed_tasks);
     drawInteractions(tasks_with_current);
-
-    updateStatus();
+  
+    //updateStatus();
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -1336,6 +1336,7 @@ var constructStatusObj = function(){
 };
 
 var updateStatus = function(flash_team_in_progress){
+    //console.log("in updateStatus");
     var localStatus = constructStatusObj();
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
@@ -1419,6 +1420,7 @@ var completeTask = function(groupNum){
     if (idx != -1) { // delayed task
         delayed_tasks.splice(idx, 1);
         completed_red_tasks.push(groupNum);
+        updateStatus(true);
         console.log("removed task from delayed and added to completed_red");
         sendEmailOnCompletionOfDelayedTask(groupNum);
     } else {
@@ -1429,6 +1431,7 @@ var completeTask = function(groupNum){
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);
                 moveRemainingTasksLeft(blue_width);
+                updateStatus(true);
                 sendEmailOnEarlyCompletion(blue_width);
             }
             live_tasks.splice(idx, 1);
