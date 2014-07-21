@@ -63,7 +63,7 @@ class UsersController < ApplicationController
 				redirect_to(:controller => :flash_teams, :action => :index)
 							
 		else #login does not exist in the database
-			flash[:notice] = "Invalid username and/or password."
+			flash[:notice] = "Invalid username."
 			render(:action => :login)
 		end
 		
