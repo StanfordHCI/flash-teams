@@ -127,7 +127,7 @@ function DelayedTaskFinished_helper(remaining_tasks,title){
 
                         if (remaining_time != undefined){
 	                       sendDelayedTaskFinishedEmail(remaining_time,uniq,title);
-                           console.log("sent delayed task finished email to"+tmp_email+" "+remaining_time);
+                           //console.log("sent delayed task finished email to"+tmp_email+" "+remaining_time);
                        }          
 	             	}
 	            }
