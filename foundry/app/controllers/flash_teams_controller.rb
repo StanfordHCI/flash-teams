@@ -42,7 +42,8 @@ class FlashTeamsController < ApplicationController
     @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + author + '"}'
 
     if @flash_team.save
-      redirect_to @flash_team
+      #redirect_to @flash_team
+      redirect_to edit_flash_team_path(id)
     else
       render 'new'
     end
@@ -310,27 +311,29 @@ end
       flash_team.notification_email_status = JSON.dump(notification_email_status)
       flash_team.save
 
-      flash_team_status = JSON.parse(flash_team.status)
-      flash_team_json=flash_team_status["flash_teams_json"]
-      flash_team_members=flash_team_json["members"]
-      flash_team_events=flash_team_json["events"]
-    
-      #dri_role=flash_team_events[event_id.to_f]["members"][0]
-      dri =  flash_team_events[event_id.to_f]["dri"]
-      dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
-      if dri_member  == nil
-        puts "dri is not defined"
-        dri_member= flash_team_members.detect{|m| m["role"] == flash_team_events[event_id.to_f]["members"][0]["name"]}
-      end
-      dri_role=dri_member["role"]
-      event_name= flash_team_events[event_id.to_f]["title"]
-      flash_team_members.each do |member|
-          #tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
-          #member_id= tmp_member["id"]
-          uniq = member["uniq"]
-          email = Member.where(:uniq => uniq)[0].email
-          UserMailer.send_task_delayed_email(email,@delay_estimation,event_name,dri_role).deliver
-       
+      if !flash_team.status.blank?
+        flash_team_status = JSON.parse(flash_team.status)
+        flash_team_json=flash_team_status["flash_teams_json"]
+        flash_team_members=flash_team_json["members"]
+        flash_team_events=flash_team_json["events"]
+      
+        #dri_role=flash_team_events[event_id.to_f]["members"][0]
+        dri =  flash_team_events[event_id.to_f]["dri"]
+        dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
+        if dri_member  == nil
+          puts "dri is not defined"
+          dri_member= flash_team_members.detect{|m| m["id"].to_i == flash_team_events[event_id.to_f]["members"][0].to_i}
+        end
+        dri_role=dri_member["role"]
+        event_name= flash_team_events[event_id.to_f]["title"]
+        flash_team_members.each do |member|
+            #tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
+            #member_id= tmp_member["id"]
+            uniq = member["uniq"]
+            email = Member.where(:uniq => uniq)[0].email
+            UserMailer.send_task_delayed_email(email,@delay_estimation,event_name,dri_role).deliver
+         
+        end
       end
   end
 
