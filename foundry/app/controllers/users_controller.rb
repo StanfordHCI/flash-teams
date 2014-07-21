@@ -64,7 +64,7 @@ class UsersController < ApplicationController
 							
 		else #login does not exist in the database
 			flash[:notice] = "Invalid username and/or password."
-			render(:action => :new)
+			render(:action => :login)
 		end
 		
 	end #end post_login
