@@ -28,13 +28,6 @@ var authoringTour = new Tour({
 		+"skills based on the oDesk platform."
 	},
 	{
-		element: "#member-container",
-		title: "<b>Invite the Members</b>",
-		content: "When you have recruited members to your team, use the invite "
-		+"link at the bottom of the popover to send an invitation link to the workers, "
-		+" so they can log in to Foundry and track their progress."
-	},
-	{
 		orphan: true,
 		title: "<b>Interactive Task-Based Timeline</b>",
 		content: "This is the timeline. You can click to add an event."
