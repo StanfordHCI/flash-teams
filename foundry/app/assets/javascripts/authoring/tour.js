@@ -46,7 +46,7 @@ var authoringTour = new Tour({
 	},
 	{
 		orphan: true,
-		title: "<b>Cuztomize the Events</b>",
+		title: "<b>Customize the Events</b>",
 		content: "Change the start time and duration, add members to the event " 
 		+"assign a directly-responsible individual, add notes for the workers "
 		+"and add inputs and outputs to each event to guide the work."
