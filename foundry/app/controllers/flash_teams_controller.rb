@@ -40,9 +40,6 @@ class FlashTeamsController < ApplicationController
     id = @flash_team[:id]
 
     # store in flash team
-    
-    #@flash_team.user_name = 
-
     @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + author + '"}'
 
     if @flash_team.save
@@ -55,7 +52,20 @@ class FlashTeamsController < ApplicationController
   end
 
   def show
-    @flash_team = FlashTeam.find(params[:id])
+  
+  	if session[:user].nil?
+		@user = nil 
+		@title = "Invalid User ID"
+		@flash_team = nil
+		redirect_to(welcome_index_path)				
+  	else
+    	@flash_team = FlashTeam.find(params[:id])
+    
+		if @flash_team.user_id != session[:user].id
+			flash[:notice] = 'You cannot access this flash team.' 
+    		redirect_to(flash_teams_path)
+		end
+	end
   end
 
   def duplicate
@@ -92,7 +102,6 @@ class FlashTeamsController < ApplicationController
 			@user = User.find(session[:user].id)
 			
 			@flash_teams = FlashTeam.where(:user_id => @user.id).order(:id).reverse_order	
-			#@flash_teams = FlashTeam.where(user_id: @user.id).order(:id).reverse_order		
 		end
   end
   
