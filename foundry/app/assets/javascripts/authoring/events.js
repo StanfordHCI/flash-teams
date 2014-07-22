@@ -78,7 +78,9 @@ function leftResize(d) {
         newX = 0;
     }
     var newWidth = width + (ev.x - newX);
-
+    if (newWidth < 30)
+        return;
+    
     // update x and draw event
     ev.x = newX;
     ev.min_x = newX;
@@ -99,6 +101,7 @@ function rightResize(d) {
         return;
     }
 
+
     // get event id
     var groupNum = d.groupNum;
 
@@ -110,6 +113,8 @@ function rightResize(d) {
         newX = SVG_WIDTH;
     }
     var newWidth = newX - ev.x;
+    if (newWidth < 30)
+        return;
 
     ev.duration = durationForWidth(newWidth);
 
