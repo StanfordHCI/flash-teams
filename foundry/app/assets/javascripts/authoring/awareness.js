@@ -1164,7 +1164,7 @@ var trackUpcomingEvent = function(){
             if (currentUserEvents.length == 0){
                 $("#rect_" + toDelete).attr("fill-opacity", .4);
                 upcomingEvent = undefined;
-                statusText.text("You've Completed Your Tasks!");
+                statusText.text("You've completed your tasks!");
                 return;
             }
             upcomingEvent = currentUserEvents[0].id;
@@ -1199,11 +1199,11 @@ var trackUpcomingEvent = function(){
         if (displayTimeinMinutes < 0){
 
             if(!isDelayed(upcomingEvent)){
-                overallTime = "Your event is IN PROGRESS";
+                overallTime = "Your task is IN PROGRESS";
                 statusText.attr("fill", "blue");
             }
             else{
-                overallTime = "Your Task Is DELAYED";
+                overallTime = "Your task is DELAYED";
                 statusText.attr("fill", "red");
             }
         } else{
@@ -1212,7 +1212,7 @@ var trackUpcomingEvent = function(){
         }
 
         if (displayTimeinMinutes == -2) {
-            overallTime = "Your event begins NOW";
+            overallTime = "Your task begins NOW";
             statusText.attr("fill", "blue");
         }
 
