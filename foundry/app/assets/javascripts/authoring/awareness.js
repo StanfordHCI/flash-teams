@@ -1101,6 +1101,12 @@ var trackLiveAndRemainingTasks = function() {
       
         
 
+       
+
+        var tasks_tmp = MoveLiveToRemaining(new_live_tasks,new_remaining_tasks);
+        new_live_tasks = tasks_tmp["live"];
+        new_remaining_tasks = tasks_tmp["remaining"];
+        
         for (var j=0;j<remaining_tasks.length;j++){
             var groupNum = parseInt(remaining_tasks[j]);
             if (new_live_tasks.indexOf(groupNum) != -1) { // groupNum is now live
@@ -1108,13 +1114,8 @@ var trackLiveAndRemainingTasks = function() {
             }
         }
 
-        var tasks_tmp = MoveLiveToRemaining(new_live_tasks,new_remaining_tasks);
-        new_live_tasks = tasks_tmp["live"];
-        new_remaining_tasks = tasks_tmp["remaining"];
-        
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
-
        
         
 
@@ -1336,7 +1337,7 @@ var constructStatusObj = function(){
 };
 
 var updateStatus = function(flash_team_in_progress){
-    //console.log("in updateStatus");
+    console.log("in updateStatus");
     var localStatus = constructStatusObj();
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
@@ -1420,7 +1421,7 @@ var completeTask = function(groupNum){
     if (idx != -1) { // delayed task
         delayed_tasks.splice(idx, 1);
         completed_red_tasks.push(groupNum);
-        updateStatus(true);
+        //updateStatus(true);
         console.log("removed task from delayed and added to completed_red");
         sendEmailOnCompletionOfDelayedTask(groupNum);
     } else {
@@ -1431,7 +1432,7 @@ var completeTask = function(groupNum){
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);
                 moveRemainingTasksLeft(blue_width);
-                updateStatus(true);
+                //updateStatus(true);
                 sendEmailOnEarlyCompletion(blue_width);
             }
             live_tasks.splice(idx, 1);
