@@ -444,7 +444,11 @@ function drawDurationText(eventObj, firstTime) {
     if(existingDurationText[0].length == 0){ // first time
         task_g.append("text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min";
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("class", "time_text")
             .attr("id", function(d) {return "time_text_" + groupNum;})
@@ -455,7 +459,11 @@ function drawDurationText(eventObj, firstTime) {
     } else {
         task_g.selectAll(".time_text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min"; 
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
