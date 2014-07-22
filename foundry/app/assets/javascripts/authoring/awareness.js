@@ -1199,7 +1199,7 @@ var trackUpcomingEvent = function(){
         if (displayTimeinMinutes < 0){
 
             if(!isDelayed(upcomingEvent)){
-                overallTime = "NOW";
+                overallTime = "Your event is IN PROGRESS";
                 statusText.attr("fill", "blue");
             }
             else{
@@ -1209,6 +1209,11 @@ var trackUpcomingEvent = function(){
         } else{
             statusText.attr("fill", "black");
             overallTime = "Your task starts in " + overallTime;
+        }
+
+        if (displayTimeinMinutes == -2) {
+            overallTime = "Your event begins NOW";
+            statusText.attr("fill", "blue");
         }
 
         statusText.text(overallTime);
