@@ -18,6 +18,7 @@
 // require ./bootstrap/bootstrap
 //= require ./bootstrap/bootstrap.min
 //= require ./bootstrap-editable.min
+//= require ./bootstrap-tour.min
 //= require ./authoring/load
 //= require ./authoring/timeline
 //= require ./authoring/events
@@ -38,3 +39,4 @@
 //= require ./authoring/gdrive
 //= require ./authoring/bootstrap-tagsinput
 //= require ./authoring/notifications
+//= require ./authoring/tour

@@ -1,6 +1,8 @@
 /***chat****/
 
-var myDataRef = new Firebase('https://foundry-ft.firebaseio.com/'+ flash_team_id +'/chats');
+var firebaseURL = 'https://foundry-ft-dev.firebaseio.com/'; //should be foundry-ft for production and foundry-ft-dev for development
+
+var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
 
 var currentdate = new Date(); 
 
@@ -107,13 +109,13 @@ function displayChatMessage(name, uniq, role, date, text) {
 //*** online users
 // since I can connect from multiple devices or browser tabs, we store each connection instance separately
 // any time that connectionsRef's value is null (i.e. has no children) I am offline
-var myConnectionsRef = new Firebase('https://foundry-ft.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
+var myConnectionsRef = new Firebase(firebaseURL + flash_team_id + '/users/'+name+'/connections');
 // stores the timestamp of my last disconnect (the last time I was seen online)
-var lastOnlineRef = new Firebase('https://foundry-ft.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
-var connectedRef = new Firebase('https://foundry-ft.firebaseio.com/.info/connected');
+var lastOnlineRef = new Firebase(firebaseURL + flash_team_id + '/users/'+name+'/lastOnline');
+var connectedRef = new Firebase(firebaseURL + '.info/connected');
 
 // Get a reference to the presence data in Firebase.
-var userListRef = new Firebase('https://foundry-ft.firebaseio.com/' + flash_team_id + '/presence');
+var userListRef = new Firebase(firebaseURL + flash_team_id + '/presence');
 
 // Generate a reference to a new location for my user with push.
 var myUserRef = userListRef.push();
