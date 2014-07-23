@@ -269,8 +269,8 @@ function getEventFromId(id) {
 function getWidth(ev) {
     var durationInMinutes = ev.duration;
     var hrs = parseFloat(durationInMinutes)/parseFloat(60);
-    var width = hrs*RECTANGLE_WIDTH;
-    var roundedWidth = Math.round(width/STEP_WIDTH) * STEP_WIDTH;
+    var width = parseFloat(hrs)*parseFloat(RECTANGLE_WIDTH);
+    var roundedWidth = Math.round(parseFloat(width)/parseFloat(STEP_WIDTH)) * STEP_WIDTH;
     return roundedWidth;
 };
 

@@ -174,6 +174,8 @@ function renderEverything(firstTime) {
             renderChatbox();
             
         }
+
+
         //get user name and user role for the chat
         if(data == null){
             //console.log("RETURNING BEFORE LOAD"); 
@@ -632,6 +634,11 @@ var drawDelayedTasks = function(){
         allRanges.push([task_end, red_end]);
     }
 
+    var tasks_tmp = MoveLiveToRemaining(live_tasks,remaining_tasks);
+    live_tasks = tasks_tmp["live"];
+    remaining_tasks = tasks_tmp["remaining"];
+
+
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
         console.log("DRAWING DELAYED TASKS AFTER UPDATE");
@@ -777,15 +784,43 @@ var computeLiveAndRemainingTasks = function(){
         var width = getWidth(ev);
         var end_x = parseFloat(start_x) + parseFloat(width);
 
+		
         if(curr_new_x >= start_x && curr_new_x <= end_x && drawn_blue_tasks.indexOf(groupNum) == -1){
-            live_tasks.push(groupNum);
+        
+		         //console.log("previous task does not appear to be delayed so adding task to live_task");
+                   live_tasks.push(groupNum);
+        
+        
         } else if(curr_new_x < start_x){
             remaining_tasks.push(groupNum);
         }
     }
+    
+/*    var tasks_tmp = MoveLiveToRemaining(live_tasks,remaining_tasks);
+    live_tasks = tasks_tmp["live"];
+    remaining_tasks = tasks_tmp["remaining"];
+    updateStatus(true);
+  */  
     //console.log("returning from computing live and remaining tasks");
     return {"live":live_tasks, "remaining":remaining_tasks};
 };
+
+
+var prevTasksDelayed = function(curr_x){
+     var prevTasks = computeTasksBeforeCurrent(curr_x);
+     if(prevTasks.length > 0){
+     	for (var i=0;i<prevTasks.length;i++){
+
+          if(isDelayed(prevTasks[i])){
+               return true;
+          }
+		}
+     }
+     else{
+          return false;
+     }
+     return false;
+}
 
 var computeTasksAfterCurrent = function(curr_x){
     tasks_after_curr = [];
@@ -800,7 +835,7 @@ var computeTasksAfterCurrent = function(curr_x){
         var start_x = ev.x;
         
         // if the task's x coordinate is after the current x, it is "after," so add it
-        if(curr_x < start_x){
+        if(curr_x <= start_x){
             tasks_after_curr.push(groupNum);
         }
     }
@@ -823,11 +858,10 @@ var computeTasksBeforeCurrent = function(curr_x){
         var end_x = parseFloat(start_x) + parseFloat(width);
         
         // if the task's end x coordinate is before the current x, it is "before," so add it
-        if(end_x < curr_x){
+        if(end_x <= curr_x){
             tasks_before_curr.push(groupNum);
         }
     }
-
     return tasks_before_curr;
 };
 
@@ -947,6 +981,7 @@ var moveTasksRight = function(tasks, amount, from_initial){
         ev.startTime = startTimeObj["startTime"];
         ev.startHr = startTimeObj["startHr"];
         ev.startMin = startTimeObj["startMin"];
+        flashTeamsJSON["events"][getEventJSONIndex(groupNum)] = ev;
 
         drawEvent(ev);
         drawPopover(ev, false, false);
@@ -955,8 +990,8 @@ var moveTasksRight = function(tasks, amount, from_initial){
     var tasks_with_current = tasks.slice(0);
     tasks_with_current = tasks_with_current.concat(delayed_tasks);
     drawInteractions(tasks_with_current);
-
-    //updateStatus(true);
+  
+    //updateStatus();
 };
 
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
@@ -1003,7 +1038,7 @@ var moveRemainingTasksLeft = function(amount){
         var start_x = ev.x;
         var width = getWidth(ev);
         var end_x = parseFloat(start_x) + parseFloat(width);
-        if (end_x > lastEndTime){
+        if (end_x >= lastEndTime){
             lastEndTime = end_x;
         }
     }
@@ -1014,7 +1049,7 @@ var moveRemainingTasksLeft = function(amount){
         var start_x = ev.x;
         var width = getWidth(ev);
         var end_x = parseFloat(start_x) + parseFloat(width);
-        if (start_x > lastEndTime + 15){
+        if (start_x >= lastEndTime){
             to_move.push(evNum);
         }
     }
@@ -1063,7 +1098,15 @@ var trackLiveAndRemainingTasks = function() {
                 at_least_one_task_delayed = true;
             }
         }
+      
+        
 
+       
+
+        var tasks_tmp = MoveLiveToRemaining(new_live_tasks,new_remaining_tasks);
+        new_live_tasks = tasks_tmp["live"];
+        new_remaining_tasks = tasks_tmp["remaining"];
+        
         for (var j=0;j<remaining_tasks.length;j++){
             var groupNum = parseInt(remaining_tasks[j]);
             if (new_live_tasks.indexOf(groupNum) != -1) { // groupNum is now live
@@ -1073,6 +1116,9 @@ var trackLiveAndRemainingTasks = function() {
 
         live_tasks = new_live_tasks;
         remaining_tasks = new_remaining_tasks;
+       
+        
+
         if(at_least_one_task_delayed || at_least_one_task_started){
             updateStatus(true);
             if(at_least_one_task_delayed)
@@ -1082,6 +1128,36 @@ var trackLiveAndRemainingTasks = function() {
         }
     }, fire_interval);
 };
+
+//moves live task to remaining task if prev task is delayed
+function MoveLiveToRemaining(new_live_tasks,new_remaining_tasks){
+    var tmp_live_tasks = [];
+    for (var i =0 ; i<new_live_tasks.length; i++){
+        tmp_live_tasks.push(new_live_tasks[i]);
+    }
+
+
+    for (var j=0;j<tmp_live_tasks.length;j++){
+       // console.log(tmp_live_tasks.length);
+        var groupNum = parseInt(tmp_live_tasks[j]);
+        var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
+        var start_x = ev.x;
+
+
+        if(prevTasksDelayed(start_x)){
+                  new_remaining_tasks.push(groupNum);
+
+                 //remove task from live array
+                 new_live_tasks.splice(new_live_tasks.indexOf(tmp_live_tasks[j]), 1);
+
+        }
+    }
+
+
+    return {"live":new_live_tasks, "remaining":new_remaining_tasks};
+
+}
+
 
 //Search all handoffs, return those that involve only two remaining tasks
 function getHandoffs(tasks) {
@@ -1261,11 +1337,12 @@ var constructStatusObj = function(){
 };
 
 var updateStatus = function(flash_team_in_progress){
+    console.log("in updateStatus");
     var localStatus = constructStatusObj();
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
     } else {
-      //  alert(in_progress);
+
         localStatus.flash_team_in_progress = in_progress;
     }
     localStatus.latest_time = (new Date).getTime();
@@ -1344,6 +1421,7 @@ var completeTask = function(groupNum){
     if (idx != -1) { // delayed task
         delayed_tasks.splice(idx, 1);
         completed_red_tasks.push(groupNum);
+        //updateStatus(true);
         console.log("removed task from delayed and added to completed_red");
         sendEmailOnCompletionOfDelayedTask(groupNum);
     } else {
@@ -1354,6 +1432,7 @@ var completeTask = function(groupNum){
             if (blue_width !== null){
                 drawn_blue_tasks.push(groupNum);
                 moveRemainingTasksLeft(blue_width);
+                //updateStatus(true);
                 sendEmailOnEarlyCompletion(blue_width);
             }
             live_tasks.splice(idx, 1);
