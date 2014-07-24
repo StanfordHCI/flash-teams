@@ -634,16 +634,6 @@ function drawMemberLines(eventObj) {
 };
 
 
-function getMemberIndexFromId(member_id) {
-    //debugger;
-    var index = -1;
-    for (var i = 0; i < flashTeamsJSON["members"].length; i++) {
-        if (flashTeamsJSON["members"][i]["id"] == member_id) {
-            index = i;
-        }
-    }
-    return index;
-}
 
 // TODO: might have issues with redrawing
 function drawShade(eventObj, firstTime) {
@@ -661,7 +651,6 @@ function drawShade(eventObj, firstTime) {
     for (var i=0; i<members.length; i++) {
         var member_id = members[i];
         //var idx = getMemberIndexFromName(member["name"]);
-        //var idx = getMemberIndexFromId(member);
         //debugger;
         if (current == member_id){
             if (currentUserIds.indexOf(groupNum) < 0){
@@ -678,7 +667,6 @@ function drawShade(eventObj, firstTime) {
     }
 
     if (currentUserEvents.length > 0){
-        console.log("user events greater than 0");
         currentUserEvents = currentUserEvents.sort(function(a,b){return parseInt(a.startTime) - parseInt(b.startTime)});
         upcomingEvent = currentUserEvents[0].id; 
         task_g.selectAll("#rect_" + upcomingEvent)
