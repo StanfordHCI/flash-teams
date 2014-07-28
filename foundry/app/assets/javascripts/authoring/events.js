@@ -540,7 +540,7 @@ function drawHandoffBtn(eventObj, firstTime) {
     }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
-    var y_offset = 23; // unique for handoff btn
+    var y_offset = 46; // unique for handoff btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -582,7 +582,7 @@ function drawCollabBtn(eventObj, firstTime) {
     if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
-    var y_offset = 23; // unique for collab btn
+    var y_offset = 46; // unique for collab btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
