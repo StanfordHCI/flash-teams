@@ -156,3 +156,14 @@ in flash_teams.css.scss? */
 #gFolder {
     cursor:pointer;
 }
+
+
+#TitleLength
+{
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
+    font-weight: bold;
+    font-size: 12px;
+}
