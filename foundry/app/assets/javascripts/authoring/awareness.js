@@ -460,7 +460,11 @@ var startTeam = function(firstTime){
     console.log("STARTING TEAM");
 
     if(!in_progress) {
-        recordStartTime();
+        flashTeamsJSON["original_json"] = JSON.parse(JSON.stringify(flashTeamsJSON));
+        flashTeamsJSON["original_status"] = JSON.parse(JSON.stringify(loadedStatus));
+        console.log("flashTeamsJSON['original_json']: " + flashTeamsJSON["original_json"]);
+        console.log("flashTeamsJSON['original_status']: " + flashTeamsJSON["original_status"]);
+		recordStartTime();
         addAllFolders();
         in_progress = true; // TODO: set before this?
     }
