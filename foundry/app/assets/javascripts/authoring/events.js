@@ -415,6 +415,25 @@ function drawTitleText(eventObj, firstTime) {
     var title = eventObj["title"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
+    //shorten title to fit inside event
+    var existingTitleTextDiv = document.getElementById("TitleLength");
+    existingTitleTextDiv.innerHTML = title;
+    var shortened_title = title;
+    var width = (existingTitleTextDiv.clientWidth );
+    var event_width = getWidth(eventObj);
+     
+  while (width > event_width - 15){ 
+         shortened_title = shortened_title.substring(0,shortened_title.length - 4);
+        shortened_title = shortened_title + "...";
+       
+        console.log(shortened_title);
+        existingTitleTextDiv.innerHTML = shortened_title;
+        width = (existingTitleTextDiv.clientWidth);
+  }
+
+    title = shortened_title;
+   
+
     var existingTitleText = task_g.selectAll("#title_text_" + groupNum);
     if(existingTitleText[0].length == 0){ // first time
         task_g.append("text")
@@ -432,6 +451,8 @@ function drawTitleText(eventObj, firstTime) {
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
+
+
 }
 
 function drawDurationText(eventObj, firstTime) {
@@ -929,3 +950,9 @@ function deleteEvent(eventId){
     
     updateStatus(false);
 }
+
+//This function is used to truncate the event title string since html tags cannot be attached to svg
+String.prototype.trunc = String.prototype.trunc ||
+      function(n){
+         // return this.length>n ? this.substr(0,n-1)+'...' : this;
+      };
