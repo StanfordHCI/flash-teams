@@ -1341,9 +1341,11 @@ var updateStatus = function(flash_team_in_progress){
     var localStatus = constructStatusObj();
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
+        console.log("flash staus not undefined");
     } else {
 
         localStatus.flash_team_in_progress = in_progress;
+        console.log("flash status undefined");
     }
     localStatus.latest_time = (new Date).getTime();
     var localStatusJSON = JSON.stringify(localStatus);
