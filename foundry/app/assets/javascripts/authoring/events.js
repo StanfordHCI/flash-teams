@@ -78,7 +78,9 @@ function leftResize(d) {
         newX = 0;
     }
     var newWidth = width + (ev.x - newX);
-
+    if (newWidth < 30)
+        return;
+    
     // update x and draw event
     ev.x = newX;
     ev.min_x = newX;
@@ -99,6 +101,7 @@ function rightResize(d) {
         return;
     }
 
+
     // get event id
     var groupNum = d.groupNum;
 
@@ -110,6 +113,8 @@ function rightResize(d) {
         newX = SVG_WIDTH;
     }
     var newWidth = newX - ev.x;
+    if (newWidth < 30)
+        return;
 
     ev.duration = durationForWidth(newWidth);
 
@@ -410,6 +415,25 @@ function drawTitleText(eventObj, firstTime) {
     var title = eventObj["title"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
+    //shorten title to fit inside event
+    var existingTitleTextDiv = document.getElementById("TitleLength");
+    existingTitleTextDiv.innerHTML = title;
+    var shortened_title = title;
+    var width = (existingTitleTextDiv.clientWidth );
+    var event_width = getWidth(eventObj);
+     
+  while (width > event_width - 15){ 
+         shortened_title = shortened_title.substring(0,shortened_title.length - 4);
+        shortened_title = shortened_title + "...";
+       
+        console.log(shortened_title);
+        existingTitleTextDiv.innerHTML = shortened_title;
+        width = (existingTitleTextDiv.clientWidth);
+  }
+
+    title = shortened_title;
+   
+
     var existingTitleText = task_g.selectAll("#title_text_" + groupNum);
     if(existingTitleText[0].length == 0){ // first time
         task_g.append("text")
@@ -427,6 +451,8 @@ function drawTitleText(eventObj, firstTime) {
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
+
+
 }
 
 function drawDurationText(eventObj, firstTime) {
@@ -444,7 +470,11 @@ function drawDurationText(eventObj, firstTime) {
     if(existingDurationText[0].length == 0){ // first time
         task_g.append("text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min";
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("class", "time_text")
             .attr("id", function(d) {return "time_text_" + groupNum;})
@@ -455,7 +485,11 @@ function drawDurationText(eventObj, firstTime) {
     } else {
         task_g.selectAll(".time_text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min"; 
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
@@ -506,7 +540,7 @@ function drawHandoffBtn(eventObj, firstTime) {
     }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
-    var y_offset = 23; // unique for handoff btn
+    var y_offset = 40; // unique for handoff btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -548,7 +582,7 @@ function drawCollabBtn(eventObj, firstTime) {
     if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
-    var y_offset = 23; // unique for collab btn
+    var y_offset = 40; // unique for collab btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -923,3 +957,9 @@ function deleteEvent(eventId){
     
     updateStatus(false);
 }
+
+//This function is used to truncate the event title string since html tags cannot be attached to svg
+String.prototype.trunc = String.prototype.trunc ||
+      function(n){
+         // return this.length>n ? this.substr(0,n-1)+'...' : this;
+      };
