@@ -26,15 +26,16 @@ var authoringTour = new Tour({
 	{
 		element: "#member-container",
 		title: "<b>Customize Each Role</b>",
-		content: "Once you have added a role, you assign it to a category"
-		+"and specify the necessary skills for that role" 
-		+"skills based on the oDesk platform.",
-		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
-		+"<div class='popover-content'></div><nav class='popover-navigation'><div class='btn-group'>"
-		+"<div><img src='/assets/categories.png'> </img></div>"
+		html: true,
+		content: "<div class='tour-content-wrapper'>Once you have added a role, you assign it to a category "
+		+"and specify the necessary skills for that role " 
+		+"skills based on the oDesk platform. <img src='/assets/categories.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
 		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
 		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
-		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
