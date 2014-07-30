@@ -230,12 +230,22 @@ var project_status_svg = d3.select("#status-bar-container").append("svg")
 .attr("width", 300)
 .attr("height", 100);
 
-var statusText = project_status_svg.append("text").text("You currently have no tasks")
+var statusText = project_status_svg.append("foreignObject")
+    
 .attr("x", 0)
 .attr("y", 15)
-.attr("font-size", "sans-serif")
-.attr("font-size", "20px")
-.attr("fill", "black");
+.attr("width", "300px")
+.attr("height", "400px")
+.append("xhtml:body")
+.append("p")
+.style("color", "black")
+.style("font-size", "18px")
+.style("background-color", "#f5f5f5")
+.style("width", "300px")
+.text("You currently have no tasks");
+
+
+
 
 var status_width=100; 
 var status_height=32;

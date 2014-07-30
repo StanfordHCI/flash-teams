@@ -1257,16 +1257,11 @@ var trackUpcomingEvent = function(){
         var ev = flashTeamsJSON["events"][getEventJSONIndex(upcomingEvent)];
         var task_g = getTaskGFromGroupNum(upcomingEvent);
         if (ev.completed_x){
-            debugger;
             //console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
             toDelete = upcomingEvent;
             //console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
             //console.log("AFTER SPLICING", currentUserEvents);
-            var id = currentUserEvents[0].id;
-            var ev_json_index = getEventIndexFromId(id);
-            var ev = flashTeamsJSON["events"][ev_json_index];
-            //var stime = ev.startTime;
             //console.log("THIS IS THE START TIME", stime);
             //console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
             if (currentUserEvents.length == 0){
@@ -1288,6 +1283,7 @@ var trackUpcomingEvent = function(){
             cursorHr++;
             cursorMin = 0;
         } else cursorMin += 2.4
+
         //maggie added the -2 to fix the off by 2 min bug
         var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin) - 2;
         //console.log(currentUserEvents, currentUserEvents[0]);
@@ -1297,9 +1293,6 @@ var trackUpcomingEvent = function(){
         var cur_ev_id = currentUserEvents[0].id;
         var cur_ev_ind = getEventIndexFromId(cur_ev_id);
 
-
-        //var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
-        //var displayTimeinMinutes = parseInt(flashTeamsJSON["events"][cur_ev_ind].startTime) - parseInt(cursorTimeinMinutes);
         var ev_start_time = parseInt(ev.startHr) * 60 + parseInt(ev.startMin);
         var displayTimeinMinutes = ev_start_time - parseInt(cursorTimeinMinutes);
 
@@ -1313,28 +1306,35 @@ var trackUpcomingEvent = function(){
             minutesText = "0" + minutes;
         }
         var overallTime = hours + ":" + minutesText;
-
         
         if (displayTimeinMinutes < 0){
 
             if(!isDelayed(upcomingEvent)){
                 overallTime = "Your task is IN PROGRESS";
-                statusText.attr("fill", "blue");
+                statusText.style("color", "blue");
             }
             else{
                 overallTime = "Your task is DELAYED";
-                statusText.attr("fill", "red");
+                statusText.style("color", "red");
             }
-        } else{
-            statusText.attr("fill", "black");
-            overallTime = "Your task starts in " + overallTime;
+        } else {
+            if (cursorTimeinMinutes == 0) {
+                overallTime = "Your task will start " + overallTime + " after the team has begun";
+            } else {
+                overallTime = "Your task starts in " + overallTime;
+            }
+            statusText.style("color", "blue");
         }
 
         if (displayTimeinMinutes == 0) {
-            overallTime = "Your task begins NOW";
-            statusText.attr("fill", "blue");
+            if (cursorTimeinMinutes == 0) {
+                overallTime = "Your task will begin once the team starts";  
+            } else {
+                overallTime = "Your task begins NOW";
+            }
+            statusText.style("color", "blue");
         }
-
+        
         statusText.text(overallTime);
        
     }, fire_interval);
