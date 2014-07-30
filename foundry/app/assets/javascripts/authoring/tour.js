@@ -27,26 +27,27 @@ var authoringTour = new Tour({
 		element: "#member-container",
 		title: "<b>Customize Each Role</b>",
 		html: true,
-		content: "<div class='tour-content-wrapper'>Once you have added a role, you assign it to a category "
-		+"and specify the necessary skills for that role " 
-		+"skills based on the oDesk platform. <img src='/assets/categories.png'> </img></div>"
+		content: "<div class='tour-content-wrapper'>Once you have added a role, you assign it to a "
+		+"category and specify the necessary skills for that role " 
+		+"skills based on the oDesk platform. <img src='/assets/categories.png'> </img></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 		+"<nav class='popover-navigation tour-nav'><div class='btn-group'>"
 		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
 		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
-		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
-		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
-		+"<div class='popover-content'></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>"
 	},
 	{
 		orphan: true,
 		title: "<b>Interactive Task-Based Timeline</b>",
-		content: "This is the timeline. You can click to add an event"
+		content: "This is the timeline. You can click to add an event "
 		+"and customize it."
 	},
 	{
 		orphan: true,
 		title: "<b>Customize the Events</b>",
-		content: "Use the pop-up form to change the details of the events."
+		content: "<div class='tour-content-wrapper'> Use the pop-up form to change"
+		+" the details of the events.</div>"
 	},
 	{
 		orphan: true,
