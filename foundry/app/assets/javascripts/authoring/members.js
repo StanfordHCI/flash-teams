@@ -353,7 +353,6 @@ function confirmDeleteMember(pillId) {
 
     var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Remove member";
-    $("#confirmButton").attr("class","btn btn-danger");
 
     $('#confirmAction').modal('show');
 

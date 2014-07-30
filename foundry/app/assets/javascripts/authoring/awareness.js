@@ -81,24 +81,6 @@ function removeHandoffBtns(){
 };
 
 $("#flashTeamStartBtn").click(function(){
-    var bodyText = document.getElementById("confirmActionText");
-    //updateStatus();
-    bodyText.innerHTML = "Are you sure you want to begin running " + flashTeamsJSON["title"] + "?";
-    
-    var confirmStartTeamBtn = document.getElementById("confirmButton");
-    confirmStartTeamBtn.innerHTML = "Start the team";
-    
-    $("#confirmButton").attr("class","btn btn-success");
-    var label = document.getElementById("confirmActionLabel");
-    label.innerHTML = "Start Team?";
-    $('#confirmAction').modal('show');
-
-    document.getElementById("confirmButton").onclick=function(){startFlashTeam()};
-    
-});
-
-function startFlashTeam() {
-    $('#confirmAction').modal('hide');
     // view changes
     $("#flashTeamStartBtn").attr("disabled", "disabled");
     $("#flashTeamStartBtn").css('display','none');
@@ -111,7 +93,7 @@ function startFlashTeam() {
     removeHandoffBtns();
     startTeam(true);
     googleDriveLink();
-}
+});
 
 
 function endTeam() {
@@ -138,7 +120,6 @@ $("#flashTeamEndBtn").click(function(){
     }
     var confirmEndTeamBtn = document.getElementById("confirmButton");
     confirmEndTeamBtn.innerHTML = "End the team";
-    $("#confirmButton").attr("class","btn btn-danger");
     var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "End Team?";
     $('#confirmAction').modal('show');
@@ -237,12 +218,6 @@ function renderEverything(firstTime) {
             startTeam(firstTime);
         } else {
             console.log("flash team not in progress");
-            
-            if(flashTeamsJSON["startTime"] == undefined){
-	            //console.log("NO START TIME!");
-				updateOriginalStatus();
-            }
-            
             if(!flashTeamsJSON)
                 return;
             
@@ -485,13 +460,7 @@ var startTeam = function(firstTime){
     console.log("STARTING TEAM");
 
     if(!in_progress) {
-        //flashTeamsJSON["original_json"] = JSON.parse(JSON.stringify(flashTeamsJSON));
-        //flashTeamsJSON["original_status"] = JSON.parse(JSON.stringify(loadedStatus));
-        //console.log("flashTeamsJSON['original_json']: " + flashTeamsJSON["original_json"]);
-        //console.log("flashTeamsJSON['original_status']: " + flashTeamsJSON["original_status"]);
-        //updateStatus();
-        updateOriginalStatus();
-		recordStartTime();
+        recordStartTime();
         addAllFolders();
         in_progress = true; // TODO: set before this?
     }
@@ -1370,13 +1339,6 @@ var constructStatusObj = function(){
 var updateStatus = function(flash_team_in_progress){
     console.log("in updateStatus");
     var localStatus = constructStatusObj();
-    
-    //if flashTeam hasn't been started yet, update the original status in the db
-    if(flashTeamsJSON["startTime"] == undefined){
-	    //console.log("NO START TIME!");    
-		updateOriginalStatus();
-    }
-
     if(flash_team_in_progress != undefined){ // could be undefined if want to call updateStatus in a place where not sure if the team is running or not
         localStatus.flash_team_in_progress = flash_team_in_progress;
         console.log("flash staus not undefined");
@@ -1392,29 +1354,6 @@ var updateStatus = function(flash_team_in_progress){
     var flash_team_id = $("#flash_team_id").val();
     var authenticity_token = $("#authenticity_token").val();
     var url = '/flash_teams/' + flash_team_id + '/update_status';
-    $.ajax({
-        url: url,
-        type: 'post',
-        data: {"localStatusJSON": localStatusJSON, "authenticity_token": authenticity_token}
-    }).done(function(data){
-        //console.log("UPDATED FLASH TEAM STATUS");
-    });
-};
-
-//this function updates the original status of the flash team in the database, which is 
-// used for the team duplication feature (it preserves the team without saving the status 
-// information once the team is run
-var updateOriginalStatus = function(){
-    console.log("in updateOriginalStatus");
-    var localStatus = constructStatusObj();
-
-    localStatus.latest_time = (new Date).getTime();
-    var localStatusJSON = JSON.stringify(localStatus);
-    //console.log("updating string: " + localStatusJSON);
-
-    var flash_team_id = $("#flash_team_id").val();
-    var authenticity_token = $("#authenticity_token").val();
-    var url = '/flash_teams/' + flash_team_id + '/update_original_status';
     $.ajax({
         url: url,
         type: 'post',
@@ -1462,7 +1401,6 @@ function confirmCompleteTask(groupNum) {
 
     var completeButton = document.getElementById("confirmButton");
     completeButton.innerHTML = "Complete event";
-    $("#confirmButton").attr("class","btn btn-success");
 
     $('#confirmAction').modal('show');
     
