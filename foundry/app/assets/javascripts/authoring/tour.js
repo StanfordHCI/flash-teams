@@ -20,7 +20,7 @@ var authoringTour = new Tour({
 		element: "#member-container",
 		title: "<b>Team Roles</b>",
 		content: "In this panel, you can add role-based members to the team "
-		+"(e.g., a team for an eBook may desire an Illustrator who knows " +
+		+"(e.g., a team for an eBook may desire an Illustrator who knows " 
 		+"character design)"
 	},
 	{
@@ -58,7 +58,7 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Handoffs</b>",
-		content: "Click on the gray arrow button on an event to " 
+		content: "<div class='tour-content-wrapper'>Click on the gray arrow button on an event to " 
 		+"start drawing a handoff, click another event to complete the interaction. "
 		+"To cancel, click on the same event."
 		+"<img src='/assets/handoffs.png'> </img></div>"
@@ -72,7 +72,7 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Collaborations</b>",
-		content: "Click on the black double-sided arrow button on an event to " 
+		content: "<div class='tour-content-wrapper'>Click on the black double-sided arrow button on an event to " 
 		+"start drawing a collaboration between two overlapping events, "
 		+" click another event to complete the interaction. "
 		+"<img src='/assets/collabs.png'> </img></div>"
@@ -86,7 +86,7 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Google Drive Integration</b>",
-		content: "Google Drive folders are automatically created for each "
+		content: "<div class='tour-content-wrapper'>Google Drive folders are automatically created for each "
 		+"event, workers can upload their work to the folders "
 		+"by clicking 'Upload' on the event."
 		+"<img src='/assets/upload.png'> </img></div>"
@@ -107,7 +107,7 @@ var authoringTour = new Tour({
 	{
 		element: "#search-events-container" ,
 		title: "<b>Event Library</b>", 
-		content: "This is the event library. Here you can search over " 
+		content: "<div class='tour-content-wrapper'>This is the event library. Here you can search over " 
 		+"all previously created events by entering in keywords, inputs, "
 		+"and outputs, and drag them to your timeline."
 		+"<img src='/assets/eventlibrary.png'> </img></div>"
@@ -130,6 +130,11 @@ var authoringTour = new Tour({
 		title: "<b>Chat With the Team</b>", 
 		content: "Once the team has started working, you can chat with " 
 		+"all of the team members in this group chat box."
+	},
+	{
+		orphan: true,
+		title: "<b>Good luck! </b>", 
+		content: "Good luck with your project and please enjoy the use of Foundry!"
 	}
 ]});
 
@@ -193,7 +198,7 @@ var expertTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Complete Your Events</b>", 
-		content: "If you are the DRI, when you have completed the work for your event, uploaded " 
+		content: "<div class='tour-content-wrapper'>If you are the DRI, when you have completed the work for your event, uploaded " 
 		+"any relevant files, etc. you can click the event and choose 'Complete' to mark "
 		+"the task as done and auto notifiy the next workers that they can begin working."
 		+"<img src='/assets/completeTask.png'> </img></div>"
@@ -214,7 +219,7 @@ var expertTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Delayed Events</b>", 
-		content: "If your work takes longer than the expected estimation, the event "
+		content: "<div class='tour-content-wrapper'>If your work takes longer than the expected estimation, the event "
 		+"will extend in red and be marked as delayed. Foundry will email you to request "
 		+"a new estimated complete time so the downstream workers can be notified." 
 		+"<img src='/assets/delayedTask.png'> </img></div>"
@@ -228,7 +233,7 @@ var expertTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Early Events</b>", 
-		content: "Similarly, if you complete earlier than the expected estimation, the "
+		content: "<div class='tour-content-wrapper'>Similarly, if you complete earlier than the expected estimation, the "
 		+"event will be marked in blue, downstream tasks will shift up, and "
 		+"downstream workers will be notified that they can/should start early." 
 		+"<img src='/assets/earlyTask.png'> </img></div>"
