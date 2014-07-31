@@ -196,6 +196,13 @@ var expertTour = new Tour({
 		content: "If you are the DRI, when you have completed the work for your event, uploaded " 
 		+"any relevant files, etc. you can click the event and choose 'Complete' to mark "
 		+"the task as done and auto notifiy the next workers that they can begin working."
+		+"<img src='/assets/completeTask.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
@@ -210,6 +217,13 @@ var expertTour = new Tour({
 		content: "If your work takes longer than the expected estimation, the event "
 		+"will extend in red and be marked as delayed. Foundry will email you to request "
 		+"a new estimated complete time so the downstream workers can be notified." 
+		+"<img src='/assets/delayedTask.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
@@ -217,6 +231,13 @@ var expertTour = new Tour({
 		content: "Similarly, if you complete earlier than the expected estimation, the "
 		+"event will be marked in blue, downstream tasks will shift up, and "
 		+"downstream workers will be notified that they can/should start early." 
+		+"<img src='/assets/earlyTask.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
