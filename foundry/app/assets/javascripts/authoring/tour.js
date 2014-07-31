@@ -19,9 +19,14 @@ var authoringTour = new Tour({
 	{
 		element: "#member-container",
 		title: "<b>Team Roles</b>",
-		content: "In this panel, you can add role-based members to the team "
-		+"(e.g., a team for an eBook may desire an Illustrator who knows " 
-		+"character design)"
+		content: "<div class='tour-content-wrapper'>In this panel, you can add role-based "
+		+"members to the team. <img src='/assets/members.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		element: "#member-container",
@@ -29,7 +34,7 @@ var authoringTour = new Tour({
 		html: true,
 		content: "<div class='tour-content-wrapper'>Once you have added a role, you assign it to a category "
 		+"and specify the necessary skills for that role " 
-		+"skills based on the oDesk platform. <img src='/assets/categories.png'> </img></div>"
+		+"skills based on the oDesk platform. <img src='/assets/memberForm.png'> </img></div>"
 		+"<nav class='popover-navigation'><div class='btn-group'>"
 		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
 		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
@@ -40,14 +45,14 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Interactive Task-Based Timeline</b>",
-		content: "This is the timeline. You can click to add an event"
+		content: "This is the timeline. You can click to add an event "
 		+"and customize it."
 	},
 	{
 		orphan: true,
 		title: "<b>Customize the Events</b>",
 		content: "<div class='tour-content-wrapper'>Use the pop-up form to change the details of the events."
-		+"<img src='/assets/form.png'> </img></div>"
+		+"<img src='/assets/eventForm.png'> </img></div>"
 		+"<nav class='popover-navigation'><div class='btn-group'>"
 		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
 		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
@@ -150,7 +155,7 @@ authoringTour.init();
 
 $("#tourBtn").click(function(){
     authoringTour.start(true);
-    authoringTour.goTo(0); //Always start tour at the first step
+    //authoringTour.goTo(0); //Always start tour at the first step
 });
 
 
@@ -169,19 +174,14 @@ var expertTour = new Tour({
 	{
 		element: "#project-status-container",
 		title: "<b>Project Status</b>", 
-		content: "This panel contains information about this project."
+		content: "This panel contains information about this project including "
+		+"the progress of the whole team as well as your next upcoming task. "
 	},
 	{
 		element: "#gFolder" ,
 		title: "<b>Google Drive Project Folder</b>", 
 		content: "At the top is a link to the Google Drive folder " 
 		+"for the entire project."
-	},
-	{
-		element: "#project-status-container" ,
-		title: "<b>Upcoming Tasks</b>", 
-		content: "You can also see the status of the entire project " 
-		+"as well as your next upcoming task."
 	},
 	{
 		element: "#chat-box-container" ,
