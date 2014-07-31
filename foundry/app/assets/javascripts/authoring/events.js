@@ -671,7 +671,9 @@ function drawMemberLines(eventObj) {
 
 // TODO: might have issues with redrawing
 function drawShade(eventObj, firstTime) {
-    if(current == undefined) {return;}
+    console.log("current user: "+ current_user);
+    console.log("current: "+ current);
+    if(current_user == undefined) {return;}
 
     var groupNum = eventObj["id"];
     var members = eventObj["members"];
@@ -682,11 +684,13 @@ function drawShade(eventObj, firstTime) {
     //in doing so it takes its array of members FOR THAT EVENT
     //for each member for that event it gets their ID
     //if they are the CURRENT member
+    console.log("members array: " + members);
     for (var i=0; i<members.length; i++) {
         var member_id = members[i];
         //var idx = getMemberIndexFromName(member["name"]);
         //debugger;
-        if (current == member_id){
+        if (current_user.id == member_id){
+            console.log("here");
             if (currentUserIds.indexOf(groupNum) < 0){
                 currentUserIds.push(groupNum);
                 currentUserEvents.push(eventObj);
@@ -707,6 +711,8 @@ function drawShade(eventObj, firstTime) {
             .attr("fill", color)
             .attr("fill-opacity", .9);  
     }
+    console.log("current user ids: " +currentUserIds);
+    console.log("current user events: " + currentUserEvents);
 }
 
 function drawEachHandoffForEvent(eventObj){

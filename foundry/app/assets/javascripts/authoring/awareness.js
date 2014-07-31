@@ -1267,7 +1267,8 @@ var trackUpcomingEvent = function(){
             if (currentUserEvents.length == 0){
                 $("#rect_" + toDelete).attr("fill-opacity", .4);
                 upcomingEvent = undefined;
-                statusText.text("You've completed your tasks!");
+                statusText.style("color", "green");
+                statusText.text("You've completed all your tasks!");
                 return;
             }
             upcomingEvent = currentUserEvents[0].id;
@@ -1319,18 +1320,21 @@ var trackUpcomingEvent = function(){
             }
         } else {
             if (cursorTimeinMinutes == 0) {
-                overallTime = "Your task will start " + overallTime + " after the team has begun";
+                overallTime = "Your first task will start " + overallTime + " after the team has begun";
             } else {
-                overallTime = "Your task starts in " + overallTime;
+                if (delayed_tasks.length != 0) {
+                    console.log("There are delayed tasks");
+                }
+                overallTime = "Your next task starts in " + overallTime;
             }
             statusText.style("color", "blue");
         }
 
         if (displayTimeinMinutes == 0) {
             if (cursorTimeinMinutes == 0) {
-                overallTime = "Your task will begin once the team starts";  
+                overallTime = "Your first task will begin once the team starts";  
             } else {
-                overallTime = "Your task begins NOW";
+                overallTime = "Your next task begins NOW";
             }
             statusText.style("color", "blue");
         }

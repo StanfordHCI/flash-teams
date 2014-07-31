@@ -241,7 +241,7 @@ var statusText = project_status_svg.append("foreignObject")
 .style("color", "black")
 .style("font-size", "18px")
 .style("background-color", "#f5f5f5")
-.style("width", "300px")
+.style("width", "280px")
 .text("You currently have no tasks");
 
 
