@@ -100,9 +100,16 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Open in Drive</b>",
-		content: "After clicking on 'Upload' on the event, click on the "
+		content: "<div class='tour-content-wrapper'>After clicking on 'Upload' on the event, click on the "
 		+"'Open in Drive' button on the top right side of the Google " 
 		+"drive page so that you can upload to the drive."
+		+"<img src='/assets/openInDrive.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		element: "#search-events-container" ,
@@ -143,7 +150,7 @@ authoringTour.init();
 
 $("#tourBtn").click(function(){
     authoringTour.start(true);
-    //authoringTour.goTo(0); //Always start tour at the first step
+    authoringTour.goTo(0); //Always start tour at the first step
 });
 
 
@@ -212,9 +219,16 @@ var expertTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Open in Drive</b>",
-		content: "After clicking on 'Upload' on the event, click on the "
+		content: "<div class='tour-content-wrapper'>After clicking on 'Upload' on the event, click on the "
 		+"'Open in Drive' button on the top right side of the Google " 
 		+"drive page so that you can upload to the drive."
+		+"<img src='/assets/openInDrive.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
