@@ -46,20 +46,42 @@ var authoringTour = new Tour({
 	{
 		orphan: true,
 		title: "<b>Customize the Events</b>",
-		content: "Use the pop-up form to change the details of the events."
+		content: "<div class='tour-content-wrapper'>Use the pop-up form to change the details of the events."
+		+"<img src='/assets/form.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
 		title: "<b>Handoffs</b>",
 		content: "Click on the gray arrow button on an event to " 
-		+"start drawing a handoff, click another event to complete the interaction."
+		+"start drawing a handoff, click another event to complete the interaction. "
+		+"To cancel, click on the same event."
+		+"<img src='/assets/handoffs.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
 		title: "<b>Collaborations</b>",
 		content: "Click on the black double-sided arrow button on an event to " 
 		+"start drawing a collaboration between two overlapping events, "
-		+" click another event to complete the interaction."
+		+" click another event to complete the interaction. "
+		+"<img src='/assets/collabs.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
@@ -67,6 +89,13 @@ var authoringTour = new Tour({
 		content: "Google Drive folders are automatically created for each "
 		+"event, workers can upload their work to the folders "
 		+"by clicking 'Upload' on the event."
+		+"<img src='/assets/upload.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		orphan: true,
@@ -81,6 +110,13 @@ var authoringTour = new Tour({
 		content: "This is the event library. Here you can search over " 
 		+"all previously created events by entering in keywords, inputs, "
 		+"and outputs, and drag them to your timeline."
+		+"<img src='/assets/eventlibrary.png'> </img></div>"
+		+"<nav class='popover-navigation'><div class='btn-group'>"
+		+"<button class='btn btn-default' data-role='prev'>« Prev</button>"
+		+"<button class='btn btn-default' data-role='next'>Next »</button></div>"
+		+"<button class='btn btn-default' data-role='end'>End tour</button></nav></div>",
+		template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>"
+		+"<div class='popover-content'></div>"
 	},
 	{
 		element: "#flashTeamStartBtn",
