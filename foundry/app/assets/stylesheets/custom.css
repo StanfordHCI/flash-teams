@@ -125,6 +125,14 @@
 	height: 385px;
 }
 
+#status-bar-container svg {
+	width: 280px;
+}
+
+#status-bar-container text {
+	overflow-x: scroll;
+}
+
 /*NOTE/QUESTION: should this be with the 
 rest of the event-block style information
 in flash_teams.css.scss? */
