@@ -2,7 +2,7 @@
  * ---------------------------------------------
  * 
  */
-
+ 
 var poll_interval = 5000; // 20 seconds
 var poll_interval_id;
 var timeline_interval = 10000; // "normal" speed timer is 30 minutes (1800000 milliseconds); fast timer is 10 seconds (10000 milliseconds)
@@ -190,8 +190,7 @@ function renderEverything(firstTime) {
         // !user_poll means a poll wasn't the one the generated this call to renderEverything
         //if(firstTime && !user_poll) // TODO: find better way to capture the case of user_poll
         if(firstTime){
-            renderChatbox();
-            
+            renderChatbox(); 
         }
 
 

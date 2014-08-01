@@ -699,7 +699,6 @@ function drawShade(eventObj, firstTime) {
             task_g.selectAll("#rect_" + groupNum)
                 .attr("fill", color)
                 .attr("fill-opacity", .4);
-
             break;
         }
     }
