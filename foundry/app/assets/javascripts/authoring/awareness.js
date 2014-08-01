@@ -997,6 +997,7 @@ var moveTasksRight = function(tasks, amount, from_initial){
 //Notes: Error exist with delay and handoff connections...how and why are those dependencies the way they are?
 
 var moveTasksLeft = function(tasks, amount){
+    console.log("MOVE TASKS LEFT FXN CALLED");
     for (var i=0;i<tasks.length;i++){
         // get the task id
         var groupNum = tasks[i];
@@ -1010,6 +1011,7 @@ var moveTasksLeft = function(tasks, amount){
             ev.min_x = ev.x;
         
         // change the time corresponding to the new start x
+        //ev.startTime -= amount;
         var startTimeObj = getStartTime(ev.x);
         ev.startTime = startTimeObj["startTime"];
         ev.startHr = startTimeObj["startHr"];
@@ -1223,6 +1225,16 @@ function isDelayed(element) {
     return false;
 };
 
+function getEventIndexFromId(event_id) {
+    var index = -1;
+    for (var i = 0; i < flashTeamsJSON["events"].length; i++) {
+        if (flashTeamsJSON["events"][i]["id"] == event_id) {
+            index = i;
+        }
+    }
+    return index;
+}
+
 //Tracks a current user's ucpcoming and current events
 var trackUpcomingEvent = function(){
      if (current == undefined){
@@ -1233,14 +1245,18 @@ var trackUpcomingEvent = function(){
         var ev = flashTeamsJSON["events"][getEventJSONIndex(upcomingEvent)];
         var task_g = getTaskGFromGroupNum(upcomingEvent);
         if (ev.completed_x){
+            //console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
             toDelete = upcomingEvent;
             //console.log("BEFORE SPLICING", currentUserEvents);
             currentUserEvents.splice(0,1);
             //console.log("AFTER SPLICING", currentUserEvents);
+            //console.log("THIS IS THE START TIME", stime);
+            //console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
             if (currentUserEvents.length == 0){
                 $("#rect_" + toDelete).attr("fill-opacity", .4);
                 upcomingEvent = undefined;
-                statusText.text("You've Completed Your Tasks!");
+                statusText.style("color", "green");
+                statusText.text("You've completed all your tasks!");
                 return;
             }
             upcomingEvent = currentUserEvents[0].id;
@@ -1256,14 +1272,22 @@ var trackUpcomingEvent = function(){
             cursorHr++;
             cursorMin = 0;
         } else cursorMin += 2.4
-        var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin);
+
+        //maggie added the -2 to fix the off by 2 min bug
+        var cursorTimeinMinutes = parseInt((cursorHr*60)) + parseInt(cursorMin) - 2;
         //console.log(currentUserEvents, currentUserEvents[0]);
         //console.log("THIS IS START HOUR AND MINUTES", currentUserEvents[0].startHr, currentUserEvents[0].startMin);
         currentUserEvents[0].startTime = parseInt(currentUserEvents[0].startHr)*60 + parseInt(currentUserEvents[0].startMin);
         //console.log("THIS IS THE START TIME", currentUserEvents[0].startTime);
-        var displayTimeinMinutes = parseInt(currentUserEvents[0].startTime) - parseInt(cursorTimeinMinutes);
+        var cur_ev_id = currentUserEvents[0].id;
+        var cur_ev_ind = getEventIndexFromId(cur_ev_id);
+
+        var ev_start_time = parseInt(ev.startHr) * 60 + parseInt(ev.startMin);
+        var displayTimeinMinutes = ev_start_time - parseInt(cursorTimeinMinutes);
+
         //console.log(currentUserEvents[0].startTime);
         //console.log("DISPLAY TIME", displayTimeinMinutes);
+        //console.log("CURSOR TIME", cursorTimeinMinutes);
         var hours = parseInt(displayTimeinMinutes/60);
         var minutes = displayTimeinMinutes%60;
         var minutesText = minutes;
@@ -1271,22 +1295,43 @@ var trackUpcomingEvent = function(){
             minutesText = "0" + minutes;
         }
         var overallTime = hours + ":" + minutesText;
-        
         if (displayTimeinMinutes < 0){
 
             if(!isDelayed(upcomingEvent)){
-                overallTime = "NOW";
-                statusText.attr("fill", "blue");
+                overallTime = "Your task is IN PROGRESS";
+                statusText.style("color", "blue");
             }
             else{
-                overallTime = "Your Task Is DELAYED";
-                statusText.attr("fill", "red");
+                overallTime = "Your task is DELAYED";
+                statusText.style("color", "red");
             }
-        } else{
-            statusText.attr("fill", "black");
-            overallTime = "Your task starts in " + overallTime;
+        } else {
+            if (cursorTimeinMinutes == 0) {
+                overallTime = "Your first task will start " + overallTime + " after the team has begun";
+            } else {
+                if (delayed_tasks.length != 0) {
+                    //if the event starts immediately after the delayed event...
+                    if ((hours == 0) && (minutes <= 2)) {
+                        overallTime = "A task ahead of yours has been delayed. Your next task will start as soon as the delayed task is completed";
+                    } else {
+                        overallTime = "A task ahead of yours has been delayed. Your next task will start " + overallTime + " after the delayed task is completed.";
+                    }
+                    statusText.style("color", "red");
+                } else {
+                    overallTime = "Your next task starts in " + overallTime;
+                    statusText.style("color", "blue");
+                }
+            }
         }
-
+        if (displayTimeinMinutes == 0) {
+            if (cursorTimeinMinutes == 0) {
+                overallTime = "Your first task will begin as soon as the team starts";  
+            } else {
+                overallTime = "Your next task begins NOW";
+            }
+            statusText.style("color", "blue");  
+        }
+        
         statusText.text(overallTime);
        
     }, fire_interval);
