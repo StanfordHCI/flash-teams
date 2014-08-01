@@ -43,10 +43,7 @@ class FlashTeamsController < ApplicationController
     # Then create a copy from the original data
     copy = FlashTeam.create(:name => original.name + " Copy", :author => original.author)
     copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + copy.author + '"}'
-    
-    # Use the original_status of the original flash team when copying to prevent copying over the status information of teams that were already started
-    copy.status = original.original_status
-    #copy.status = original.status
+    copy.status = original.status
     copy.save
 
     # Redirect to the list of things
@@ -154,17 +151,6 @@ end
     status = params[:localStatusJSON]
     @flash_team = FlashTeam.find(params[:id])
     @flash_team.status = status
-    @flash_team.save
-
-    respond_to do |format|
-      format.json {render json: "saved".to_json, status: :ok}
-    end
-  end
-  
-  def update_original_status
-    status = params[:localStatusJSON]
-    @flash_team = FlashTeam.find(params[:id])
-    @flash_team.original_status = status
     @flash_team.save
 
     respond_to do |format|

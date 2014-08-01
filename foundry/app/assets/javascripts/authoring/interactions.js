@@ -126,6 +126,7 @@ function eventMousedown(task2idNum) {
         togglePopover(task2idNum);
         return;
     }
+    updateStatus(false);
 }
 
 
