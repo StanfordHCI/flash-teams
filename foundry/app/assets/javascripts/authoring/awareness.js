@@ -81,6 +81,24 @@ function removeHandoffBtns(){
 };
 
 $("#flashTeamStartBtn").click(function(){
+
+    var bodyText = document.getElementById("confirmActionText");
+    bodyText.innerHTML = "Are you sure you want to begin running " + flashTeamsJSON["title"] + "?";
+
+    var confirmStartTeamBtn = document.getElementById("confirmButton");
+    confirmStartTeamBtn.innerHTML = "Start the team";
+     
+    $("#confirmButton").attr("class","btn btn-success");
+    var label = document.getElementById("confirmActionLabel");
+    label.innerHTML = "Start Team?";
+    $('#confirmAction').modal('show');
+ 
+    document.getElementById("confirmButton").onclick=function(){startFlashTeam()};
+
+});
+
+function startFlashTeam() {
+    $('#confirmAction').modal('hide');
     // view changes
     $("#flashTeamStartBtn").attr("disabled", "disabled");
     $("#flashTeamStartBtn").css('display','none');
@@ -93,7 +111,8 @@ $("#flashTeamStartBtn").click(function(){
     removeHandoffBtns();
     startTeam(true);
     googleDriveLink();
-});
+}
+
 
 
 function endTeam() {
@@ -120,6 +139,7 @@ $("#flashTeamEndBtn").click(function(){
     }
     var confirmEndTeamBtn = document.getElementById("confirmButton");
     confirmEndTeamBtn.innerHTML = "End the team";
+    $("#confirmButton").attr("class","btn btn-danger");
     var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "End Team?";
     $('#confirmAction').modal('show');
@@ -1446,6 +1466,7 @@ function confirmCompleteTask(groupNum) {
 
     var completeButton = document.getElementById("confirmButton");
     completeButton.innerHTML = "Complete event";
+    $("#confirmButton").attr("class","btn btn-success");
 
     $('#confirmAction').modal('show');
     
