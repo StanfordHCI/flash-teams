@@ -1341,7 +1341,12 @@ var trackUpcomingEvent = function(){
                 overallTime = "Your first task will start " + overallTime + " after the team has begun";
             } else {
                 if (delayed_tasks.length != 0) {
-                    overallTime = "A task ahead of yours has been delayed.  Your next task will start " + overallTime + " after the delayed task is completed.";
+                    //if the event starts immediately after the delayed event...
+                    if ((hours == 0) && (minutes <= 2)) {
+                        overallTime = "A task ahead of yours has been delayed. Your next task will start as soon as the delayed task is completed";
+                    } else {
+                        overallTime = "A task ahead of yours has been delayed. Your next task will start " + overallTime + " after the delayed task is completed.";
+                    }
                     statusText.style("color", "red");
                 } else {
                     overallTime = "Your next task starts in " + overallTime;
