@@ -1326,7 +1326,6 @@ var trackUpcomingEvent = function(){
             minutesText = "0" + minutes;
         }
         var overallTime = hours + ":" + minutesText;
-        
         if (displayTimeinMinutes < 0){
 
             if(!isDelayed(upcomingEvent)){
@@ -1342,20 +1341,21 @@ var trackUpcomingEvent = function(){
                 overallTime = "Your first task will start " + overallTime + " after the team has begun";
             } else {
                 if (delayed_tasks.length != 0) {
-                    console.log("There are delayed tasks");
+                    overallTime = "A task ahead of yours has been delayed.  Your next task will start " + overallTime + " after the delayed task is completed.";
+                    statusText.style("color", "red");
+                } else {
+                    overallTime = "Your next task starts in " + overallTime;
+                    statusText.style("color", "blue");
                 }
-                overallTime = "Your next task starts in " + overallTime;
             }
-            statusText.style("color", "blue");
         }
-
         if (displayTimeinMinutes == 0) {
             if (cursorTimeinMinutes == 0) {
-                overallTime = "Your first task will begin once the team starts";  
+                overallTime = "Your first task will begin as soon as the team starts";  
             } else {
                 overallTime = "Your next task begins NOW";
             }
-            statusText.style("color", "blue");
+            statusText.style("color", "blue");  
         }
         
         statusText.text(overallTime);
