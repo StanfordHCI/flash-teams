@@ -78,7 +78,9 @@ function leftResize(d) {
         newX = 0;
     }
     var newWidth = width + (ev.x - newX);
-
+    if (newWidth < 30)
+        return;
+    
     // update x and draw event
     ev.x = newX;
     ev.min_x = newX;
@@ -99,6 +101,7 @@ function rightResize(d) {
         return;
     }
 
+
     // get event id
     var groupNum = d.groupNum;
 
@@ -110,6 +113,8 @@ function rightResize(d) {
         newX = SVG_WIDTH;
     }
     var newWidth = newX - ev.x;
+    if (newWidth < 30)
+        return;
 
     ev.duration = durationForWidth(newWidth);
 
@@ -264,8 +269,8 @@ function getEventFromId(id) {
 function getWidth(ev) {
     var durationInMinutes = ev.duration;
     var hrs = parseFloat(durationInMinutes)/parseFloat(60);
-    var width = hrs*RECTANGLE_WIDTH;
-    var roundedWidth = Math.round(width/STEP_WIDTH) * STEP_WIDTH;
+    var width = parseFloat(hrs)*parseFloat(RECTANGLE_WIDTH);
+    var roundedWidth = Math.round(parseFloat(width)/parseFloat(STEP_WIDTH)) * STEP_WIDTH;
     return roundedWidth;
 };
 
@@ -410,6 +415,25 @@ function drawTitleText(eventObj, firstTime) {
     var title = eventObj["title"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
+    //shorten title to fit inside event
+    var existingTitleTextDiv = document.getElementById("TitleLength");
+    existingTitleTextDiv.innerHTML = title;
+    var shortened_title = title;
+    var width = (existingTitleTextDiv.clientWidth );
+    var event_width = getWidth(eventObj);
+     
+  while (width > event_width - 15){ 
+         shortened_title = shortened_title.substring(0,shortened_title.length - 4);
+        shortened_title = shortened_title + "...";
+       
+        console.log(shortened_title);
+        existingTitleTextDiv.innerHTML = shortened_title;
+        width = (existingTitleTextDiv.clientWidth);
+  }
+
+    title = shortened_title;
+   
+
     var existingTitleText = task_g.selectAll("#title_text_" + groupNum);
     if(existingTitleText[0].length == 0){ // first time
         task_g.append("text")
@@ -427,6 +451,8 @@ function drawTitleText(eventObj, firstTime) {
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
+
+
 }
 
 function drawDurationText(eventObj, firstTime) {
@@ -444,7 +470,11 @@ function drawDurationText(eventObj, firstTime) {
     if(existingDurationText[0].length == 0){ // first time
         task_g.append("text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min";
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("class", "time_text")
             .attr("id", function(d) {return "time_text_" + groupNum;})
@@ -455,7 +485,11 @@ function drawDurationText(eventObj, firstTime) {
     } else {
         task_g.selectAll(".time_text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min"; 
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
@@ -506,7 +540,7 @@ function drawHandoffBtn(eventObj, firstTime) {
     }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
-    var y_offset = 23; // unique for handoff btn
+    var y_offset = 40; // unique for handoff btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -548,7 +582,7 @@ function drawCollabBtn(eventObj, firstTime) {
     if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
-    var y_offset = 23; // unique for collab btn
+    var y_offset = 40; // unique for collab btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -633,19 +667,30 @@ function drawMemberLines(eventObj) {
     }
 };
 
+
+
 // TODO: might have issues with redrawing
 function drawShade(eventObj, firstTime) {
-    if(current == undefined) {return;}
+    console.log("current user: "+ current_user);
+    console.log("current: "+ current);
+    if(current_user == undefined) {return;}
 
     var groupNum = eventObj["id"];
     var members = eventObj["members"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
     // draw shade on main rect of this event
+    //for each event it draws the shade. 
+    //in doing so it takes its array of members FOR THAT EVENT
+    //for each member for that event it gets their ID
+    //if they are the CURRENT member
+    console.log("members array: " + members);
     for (var i=0; i<members.length; i++) {
-        var member = members[i];
-        var idx = getMemberIndexFromName(member["name"]);
-        if (current == idx){
+        var member_id = members[i];
+        //var idx = getMemberIndexFromName(member["name"]);
+        //debugger;
+        if (current_user.id == member_id){
+            console.log("here");
             if (currentUserIds.indexOf(groupNum) < 0){
                 currentUserIds.push(groupNum);
                 currentUserEvents.push(eventObj);
@@ -666,6 +711,8 @@ function drawShade(eventObj, firstTime) {
             .attr("fill", color)
             .attr("fill-opacity", .9);  
     }
+    console.log("current user ids: " +currentUserIds);
+    console.log("current user events: " + currentUserEvents);
 }
 
 function drawEachHandoffForEvent(eventObj){
@@ -870,6 +917,7 @@ function confirmDeleteEvent(eventId) {
 
     var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Delete event";
+    $("#confirmButton").attr("class","btn btn-danger");
 
     $('#confirmAction').modal('show');
     
@@ -916,3 +964,9 @@ function deleteEvent(eventId){
     
     updateStatus(false);
 }
+
+//This function is used to truncate the event title string since html tags cannot be attached to svg
+String.prototype.trunc = String.prototype.trunc ||
+      function(n){
+         // return this.length>n ? this.substr(0,n-1)+'...' : this;
+      };

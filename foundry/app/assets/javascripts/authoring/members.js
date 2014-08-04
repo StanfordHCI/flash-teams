@@ -60,6 +60,7 @@ function setCurrentMember() {
         for(var i=0;i<flash_team_members.length;i++){            
             if (flash_team_members[i].uniq == uniq){
                 current = flash_team_members[i].id;
+                current_user = flash_team_members[i];
                 isUser = true;
             }
         }
@@ -353,6 +354,7 @@ function confirmDeleteMember(pillId) {
 
     var deleteButton = document.getElementById("confirmButton");
     deleteButton.innerHTML = "Remove member";
+    $("#confirmButton").attr("class","btn btn-danger");
 
     $('#confirmAction').modal('show');
 
