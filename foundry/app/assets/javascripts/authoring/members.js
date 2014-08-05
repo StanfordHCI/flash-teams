@@ -406,6 +406,7 @@ function deleteMember(pillId) {
 
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
 function saveMemberInfo(popId) {
+    console.log("HERE COLOR THANG");
     var indexOfJSON = getMemberJSONIndex(popId);
 
     flashTeamsJSON["members"][indexOfJSON].category1 = document.getElementById("member" + popId + "_category1").value;
