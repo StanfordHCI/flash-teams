@@ -3,7 +3,7 @@
  *
  */
 
- var pillCounter = undefined;
+ var memberCounter = undefined;
  var colorToChange = "#ff0000";
  var current = undefined;
  var isUser = false;
@@ -60,6 +60,7 @@ function setCurrentMember() {
         for(var i=0;i<flash_team_members.length;i++){            
             if (flash_team_members[i].uniq == uniq){
                 current = flash_team_members[i].id;
+                current_user = flash_team_members[i];
                 isUser = true;
             }
         }
@@ -156,7 +157,7 @@ function renderMemberPopovers(members) {
 
          +'<p><button class="btn btn-success" type="button" onclick="saveMemberInfo(' + member_id + '); updateStatus();">Save</button>      '
          +'<button class="btn btn-danger" type="button" onclick="confirmDeleteMember(' + member_id + ');">Delete</button>     '
-         +'<button class="btn btn-default" type="button" onclick="reInviteMember(' + member_id + '); updateStatus();">Replace</button>     '
+         +'<button class="btn btn-default" type="button" onclick="confirmReplaceMember(' + member_id + '); updateStatus();">Replace</button>     '
          +'<button class="btn btn-default" type="button" onclick="hideMemberPopover(' + member_id + ');">Cancel</button><br><br>'
 
         + 'Invitation link: <a id="invitation_link_' + member_id + '" href="' + invitation_link + '" target="_blank">'
@@ -242,12 +243,12 @@ function renderDiagram(members) {
 };
 
 function newMemberObject(memberName) {
-    if (pillCounter == undefined) {
-        pillCounter = initializeMemberCounter();
+    if (memberCounter == undefined) {
+        memberCounter = initializeMemberCounter();
     }
-    pillCounter++;
+    memberCounter++;
     var color = colorBox.grabColor();
-    return {"role":memberName, "id": pillCounter, "color":color, "skills":[], "category1":"", "category2":""};
+    return {"role":memberName, "id": memberCounter, "color":color, "skills":[], "category1":"", "category2":""};
 };
 
 function addMember() {
@@ -256,6 +257,12 @@ function addMember() {
     if (member_name === "") {
         alert("Please enter a member role.");
         return;
+    }
+
+    //Close all open popovers
+    for (var i = 0; i<flashTeamsJSON["members"].length; i++) {
+        var idNum = flashTeamsJSON["members"][i].id;
+        $("#mPill_"+idNum).popover('hide');
     }
 
     // clear input
@@ -332,34 +339,34 @@ function saveMemberInfo(popId) {
 };
 
 
-
 //Shows an alert asking to confirm delete member role
 function confirmDeleteMember(pillId) {
     var indexOfJSON = getMemberJSONIndex(pillId);
     var members = flashTeamsJSON["members"];
     var memberToDelete = members[indexOfJSON].role;
 
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Remove Member?";
 
-    var alertText = document.getElementById("confirmDeleteText");
+    var alertText = document.getElementById("confirmActionText");
     alertText.innerHTML = "<b>Are you sure you want to remove " + memberToDelete + " from " + flashTeamsJSON["title"]+ "? </b><br><font size = '2'>" 
                 + memberToDelete + " will be removed from all events on the timeline. </font>";
 
-    var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Remove " + memberToDelete;
+    var deleteButton = document.getElementById("confirmButton");
+    deleteButton.innerHTML = "Remove member";
+    $("#confirmButton").attr("class","btn btn-danger");
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
 
     //Calls deleteMember function if user confirms the delete
-    document.getElementById("deleteButton").onclick=function(){deleteMember(pillId)};
-}
+    document.getElementById("confirmButton").onclick=function(){deleteMember(pillId)};
 
+}
 
 
 //Delete team member from team list, JSON, diagram, and events
 function deleteMember(pillId) {
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
 
     // remove from members array
     var indexOfJSON = getMemberJSONIndex(pillId);
@@ -395,6 +402,7 @@ function deleteMember(pillId) {
     drawAllPopovers();
 
     updateStatus(false);
+
 };
 
 //Saves info and updates popover, no need to update JSON, done by individual item elsewhere
@@ -437,6 +445,7 @@ function inviteMember(pillId) {
 };
 
 function reInviteMember(pillId) {
+    $('#confirmAction').modal('hide');
 
     var flash_team_id = $("#flash_team_id").val();
     var url = '/members/' + flash_team_id + '/reInvite';
@@ -460,6 +469,28 @@ function reInviteMember(pillId) {
         updateStatus();
     });
 };
+
+function confirmReplaceMember(pillId) {
+    var indexOfJSON = getMemberJSONIndex(pillId);
+    var members = flashTeamsJSON["members"];
+    var memberToReplace = members[indexOfJSON].role;
+
+    var label = document.getElementById("confirmActionLabel");
+    label.innerHTML = "Replace Member?";
+
+    var alertText = document.getElementById("confirmActionText");
+    alertText.innerHTML = "<b>Are you sure you want to replace " + memberToReplace + "? </b><br><font size = '2'>  The current " 
+                + memberToReplace + " will no longer have access to " + flashTeamsJSON["title"] + " and you will need to hire a new " + memberToReplace + ".</font>";
+
+    var deleteButton = document.getElementById("confirmButton");
+    deleteButton.innerHTML = "Replace member";
+
+    $('#confirmAction').modal('show');
+
+    //Calls reInviteMember function if user confirms the replace
+    document.getElementById("confirmButton").onclick=function(){reInviteMember(pillId)};
+
+}
 
 function renderMemberPillColor(memberId) {
     var indexOfJSON = getMemberJSONIndex(memberId);

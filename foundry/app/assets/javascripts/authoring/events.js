@@ -45,7 +45,7 @@ var drag_left = d3.behavior.drag()
 //Called when task rectangles are dragged
 var drag = d3.behavior.drag()
     .origin(Object)
-    .on("drag", dragEvent)
+    .on("drag", dragEventBlock)
     .on("dragend", function(d){
         if(dragged){
             dragged = false;
@@ -78,7 +78,9 @@ function leftResize(d) {
         newX = 0;
     }
     var newWidth = width + (ev.x - newX);
-
+    if (newWidth < 30)
+        return;
+    
     // update x and draw event
     ev.x = newX;
     ev.min_x = newX;
@@ -99,6 +101,7 @@ function rightResize(d) {
         return;
     }
 
+
     // get event id
     var groupNum = d.groupNum;
 
@@ -110,13 +113,15 @@ function rightResize(d) {
         newX = SVG_WIDTH;
     }
     var newWidth = newX - ev.x;
+    if (newWidth < 30)
+        return;
 
     ev.duration = durationForWidth(newWidth);
 
     drawEvent(ev, false);
 }
 
-function dragEvent(d) {
+function dragEventBlock(d) {
     
     if(isUser || in_progress) { // user page
         return;
@@ -264,8 +269,8 @@ function getEventFromId(id) {
 function getWidth(ev) {
     var durationInMinutes = ev.duration;
     var hrs = parseFloat(durationInMinutes)/parseFloat(60);
-    var width = hrs*RECTANGLE_WIDTH;
-    var roundedWidth = Math.round(width/STEP_WIDTH) * STEP_WIDTH;
+    var width = parseFloat(hrs)*parseFloat(RECTANGLE_WIDTH);
+    var roundedWidth = Math.round(parseFloat(width)/parseFloat(STEP_WIDTH)) * STEP_WIDTH;
     return roundedWidth;
 };
 
@@ -410,6 +415,25 @@ function drawTitleText(eventObj, firstTime) {
     var title = eventObj["title"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
+    //shorten title to fit inside event
+    var existingTitleTextDiv = document.getElementById("TitleLength");
+    existingTitleTextDiv.innerHTML = title;
+    var shortened_title = title;
+    var width = (existingTitleTextDiv.clientWidth );
+    var event_width = getWidth(eventObj);
+     
+  while (width > event_width - 15){ 
+         shortened_title = shortened_title.substring(0,shortened_title.length - 4);
+        shortened_title = shortened_title + "...";
+       
+        console.log(shortened_title);
+        existingTitleTextDiv.innerHTML = shortened_title;
+        width = (existingTitleTextDiv.clientWidth);
+  }
+
+    title = shortened_title;
+   
+
     var existingTitleText = task_g.selectAll("#title_text_" + groupNum);
     if(existingTitleText[0].length == 0){ // first time
         task_g.append("text")
@@ -427,6 +451,8 @@ function drawTitleText(eventObj, firstTime) {
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
     }
+
+
 }
 
 function drawDurationText(eventObj, firstTime) {
@@ -444,7 +470,11 @@ function drawDurationText(eventObj, firstTime) {
     if(existingDurationText[0].length == 0){ // first time
         task_g.append("text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min";
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("class", "time_text")
             .attr("id", function(d) {return "time_text_" + groupNum;})
@@ -455,7 +485,11 @@ function drawDurationText(eventObj, firstTime) {
     } else {
         task_g.selectAll(".time_text")
             .text(function (d) {
-                return numHoursInt+"hrs "+minutesLeft+"min";
+                if (numHoursInt == 0){
+                    return minutesLeft+"min"; 
+                }
+                else
+                    return numHoursInt+"hrs "+minutesLeft+"min";
             })
             .attr("x", function(d) {return d.x + x_offset})
             .attr("y", function(d) {return d.y + y_offset});
@@ -506,7 +540,7 @@ function drawHandoffBtn(eventObj, firstTime) {
     }
 
     var x_offset = getWidth(eventObj)-18; // unique for handoff btn
-    var y_offset = 23; // unique for handoff btn
+    var y_offset = 40; // unique for handoff btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -548,7 +582,7 @@ function drawCollabBtn(eventObj, firstTime) {
     if(isUser || in_progress){ return; }
 
     var x_offset = getWidth(eventObj)-38; // unique for collab btn
-    var y_offset = 23; // unique for collab btn
+    var y_offset = 40; // unique for collab btn
 
     var groupNum = eventObj["id"];
     var task_g = getTaskGFromGroupNum(groupNum);
@@ -633,19 +667,26 @@ function drawMemberLines(eventObj) {
     }
 };
 
+
+
 // TODO: might have issues with redrawing
 function drawShade(eventObj, firstTime) {
-    if(current == undefined) {return;}
+    if(current_user == undefined) {return;}
 
     var groupNum = eventObj["id"];
     var members = eventObj["members"];
     var task_g = getTaskGFromGroupNum(groupNum);
 
     // draw shade on main rect of this event
+    //for each event it draws the shade. 
+    //in doing so it takes its array of members FOR THAT EVENT
+    //for each member for that event it gets their ID
+    //if they are the CURRENT member
     for (var i=0; i<members.length; i++) {
-        var member = members[i];
-        var idx = getMemberIndexFromName(member["name"]);
-        if (current == idx){
+        var member_id = members[i];
+        //var idx = getMemberIndexFromName(member["name"]);
+        //debugger;
+        if (current_user.id == member_id){
             if (currentUserIds.indexOf(groupNum) < 0){
                 currentUserIds.push(groupNum);
                 currentUserEvents.push(eventObj);
@@ -668,7 +709,7 @@ function drawShade(eventObj, firstTime) {
     }
 }
 
-function drawEachHandoff(eventObj, firstTime){
+function drawEachHandoffForEvent(eventObj){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
@@ -685,37 +726,30 @@ function drawEachHandoff(eventObj, firstTime){
                 var ev2 = eventObj;
             }  
             if (draw){
-                var existingHandoff = timeline_svg.selectAll("#interaction_" + inter["id"]);
-                if(existingHandoff[0].length == 0){ // first time
-                    var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
-                        "type":"handoff", "description":"", "id":inter["id"]};
-                    drawHandoff(handoffData);
-                } else {
-                    var x1 = handoffStart(ev1);
-                    var y1 = ev1.y + 50;
-                    var x2 = ev2.x + 3;
-                    var y2 = ev2.y + 50;
-
-                    $("#interaction_" + inter["id"])
-                        .attr("x1", x1)
-                        .attr("y1", y1)
-                        .attr("x2", x2)
-                        .attr("y2", y2)
-                        .attr("d", function(d) {
-                            var dx = x1 - x2,
-                            dy = y1 - y2,
-                            dr = Math.sqrt(dx * dx + dy * dy);
-                            //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
-                            return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
-                            + " 0 0,0 " + x2 + "," + (y2+15); 
-                        });
-                }
+                //Reposition an existing handoff
+                var x1 = handoffStart(ev1);
+                var y1 = ev1.y + 50;
+                var x2 = ev2.x + 3;
+                var y2 = ev2.y + 50;
+                $("#interaction_" + inter["id"])
+                    .attr("x1", x1)
+                    .attr("y1", y1)
+                    .attr("x2", x2)
+                    .attr("y2", y2)
+                    .attr("d", function(d) {
+                        var dx = x1 - x2,
+                        dy = y1 - y2,
+                        dr = Math.sqrt(dx * dx + dy * dy);
+                        //For ref: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+                        return "M " + x1 + "," + y1 + "\n A " + dr + ", " + dr 
+                        + " 0 0,0 " + x2 + "," + (y2+15); 
+                    });
             }
         }
     }
 }
 
-function drawEachCollab(eventObj, firstTime){
+function drawEachCollabForEvent(eventObj){
     var interactions = flashTeamsJSON["interactions"];
     for (var i = 0; i < interactions.length; i++){
         var inter = interactions[i];
@@ -732,12 +766,14 @@ function drawEachCollab(eventObj, firstTime){
                 var ev2 = eventObj;
             }
             if (draw){
-                var existingCollab = timeline_svg.selectAll("#interaction_" + inter["id"]);
-                if(existingCollab[0].length == 0){ // first time
+                /*var existingInter = timeline_svg.selectAll("#interaction_" + inter["id"]);
+                if(existingInter[0].length == 0){ // first time
+                    //Alexandra - I'm not convinced this ever get called? 
                     var handoffData = {"event1":inter["event1"], "event2":inter["event2"], 
                         "type":"handoff", "description":"", "id":inter["id"]};
                     drawHandoff(handoffData);
-                } else {
+                } else {*/
+                    //Reposition existing collaboration
                     var y1 = ev1.y + 17;
                     var x1 = ev1.x + 3;
                     var x2 = ev2.x + 3;
@@ -759,7 +795,7 @@ function drawEachCollab(eventObj, firstTime){
                         .attr("y", firstTaskY)
                         .attr("height", taskDistance)
                         .attr("width", overlap);
-                }
+                /*}*/
             }
         }
     }
@@ -780,8 +816,8 @@ function drawEvent(eventObj) {
     drawCollabBtn(eventObj);
     drawMemberLines(eventObj);
     drawShade(eventObj);
-    drawEachHandoff(eventObj);
-    drawEachCollab(eventObj);
+    drawEachHandoffForEvent(eventObj);
+    drawEachCollabForEvent(eventObj);
 };
 
 function drawAllPopovers() {
@@ -863,23 +899,25 @@ function removeAllMemberLines(eventObj){
 //shows an alert asking the user to confirm that they want to delete an event
 function confirmDeleteEvent(eventId) {
 
-    var label = document.getElementById("confirmDeleteLabel");
+    var label = document.getElementById("confirmActionLabel");
     label.innerHTML = "Delete Event?";
 
     var indexOfJSON = getEventJSONIndex(eventId);
     var events = flashTeamsJSON["events"];
     var eventToDelete = events[indexOfJSON];
 
-    var alertText = document.getElementById("confirmDeleteText");
-    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + " ?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
+    var alertText = document.getElementById("confirmActionText");
+    alertText.innerHTML = "<b>Are you sure you want to delete " + eventToDelete["title"] + "?</b><br><font size = '2'>Deleting an event will permanently delete all its data, handoffs, and collaborations.</font>";
 
-    var deleteButton = document.getElementById("deleteButton");
-    deleteButton.innerHTML = "Delete " + eventToDelete["title"];
+    var deleteButton = document.getElementById("confirmButton");
+    deleteButton.innerHTML = "Delete event";
+    $("#confirmButton").attr("class","btn btn-danger");
 
-    $('#confirmDelete').modal('show');
+    $('#confirmAction').modal('show');
+    
 
     //Calls deleteEvent function if user confirms the delete
-    document.getElementById("deleteButton").onclick=function(){deleteEvent(eventId)};
+    document.getElementById("confirmButton").onclick=function(){deleteEvent(eventId)};
 }
 
 
@@ -887,7 +925,7 @@ function confirmDeleteEvent(eventId) {
 // then, calls removeTask to remove the task from the timeline
 function deleteEvent(eventId){
 
-    $('#confirmDelete').modal('hide');
+    $('#confirmAction').modal('hide');
 
 	var indexOfJSON = getEventJSONIndex(eventId);
 	var events = flashTeamsJSON["events"];
@@ -920,3 +958,9 @@ function deleteEvent(eventId){
     
     updateStatus(false);
 }
+
+//This function is used to truncate the event title string since html tags cannot be attached to svg
+String.prototype.trunc = String.prototype.trunc ||
+      function(n){
+         // return this.length>n ? this.substr(0,n-1)+'...' : this;
+      };

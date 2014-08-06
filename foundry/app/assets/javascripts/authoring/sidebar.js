@@ -66,7 +66,9 @@ function saveProjectOverview(){
 
 /***chat****/
 
-var myDataRef = new Firebase('https://foundry-ft.firebaseio.com/'+ flash_team_id +'/chats');
+var firebaseURL = 'https://foundry-ft-dev.firebaseio.com/'; //should be foundry-ft for production and foundry-ft-dev for development
+
+var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
 
 var currentdate = new Date(); 
 
@@ -134,7 +136,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     //notification body
     var notif_body = dateform;
     
-    var showchatnotif; // true if notifications should be shown
+    var showchatnotif = false; // true if notifications should be shown
         
     if ((current_user == 'Author' && role == 'Author') || (current_user.uniq == uniq)){
     	showchatnotif = false;
@@ -147,6 +149,7 @@ function displayChatMessage(name, uniq, role, date, text) {
     // this is used to only create notifications for messages that were sent from the time you logged in and forward 
     // (e.g., no notifications for messages in the past)
     if (diff <= 50000 && showchatnotif == true){
+        playSound("/assets/notify");
 	    notifyMe(notif_title, notif_body, 'chat');
     }
 
@@ -172,13 +175,13 @@ function displayChatMessage(name, uniq, role, date, text) {
 //*** online users
 // since I can connect from multiple devices or browser tabs, we store each connection instance separately
 // any time that connectionsRef's value is null (i.e. has no children) I am offline
-var myConnectionsRef = new Firebase('https://foundry-ft.firebaseio.com/'+flash_team_id+'/users/'+name+'/connections');
+var myConnectionsRef = new Firebase(firebaseURL + flash_team_id + '/users/'+name+'/connections');
 // stores the timestamp of my last disconnect (the last time I was seen online)
-var lastOnlineRef = new Firebase('https://foundry-ft.firebaseio.com/'+flash_team_id+'/users/'+name+'/lastOnline');
-var connectedRef = new Firebase('https://foundry-ft.firebaseio.com/.info/connected');
+var lastOnlineRef = new Firebase(firebaseURL + flash_team_id + '/users/'+name+'/lastOnline');
+var connectedRef = new Firebase(firebaseURL + '.info/connected');
 
 // Get a reference to the presence data in Firebase.
-var userListRef = new Firebase('https://foundry-ft.firebaseio.com/' + flash_team_id + '/presence');
+var userListRef = new Firebase(firebaseURL + flash_team_id + '/presence');
 
 // Generate a reference to a new location for my user with push.
 var myUserRef = userListRef.push();
@@ -293,12 +296,22 @@ var project_status_svg = d3.select("#status-bar-container").append("svg")
 .attr("width", 300)
 .attr("height", 100);
 
-var statusText = project_status_svg.append("text").text("You currently have no tasks")
+var statusText = project_status_svg.append("foreignObject")
+    
 .attr("x", 0)
 .attr("y", 15)
-.attr("font-size", "sans-serif")
-.attr("font-size", "20px")
-.attr("fill", "black");
+.attr("width", "300px")
+.attr("height", "400px")
+.append("xhtml:body")
+.append("p")
+.style("color", "blue")
+.style("font-size", "18px")
+.style("background-color", "#f5f5f5")
+.style("width", "280px")
+.text("You currently have no tasks");
+
+
+
 
 var status_width=100; 
 var status_height=32;

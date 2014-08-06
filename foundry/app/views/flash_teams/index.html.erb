@@ -23,8 +23,8 @@
       <!-- <td><%= flash_team.name %></td> -->
       <!-- <td><%= link_to 'Show', flash_team %></td> -->
       <td><%= link_to 'Edit', edit_flash_team_path(flash_team) %></td>
-	  <td><%= link_to 'Delete', flash_team_path(flash_team), :method => :delete, :confirm => 'Are you sure?' %></td>
-
+  	  <td><%= link_to 'Delete', flash_team_path(flash_team), :method => :delete, :confirm => 'Are you sure?' %></td>
+      <td><%= link_to 'Duplicate', duplicate_flash_team_path(flash_team) %></td>
     </tr>
   <% end %>
   </tbody>
@@ -35,6 +35,7 @@
   <%= javascript_include_tag "/assets/jquery_ujs" %>
   <%= javascript_include_tag "bootstrap/bootstrap.min" %>
   <%= javascript_include_tag "bootstrap-editable.min" %>
+  <%= javascript_include_tag "bootstrap-tour.min" %>
 
 <script>
   $(document).ready(function() {

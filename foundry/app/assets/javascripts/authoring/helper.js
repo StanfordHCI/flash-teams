@@ -9,7 +9,10 @@ var flashTeamsJSON = {
     "id" : 1,
     "events": [],        //{"title", "id", "startTime", "duration", "notes", "members": [], "dri", "yPosition", inputs”:[], “outputs”:[]}
     "members": [],       //{"id", "role", "skills":[], "color", "category1", "category2"}
-    "interactions" : []  //{"event1", "event2", "type", "description", "id"}
+    "interactions" : [],  //{"event1", "event2", "type", "description", "id"}
+    "author": "defaultAuthor",
+    "original_status": "original status",
+    "original_json": "original json"
 };
 
 function pressEnterKeyToSubmit(inputId, buttonId) {
@@ -53,20 +56,20 @@ function drawFlashTeamFromJSON(ftJSON) {
     	$("#member" + (i+1) + "_category1")[0].value = ftJSON["members"][i].category1;
     	$("#member" + (i+1) + "_category2").removeAttr("disabled");
     	$("#member" + (i+1) + "_category2").empty();
-		var category1Select = document.getElementById("member" + pillCounter + "_category1");
+		var category1Select = document.getElementById("member" + memberCounter + "_category1");
 	    var category1Name = category1Select.options[category1Select.selectedIndex].value;
 	    for (j = 0; j < oDeskCategories[category1Name].length; j++) {
 	        var option = document.createElement("option");
-	        $("#member" + pillCounter + "_category2").append("<option>" + oDeskCategories[category1Name][j] + "</option>");
+	        $("#member" + memberCounter + "_category2").append("<option>" + oDeskCategories[category1Name][j] + "</option>");
 	    }
     	$("#member" + (i+1) + "_category2")[0].value = ftJSON["members"][i].category2;
 
     	//Add skills
     	for (var k = 0; k<ftJSON["members"][i].skills.length; k++) {
-    		$("#addSkillInput_" + pillCounter).val(ftJSON["members"][i].skills[k]);
-    		addSkill(pillCounter);
+    		$("#addSkillInput_" + memberCounter).val(ftJSON["members"][i].skills[k]);
+    		addSkill(memberCounter);
     	}
-    	saveMemberInfo(pillCounter);
+    	saveMemberInfo(memberCounter);
     }
 
     var events_len = ftJSON["events"].length;
@@ -87,7 +90,7 @@ function drawFlashTeamFromJSON(ftJSON) {
     	var startMin = ftJSON["events"][j].startTime%60;
     	addEventPopover(startHr, startMin);
     	//CHECK THAT MEMBERS WORK, SHOULD BE TAKEN CARE OF BY EVENT POPOVERT
-    	$("#notes_" + pillCounter).val(ftJSON["events"][j].notes);
+    	$("#notes_" + memberCounter).val(ftJSON["events"][j].notes);
     	overlayOn();
     }
     

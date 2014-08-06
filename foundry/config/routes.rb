@@ -68,12 +68,16 @@ Foundry::Application.routes.draw do
       delete :destroy
       get :get_status
       post :update_status
+      post :update_original_status
       post :update_json
       get :get_json
       post :early_completion_email
       post :get_user_name
       post :delayed_task_finished_email
       post :create
+      get :settings
+      get :duplicate
+      post :settings
     end
   end
 

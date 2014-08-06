@@ -54,7 +54,7 @@ function editablePopoverObj(eventObj) {
             + '" min="0" step="15" max="45" style="width:35px"><br />'
         + '<b>Total Runtime: </b> <br />' 
         + 'Hours: <input type = "number" id="hours_' + groupNum + '" placeholder="'
-            +numHours+'" min="2" style="width:35px"/>         ' 
+            +numHours+'" min="0" style="width:35px"/>         ' 
         + 'Minutes: <input type = "number" id = "minutes_' + groupNum + '" placeholder="'+minutesLeft
             +'" style="width:35px" min="0" step="15" max="45"/> <br />'
         + '<b>Members</b><br /> <div id="event' + groupNum + 'memberList">'
@@ -85,7 +85,6 @@ function editablePopoverObj(eventObj) {
     return obj;
 };
 
-//maggie -> delete event is called here
 
 /*
  * Input(s): 
@@ -159,7 +158,7 @@ function readOnlyPopoverObj(ev) {
     }
 
     content += '<br><form><button type="button" class="btn btn-success" id="complete_' + groupNum 
-        + '" onclick="completeTask(' + groupNum + ');">Complete</button>'
+        + '" onclick="confirmCompleteTask(' + groupNum + ');">Complete</button>'
         + ' <button type="button" class="btn btn-default" id="ok"'
         +' onclick="hidePopover(' + groupNum + ');">Ok</button></form>';
     
@@ -270,6 +269,7 @@ function saveEventInfo (popId) {
     var startHour = $("#startHr_" + popId).val();    
     if (startHour == "") startHour = parseInt($("#startHr_" + popId).attr("placeholder"));
     var startMin = $("#startMin_" + popId).val();
+
     if (startMin == "") startMin = parseInt($("#startMin_" + popId).attr("placeholder"));
     //newX
     startHour = parseInt(startHour);
@@ -302,6 +302,11 @@ function saveEventInfo (popId) {
     if (newHours == "") newHours = parseInt($("#hours_" + popId)[0].placeholder);
     if (newMin == "") newMin = parseInt($("#minutes_" + popId)[0].placeholder);
     newMin = Math.round(parseInt(newMin)/15) * 15;
+    
+    //cannot have events shorter than 30 minutes
+    if (newHours == 0 && newMin == 15){
+        newMin = 30;
+    }
     var newWidth = (newHours * 100) + (newMin/15*25);
   
     //Update JSON

@@ -88,7 +88,6 @@ GEM
     multipart-post (2.0.0)
     oauth (0.4.7)
     pg (0.17.1)
-    pg (0.17.1-x64-mingw32)
     pg (0.17.1-x86-mingw32)
     polyglot (0.3.4)
     pusher (0.12.0)
@@ -165,12 +164,10 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw32
   x86-mingw32
 
 DEPENDENCIES
   bootstrap-sass-rails
-  coffee-rails (~> 4.0.0)
   d3-rails
   google-api-client
   jbuilder (~> 1.2)

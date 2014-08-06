@@ -13,16 +13,20 @@ class FlashTeamsController < ApplicationController
 
   def create
     name = flash_team_params(params[:flash_team])[:name]
-    @flash_team = FlashTeam.create(:name => name)
+
+    author = flash_team_params(params[:flash_team])[:author]
+    @flash_team = FlashTeam.create(:name => name, :author => author)
 
     # get id
     id = @flash_team[:id]
 
     # store in flash team
-    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": []}'
+
+    @flash_team.json = '{"title": "' + name + '","id": ' + id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + author + '"}'
 
     if @flash_team.save
-      redirect_to @flash_team
+      #redirect_to @flash_team
+      redirect_to edit_flash_team_path(id)
     else
       render 'new'
     end
@@ -31,6 +35,24 @@ class FlashTeamsController < ApplicationController
   def show
     @flash_team = FlashTeam.find(params[:id])
   end
+
+  def duplicate
+    # Locate data from the original
+    original = FlashTeam.find(params[:id])
+
+    # Then create a copy from the original data
+    copy = FlashTeam.create(:name => original.name + " Copy", :author => original.author)
+    copy.json = '{"title": "' + copy.name + '","id": ' + copy.id.to_s + ',"events": [],"members": [],"interactions": [], "author": "' + copy.author + '"}'
+    
+    # Use the original_status of the original flash team when copying to prevent copying over the status information of teams that were already started
+    copy.status = original.original_status
+    #copy.status = original.status
+    copy.save
+
+    # Redirect to the list of things
+    redirect_to :action => 'index'
+  end
+
 
   def index
     @flash_teams = FlashTeam.all.order(:id).reverse_order
@@ -138,6 +160,17 @@ end
       format.json {render json: "saved".to_json, status: :ok}
     end
   end
+  
+  def update_original_status
+    status = params[:localStatusJSON]
+    @flash_team = FlashTeam.find(params[:id])
+    @flash_team.original_status = status
+    @flash_team.save
+
+    respond_to do |format|
+      format.json {render json: "saved".to_json, status: :ok}
+    end
+  end
 
   def update_json
     json = params[:flashTeamJSON]
@@ -229,27 +262,29 @@ end
       flash_team.notification_email_status = JSON.dump(notification_email_status)
       flash_team.save
 
-      flash_team_status = JSON.parse(flash_team.status)
-      flash_team_json=flash_team_status["flash_teams_json"]
-      flash_team_members=flash_team_json["members"]
-      flash_team_events=flash_team_json["events"]
-    
-      #dri_role=flash_team_events[event_id.to_f]["members"][0]
-      dri =  flash_team_events[event_id.to_f]["dri"]
-      dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
-      if dri_member  == nil
-        puts "dri is not defined"
-        dri_member= flash_team_members.detect{|m| m["role"] == flash_team_events[event_id.to_f]["members"][0]["name"]}
-      end
-      dri_role=dri_member["role"]
-      event_name= flash_team_events[event_id.to_f]["title"]
-      flash_team_members.each do |member|
-          #tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
-          #member_id= tmp_member["id"]
-          uniq = member["uniq"]
-          email = Member.where(:uniq => uniq)[0].email
-          UserMailer.send_task_delayed_email(email,@delay_estimation,event_name,dri_role).deliver
-       
+      if !flash_team.status.blank?
+        flash_team_status = JSON.parse(flash_team.status)
+        flash_team_json=flash_team_status["flash_teams_json"]
+        flash_team_members=flash_team_json["members"]
+        flash_team_events=flash_team_json["events"]
+      
+        #dri_role=flash_team_events[event_id.to_f]["members"][0]
+        dri =  flash_team_events[event_id.to_f]["dri"]
+        dri_member= flash_team_members.detect{|m| m["id"] == dri.to_i}
+        if dri_member  == nil
+          puts "dri is not defined"
+          dri_member= flash_team_members.detect{|m| m["id"].to_i == flash_team_events[event_id.to_f]["members"][0].to_i}
+        end
+        dri_role=dri_member["role"]
+        event_name= flash_team_events[event_id.to_f]["title"]
+        flash_team_members.each do |member|
+            #tmp_member= flash_team_members.detect{|m| m["role"] == member["role"]}
+            #member_id= tmp_member["id"]
+            uniq = member["uniq"]
+            email = Member.where(:uniq => uniq)[0].email
+            UserMailer.send_task_delayed_email(email,@delay_estimation,event_name,dri_role).deliver
+         
+        end
       end
   end
 
@@ -263,7 +298,10 @@ end
       user_name = member.name
       user_role="" 
      else
-        user_name="Daniela"
+        #it is the requester
+        flash_team = FlashTeam.find(params[:id])
+        flash_team_json = JSON.parse(flash_team.json)
+        user_name = flash_team_json["author"]
         user_role="Author"
      end
 
@@ -313,6 +351,6 @@ end
    end
 
   def flash_team_params params
-    params.permit(:name)
+    params.permit(:name, :author)
   end
 end

@@ -125,6 +125,7 @@
 	height: 385px;
 }
 
+
 #project-overview-container{
 	padding-bottom: 10px;
 }
@@ -137,6 +138,13 @@
   resize:none;
   padding:5px;
   border:solid 1px #c3c3c3;
+
+#status-bar-container svg {
+	width: 280px;
+}
+
+#status-bar-container text {
+	overflow-x: scroll;
 }
 
 /*NOTE/QUESTION: should this be with the 
@@ -169,4 +177,15 @@ in flash_teams.css.scss? */
 }
 #gFolder {
     cursor:pointer;
+}
+
+
+#TitleLength
+{
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
+    font-weight: bold;
+    font-size: 12px;
 }
