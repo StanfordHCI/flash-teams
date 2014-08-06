@@ -4,9 +4,9 @@ function renderProjectOverview(){
 		
 	var project_overview = flashTeamsJSON["projectoverview"];
 	
-	console.log(flashTeamsJSON["projectoverview"]);
+	//console.log(flashTeamsJSON["projectoverview"]);
 	
-	console.log("renderProjectOverview is being called");
+	//console.log("renderProjectOverview is being called");
 
 
 	showProjectOverview();
@@ -31,6 +31,11 @@ function showProjectOverview(){
 function editProjectOverview(){
 
 	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if(project_overview === undefined){
+		project_overview = "";
+	}
+
 	
 	$('#projectOverviewEditLink').hide();
 	
