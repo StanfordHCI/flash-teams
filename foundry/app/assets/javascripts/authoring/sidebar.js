@@ -3,14 +3,8 @@
 function renderProjectOverview(){
 		
 	var project_overview = flashTeamsJSON["projectoverview"];
-	
-	//console.log(flashTeamsJSON["projectoverview"]);
-	
-	//console.log("renderProjectOverview is being called");
-
 
 	showProjectOverview();
-	//editProjectOverview();
 }
 
 function showProjectOverview(){
@@ -40,7 +34,6 @@ function editProjectOverview(){
 	if(project_overview === undefined){
 		project_overview = "";
 	}
-
 	
 	$('#projectOverviewEditLink').hide();
 	
@@ -69,7 +62,7 @@ function saveProjectOverview(){
     
     console.log("saved projectoverview: " + flashTeamsJSON["projectoverview"]);
     
-    updateStatus(false);
+    updateStatus();
     
     showProjectOverview();
 }
