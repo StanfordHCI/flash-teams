@@ -17,13 +17,18 @@ function showProjectOverview(){
 	var project_overview = flashTeamsJSON["projectoverview"];
 	
 	if(project_overview === undefined){
-		project_overview = "You have not entered an overview of the project yet.";
+		project_overview = "No project overview has been added yet.";
 	}
-		
-	$('#projectOverviewEditLink').show();
-	$("#projectOverviewEditLink").html('<a onclick="editProjectOverview()" style="font-weight: normal;">Edit</a>');
 	
-	var projectOverviewContent = '<p>' + project_overview + '</p>';	
+	//uniq_u is null for author, we use this to decide whether to show the edit link next to project overview
+	var uniq_u=getParameterByName('uniq');
+		
+	if(uniq_u == "") {
+		$('#projectOverviewEditLink').show();
+		$("#projectOverviewEditLink").html('<a onclick="editProjectOverview()" style="font-weight: normal;">Edit</a>');
+	}
+	
+	var projectOverviewContent = '<div id="project-overview-text"><p>' + project_overview + '</p></div>';	
 	
 	$('#projectOverview').html(projectOverviewContent);
 }
@@ -54,7 +59,7 @@ function saveProjectOverview(){
     var project_overview_input = $("#projectOverviewInput").val();
     
     		if (project_overview_input === "") {
-        		project_overview_input =  "You have not entered an overview of the project yet.";
+        		project_overview_input =  "No project overview has been added yet.";
 				//alert("Please enter a project overview.");
 				//return;
 		}

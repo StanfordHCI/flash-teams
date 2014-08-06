@@ -128,13 +128,22 @@
 
 #project-overview-container{
 	padding-bottom: 10px;
+	max-height: 250px;
 }
+
+/* #project-overview-text span{ */
+/*
+#project-overview-text{
+	background: white;
+}
+*/
 
 #projectOverviewInput{
 	overflow: auto; 
   overflow-y: auto;
   word-wrap:break-word;
   width: 96.5%;
+  /* height: 250px; */
   resize:none;
   padding:5px;
   border:solid 1px #c3c3c3;

@@ -416,7 +416,7 @@ function drawTitleText(eventObj, firstTime) {
     var task_g = getTaskGFromGroupNum(groupNum);
 
     //shorten title to fit inside event
-    var existingTitleTextDiv = document.getElementById("TitleLength");
+    var existingTitleTextDiv = document.getElementById("titleLength");
     var spn = existingTitleTextDiv.getElementsByTagName('span')[0];
     spn.innerHTML = title;
     //existingTitleTextDiv.innerHTML = title;
