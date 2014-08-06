@@ -149,7 +149,7 @@
   border:solid 1px #c3c3c3;
 
 #status-bar-container svg {
-	width: 280px;
+	/* width: 280px; */
 }
 
 #status-bar-container text {

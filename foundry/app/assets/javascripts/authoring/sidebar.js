@@ -303,20 +303,20 @@ $(function() {
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
 /* .attr("width", SVG_WIDTH) */
-.attr("width", 280)
+.attr("width", "100%")
 .attr("height", 100);
 
 var statusText = project_status_svg.append("foreignObject")
 .attr("x", 0)
 .attr("y", 15)
-.attr("width", "280px")
-.attr("height", "400px")
+.attr("width", "100%")
+.attr("height", 100)
 .append("xhtml:body")
 .append("p")
 .style("color", "blue")
 .style("font-size", "18px")
 .style("background-color", "#f5f5f5")
-.style("width", "280px")
+.style("width", "100%")
 .text("You currently have no tasks");
 
 

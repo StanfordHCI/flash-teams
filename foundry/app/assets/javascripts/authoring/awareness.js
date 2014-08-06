@@ -1339,6 +1339,8 @@ var trackUpcomingEvent = function(){
             }
         } else {
             if (cursorTimeinMinutes == 0) {
+            	//dr: adding the commented d3 line below as a reminder of a potential solution to reduce height
+            	//project_status_svg.attr("height", 60);
                 overallTime = "Your first task will start " + overallTime + " after the team has begun";
             } else {
                 if (delayed_tasks.length != 0) {
