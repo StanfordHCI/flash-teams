@@ -53,13 +53,11 @@ function saveProjectOverview(){
 	// retrieve project overview from form
     var project_overview_input = $("#projectOverviewInput").val();
     
-    		/*
-if (project_overview_input === "") {
+    		if (project_overview_input === "") {
         		project_overview_input =  "You have not entered an overview of the project yet.";
 				//alert("Please enter a project overview.");
 				//return;
 		}
-*/
 	
     
     flashTeamsJSON["projectoverview"] = project_overview_input;
