@@ -36,9 +36,10 @@
      	<%= @flash_team.name.upcase%>
      	
      	<!-- Button to trigger modal -->
-	 	<a href="#myModal" data-toggle="modal" style="font-size: 24px; padding-left: 5px;"><i class="icon-info-sign" style="vertical-align: middle;"></i></a>
-	 
+	 	<a href="#projectOverviewModal" data-toggle="modal" style="font-size: 24px; padding-left: 5px;"><i class="icon-info-sign" style="vertical-align: middle;"></i></a>
 	 </h4>
+	 
+	 	<%= render :partial => "project_overview_modal" %>
      
      </div>
 	    
@@ -137,10 +138,11 @@
      	<%= @flash_team.name.upcase%>
      	
      	<!-- Button to trigger modal -->
-	 	<a href="#myModal" data-toggle="modal" style="font-size: 24px; padding-left: 5px;"><i class="icon-info-sign" style="vertical-align: middle;"></i></a>
-	 
+	 	<a href="#projectOverviewModal" data-toggle="modal" style="font-size: 24px; padding-left: 5px;"><i class="icon-info-sign" style="vertical-align: middle;"></i></a>
+	 	
 	 </h4>
 
+	 	<%= render :partial => "project_overview_modal" %>
      
      </div>
      
