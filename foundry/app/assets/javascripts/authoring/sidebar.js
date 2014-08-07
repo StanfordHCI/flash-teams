@@ -1,3 +1,72 @@
+/***project overview***/
+
+function renderProjectOverview(){
+		
+	var project_overview = flashTeamsJSON["projectoverview"];
+
+	showProjectOverview();
+}
+
+function showProjectOverview(){
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if(project_overview === undefined){
+		project_overview = "No project overview has been added yet.";
+	}
+	
+	//uniq_u is null for author, we use this to decide whether to show the edit link next to project overview
+	var uniq_u=getParameterByName('uniq');
+		
+	if(uniq_u == "") {
+		$('#projectOverviewEditLink').show();
+		$("#projectOverviewEditLink").html('<a onclick="editProjectOverview()" style="font-weight: normal;">Edit</a>');
+	}
+	
+	var projectOverviewContent = '<div id="project-overview-text"><p>' + project_overview + '</p></div>';	
+	
+	$('#projectOverview').html(projectOverviewContent);
+}
+
+function editProjectOverview(){
+
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if(project_overview === undefined){
+		project_overview = "";
+	}
+	
+	$('#projectOverviewEditLink').hide();
+	
+	var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
+				+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
+				+ '<button class="btn btn-default" type="button" onclick="showProjectOverview()">Cancel</button>'
+				+ '<button class="btn btn-success" type="button" onclick="saveProjectOverview()" style="float: right;">Save</button>'
+				+'</form>';
+	$('#projectOverview').html(projectOverviewForm);
+		
+}
+
+function saveProjectOverview(){
+	
+	// retrieve project overview from form
+    var project_overview_input = $("#projectOverviewInput").val();
+    
+    		if (project_overview_input === "") {
+        		project_overview_input =  "No project overview has been added yet.";
+				//alert("Please enter a project overview.");
+				//return;
+		}
+	
+    
+    flashTeamsJSON["projectoverview"] = project_overview_input;
+    
+    console.log("saved projectoverview: " + flashTeamsJSON["projectoverview"]);
+    
+    updateStatus();
+    
+    showProjectOverview();
+}
+
 /***chat****/
 
 var firebaseURL = 'https://foundry-ft-dev.firebaseio.com/'; //should be foundry-ft for production and foundry-ft-dev for development
@@ -227,21 +296,20 @@ $(function() {
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
 /* .attr("width", SVG_WIDTH) */
-.attr("width", 300)
+.attr("width", "100%")
 .attr("height", 100);
 
 var statusText = project_status_svg.append("foreignObject")
-    
 .attr("x", 0)
 .attr("y", 15)
-.attr("width", "300px")
-.attr("height", "400px")
+.attr("width", "100%")
+.attr("height", 100)
 .append("xhtml:body")
 .append("p")
 .style("color", "blue")
 .style("font-size", "18px")
 .style("background-color", "#f5f5f5")
-.style("width", "280px")
+.style("width", "100%")
 .text("You currently have no tasks");
 
 

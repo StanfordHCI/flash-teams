@@ -416,19 +416,18 @@ function drawTitleText(eventObj, firstTime) {
     var task_g = getTaskGFromGroupNum(groupNum);
 
     //shorten title to fit inside event
-    var existingTitleTextDiv = document.getElementById("TitleLength");
-    existingTitleTextDiv.innerHTML = title;
+    var existingTitleTextDiv = document.getElementById("titleLength");
+    var spn = existingTitleTextDiv.getElementsByTagName('span')[0];
+    spn.innerHTML = title;
     var shortened_title = title;
-    var width = (existingTitleTextDiv.clientWidth );
+    var width = (spn.offsetWidth );
     var event_width = getWidth(eventObj);
-     
+        
   while (width > event_width - 15){ 
-         shortened_title = shortened_title.substring(0,shortened_title.length - 4);
+        shortened_title = shortened_title.substring(0,shortened_title.length - 4);
         shortened_title = shortened_title + "...";
-       
-        console.log(shortened_title);
-        existingTitleTextDiv.innerHTML = shortened_title;
-        width = (existingTitleTextDiv.clientWidth);
+        spn.innerHTML = shortened_title;
+        width = spn.offsetWidth;
   }
 
     title = shortened_title;
