@@ -2,20 +2,30 @@
 <!-- <span class="span1" style="font-weight: normal;"><a onclick="editProjectOverview()">Edit</a></span> -->
 <span class="span1" id="projectOverviewEditLink"></span>
 </h5> 
-<!-- <p class="span2"><a onclick="editProjectOverview()">Edit</a></p> -->
 
 <div id="projectOverview" style="margin-bottom: 0px; padding-bottom: 0px;">
 
-<!--
-<form name='projectOverviewForm' id="projectOverviewForm" style="margin-bottom: 5px;">
+</div>
 
-<textarea type='text' id='projectOverviewInput' rows="6" placeholder='Description of project...'></textarea>
-  
-  <button class="btn btn-default" type="button">Cancel</button>
+<!-- <div> -->
 
-  <button class="btn btn-success" type="button" onclick="saveProjectOverview()" style="float: right;">Save</button>
+<!-- Button to trigger modal -->
+<!-- <a href="#myModal" role="button" class="btn" data-toggle="modal">Launch PO</a> -->
 
-</form>
--->
+<!-- </div> -->
 
+<!-- Project Overview Modal (triggered by info button next to the flash team title) -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Project Overview</h3>
+  </div>
+  <div class="modal-body">
+    <p id="po-text">One fine body…</p>
+    <p><span id="po-edit-link"></span></p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="edit-save" onclick="editPO()">Edit</button>
+  </div>
 </div>
