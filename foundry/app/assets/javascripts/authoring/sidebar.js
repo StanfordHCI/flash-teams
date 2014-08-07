@@ -19,7 +19,7 @@ function showProjectOverview(){
 		
 	if(uniq_u == "") {
 		$('#projectOverviewEditLink').show();
-		$("#projectOverviewEditLink").html('<a onclick="editProjectOverview()" style="font-weight: normal;">Edit</a>');
+		$("#projectOverviewEditLink").html('<a onclick="editProjectOverview(false)" style="font-weight: normal;">Edit</a>');
 	}
 	
 	var projectOverviewContent = '<div id="project-overview-text"><p>' + project_overview + '</p></div>';	
@@ -29,8 +29,9 @@ function showProjectOverview(){
 	//modal content
 	$('#po-text').html(projectOverviewContent);
 
+	//only allow authors to edit project overview
 	if(uniq_u == "") {
-		$("#edit-save").attr('onclick', 'editPO()');
+		$("#edit-save").attr('onclick', 'editProjectOverview(true)');
 		$("#edit-save").html('Edit');
 	}
 	else{
@@ -38,7 +39,7 @@ function showProjectOverview(){
 	}
 }
 
-function editProjectOverview(){
+function editProjectOverview(popover){
 
 	var project_overview = flashTeamsJSON["projectoverview"];
 	
@@ -46,39 +47,33 @@ function editProjectOverview(){
 		project_overview = "";
 	}
 	
-	$('#projectOverviewEditLink').hide();
+	if(popover==true){
+		$('#po-edit-link').hide();
+		
+		var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
+					+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
+					+ '<a onclick="showProjectOverview()" style="font-weight: normal;">Cancel</a>'
+					+'</form>';
+		$('#po-text').html(projectOverviewForm);
+		
+		$("#edit-save").attr('onclick', 'saveProjectOverview()');
+		$("#edit-save").html('Save');	
+	}
 	
-	var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
+	else{
+		$('#projectOverviewEditLink').hide();
+	
+		var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
 				+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
 				+ '<button class="btn btn-default" type="button" onclick="showProjectOverview()">Cancel</button>'
 				+ '<button class="btn btn-success" type="button" onclick="saveProjectOverview()" style="float: right;">Save</button>'
 				+'</form>';
-	$('#projectOverview').html(projectOverviewForm);
-		
-}
-
-
-//edit project overview in modeal
-function editPO(){
-
-	var project_overview = flashTeamsJSON["projectoverview"];
-	
-	if(project_overview === undefined){
-		project_overview = "";
+				
+		$('#projectOverview').html(projectOverviewForm);
 	}
-	
-	$('#po-edit-link').hide();
-	
-	var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
-				+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
-				+ '<a onclick="showProjectOverview()" style="font-weight: normal;">Cancel</a>'
-				+'</form>';
-	$('#po-text').html(projectOverviewForm);
-	
-	$("#edit-save").attr('onclick', 'saveProjectOverview()');
-	$("#edit-save").html('Save');
-		
+			
 }
+
 
 function saveProjectOverview(){
 	
@@ -90,8 +85,7 @@ function saveProjectOverview(){
 				//alert("Please enter a project overview.");
 				//return;
 		}
-	
-    
+	 
     flashTeamsJSON["projectoverview"] = project_overview_input;
     
     console.log("saved projectoverview: " + flashTeamsJSON["projectoverview"]);
