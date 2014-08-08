@@ -474,6 +474,10 @@ var loadData = function(){
     event_counter = flashTeamsJSON["events"].length;
     
     drawEvents(!in_progress);
+
+    if(isUser){
+        updateAllPopoversToReadOnly();  
+    }
     drawBlueBoxes();
     drawRedBoxes();
     drawDelayedTasks();
