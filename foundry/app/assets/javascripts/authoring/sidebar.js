@@ -295,7 +295,6 @@ $(function() {
 //var status_width=302; --> negar's
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
-/* .attr("width", SVG_WIDTH) */
 .attr("width", "100%")
 .attr("height", 100);
 
@@ -304,8 +303,7 @@ var statusText = project_status_svg.append("foreignObject")
 .attr("y", 15)
 .attr("width", "100%")
 .attr("height", 100)
-.append("xhtml:body")
-.append("p")
+.append("xhtml:p")
 .style("color", "blue")
 .style("font-size", "18px")
 .style("background-color", "#f5f5f5")
