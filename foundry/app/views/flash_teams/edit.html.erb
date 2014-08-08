@@ -31,14 +31,13 @@
      
      <div class="row-fluid" style="margin-top: 40px; margin-bottom: 5px;">
      
-     <h4 id="ft-name">
-     
-     	<%= @flash_team.name.upcase%>
+     <h4>
+     	<span id="ft-name"><%= @flash_team.name.upcase%></span>
      	
      	<!-- Button to trigger modal -->
 	 	<a href="#projectOverviewModal" data-toggle="modal" style="font-size: 24px; padding-left: 5px;"><i class="icon-info-sign" style="vertical-align: middle;"></i></a>
 	 </h4>
-	 
+	 	
 	 	<%= render :partial => "project_overview_modal" %>
      
      </div>
@@ -133,15 +132,13 @@
      
      <div class="row-fluid" style="margin-top: 40px; margin-bottom: 5px;">
      
-     	<h4 id="ft-name">
-     
-     	<%= @flash_team.name.upcase%>
+     <h4>
+     	<span id="ft-name"><%= @flash_team.name.upcase%></span>
      	
      	<!-- Button to trigger modal -->
 	 	<a href="#projectOverviewModal" data-toggle="modal" style="font-size: 24px; padding-left: 5px;"><i class="icon-info-sign" style="vertical-align: middle;"></i></a>
-	 	
 	 </h4>
-
+	 
 	 	<%= render :partial => "project_overview_modal" %>
      
      </div>
