@@ -577,6 +577,10 @@ var drawBlueBox = function(ev, task_g){
 };
 
 var drawRedBox = function(ev, task_g, use_cursor){
+
+    console.log("here!!",ev);
+    console.log("remaining ", remaining_tasks);
+    console.log("second event x: ",flashTeamsJSON["events"][1].x );
     var groupNum = ev.id;
     var task_start = parseFloat(ev.x);
     var task_rect_curr_width = parseFloat(getWidth(ev));
@@ -643,8 +647,13 @@ var drawDelayedTasks = function(){
         var groupNum = parseInt(before_tasks[i]);
         var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
         var task_g = getTaskGFromGroupNum(groupNum);
+        
         var completed = ev.completed_x;
+        
         if (completed) continue;
+        
+        var id_remaining = remaining_tasks.indexOf(groupNum)
+        if (id_remaining != -1) continue;
 
         var red_width = drawRedBox(ev, task_g, true);
         console.log(" ^^^^^^^^^^^^^^^^^^^^^^ RED_WIDTH: " + red_width);
@@ -879,6 +888,8 @@ var computeTasksAfterCurrent = function(curr_x){
     return tasks_after_curr;
 };
 
+//event.x of pushed back tasks are updated after the drawDelayedTasks is called
+//This functions returns the pushed back tasks as tasks before current if it is called before drawDelayedTasks is called
 var computeTasksBeforeCurrent = function(curr_x){
     tasks_before_curr = [];
     
