@@ -578,9 +578,6 @@ var drawBlueBox = function(ev, task_g){
 
 var drawRedBox = function(ev, task_g, use_cursor){
 
-    console.log("here!!",ev);
-    console.log("remaining ", remaining_tasks);
-    console.log("second event x: ",flashTeamsJSON["events"][1].x );
     var groupNum = ev.id;
     var task_start = parseFloat(ev.x);
     var task_rect_curr_width = parseFloat(getWidth(ev));
