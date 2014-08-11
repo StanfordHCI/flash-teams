@@ -102,8 +102,6 @@ var firebaseURL = 'https://foundry-ft-dev.firebaseio.com/'; //should be foundry-
 
 var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
 
-//var currentdate;
-
 var name;
 
 
