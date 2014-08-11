@@ -236,7 +236,7 @@ function renderEverything(firstTime) {
             else
                 renderMembersUser();
             renderMembersUser();
-            startTeam(firstTime);
+            //startTeam(firstTime);
         } else {
             console.log("flash team not in progress");
             
