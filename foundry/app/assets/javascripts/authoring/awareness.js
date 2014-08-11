@@ -684,7 +684,9 @@ var drawDelayedTasks = function(){
     if (tasks_after != null){
         var actual_offset = computeTotalOffset(allRanges);
         console.log("DRAWING DELAYED TASKS AFTER UPDATE");
-        moveTasksRight(tasks_after, actual_offset, true);
+        
+        //note from DR: this was previous true but it was causing the delayed task issue to occur (changing it to false fixed the issue)
+        moveTasksRight(tasks_after, actual_offset, false); 
     }
 };
 
