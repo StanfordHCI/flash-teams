@@ -102,7 +102,7 @@ var firebaseURL = 'https://foundry-ft-dev.firebaseio.com/'; //should be foundry-
 
 var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
 
-var currentdate = new Date(); 
+//var currentdate;
 
 var name;
 
@@ -116,6 +116,8 @@ $('#messageInput').keydown(function(e){
         if(uniq_u == undefined || uniq_u == ""){
 	        uniq_u = 'Author';
         }
+        
+        var currentdate = new Date(); 
         
         myDataRef.push({name: chat_name, role: chat_role, uniq: uniq_u, date: currentdate.toUTCString(), text: text});
         $('#messageInput').attr("placeholder", "Type your message here...").val('').blur();
