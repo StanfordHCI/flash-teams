@@ -1379,7 +1379,7 @@ var trackUpcomingEvent = function(){
             statusText.style("color", "blue");  
         }
         
-        statusText.text(overallTime);
+        //statusText.text(overallTime);
        
     }, fire_interval);
 
