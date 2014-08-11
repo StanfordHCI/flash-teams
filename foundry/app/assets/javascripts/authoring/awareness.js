@@ -107,9 +107,10 @@ function startFlashTeam() {
     $("div#project-status-container").css('display','');
     $("div#chat-box-container").css('display','');
     $("#flashTeamTitle").css('display','none');
-    removeColabBtns();
-    removeHandoffBtns();
-    startTeam(true);
+    //removeColabBtns();
+    //removeHandoffBtns();
+    //startTeam(true);
+    addAllFolders();
     googleDriveLink();
 }
 
@@ -1530,7 +1531,7 @@ function confirmCompleteTask(groupNum) {
 
 
 var completeTask = function(groupNum){
-    console.log("COMPLETED TASK");
+    /*console.log("COMPLETED TASK");
     $('#confirmAction').modal('hide');
     var ev = flashTeamsJSON["events"][getEventJSONIndex(groupNum)];
 
@@ -1566,5 +1567,5 @@ var completeTask = function(groupNum){
     updateStatus(true);
 
     // reload status bar
-    load_statusBar(status_bar_timeline_interval);
+    load_statusBar(status_bar_timeline_interval);*/
 };
