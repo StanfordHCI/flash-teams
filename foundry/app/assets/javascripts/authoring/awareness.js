@@ -1525,7 +1525,12 @@ function confirmCompleteTask(groupNum) {
     $('#confirmAction').modal('show');
     
     //Calls completeTask function if user confirms the complete
-    document.getElementById("confirmButton").onclick=function(){completeTask(groupNum)};
+    document.getElementById("confirmButton").onclick=function(){
+    
+    	$('#confirmAction').modal('hide');
+    	//completeTask(groupNum)
+    };
+    
     hidePopover(groupNum); 
 }
 
