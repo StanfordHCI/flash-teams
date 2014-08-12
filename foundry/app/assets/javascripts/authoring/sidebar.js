@@ -102,8 +102,6 @@ var firebaseURL = 'https://foundry-ft-dev.firebaseio.com/'; //should be foundry-
 
 var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
 
-var currentdate = new Date(); 
-
 var name;
 
 
@@ -117,33 +115,14 @@ $('#messageInput').keydown(function(e){
 	        uniq_u = 'Author';
         }
         
+        var currentdate = new Date(); 
+        
         myDataRef.push({name: chat_name, role: chat_role, uniq: uniq_u, date: currentdate.toUTCString(), text: text});
         $('#messageInput').attr("placeholder", "Type your message here...").val('').blur();
     }
 });
 
-//load all chats that were sent before page was reloaded
-/*myDataRef.once('value', function(snapshot) {
-    var message = snapshot.val();
-    
-	if(message != null){
-		 displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
-    
-		 name = message.name;
-	}
-});*/
 
-/*myDataRef.on('child_added', function(snapshot) {
-    var message = snapshot.val();
-    //console.log(snapshot);
-    //console.log(message);
-    //console.log("MESSAGE NAME: " + message["name"]);
-
-    displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
-    
-    name = message.name;
-});
-*/
 var lastMessage=0;
 var lastWriter;
 
