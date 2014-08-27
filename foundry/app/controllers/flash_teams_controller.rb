@@ -120,7 +120,8 @@ end
   	else
     	@flash_team = FlashTeam.find(params[:id])
     
-		if @flash_team.user_id != session[:user].id
+		#note: member info is stored in status json in flash_teams_json
+		if @flash_team.user_id != session[:user].id && !params.has_key?("uniq")
 			flash[:notice] = 'You cannot access this flash team.' 
     		redirect_to(flash_teams_path)
 		end
