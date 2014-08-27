@@ -12,29 +12,22 @@ body {
 	padding-top: 10px;
 }
 
-#about-columns{
-	padding-bottom: 30px;
-	/*
-margin-left: 20px;
-	margin-right: 15px;
-*/
-	
-}
 
 #index-phrase{
 	padding-top: 30px;
 }
 
 #carousel-index{
-	/* width: 400px; */
-	/* height: 225px; */
 }
 
 .carousel-index-photo{
-	/* width: 350px; */
-	/* height: 200px; */
 	margin: auto auto;
 }
+
+#about-columns{
+	padding-bottom: 30px;
+}
+
 .team-row{
 	padding-top: 20px;
 }
