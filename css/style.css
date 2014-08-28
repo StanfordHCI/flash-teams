@@ -1,5 +1,16 @@
-body { 
+body{ 
 	padding-top: 70px; 
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+.navbar-brand{
+	/* font-family: 'Shadows Into Light Two', cursive; */
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+.nav{
+	/* font-family: 'Shadows Into Light Two', cursive; */
+	font-family: 'Roboto Condensed', sans-serif;
 }
 
 .navbar-footer{
@@ -12,9 +23,16 @@ body {
 	padding-top: 10px;
 }
 
+/*
+.container .container-fluid .row{
+	font-family: 'Roboto Condensed', sans-serif;
+}
+*/
+
 
 #index-phrase{
 	padding-top: 30px;
+	font-family: 'Roboto Condensed', sans-serif;
 }
 
 #carousel-index{
