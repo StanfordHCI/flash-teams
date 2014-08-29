@@ -3,22 +3,21 @@ body{
 	font-family: 'Roboto Condensed', sans-serif;
 }
 
-.navbar-brand{
-	/* font-family: 'Roboto Condensed', sans-serif; */
-	font-family: 'Oswald', sans-serif;
-	font-size: 20px;
+p{
+	font-family: 'Raleway', sans-serif;
 }
 
-.nav{
-	/* font-family: 'Roboto Condensed', sans-serif; */
+.navbar-brand{
 	font-family: 'Oswald', sans-serif;
-	font-size: 16px;
+	font-size: 20px;
 }
 
 
 .navbar-default {
 	background-color: #b82500;
 	border-color: #8a1900;
+	font-family: 'Oswald', sans-serif;
+	font-size: 16px;
 }
 .navbar-default .navbar-brand {
 	color: #ecf0f1;
