@@ -106,7 +106,18 @@ p{
 	margin: auto auto;
 }
 
+
+#about-tab{
+	margin-top:20px;
+}
+
+
 #about-columns{
+	padding-bottom: 30px;
+}
+
+/*used in index2.html*/
+.about-columns{
 	padding-bottom: 30px;
 }
 
