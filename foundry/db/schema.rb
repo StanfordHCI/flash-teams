@@ -11,7 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 20140719014136) do
+=======
+ActiveRecord::Schema.define(version: 20140729170357) do
+>>>>>>> master
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,7 +40,11 @@ ActiveRecord::Schema.define(version: 20140719014136) do
     t.text     "notification_email_status"
     t.datetime "created_at"
     t.datetime "updated_at"
+<<<<<<< HEAD
     t.integer  "user_id"
+=======
+    t.text     "original_status"
+>>>>>>> master
   end
 
   create_table "handoffs", force: true do |t|

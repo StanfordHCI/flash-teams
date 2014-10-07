@@ -1,10 +1,106 @@
+/***project overview***/
+
+function renderProjectOverview(){
+		
+	var project_overview = flashTeamsJSON["projectoverview"];
+
+	showProjectOverview(); 
+}
+
+function showProjectOverview(){
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if(project_overview === undefined){
+		project_overview = "No project overview has been added yet.";
+	}
+	
+	//uniq_u is null for author, we use this to decide whether to show the edit link next to project overview
+	var uniq_u=getParameterByName('uniq');
+		
+	if(uniq_u == "") {
+		$('#projectOverviewEditLink').show();
+		$("#projectOverviewEditLink").html('<a onclick="editProjectOverview(false)" style="font-weight: normal;">Edit</a>');
+	}
+	
+	var projectOverviewContent = '<div id="project-overview-text"><p>' + project_overview + '</p></div>';	
+	
+	$('#projectOverview').html(projectOverviewContent);
+	
+	//modal content
+	$('#po-text').html(projectOverviewContent);
+
+	//only allow authors to edit project overview
+	if(uniq_u == "") {
+		$("#edit-save").attr('onclick', 'editProjectOverview(true)');
+		$("#edit-save").html('Edit');
+	}
+	else{
+		$("#edit-save").css('display', 'none');
+	}
+}
+
+function editProjectOverview(popover){
+
+	var project_overview = flashTeamsJSON["projectoverview"];
+	
+	if(project_overview === undefined){
+		project_overview = "";
+	}
+	
+	if(popover==true){
+		$('#po-edit-link').hide();
+		
+		var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
+					+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
+					+ '<a onclick="showProjectOverview()" style="font-weight: normal;">Cancel</a>'
+					+'</form>';
+		$('#po-text').html(projectOverviewForm);
+		
+		$("#edit-save").attr('onclick', 'saveProjectOverview()');
+		$("#edit-save").html('Save');	
+	}
+	
+	else{
+		$('#projectOverviewEditLink').hide();
+	
+		var projectOverviewForm = '<form name="projectOverviewForm" id="projectOverviewForm" style="margin-bottom: 5px;">'
+				+'<textarea type="text"" id="projectOverviewInput" rows="6" placeholder="Description of project...">'+project_overview+'</textarea>'
+				+ '<button class="btn btn-default" type="button" onclick="showProjectOverview()">Cancel</button>'
+				+ '<button class="btn btn-success" type="button" onclick="saveProjectOverview()" style="float: right;">Save</button>'
+				+'</form>';
+				
+		$('#projectOverview').html(projectOverviewForm);
+	}
+			
+}
+
+
+function saveProjectOverview(){
+	
+	// retrieve project overview from form
+    var project_overview_input = $("#projectOverviewInput").val();
+    
+    		if (project_overview_input === "") {
+        		project_overview_input =  "No project overview has been added yet.";
+				//alert("Please enter a project overview.");
+				//return;
+		}
+	 
+    flashTeamsJSON["projectoverview"] = project_overview_input;
+    
+    console.log("saved projectoverview: " + flashTeamsJSON["projectoverview"]);
+    
+    updateStatus();
+    
+    showProjectOverview();
+}
+
+
 /***chat****/
 
 var firebaseURL = 'https://foundry-ft-tech.firebaseio.com/'; //should be foundry-ft for production and foundry-ft-dev for development
 
 var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
-
-var currentdate = new Date(); 
 
 var name;
 
@@ -19,33 +115,14 @@ $('#messageInput').keydown(function(e){
 	        uniq_u = 'Author';
         }
         
+        var currentdate = new Date(); 
+        
         myDataRef.push({name: chat_name, role: chat_role, uniq: uniq_u, date: currentdate.toUTCString(), text: text});
         $('#messageInput').attr("placeholder", "Type your message here...").val('').blur();
     }
 });
 
-//load all chats that were sent before page was reloaded
-/*myDataRef.once('value', function(snapshot) {
-    var message = snapshot.val();
-    
-	if(message != null){
-		 displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
-    
-		 name = message.name;
-	}
-});*/
 
-/*myDataRef.on('child_added', function(snapshot) {
-    var message = snapshot.val();
-    //console.log(snapshot);
-    //console.log(message);
-    //console.log("MESSAGE NAME: " + message["name"]);
-
-    displayChatMessage(message.name, message.uniq, message.role, message.date, message.text);
-    
-    name = message.name;
-});
-*/
 var lastMessage=0;
 var lastWriter;
 
@@ -226,16 +303,23 @@ $(function() {
 //var status_width=302; --> negar's
 /* --------------- PROJECT STATUS BAR START ------------ */
 var project_status_svg = d3.select("#status-bar-container").append("svg")
-/* .attr("width", SVG_WIDTH) */
-.attr("width", 300)
+.attr("width", "100%")
 .attr("height", 100);
 
-var statusText = project_status_svg.append("text").text("You currently have no tasks")
+var statusText = project_status_svg.append("foreignObject")
 .attr("x", 0)
 .attr("y", 15)
-.attr("font-size", "sans-serif")
-.attr("font-size", "20px")
-.attr("fill", "black");
+.attr("width", "100%")
+.attr("height", 100)
+.append("xhtml:p")
+.style("color", "blue")
+.style("font-size", "18px")
+.style("background-color", "#f5f5f5")
+.style("width", "100%")
+.text("You currently have no tasks");
+
+
+
 
 var status_width=100; 
 var status_height=32;

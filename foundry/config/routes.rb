@@ -69,6 +69,7 @@ Foundry::Application.routes.draw do
       delete :destroy
       get :get_status
       post :update_status
+      post :update_original_status
       post :update_json
       get :get_json
       post :early_completion_email
