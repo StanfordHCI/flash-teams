@@ -98,7 +98,7 @@ function saveProjectOverview(){
 
 /***chat****/
 
-var firebaseURL = 'https://foundry-app-v1.firebaseio.com/'; //should be foundry-ft for production and foundry-ft-dev for development
+var firebaseURL = 'https://foundry-app-v1.firebaseio.com/'; //change firebase url depending on version of foundry
 
 var myDataRef = new Firebase(firebaseURL + flash_team_id +'/chats');
 

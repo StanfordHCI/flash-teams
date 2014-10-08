@@ -11,7 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
+ActiveRecord::Schema.define(version: 20140719014136) do
+=======
 ActiveRecord::Schema.define(version: 20140729170357) do
+>>>>>>> master
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,7 +40,11 @@ ActiveRecord::Schema.define(version: 20140729170357) do
     t.text     "notification_email_status"
     t.datetime "created_at"
     t.datetime "updated_at"
+<<<<<<< HEAD
+    t.integer  "user_id"
+=======
     t.text     "original_status"
+>>>>>>> master
   end
 
   create_table "handoffs", force: true do |t|
@@ -56,6 +64,16 @@ ActiveRecord::Schema.define(version: 20140729170357) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "sessions", force: true do |t|
+    t.string   "session_id", null: false
+    t.text     "data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
+  add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "skills", force: true do |t|
     t.string   "name"
@@ -77,6 +95,12 @@ ActiveRecord::Schema.define(version: 20140729170357) do
     t.integer  "end_minute"
     t.integer  "duration"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "users", force: true do |t|
+    t.string   "username"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
