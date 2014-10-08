@@ -115,19 +115,24 @@ rescue_from ActiveRecord::RecordNotFound do
 end
  
   def edit
-  	if session[:user].nil?
-		@user = nil 
-		@title = "Invalid User ID"
-		@flash_team = nil
-		redirect_to(welcome_index_path)				
-  	else
-    	@flash_team = FlashTeam.find(params[:id])
-    
-		#note: member info is stored in status json in flash_teams_json
-		if @flash_team.user_id != session[:user].id && !params.has_key?("uniq")
-			flash[:notice] = 'You cannot access this flash team.' 
-    		redirect_to(flash_teams_path)
+  	if !params.has_key?("uniq") #if in author view
+	  	if session[:user].nil? 
+			@user = nil 
+			@title = "Invalid User ID"
+			@flash_team = nil
+			redirect_to(welcome_index_path)			
+		else 
+			@flash_team = FlashTeam.find(params[:id])
+			
+			if @flash_team.user_id != session[:user].id 
+				flash[:notice] = 'You cannot access this flash team.' 
+				redirect_to(flash_teams_path)
+			end
 		end
+			
+  	else #else it is in worker view 
+    	@flash_team = FlashTeam.find(params[:id])
+    end 
 
     #customize user views
     status = @flash_team.status 
@@ -174,7 +179,6 @@ end
     end
     @events_json = @events_array.to_json
 
-	end #end if session nil
   end
 
   def rename
