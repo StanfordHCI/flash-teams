@@ -116,6 +116,10 @@ p{
 	padding-bottom: 30px;
 }
 
+#uist-pres-columns{
+	padding-bottom: 10px;
+}
+
 /*used in index2.html*/
 .about-columns{
 	padding-bottom: 30px;
@@ -181,6 +185,7 @@ div.slide div.image {
 
 div.caption {
 	margin-left: 424px;
+	font-weight: 500;
 }
 
 div.caption p {
